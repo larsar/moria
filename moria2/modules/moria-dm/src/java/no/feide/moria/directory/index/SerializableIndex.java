@@ -1,8 +1,8 @@
 package no.feide.moria.directory.index;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,13 +14,15 @@ implements Serializable, DirectoryManagerIndex {
 
     /**
      * Internal list of associations; that is, the mapping between logical ID
-     * realms (following the 'at' character) and search base references.
+     * realms (as <code>String</code>s) - following the 'at' character - and
+     * search base references (as <code>String</code> s).
      */
     private HashMap associations = new HashMap();
 
     /**
      * Internal list of exceptions to the associations; that is, explicitly
-     * indexed logical IDs to full external references.
+     * indexed logical IDs (as <code>String</code>s) to full external
+     * references (as <code>String</code> arrays).
      */
     private HashMap exceptions = new HashMap();
 
@@ -66,12 +68,11 @@ implements Serializable, DirectoryManagerIndex {
      * required in the logical ID.
      * @param id
      *            The logical identificator to look up.
-     * @return A list of one or more references matching the given
-     *         identificator, or <code>null</code> if no such reference was
-     *         found.
+     * @return One or more references matching the given identificator, or
+     *         <code>null</code> if no such reference was found.
      * @see DirectoryManagerIndex#lookup(String)
      */
-    public List lookup(final String id) {
+    public String[] lookup(final String id) {
 
         // Sanity check.
         if (id == null)
@@ -79,18 +80,14 @@ implements Serializable, DirectoryManagerIndex {
 
         // Do we have an explicit match? That is, an exception from the
         // association rule?
-        if (exceptions.containsKey(id)) {
-            LinkedList list = new LinkedList();
-            list.add((String) exceptions.get(id));
-            return (List) list;
-        }
+        if (exceptions.containsKey(id))
+            return new String[] {(String) exceptions.get(id)};
 
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
         if (i < 0)
             return null;
-        String realm = id.substring(i);
-        return (List) associations.get(realm);
+        return (String[]) associations.get(id.substring(i));
 
     }
 
@@ -126,16 +123,14 @@ implements Serializable, DirectoryManagerIndex {
         if (associations.containsKey(realm)) {
 
             // Update existing association.
-            List oldBase = (List) associations.get(realm);
+            List oldBase = Arrays.asList((String[]) associations.get(realm));
             oldBase.add(base);
-            associations.put(realm, oldBase);
+            associations.put(realm, oldBase.toArray(new String[] {}));
 
         } else {
 
             // Create new association.
-            LinkedList newBase = new LinkedList();
-            newBase.add(base);
-            associations.put(realm, newBase);
+            associations.put(realm, new String[] {base});
 
         }
 
