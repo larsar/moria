@@ -17,7 +17,6 @@
 
 package no.feide.moria;
 
-//import java.net.ConnectException;  // No longer used for LIMS.
 import java.security.Security;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -35,7 +34,6 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
-//import javax.naming.ldap.LdapReferralException;  No longer used for LIMS.
 
 
 /**
@@ -58,25 +56,6 @@ public class Backend {
     /** Used to show whether the system-wide JNDI init has been done. */
     private static boolean initialized = false;
     
-    /** The set of initial backend URLs. */
-	/* LIMS-specific and hence disabled.
-    private Vector initialURLs = new Vector();
-    */
-    
-    // The index of the currently used initial URL. All access should be
-    // synchronized!
-	/* LIMS-specific and hence disabled.
-    private static Integer initialURLIndex = new Integer(0);
-    */
-    
-    /**
-     * The number of referrals we've followed. Used to switch to a secondary
-     * index server if needed.
-     */
-	/* LIMS-specific and hence disabled.
-    private int referrals;
-    */
-    
     /** Default initial hash table for LDAP context environment. */
     private Hashtable defaultEnv;
     
@@ -94,18 +73,7 @@ public class Backend {
         defaultEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         defaultEnv.put(Context.REFERRAL, "throw");  // To catch referrals.
         defaultEnv.put("java.naming.ldap.derefAliases", "never");  // Due to OpenSSL problems.
-		defaultEnv.put(Context.SECURITY_PROTOCOL, "ssl");  // SSL enabled by default (must be removed if reintroducing LIMS).
-        
-        /* Old LIMS code temporarily disabled.
-        // Populate list of initial URLs.
-        String url;
-        for (int i=1; ; i++) {
-            url = Configuration.getProperty("no.feide.moria.backend.ldap.url"+i);
-            if (url == null)
-                break; // No more URLs.
-            initialURLs.add(url);
-        }
-        */
+		defaultEnv.put(Context.SECURITY_PROTOCOL, "ssl");  // SSL enabled by default.
         
     }
     
@@ -211,81 +179,65 @@ public class Backend {
         
         try {
             
-            /* Old LIMS code; disabled.
-            // Try all initial (index) servers, if necessary.
-            Hashtable env = new Hashtable(defaultEnv);
-            int failures = 0;
-            synchronized (initialURLIndex) {
-                do {
-                    int index = initialURLIndex.intValue();
-                    env.put(Context.PROVIDER_URL, (String)initialURLs.get(index));
-                    try {
-                        ldap = new InitialLdapContext(env, null);
-                    } catch (CommunicationException e) {
-                        if (e.getRootCause() instanceof ConnectException)
-
-                            // Switch to another initial URL, if available.
-                            failures++;
-                            if (failures == initialURLs.size()) {
-                                log.severe("Unable to connect to any initial (index) server; last URL was "+env.get(Context.PROVIDER_URL));
-                                throw new BackendException("Unable to connect to any initial (index) server; last URL was "+env.get(Context.PROVIDER_URL));
-                            }
-                            index++;
-                            if (index == initialURLs.size())
-                                initialURLIndex = new Integer(0);
-                            else
-                                initialURLIndex = new Integer(index);
-                            log.config("Unable to connect to "+env.get(Context.PROVIDER_URL)+", switching to "+(String)initialURLs.get(initialURLIndex.intValue()));
-
-                        }
-                } while (ldap == null);
-            }
-            */
-            
             // Map user ID domain to LDAP URL and connect to server.
 			Hashtable env = new Hashtable(defaultEnv);
-			String url = BackendIndex.lookup(c.getIdentifier().toString());
-			env.put(Context.PROVIDER_URL, url);
-			try {
-				ldap = new InitialLdapContext(env, null);
-			} catch (CommunicationException e) {
-				log.severe("Unable to connect to "+env.get(Context.PROVIDER_URL));
-				throw new BackendException("Unable to connect to "+env.get(Context.PROVIDER_URL));
+			String urls[] = BackendIndex.lookup(c.getIdentifier().toString());
+			
+			// Try each backend URL in turn.
+			for (int urlIndex = 0; urlIndex < urls.length; urlIndex++) {
+				
+				env.put(Context.PROVIDER_URL, urls[urlIndex]);
+				try {
+					ldap = new InitialLdapContext(env, null);
+				} catch (CommunicationException e) {
+					log.severe("Unable to connect to "+env.get(Context.PROVIDER_URL));
+					throw new BackendException("Unable to connect to "+env.get(Context.PROVIDER_URL));
+				}
+	
+	            // Search for user element.
+		        log.config("Connected to "+env.get(Context.PROVIDER_URL));
+	            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
+	            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
+	            rdn = ldapSearch(pattern);
+	            if (rdn == null) {
+	            	
+	                // No user element found. Try to guess the DN anyway.
+	                log.fine("No subtree match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+	                rdn = c.getIdentifier().toString();
+	                rdn = "uid="+rdn.substring(0, rdn.indexOf('@'));
+	                log.info("Guessing on RDN "+rdn);
+	                
+	            } else
+	            	log.fine("Found element at "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+	
+	            // Authenticate.
+	            ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
+	            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn+','+ldap.getNameInNamespace());
+	            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+	            try {
+	                ldap.reconnect(null);
+	                log.fine("Authenticated as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+	                return true;  // Success.
+	            } catch (AuthenticationException e) {
+	                log.fine("Failed to authenticate as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+	                if (urlIndex == urls.length) {
+	                	log.warning("No more URLs available for authentication");
+	                	return false;
+	                }
+	            }
+	            
 			}
-
-            // Search for user element.
-	        log.config("Connected to "+env.get(Context.PROVIDER_URL));
-            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
-            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-            rdn = ldapSearch(pattern);
-            if (rdn == null) {
-            	
-                // No user element found. Try to guess the DN anyway.
-                log.fine("No subtree match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                rdn = c.getIdentifier().toString();
-                rdn = "uid="+rdn.substring(0, rdn.indexOf('@'));
-                log.info("Guessing on RDN "+rdn);
-                
-            } else
-            	log.fine("Found element at "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-
-            // Authenticate.
-            ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
-            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn+','+ldap.getNameInNamespace());
-            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
-            try {
-                ldap.reconnect(null);
-                log.fine("Authenticated as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                return true;  // Success.
-            } catch (AuthenticationException e) {
-                log.fine("Failed to authenticate as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                return false;  // Failure.
-            }
             
         } catch (NamingException e) {
             log.severe("NamingException caught and re-thrown as BackendException");
             throw new BackendException(e);
+        } catch (ConfigurationException e) {
+        	log.severe("ConfigurationException caught and re-thrown as BackendException");
+        	throw new BackendException(e);
         }
+        
+        // Should never be reached; returns false in earlier catch.
+        return false;
     }
     
     
@@ -320,50 +272,6 @@ public class Backend {
         try {
             
             NamingEnumeration results;
-            /* The following block is the old LIMS-enabled initial search code. 
-            try {
-                
-                // Start counting the (milli)seconds.
-                long searchStart = System.currentTimeMillis();
-                try {
-                    log.info("Starting search for "+pattern);
-                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, false));
-                    log.info("Search completed");
-                    if (!results.hasMore()) {
-                        log.info("No results");
-                        log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                        return null;
-                    }
-                } catch (TimeLimitExceededException e) {
-                    log.severe("TimelimitExceededException caught after "+(System.currentTimeMillis()-searchStart)+"ms and re-thrown as BackendException");
-                    throw new BackendException(e);
-                }
-                
-            } catch (LdapReferralException e) {
-                
-                // We just caught a referral. Follow it recursively, enabling
-                // SSL.
-                log.info("Enabling SSL");
-                Hashtable refEnv = new Hashtable(defaultEnv);
-                refEnv.put(Context.SECURITY_PROTOCOL, "ssl");
-                try {
-                    log.info("Getting referral contest");
-                    refEnv = e.getReferralContext(refEnv).getEnvironment();
-                    log.info("OK");
-                    log.info("Matched "+pattern+" to referral "+refEnv.get(Context.PROVIDER_URL));
-                    log.info("Closing old context");
-                    ldap.close();
-                    log.info("Reopening new context");
-                    ldap = new InitialLdapContext(refEnv, null);
-                    log.info("Done");
-                } catch (TimeLimitExceededException ee) {
-                    log.severe("Time limit exceeded when following referral");
-                    throw new BackendException("Time limit exceeded when following referral");
-                }
-                return ldapSearch(pattern);
-                
-            }
-            */
                         
 			// Start counting the (milli)seconds.
 			long searchStart = System.currentTimeMillis();
