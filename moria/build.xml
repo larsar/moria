@@ -10,6 +10,7 @@
   <taskdef name="deploy"
            classname="org.apache.catalina.ant.DeployTask"
            classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
+
   <taskdef name="undeploy"
            classname="org.apache.catalina.ant.UndeployTask"
            classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
@@ -35,27 +36,29 @@
     <mkdir dir="build.moria/WEB-INF/classes/templates"/>
     <copy todir="build.moria/WEB-INF/classes/templates">
       <fileset dir="moria/templates">
-	<include name="**/*.vtl"/>
+        <include name="**/*.vtl"/>
       </fileset>
     </copy>  
     <copy todir="build.moria/WEB-INF/classes">
       <fileset dir="moria/templates">
-	<include name="**/*.properties"/>
+        <include name="**/*.properties"/>
       </fileset>
     </copy>
-    <copy file="build.moria/WEB-INF/classes/login_nb.properties" tofile="build.moria/WEB-INF/classes/login_no.properties"/>
-    <copy file="build.moria/WEB-INF/classes/logout_nb.properties" tofile="build.moria/WEB-INF/classes/logout_no.properties"/>
+    <copy file="build.moria/WEB-INF/classes/login_nb.properties"
+          tofile="build.moria/WEB-INF/classes/login_no.properties"/>
+    <copy file="build.moria/WEB-INF/classes/logout_nb.properties"
+          tofile="build.moria/WEB-INF/classes/logout_no.properties"/>
     <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
-    <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
+    <copy file="moria/config/web.xml" todir="build.moria/WEB-INF"/>
     <delete file="build.moria/WEB-INF/classes/moria.properties"/>
     <echo message="Using config: ${moria_config}"/>
     <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/moria.properties"/>
     <copy todir="build.moria/WEB-INF/lib">
       <fileset dir="moria/lib/">
-	<include name="**/*.jar"/>
+        <include name="**/*.jar"/>
       </fileset>
       <fileset dir="lib/">
-	<include name="**/*.jar"/>
+        <include name="**/*.jar"/>
         <exclude name="servlet.jar"/>
       </fileset>
     </copy>  
@@ -65,16 +68,17 @@
           description="Moria: Compile source"
           depends="moria:prepare">
     <javac srcdir="src"
+           debug="true"
            destdir="build.moria/WEB-INF/classes"
            includes="no/feide/moria/**">
-	   <classpath>
+           <classpath>
                 <fileset dir="lib/">
                   <include name="*.jar"/>
                 </fileset>
                 <fileset dir="moria/lib/">
                   <include name="*.jar"/>
                 </fileset>
-	   </classpath>
+           </classpath>
     </javac>
   </target>
 
@@ -92,7 +96,7 @@
 
   <target name="moria:wsdeploy"
           description="Moria: Process WAR"
-	  depends="moria:war">
+          depends="moria:war">
     <delete file="dist/tmp-feide-moria.war"/>
     <exec executable="${jaxrpc_home}/bin/wsdeploy.sh">
       <arg line="-o"/>
@@ -104,7 +108,7 @@
 
   <target name="moria:wsdl"
           description="Moria: Export WSDL from WAR"
-	  depends="moria:wsdeploy">
+          depends="moria:wsdeploy">
     <mkdir dir="dist/tmp"/>
     <exec executable="jar" dir="dist/tmp">
       <arg line="-xf ../feide-moria.war WEB-INF/FeideAuthentication.wsdl"/>
@@ -180,11 +184,11 @@
     <copy todir="build.mellon/demo/WEB-INF/lib">
 <!--
       <fileset dir="moria/lib/">
-	<include name="**/*.jar"/>
+        <include name="**/*.jar"/>
       </fileset> 
 -->
       <fileset dir="lib/">
-	<include name="**/*.jar"/>
+        <include name="**/*.jar"/>
       </fileset>
     </copy>  
     <mkdir dir="dist"/>
@@ -204,18 +208,19 @@
           description="Mellon API: Compile source"
           depends="mellon:wscompile">
     <javac srcdir="src"
+           debug="true"
            destdir="build.mellon/api"
            includes="no/feide/mellon/*"
            excludes="no/feide/mellon/servlet/*,no/feide/mellon/test/*">
-	   <classpath>
+           <classpath>
              <fileset dir="lib/" includes="*.jar"/>
-	   </classpath>
+           </classpath>
     </javac>
   </target>
   
   <target name="mellon:jar"
           description="Mellon API: Create JAR file"
-	  depends="mellon:compile">
+          depends="mellon:compile">
     <delete file="dist/feide-mellon-api.jar"/>
     <jar destfile="dist/feide-mellon-api.jar" basedir="build.mellon/api"/>
 
@@ -255,19 +260,19 @@
           description="Mellon filter: Compile source"
           depends="mellon:jar">
     <javac srcdir="src"
+           debug="true"
            destdir="build.mellon/filter"
            includes="no/feide/mellon/filter/*">
-	   <classpath>
+           <classpath>
              <fileset dir="lib/" includes="*.jar"/>
-	     <fileset file="dist/feide-mellon-api.jar"/>
-	   </classpath>
+             <fileset file="dist/feide-mellon-api.jar"/>
+           </classpath>
     </javac>
   </target>
 
-
   <target name="mellon:filter:jar"
           description="Mellon filter: Create JAR file"
-	  depends="mellon:filter:compile">
+          depends="mellon:filter:compile">
     <delete file="dist/feide-mellon-filter.jar"/>
     <jar destfile="dist/feide-mellon-filter.jar" basedir="build.mellon/filter"/>
   </target>
@@ -283,7 +288,8 @@
     <delete file="dist/feide-mellon-demo.war"/>
     <copy file="mellon/config/web.xml" toFile="build.mellon/demo/WEB-INF/web.xml"/>
     <echo message="Using config: ${mellon_config}"/>
-    <copy file="${mellon_config}" toFile="build.mellon/demo/WEB-INF/classes/mellon.properties"/>
+    <copy file="${mellon_config}"
+          toFile="build.mellon/demo/WEB-INF/classes/mellon.properties"/>
     <copy todir="build.mellon/demo/WEB-INF/lib">
       <fileset dir="dist" includes="**/feide-mellon*.jar"/>
     </copy>      
@@ -293,18 +299,19 @@
           description="Mellon demo: Compile source"
           depends="mellon:filter:jar,mellon:demo:prepare,mellon:jar,mellon:filter:jar">
     <javac srcdir="src"
+           debug="true"
            destdir="build.mellon/demo/WEB-INF/classes"
            includes="no/feide/mellon/servlet/*">
-	   <classpath>
+           <classpath>
              <fileset dir="lib/" includes="*.jar"/>
-	     <fileset file="dist/feide-mellon-api.jar"/>
-	   </classpath>
+             <fileset file="dist/feide-mellon-api.jar"/>
+           </classpath>
     </javac>
   </target>
 
   <target name="mellon:demo:war"
           description="Mellon demo: Create WAR file"
-	  depends="mellon:demo:compile">
+          depends="mellon:demo:compile">
     <jar destfile="dist/feide-mellon-demo.war" basedir="build.mellon/demo"/>
   </target>
   
@@ -340,7 +347,7 @@
 
   <target name="mellon:zip"
           description="Mellon jars, docs and example code in zip-file.">
-	  <copy todir="build.mellon/zip">
+          <copy todir="build.mellon/zip">
             <fileset dir="dist" includes="**/feide-mellon-api.jar"/>
             <fileset dir="mellon/config" includes="mellon.properties"/>
             <fileset dir="doc/mellon/java/examples" includes="SimpleCreateAuthSession.java"/>
@@ -348,16 +355,12 @@
               <include name="**/*.jar"/>
             </fileset>
           </copy>   
-	  <copy todir="build.mellon/zip/javadoc">
-	    <fileset dir="build.mellon/javadoc"/>
-	  </copy>
+          <copy todir="build.mellon/zip/javadoc">
+            <fileset dir="build.mellon/javadoc"/>
+          </copy>
 
-	  <zip destfile="dist/mellon.zip">
-	    <fileset dir="build.mellon/zip"/>
-	  </zip>
-	  
-	  
-  </target>	  
-
-
+          <zip destfile="dist/mellon.zip">
+            <fileset dir="build.mellon/zip"/>
+          </zip>
+  </target>       
 </project>
