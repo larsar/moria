@@ -138,24 +138,6 @@ implements AuthenticationIF, ServiceLifecycle {
     
     
     /**
-     * Request a new Moria session, without asking for a set of user
-     * attributes or prefix/postfix. Actually a simple wrapper for
-     * <code>requestSession(String[], String)</code> with empty
-     * (<code>null</code>) attribute request array and prefix/postfix.
-     * @return A new session descriptor, or <code>null</code> if a new session
-               could not be established.
-     * @throws RemoteException If a SessionException or a
-     *                         BackendException is caught.
-     */
-    public SessionDescriptor requestSession()
-    throws RemoteException {
-        log.finer("requestSession()");
-
-	return requestSession(null, null, null);
-    }
-    
-    
-    /**
      * Verify a Moria session; that is, check that exists and has been
      * through authentication.
      * @param id The session ID.
