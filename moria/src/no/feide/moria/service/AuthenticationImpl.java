@@ -265,7 +265,7 @@ implements AuthenticationIF, ServiceLifecycle {
             if (ctx.getUserPrincipal() != null)
                 serviceName = ctx.getUserPrincipal().getName();
             
-            String log_prefix = "Attributes requested by "+serviceName;
+            String log_prefix = "Attributes requested by "+serviceName+": ";
 
             /* Reauthorize the WebService */
             if (!session.getWebService().getId().equals(serviceName)) {
