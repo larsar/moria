@@ -47,6 +47,7 @@
           tofile="build/WEB-INF/classes/login_no.properties"/>
     <copy file="build/WEB-INF/classes/logout_nb.properties"
           tofile="build/WEB-INF/classes/logout_no.properties"/>
+    <echo message="Using web.xml: ${web_xml}"/>
     <copy file="${web_xml}" todir="build/WEB-INF"/>
     <delete file="build/WEB-INF/classes/moria.properties"/>
     <echo message="Using config: ${moria_config}"/>
