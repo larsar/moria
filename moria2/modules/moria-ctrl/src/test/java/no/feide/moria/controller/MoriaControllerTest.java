@@ -268,7 +268,7 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Verify that the controller initialization checks works and then initates the conftroller.
      */
-    private void controllerInitialization() throws InoperableStateException {
+    private void controllerInitialization() throws InoperableStateException, IllegalInputException {
         /* Controller not initialized */
         MoriaController.stop();
         try {
