@@ -172,7 +172,6 @@
            excludes="no/feide/mellon/test/*">
 	   <classpath>
              <fileset dir="lib/" includes="*.jar"/>
-             <fileset dir="mellon/lib/" includes="*.jar"/>
 	   </classpath>
     </javac>
   </target>
@@ -185,7 +184,6 @@
            includes="no/feide/mellon/filter/*">
 	   <classpath>
              <fileset dir="lib/" includes="*.jar"/>
-             <fileset dir="mellon/lib/" includes="*.jar"/>
 	     <fileset file="dist/feide-mellon-api.jar"/>
 	   </classpath>
     </javac>
@@ -238,7 +236,6 @@
            includes="no/feide/mellon/test/**">
       <classpath>
         <fileset dir="lib/" includes="*.jar"/>
-        <fileset dir="mellon/lib/" includes="*.jar"/>
         <fileset dir="moria/lib/" includes="*.jar"/>
         <fileset dir="dist/" includes="feide-mellon-api.jar"/>
       </classpath>
@@ -267,7 +264,6 @@
       <classpath>
         <fileset dir="dist" includes="AuthenticationServiceClient.jar feide-mellon-api.jar"/>
         <fileset dir="lib/" includes="*.jar"/>
-        <fileset dir="mellon/lib/" includes="*.jar"/>
         <fileset dir="moria/lib/" includes="*.jar"/>
       </classpath>
       <arg value="${mellon_config}"/>
