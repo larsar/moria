@@ -542,7 +542,7 @@ public final class AuthorizationManagerTest extends TestCase {
 
         /* Check allowed SSO attribute list */
         String[] expectedSSOAttrs = new String[]{"attr1", "attr2"};
-        Set actualSSOAttrs = authMan.getSSOAttributes();
+        Set actualSSOAttrs = authMan.getCachableAttributes();
 
         assertEquals("Allowed SSO attribute list's sizes differs", expectedSSOAttrs.length, actualSSOAttrs.size());
 

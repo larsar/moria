@@ -57,7 +57,7 @@ public final class AuthorizationManager {
     /**
      * List of attributes that is allowed to be cached
      */
-    private HashSet ssoAttributes = new HashSet();
+    private HashSet cachableAttributes = new HashSet();
 
     /**
      * True if the authorization manager is ready to be used.
@@ -375,7 +375,7 @@ public final class AuthorizationManager {
         }
 
         /* Generate a list of attributes that is allowed to be cached */
-        HashSet newSSOAttributes = new HashSet();
+        HashSet newCachableAttributes = new HashSet();
         Iterator clientIt = newClients.keySet().iterator();
         while (clientIt.hasNext()) {
             AuthorizationClient authzClient = (AuthorizationClient) newClients.get(clientIt.next());
@@ -385,7 +385,7 @@ public final class AuthorizationManager {
             while (attrIt.hasNext()) {
                 AuthorizationAttribute attr = (AuthorizationAttribute) attributes.get(attrIt.next());
                 if (attr.getAllowSSO()) {
-                    newSSOAttributes.add(attr.getName());
+                    newCachableAttributes.add(attr.getName());
                 }
             }
         }
@@ -393,7 +393,7 @@ public final class AuthorizationManager {
         /* Set new authorization configuration */
         synchronized (authzClients) {
             authzClients = newClients;
-            ssoAttributes = newSSOAttributes;
+            cachableAttributes = newCachableAttributes;
             activated = true;
         }
     }
@@ -558,7 +558,7 @@ public final class AuthorizationManager {
      *
      * @return a set of attributes that can be cached.
      */
-    public HashSet getSSOAttributes() {
-        return new HashSet(ssoAttributes);
+    public HashSet getCachableAttributes() {
+        return new HashSet(cachableAttributes);
     }
 }
