@@ -18,5 +18,5 @@
      name="project:deploy"
      prereqs="jar:deploy"
      description="Build and deploy jar in remote repository"/>
-  
+
 </project>
