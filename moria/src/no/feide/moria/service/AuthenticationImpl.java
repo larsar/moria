@@ -300,8 +300,9 @@ implements AuthenticationIF, ServiceLifecycle {
     	
     	try {
 
-    		// Create session and check the client identity.
-        	String ticketId = initiateAuthentication(attributes, null, null, false);
+    		// Create session (using a dummy URL) and check the client identity.
+        	String redirectURL = initiateAuthentication(attributes, "http://directNonInteractiveAuthentication/", "", false);
+        	String ticketId = redirectURL.substring(redirectURL.lastIndexOf("id=")+3);
     		Session session = sessionStore.getSessionLogin(ticketId);
     		validateClient(ctx.getUserPrincipal(), session);
 
