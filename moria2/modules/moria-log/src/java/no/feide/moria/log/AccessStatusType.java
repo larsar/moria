@@ -163,7 +163,7 @@ public final class AccessStatusType implements Serializable {
     public static final AccessStatusType NONEXISTENT_TGT = new AccessStatusType("NONEXISTENT TGT");
 
     /**
-     * Access log type used to indicate that authentication initiation failed due to invalid prefix/postfix URL.
+     * Access log type used to indicate that authentication initialization failed due to invalid prefix/postfix URL.
      */
     public static final AccessStatusType INITIATE_DENIED_INVALID_URL = new AccessStatusType(
             "INITIATE_DENIED_INVALID_URL");
@@ -212,7 +212,7 @@ public final class AccessStatusType implements Serializable {
             "SUCCESSFUL PROXY AUTHENTICATION");
 
     /**
-     * Access log type used to indicate that authentication initiation was succesful.
+     * Access log type used to indicate that authentication initialization was succesful.
      */
     public static final AccessStatusType SUCCESSFUL_AUTH_INIT = new AccessStatusType("SUCCESSFUL AUTH INIT");
 
