@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<!--
+
+A sample configuration file, with the Security element commented out.
+This means that the system property javax.net.ssl.trustStore and
+javax.net.ssl.trustStorePassword must be set externally, if needed.
+
+Alternatively, the Security element may be set - this will result in
+these system properties being set by JNDIBackendFactory.setConfig(Element).
+
+-->
+
+<DirectoryManagerConfiguration>
+
+    <!--
+	     - Use the written SerializableIndex object MyIndex.object as the index.
+         - Check for a new index every 120 seconds.
+	-->
+	<Index file="MyIndex.object"
+           update="120"/>
+  
+    <!--
+	     - Use no.feide.moria.directory.backend.JNDIBackendFactory to create backend instances.
+	     - Use a 10 second timeout when accessing the JNDI backend.
+         - Do NOT set the system property javax.net.ssl.trustStore to MyTrustStoreFilename.
+         - Do NOT set the system property javax.net.ssl.trustStorePassword to MyTrustStorePassword.
+	-->
+	<Backend class="no.feide.moria.directory.backend.JNDIBackendFactory">
+	    <JNDI timeout="10">
+	    	<!-- Security>
+	    		<Truststore filename="MyTrustStoreFilename" password="MyTrustStorePassword"/>
+	    	</Security -->
+		</JNDI>
+	</Backend>
+
+</DirectoryManagerConfiguration>
