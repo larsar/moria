@@ -345,6 +345,7 @@ public class AuthorizationData {
             ws.setDefaultLang(defaultLang);
             ws.setDefaultOrg(defaultOrg);
             ws.setAllowLocalAuth(allowsLocalAuth);
+            ws.setDirectAuthenticationAllowed(wsElem.getElementsByTagName("AllowDirectAuth").getLength() > 0);
             
             /* Set WebService's affiliation. The organizations is ordered by a "order"-attribute. */
             Element affiliationList = (Element) wsElem.getElementsByTagName("Affiliation").item(0);
