@@ -145,15 +145,24 @@ function fokuser(){document.loginform.username.focus();}
       <table summary="" cellspacing="3" cellpadding="3" border="0" >
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
-        <td><%=bundle.getString("expl_ws")%></td>
+        <td><%=RequestUtil.insertLink("CLIENT_LINK",
+                                         bundle.getString("expl_ws"),
+                                         (String) request.getAttribute("clientName"),
+                                         (String) request.getAttribute("clientURL"))%></td>
       </tr>
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
-        <td><%=bundle.getString("expl_user")%></td>
+        <td><%=RequestUtil.insertLink("CLIENT_LINK",
+                                         bundle.getString("expl_user"),
+                                         (String) request.getAttribute("clientName"),
+                                         (String) request.getAttribute("clientURL"))%></td>
       </tr>
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
-        <td><%=bundle.getString("expl_data")%><BR/>
+        <td><%=RequestUtil.insertLink("CLIENT_LINK",
+                                         bundle.getString("expl_data"),
+                                         (String) request.getAttribute("clientName"),
+                                         (String) request.getAttribute("clientURL"))%><BR/>
 
 #if (!$attrNames)
 <a href="$loginURL&showAttrs">$attrs_show</a>
