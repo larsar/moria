@@ -19,6 +19,7 @@ package no.feide.moria.authorization;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Properties;
 
 /**
  * Represents a web service. A web service has a name, id, url and attributes.
@@ -79,17 +80,19 @@ class AuthorizationClient {
      */
     private HashMap attributes = new HashMap();
 
+    private Properties properties = new Properties();
+
     /**
      * Constructor
      *
-     * @param name serviceID
+     * @param name        serviceID
      * @param displayName full name of service
-     * @param url URL to the service main page
-     * @param language default language for the service
-     * @param home service home organization
+     * @param url         URL to the service main page
+     * @param language    default language for the service
+     * @param home        service home organization
      * @param affiliation the organizations affiliated to the service
-     * @param operations operations that the service can perform
-     * @param attributes attributes the service can access
+     * @param operations  operations that the service can perform
+     * @param attributes  attributes the service can access
      */
     AuthorizationClient(String name, String displayName, String url, String language, String home, HashSet affiliation, HashSet operations, HashSet subsystems, HashMap attributes) {
 
@@ -165,6 +168,13 @@ class AuthorizationClient {
         this.operations = operations;
         this.subsystems = subsystems;
         this.attributes = attributes;
+
+        properties.put("displayName", new String(displayName));
+        properties.put("url", new String(url));
+        properties.put("language", new String(language));
+        properties.put("home", new String(home));
+        properties.put("name", new String(name));
+
     }
 
     /**
@@ -408,4 +418,13 @@ class AuthorizationClient {
         return new HashMap(attributes);
     }
 
+    /**
+     * Get the properties for this client. The properties object contains the
+     * data that should be transferred to other packages.
+     *
+     * @return the properties for this object
+     */
+    public Properties getProperties() {
+        return properties;
+    }
 }
