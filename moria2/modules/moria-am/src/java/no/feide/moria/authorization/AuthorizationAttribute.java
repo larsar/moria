@@ -23,7 +23,7 @@ package no.feide.moria.authorization;
 
 
 /**
- * This class represents a LDAP attribute and is used for authorization of a
+ * This class represents an LDAP attribute and is used for authorization of a
  * web service. Both Profile and WebService have lists of attributes.
  *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -32,7 +32,7 @@ package no.feide.moria.authorization;
 final class AuthorizationAttribute {
 
     /**
-     * Cached hashCode.
+     * Cached hash code.
      */
     private volatile int hashCode = 0;
 
@@ -43,7 +43,7 @@ final class AuthorizationAttribute {
     private String name = null;
 
     /**
-     * Is this attribute allowd in use with SSO.
+     * Is this attribute allowed in use with SSO?
      */
     private boolean allowSSO = false;
 
@@ -56,9 +56,9 @@ final class AuthorizationAttribute {
      * Constructor. Name of attribute must be a non-empty string. Security
      * level must be > 0.
      *
-     * @param name     Name of attribute
-     * @param secLevel The attributes security level
-     * @param allowSSO Allow use of SSO with this attribute
+     * @param name     Name of attribute.
+     * @param allowSSO Allow use of SSO with this attribute.
+     * @param secLevel The attribute's security level.
      */
     AuthorizationAttribute(final String name, final boolean allowSSO, final int secLevel) {
 
@@ -76,9 +76,9 @@ final class AuthorizationAttribute {
     }
 
     /**
-     * Return true if the supplied object is identical to this one.
+     * Returns true if the supplied object is identical to this one.
      *
-     * @param object the object to compare with
+     * @param object The object to compare with.
      * @return false if any of the attributes are different from the supplied
      *         object.
      */
@@ -96,8 +96,8 @@ final class AuthorizationAttribute {
     }
 
     /**
-     * Generates a hashCode from the objects attributes. 'name', 'secLevel' and
-     * 'allowSSO' are used for the computation.
+     * Generates a hashCode from the object's attributes. 'name', 'secLevel' 
+     * and 'allowSSO' are used for the computation.
      *
      * @return The hashcode for this object.
      */
@@ -113,27 +113,27 @@ final class AuthorizationAttribute {
     }
 
     /**
-     * Return the secLevel of this attribute.
+     * Gets the security level of this attribute.
      *
-     * @return secLevel
+     * @return Security level.
      */
     public int getSecLevel() {
         return secLevel;
     }
 
     /**
-     * Get name of attribute.
+     * Gets the name of attribute.
      *
-     * @return Name of the attribute
+     * @return Name of the attribute.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Returns true if the attribute allowed in use with SSO.
+     * Returns true if the attribute is allowed in use with SSO.
      *
-     * @return True if the attribute can be used with SSO, else false
+     * @return True if the attribute can be used with SSO, else false.
      */
     public boolean getAllowSSO() {
         return allowSSO;
@@ -142,7 +142,7 @@ final class AuthorizationAttribute {
     /**
      * Returns a string representation of this object.
      *
-     * @return the string representation of this object
+     * @return The string representation of this object.
      */
     public String toString() {
         return ("Attribute name: " + name + " secLevel: " + secLevel + " allowSSO: " + allowSSO);
