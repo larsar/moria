@@ -24,6 +24,7 @@
 
          String[] states = {"moria", "init", "am", "dm", "sm", "web"};
          Map moduleNames = new HashMap();
+         moduleNames.put("moria", "Moria");
          moduleNames.put("init", "Controller");
          moduleNames.put("am", "Authorization manager");
          moduleNames.put("dm", "Directory manager");
@@ -48,10 +49,10 @@
              }
          }
      }
-%>
+	%>
   <body>
     <p>
-        <%= statusMsg %>
+<%= statusMsg %>
     </p>
   </body>
 </html>
