@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project
+  xmlns:j="jelly:core"
+  xmlns:m="jelly:maven"
+  xmlns:u="jelly:util"
+  default="project:install">
+
+  <goal
+    name="project:install"
+    description="Builds and installs all sub-projects">
+
+    <m:reactor
+      basedir="${basedir}"
+      postProcessing="false"
+      includes="**/${pattern}/**/project.xml"
+      excludes="project.xml"
+      goals="project:install"
+      banner="Building"
+      ignoreFailures="false"/>
+  </goal>
+
+  <goal
+    name="project:clean"
+    description="Cleans all sub-projects">
+
+    <m:reactor
+      basedir="${basedir}"
+      postProcessing="false"
+      includes="**/${pattern}/**/project.xml"
+      excludes="project.xml"
+      goals="project:clean"
+      banner="Building"
+      ignoreFailures="false"/>
+  </goal>
+    
+</project>
