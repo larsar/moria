@@ -19,6 +19,9 @@ public class DirectoryManagerConfiguration {
 
     /** Internal representation of the index class. */
     private Class indexClass;
+    
+    /** Holds the index file location. */
+    private String indexFile;
 
     /** Internal representation of the backend class. */
     private Class backendFactoryClass;
@@ -107,7 +110,7 @@ public class DirectoryManagerConfiguration {
         HashMap indexConfig = new HashMap();
 
         // Get index class, with sanity checks.
-        final Attribute a = getUniqueElement(indexElement, "Class").getAttribute("name");
+        Attribute a = indexElement.getAttribute("class");
         if ((a == null) || (a.getValue() == null) || (a.getValue() == "")) {
             throw new DirectoryManagerConfigurationException("Index class not set in configuration file");
         }
@@ -116,6 +119,13 @@ public class DirectoryManagerConfiguration {
         } catch (ClassNotFoundException e) {
             throw new DirectoryManagerConfigurationException("Index class " + a.getValue() + " not found", e);
         }
+        
+        // Get index class, with sanity checks.
+        a = indexElement.getAttribute("file");
+        if ((a == null) || (a.getValue() == null) || (a.getValue() == "")) {
+            throw new DirectoryManagerConfigurationException("Index file not set in configuration file");
+        }
+        indexFile = a.getValue();
 
     }
 
@@ -128,6 +138,17 @@ public class DirectoryManagerConfiguration {
 
         return indexClass;
 
+    }
+    
+    
+    /**
+     * Get the serialized index file name.
+     * @return The index file name.
+     */
+    public String getIndexFile() {
+        
+        return indexFile;
+        
     }
 
 
