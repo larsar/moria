@@ -81,12 +81,7 @@ public class MoriaCacheStore implements MoriaStore {
         if (servicePrincipal == null || servicePrincipal.equals(""))
                 throw new IllegalArgumentException("servicePrincipal cannot be null or empty string");
 
-        try {
-            ticket = new MoriaTicket(MoriaTicket.LOGIN_TICKET, servicePrincipal, loginTicketTTL);
-        } catch (InvalidTicketException e) {
-            // TODO: Handle this exception properly
-            throw new RuntimeException(e);
-        }
+        ticket = new MoriaTicket(MoriaTicket.LOGIN_TICKET, servicePrincipal, loginTicketTTL);
 
         authnAttempt = new MoriaAuthnAttempt(requestedAttributes, responseURLPrefix, responseURLPostfix,
                 forceInteractiveAuthentication);
@@ -142,7 +137,6 @@ public class MoriaCacheStore implements MoriaStore {
         CachedUserData userData = new CachedUserData(attributes);
 
         /* Try / catch block for ticket creation */
-        try {
             MoriaTicket ssoTicket = new MoriaTicket(MoriaTicket.SSO_TICKET, null, ssoTicketTTL);
 
             /* Try / catch block for tree cache data addition */
@@ -155,14 +149,10 @@ public class MoriaCacheStore implements MoriaStore {
 
             return ssoTicket;
 
-        } catch (InvalidTicketException e) {
-            // TODO: Handle this exception properly
-            throw new RuntimeException(e);
-        }
     }
 
     /**
-     * @see no.feide.moria.store.MoriaStore#getUserData(no.feide.moria.store.MoriaTicket)
+     * @see no.feide.moria.store.MoriaStore#getUserData(java.lang.String) 
      */
     public CachedUserData getUserData(MoriaTicket ticket) throws InvalidTicketException {
 
@@ -186,7 +176,7 @@ public class MoriaCacheStore implements MoriaStore {
     }
 
     /**
-     * @see no.feide.moria.store.MoriaStore#createServiceTicket(no.feide.moria.store.MoriaTicket)
+     * @see no.feide.moria.store.MoriaStore#createServiceTicket(java.lang.String)
      */
     public MoriaTicket createServiceTicket(MoriaTicket loginTicket) throws InvalidTicketException {
 
@@ -217,8 +207,7 @@ public class MoriaCacheStore implements MoriaStore {
     }
 
     /**
-     * @see no.feide.moria.store.MoriaStore#createTicketGrantingTicket(no.feide.moria.store.MoriaTicket,
-     *      java.lang.String)
+     * @see no.feide.moria.store.MoriaStore#createTicketGrantingTicket(java.lang.String, java.lang.String)
      */
     public MoriaTicket createTicketGrantingTicket(MoriaTicket ssoTicket, String servicePrincipal) throws InvalidTicketException {
 
@@ -233,12 +222,7 @@ public class MoriaCacheStore implements MoriaStore {
         Object userData;
 
         /* Create ticket */
-        try {
             tgTicket = new MoriaTicket(MoriaTicket.TICKET_GRANTING_TICKET, servicePrincipal, tgTicketTTL);
-        } catch (InvalidTicketException e) {
-            throw new RuntimeException(e);
-            // TODO: Handle this exception properly
-        }
 
         /* Get userdata form treecache */
         try {
@@ -264,7 +248,7 @@ public class MoriaCacheStore implements MoriaStore {
     }
 
     /**
-     * @see no.feide.moria.store.MoriaStore#createProxyTicket(no.feide.moria.store.MoriaTicket, java.lang.String) 
+     * @see no.feide.moria.store.MoriaStore#createProxyTicket(java.lang.String, java.lang.String)
      */
     public MoriaTicket createProxyTicket(MoriaTicket tgTicket, String servicePrincipal) throws InvalidTicketException {
 
@@ -294,7 +278,7 @@ public class MoriaCacheStore implements MoriaStore {
     }
 
     /**
-     * @see no.feide.moria.store.MoriaStore#setTransientAttributes(no.feide.moria.store.MoriaTicket,
+     * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String, java.lang.String[])
      *      java.lang.String[])
      */
     public void setTransientAttributes(MoriaTicket ticket, String[] transientAttributes) throws InvalidTicketException {
