@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import junit.framework.*;
 import no.feide.moria.directory.Credentials;
+import no.feide.moria.directory.index.IndexedReference;
 
 /**
  * JUnit tests for the <code>DummyBackend</code> class.
@@ -51,7 +52,7 @@ extends TestCase {
 
         backend = new DummyBackend();
         Assert.assertNotNull("Failed to instantiate backend object", backend);
-        backend.open("foobar"); // Does nothing.
+        backend.open(new IndexedReference("foobar", new String[] {"ldap://my.ldap.server:636/dc=search,dc=base"}, true));
 
     }
 
