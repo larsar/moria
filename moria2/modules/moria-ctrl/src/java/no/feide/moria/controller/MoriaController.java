@@ -700,7 +700,11 @@ public final class MoriaController {
     /**
      * Retrieve user attributes from a authentication attempt. The method
      * returns the user attributes stored in the authentication attempt, which
-     * is referenced to by the service ticket.
+     * is referenced to by the service ticket. <br>
+     * <br>
+     * Note that this method can only be used once for each non-SSO
+     * authentication attempt. Due to security reasons, Moria will not cache
+     * attribute values longer than absolutely neccessary.
      * @param serviceTicketId
      *            the ticket associated with the authentication attempt
      * @param servicePrincipal
