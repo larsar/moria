@@ -262,6 +262,7 @@ implements DirectoryManagerBackend {
                     ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
                     try {
                         ldap.reconnect(null);
+                        log.logDebug("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j]);
                         return getAttributes(ldap, rdn, attributeRequest); // Success.
                     } catch (AuthenticationException e) {
 
