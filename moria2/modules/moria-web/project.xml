@@ -18,8 +18,9 @@
 
   <dependencies>
     <dependency>
-      <id>servletapi</id>
-      <version>2.3</version>
+      <groupId>servletapi</groupId>
+      <artifactId>servletapi</artifactId>
+      <version>2.4-20030804.000000</version>
       <type>jar</type>
     </dependency>
 
@@ -163,6 +164,12 @@
           <include>*.properties</include>
         </includes>
       </resource>
+        <resource>
+          <directory>${basedir}/src/bundles</directory>
+          <includes>
+            <include>*.properties</include>
+          </includes>
+        </resource>
 <!--
       <resource>
         <directory>${project.generated.src.dir}/no/feide/login/moria/v1_1/Authentication</directory>
