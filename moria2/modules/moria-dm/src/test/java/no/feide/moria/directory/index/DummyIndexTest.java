@@ -54,7 +54,7 @@ extends TestCase {
             Assert.assertEquals("Reference should not exist", null, index.lookup(nonExisting[i]));
 
         // Look up the existing entry.
-        Assert.assertEquals("Reference does not exist", "ldap://my.ldap.server:636/dc=search,dc=base", index.lookup("user@some.realm"));
+        Assert.assertEquals("Reference does not exist", "ldap://my.ldap.server:636/dc=search,dc=base", index.lookup("user@some.realm").get(0));
 
     }
 
