@@ -129,6 +129,9 @@ public class LoginServlet extends VelocityServlet {
         Properties p = new Properties();
         String path = System.getProperty("no.feide.moria.servlet.TemplateDir");
 
+        p.setProperty("file.resource.loader.cache", "true");
+        p.setProperty("file.resource.loader.modificationCheckInterval","0");
+
         /* If path is null, log it. */ 
         if (path == null) {
             log.severe("Path to Velocity templates not set.");
