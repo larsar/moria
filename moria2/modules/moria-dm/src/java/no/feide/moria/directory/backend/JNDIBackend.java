@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import javax.naming.AuthenticationException;
 import javax.naming.ConfigurationException;
 import javax.naming.Context;
+import javax.naming.LimitExceededException;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -109,12 +110,16 @@ implements DirectoryManagerBackend {
         // Create initial context environment.
         defaultEnv = new Hashtable();
         defaultEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+        
 
         // To catch referrals.
         defaultEnv.put(Context.REFERRAL, "throw");
 
         // Due to OpenSSL problems.
         defaultEnv.put("java.naming.ldap.derefAliases", "never");
+        
+        // Use LDAP v3.
+        defaultEnv.put("java.naming.ldap.version", "3");
 
         // Should we enable SSL?
         if (ssl)
@@ -445,6 +450,12 @@ implements DirectoryManagerBackend {
             log.logInfo("Could not find " + pattern + " on " + url); // Necessary?
             return null;
 
+        } catch (LimitExceededException e) {
+         
+            // We hit some configured limit on the server's part.
+            log.logInfo("Search on " + url + " for " + pattern + " exceeded limit", e);
+            return null;
+            
         } catch (NamingException e) {
 
             // All other exceptions.
