@@ -26,7 +26,7 @@ package no.feide.moria.controller;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public final class AuthenticationException extends Exception {
+public final class AuthenticationException extends MoriaControllerException {
 
     /**
      * Basic constructor.

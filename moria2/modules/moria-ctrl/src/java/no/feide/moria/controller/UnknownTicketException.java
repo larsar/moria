@@ -22,11 +22,11 @@ package no.feide.moria.controller;
 
 /**
  * Used to signal that a ticket does not exist in the store.
- * 
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class UnknownTicketException extends Exception {
+public class UnknownTicketException extends MoriaControllerException {
 
     /**
      * Basic constructor.
