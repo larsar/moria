@@ -89,12 +89,12 @@ static void mf_cache_set(mf_cache_entry_t *table, int size, char *key)
 
 
 /* parse error here for some silly reason */
-static char *mf_cache_genkey(apr_pool_t *pool, char *id, char *domain)
+static char *mf_cache_genkey(apr_pool_t *pool, char *id, char *domain, char *ip)
 {
 	char hash[MF_CACHE_KEYSIZE];
 	char *tmp;
 
-	tmp = apr_pstrcat(pool, id, domain, NULL);
+	tmp = apr_pstrcat(pool, id, ip, domain, NULL);
 
 	if (apr_md5_encode(tmp, "ab", hash, strlen(tmp)) == 0) {
 		return apr_pstrdup(pool, hash);
@@ -572,7 +572,8 @@ static int authenticate_feide_user(request_rec *r)
 
 	/* if the module hasn't been configured, then we decline to handle
 	 * this request */
-	if (!(cfg->varname && cfg->moria_url && cfg->userid  && cfg->passwd)) {
+	if (!(cfg->varname && cfg->moria_url && cfg->userid  && cfg->passwd &&
+	      cfg->domain)) {
 		return DECLINED;
 	}
 
@@ -649,9 +650,10 @@ static int authenticate_feide_user(request_rec *r)
 
 			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
 			             "Making cache_key from \"%s\" and \"%s\".",
-			             key, r->connection->remote_ip);
+			             key, cfg->domain, r->connection->remote_ip);
 
-			cache_key = mf_cache_genkey(r->pool, key, r->connection->remote_ip);
+			cache_key = mf_cache_genkey(r->pool, key, cfg->domain,
+			                            r->connection->remote_ip);
 
 			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
 			             "cache_key=%s", cache_key);
