@@ -19,6 +19,9 @@ public class DirectoryManagerConfiguration {
    
     /** Holds the index file location. */
     private String indexFilename;
+    
+    /** The index update frequency, in milliseconds. */
+    private long indexUpdateFrequency;
 
     /** Internal representation of the backend class. */
     private Class backendFactoryClass;
@@ -111,10 +114,17 @@ public class DirectoryManagerConfiguration {
         
         // Get index filename, with sanity checks.
         Attribute a = indexElement.getAttribute("file");
-        if ((a == null) || (a.getValue() == null) || (a.getValue() == "")) {
+        if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
             throw new DirectoryManagerConfigurationException("Index file not set in configuration file");
-        }
         indexFilename = a.getValue();
+        
+        // Get index update frequency, with sanity checks.
+        a = indexElement.getAttribute("update");
+        if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
+            throw new DirectoryManagerConfigurationException("Index update frequency not set in configuration file");
+        indexUpdateFrequency = 1000*Integer.parseInt(a.getValue());
+        if (indexUpdateFrequency <= 0)
+            throw new DirectoryManagerConfigurationException("Index update frequency must be greater than zero");
 
     }
     
