@@ -352,11 +352,8 @@ public class Session {
      * Returns true if sessions has not timed out. 
      * @param validUntil Milliseconds since epoc
      */
-    protected boolean isValid(double validUntil) {
-        if (timestamp < validUntil) 
-            return false;
-        else
-            return true;
+    protected boolean isValidAt(double time, double lifetime) {
+        return timestamp + lifetime > time;
     }
 
     /**
