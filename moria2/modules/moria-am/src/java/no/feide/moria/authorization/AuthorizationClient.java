@@ -192,6 +192,11 @@ class AuthorizationClient {
      */
     boolean allowSSOForAttributes(String requestedAttributes[]) {
         boolean allow = true;
+
+        if (requestedAttributes == null) {
+            throw new IllegalArgumentException("requestedAttributes cannot be null");
+        }
+
         for (int i = 0; i < requestedAttributes.length; i++) {
             String attrName = requestedAttributes[i];
             if (!attributes.containsKey(attrName) || !((AuthorizationAttribute) attributes.get(attrName)).getAllowSSO()) {
@@ -231,8 +236,7 @@ class AuthorizationClient {
         }
 
         if (requestedOperations.length == 0) {
-            // TODO: Log
-            throw new IllegalArgumentException("RequestedOperations cannot be empty");
+            return true;
         }
 
         for (int i = 0; i < requestedOperations.length; i++) {
