@@ -85,15 +85,6 @@ extends HttpServlet {
     private static final String CONFIG_FILENAME = "no.feide.mellon.demo.config";
 
     /**
-     * Used to build the QName for mapping remote Attribute type to local type.
-     * <br>
-     * <br>
-     * Current value is
-     * <code>"no.feide.mellon.demo.attributeNamespaceURI"</code>.
-     */
-    private static final String CONFIG_ATTRIBUTE_NAMESPACE_URI = "no.feide.mellon.demo.attributeNamespaceURI";
-
-    /**
      * The service endpoint. <br>
      * <br>
      * Current value is <code>"no.feide.mellon.demo.serviceEndpoint"</code>.
@@ -171,7 +162,7 @@ extends HttpServlet {
     /**
      * Required parameters.
      */
-    private static final String[] REQUIRED_PARAMETERS = {CONFIG_SERVICE_ENDPOINT, CONFIG_SLAVE_USERNAME, CONFIG_SLAVE_PASSWORD, CONFIG_LOGOUT_URL, CONFIG_ATTRIBUTE_NAMESPACE_URI};
+    private static final String[] REQUIRED_PARAMETERS = {CONFIG_SERVICE_ENDPOINT, CONFIG_SLAVE_USERNAME, CONFIG_SLAVE_PASSWORD, CONFIG_LOGOUT_URL};
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -179,6 +170,23 @@ extends HttpServlet {
      * Current value is <code>"ticket"</code>.
      */
     private static final String PARAM_TICKET = "ticket";
+
+
+    /**
+     * Initialization. Will set the truststore used by the servlet when trusting
+     * the Moria instance's certificate, if it is not covered by the default
+     * truststore.
+     * @throws ServletException
+     *             Never.
+     */
+    public void init() throws ServletException {
+
+        // Set the truststore.
+        final Properties config = getConfig();
+        System.setProperty("javax.net.trustStore", config.getProperty(CONFIG_TRUSTSTORE));
+        System.setProperty("javax.net.trustStorePassword", config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
+
+    }
 
 
     /**
@@ -215,7 +223,6 @@ extends HttpServlet {
             }
 
             // Prepare API.
-            //Moria service = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_MASTER_USERNAME), config.getProperty(CONFIG_MASTER_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
             AuthenticationSoapBindingStub service = new AuthenticationSoapBindingStub(new URL(config.getProperty(CONFIG_SERVICE_ENDPOINT)), null);
             service.setUsername(config.getProperty(CONFIG_MASTER_USERNAME));
             service.setUsername(config.getProperty(CONFIG_MASTER_PASSWORD));
@@ -285,7 +292,6 @@ extends HttpServlet {
 
                     // We now have a proxy ticket; now let's fake our own
                     // subsystem. Retrieve and display some attributes.
-                    //Moria subservice = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_SLAVE_USERNAME), config.getProperty(CONFIG_SLAVE_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
                     AuthenticationSoapBindingStub subservice = new AuthenticationSoapBindingStub(new URL(config.getProperty(CONFIG_SERVICE_ENDPOINT)), null);
                     subservice.setUsername(config.getProperty(CONFIG_SLAVE_USERNAME));
                     subservice.setPassword(config.getProperty(CONFIG_SLAVE_PASSWORD));
