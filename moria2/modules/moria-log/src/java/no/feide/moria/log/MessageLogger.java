@@ -31,7 +31,7 @@ import org.apache.log4j.Level;
 
 /**
  * Logs generic messages from the system, may include ticket id
- * and/or exception.
+ * and/or throwable.
  *
  * Supports four loglevels: Debug, Info, Warn, Critical.
  *
@@ -85,13 +85,13 @@ public final class MessageLogger implements Serializable {
      *
      * @param message
      *            The message to log.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logCritical(final String message, final Exception exception) {
+    public void logCritical(final String message, final Throwable throwable) {
         if (Level.FATAL_INT >= logLevel)
-            getLogger().fatal(generateLogMessage(message, null, exception));
+            getLogger().fatal(generateLogMessage(message, null, throwable));
     }
 
     /**
@@ -114,13 +114,13 @@ public final class MessageLogger implements Serializable {
      *            The message to log.
      * @param ticketId
      *            The ticket id associated with this log message.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logCritical(final String message, final String ticketId, final Exception exception) {
+    public void logCritical(final String message, final String ticketId, final Throwable throwable) {
         if (Level.FATAL_INT >= logLevel)
-            getLogger().fatal(generateLogMessage(message, ticketId, exception));
+            getLogger().fatal(generateLogMessage(message, ticketId, throwable));
     }
 
     /**
@@ -139,13 +139,13 @@ public final class MessageLogger implements Serializable {
      *
      * @param message
      *            The message to log.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logWarn(final String message, final Exception exception) {
+    public void logWarn(final String message, final Throwable throwable) {
         if (Level.WARN_INT >= logLevel)
-            getLogger().warn(generateLogMessage(message, null, exception));
+            getLogger().warn(generateLogMessage(message, null, throwable));
     }
 
     /**
@@ -168,13 +168,13 @@ public final class MessageLogger implements Serializable {
      *            The message to log.
      * @param ticketId
      *            The ticket id associated with this log message.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logWarn(final String message, final String ticketId, final Exception exception) {
+    public void logWarn(final String message, final String ticketId, final Throwable throwable) {
         if (Level.WARN_INT >= logLevel)
-            getLogger().warn(generateLogMessage(message, ticketId, exception));
+            getLogger().warn(generateLogMessage(message, ticketId, throwable));
     }
 
     /**
@@ -193,13 +193,13 @@ public final class MessageLogger implements Serializable {
      *
      * @param message
      *            The message to log.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logInfo(final String message, final Exception exception) {
+    public void logInfo(final String message, final Throwable throwable) {
         if (Level.INFO_INT >= logLevel)
-            getLogger().info(generateLogMessage(message, null, exception));
+            getLogger().info(generateLogMessage(message, null, throwable));
     }
 
     /**
@@ -222,13 +222,13 @@ public final class MessageLogger implements Serializable {
      *            The message to log.
      * @param ticketId
      *            The ticket id associated with this log message.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logInfo(final String message, final String ticketId, final Exception exception) {
+    public void logInfo(final String message, final String ticketId, final Throwable throwable) {
         if (Level.INFO_INT >= logLevel)
-            getLogger().info(generateLogMessage(message, ticketId, exception));
+            getLogger().info(generateLogMessage(message, ticketId, throwable));
     }
 
     /**
@@ -247,13 +247,13 @@ public final class MessageLogger implements Serializable {
      *
      * @param message
      *            The message to log.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logDebug(final String message, final Exception exception) {
+    public void logDebug(final String message, final Throwable throwable) {
         if (Level.DEBUG_INT >= logLevel)
-            getLogger().debug(generateLogMessage(message, null, exception));
+            getLogger().debug(generateLogMessage(message, null, throwable));
     }
 
     /**
@@ -276,13 +276,13 @@ public final class MessageLogger implements Serializable {
      *            The message to log.
      * @param ticketId
      *            The ticket id associated with this log message.
-     * @param exception
-     *            An exception associated with this log entry. Message and
+     * @param throwable
+     *            An throwable associated with this log entry. Message and
      *            stacktrace will be logged.
      */
-    public void logDebug(final String message, final String ticketId, final Exception exception) {
+    public void logDebug(final String message, final String ticketId, final Throwable throwable) {
         if (Level.DEBUG_INT >= logLevel)
-            getLogger().debug(generateLogMessage(message, ticketId, exception));
+            getLogger().debug(generateLogMessage(message, ticketId, throwable));
     }
 
     /**
@@ -292,11 +292,11 @@ public final class MessageLogger implements Serializable {
      *            The message to log.
      * @param ticketId
      *            A ticket id. May be null.
-     * @param exception
-     *            Exception to get stacktrace from. May be null.
+     * @param throwable
+     *            Throwable to get stacktrace from. May be null.
      * @return The final log string.
      */
-    private String generateLogMessage(final String message, final String ticketId, final Exception exception) {
+    private String generateLogMessage(final String message, final String ticketId, final Throwable throwable) {
 
         StringBuffer buffer = new StringBuffer();
 
@@ -304,12 +304,12 @@ public final class MessageLogger implements Serializable {
         buffer.append(ticketId != null ? "[" + ticketId + "] " : "[-] ");
         buffer.append(message != null ? "\"" + message + "\"" : "\"-\"");
 
-        if (exception != null) {
+        if (throwable != null) {
             /* Capture stacktrace */
             OutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
 
-            exception.printStackTrace(printStream);
+            throwable.printStackTrace(printStream);
             printStream.flush();
 
             buffer.append(System.getProperty("line.separator") + outputStream.toString());
