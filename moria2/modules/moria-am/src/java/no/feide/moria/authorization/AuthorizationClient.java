@@ -415,7 +415,7 @@ class AuthorizationClient {
      * @throws IllegalStateException    if one (or more) of the requested attributes are not present
      *                                  in the authorization client
      */
-    final int getSecLevel(final String[] requestedAttributes) {
+    final int getSecLevel(final String[] requestedAttributes) throws UnknownAttributeException {
         if (requestedAttributes == null) {
             throw new IllegalArgumentException("requestedAttributes cannot be null");
         }
@@ -428,7 +428,7 @@ class AuthorizationClient {
         for (int i = 0; i < requestedAttributes.length; i++) {
             AuthorizationAttribute authzAttribute = (AuthorizationAttribute) attributes.get(requestedAttributes[i]);
             if (authzAttribute == null) {
-                throw new IllegalStateException("");
+                throw new UnknownAttributeException("Attribute '"+authzAttribute+"' does not exist.");
             }
             if (authzAttribute.getSecLevel() > res) {
                 res = authzAttribute.getSecLevel();

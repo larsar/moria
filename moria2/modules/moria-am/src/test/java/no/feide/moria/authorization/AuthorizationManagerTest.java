@@ -774,7 +774,7 @@ public class AuthorizationManagerTest extends TestCase {
      *
      * @see AuthorizationManager#getSecLevel(java.lang.String, java.lang.String[])
      */
-    public void testGetSecLevel() throws UnknownServicePrincipalException {
+    public void testGetSecLevel() throws UnknownServicePrincipalException, UnknownAttributeException {
         AuthorizationManager authMan = new AuthorizationManager();
 
         Properties props = new Properties();
@@ -805,8 +805,11 @@ public class AuthorizationManagerTest extends TestCase {
         } catch (UnknownServicePrincipalException success) {
         }
 
-        /* Illegal attribute */
-        // TODO: Implement test for illegal attribute?
+        /* Illegal attributes */
+        try {
+            authMan.getSecLevel("test", new String[]{"doesNotExist"});
+        } catch (UnknownAttributeException success) {
+        }
 
         /* SecLevel 0 */
         String[] requestedAttributes = new String[]{"attr1"};
@@ -911,7 +914,7 @@ public class AuthorizationManagerTest extends TestCase {
     /**
      * Test the getOperations method.
      *
-     * @see AuthorizationManager#getOperations(java.lang.String) 
+     * @see AuthorizationManager#getOperations(java.lang.String)
      * @throws UnknownServicePrincipalException
      */
     public void testGetOperations() throws UnknownServicePrincipalException {

@@ -447,7 +447,7 @@ public class AuthorizationClientTest extends TestCase {
      *
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
      */
-    public void testGetSecLevell() {
+    public void testGetSecLevell() throws UnknownAttributeException {
         /* Invalid arguments */
         AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", emptySet,
                 emptySet, emptySet, emptyMap);
@@ -471,8 +471,8 @@ public class AuthorizationClientTest extends TestCase {
         /* Illegal attributes */
         try {
             client.getSecLevel(new String[]{"doesNotExist"});
-            fail("IllegalStateException should be raised, non-existing attributes");
-        } catch (IllegalStateException success) {
+            fail("UnknownAttributeException should be raised, non-existing attributes");
+        } catch (UnknownAttributeException success) {
         }
 
         /* Normal use */

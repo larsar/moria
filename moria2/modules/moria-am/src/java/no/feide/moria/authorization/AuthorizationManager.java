@@ -401,7 +401,8 @@ public class AuthorizationManager {
      * @return integer >= 0
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
      */
-    public int getSecLevel(String servicePrincipal, String[] requestedAttributes) throws UnknownServicePrincipalException {
+    public int getSecLevel(String servicePrincipal, String[] requestedAttributes)
+            throws UnknownServicePrincipalException, UnknownAttributeException {
         /* Validate arguments */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
             throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
