@@ -147,6 +147,7 @@
   <target name="mellon:prepare"
           description="Mellon API: Prepare build directory">
     <mkdir dir="build.mellon"/>
+    <mkdir dir="build.mellon.filter"/>
     <mkdir dir="dist"/>
   </target>
 
@@ -174,12 +175,37 @@
     </javac>
   </target>
 
+  <target name="mellon:filter:compile"
+          description="Mellon API: Compile source"
+          depends="mellon:jar">
+    <javac srcdir="src"
+           destdir="build.mellon.filter"
+           includes="no/feide/mellon/filter/*">
+	   <classpath>
+             <fileset dir="lib/" includes="*.jar"/>
+             <fileset dir="mellon/lib/" includes="*.jar"/>
+	     <fileset file="dist/feide-mellon-api.jar"/>
+	   </classpath>
+    </javac>
+  </target>
+
+
+  <target name="mellon:filter:jar"
+          description="Mellon API: Create JAR file"
+	  depends="mellon:compile">
+    <delete file="dist/feide-mellon-filter.jar"/>
+    <jar destfile="dist/feide-mellon-filter.jar" basedir="build.mellon.filter"/>
+  </target>
+
   <target name="mellon:jar"
           description="Mellon API: Create JAR file"
 	  depends="mellon:compile">
     <delete file="dist/feide-mellon-api.jar"/>
     <jar destfile="dist/feide-mellon-api.jar" basedir="build.mellon"/>
+
   </target>
+
+
 
   <target name="mellon:build"
           description="Mellon API: All steps necessary to build the JAR"
@@ -188,6 +214,8 @@
   <target name="mellon:clean"
           description="Mellon API: Clean up">
     <delete dir="build.mellon"/>
+    <delete dir="build.mellon.filter"/>
+    <delete file="dist/feide-mellon-filter.jar"/>
     <delete file="dist/feide-mellon-api.jar"/>
   </target>
 
