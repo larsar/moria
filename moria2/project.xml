@@ -9,14 +9,13 @@
   <id>moria</id>
   <groupId>moria</groupId>
   <organization>
-    <name>UNINETT FAS A/S</name>
+    <name>UNINETT FAS</name>
     <url>http://www.feide.no/</url>
   </organization>
   <inceptionYear>2001</inceptionYear>
   <package>no.feide.moria</package>
 
-  <shortDescription>Moria is a federated web authentication
-  service.</shortDescription>
+  <shortDescription>Moria is a federated web authentication service.</shortDescription>
 
   <description>Moria is a federated html- and SOAP-based
     authentication service, with multiple LDAP backend
@@ -60,9 +59,10 @@
     <developer>
       <name>Bjørn Ola Smievoll</name>
       <id>bos</id>
-      <email>b.o@smievoll.no</email>
-      <organization>Smievoll Enterprises</organization>
+      <email>b.o.smievoll@conduct.no</email>
+      <organization>Conduct AS</organization>
       <role>Java Developer</role>
+      <timezone>+1</timezone>
     </developer>
 
     <developer>
@@ -71,6 +71,7 @@
       <email>cato.olsen@uninett.no</email>
       <organization>UNINETT AS</organization>
       <role>Java Developer</role>
+      <timezone>+1</timezone>
     </developer>
 
     <developer>
@@ -79,17 +80,49 @@
       <email>lars.preben.arnesen@conduct.no</email>
       <organization>Conduct AS</organization>
       <role>Java Developer</role>
+      <timezone>+1</timezone>
     </developer>
   </developers>
+
+  <contributors>
+    <contributor>
+      <name>Ingrid Melve</name>
+      <id>im</id>
+      <email>ingrid.melve@uninett.no</email>
+      <organization>UNINETT AS</organization>
+      <role>Project Manager</role>
+      <timezone>+1</timezone>
+    </contributor>
+  </contributors>
 
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>src/test/java</unitTestSourceDirectory>
 
+    <resources>
+      <resource>
+        <directory>src/conf</directory>
+        <includes>
+          <include>*.xml</include>
+          <include>*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
     <unitTest>
       <includes>
         <include>**/*Test.java</include>
       </includes>
+
+      <resources>
+	<resource>
+          <directory>src/test/conf</directory>
+          <includes>
+            <include>*.xml</include>
+            <include>*.properties</include>
+          </includes>
+	</resource>
+      </resources>
     </unitTest>
 
   </build>
