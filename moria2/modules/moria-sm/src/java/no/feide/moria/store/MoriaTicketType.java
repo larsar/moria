@@ -20,7 +20,6 @@
 
 package no.feide.moria.store;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /**
@@ -86,7 +85,7 @@ public final class MoriaTicketType implements Serializable {
      *
      * @return the local classloader representation of the object.
      */
-    public Object readResolve() {
+    Object readResolve() {
         return TYPES[ordinal];
     }
 }
