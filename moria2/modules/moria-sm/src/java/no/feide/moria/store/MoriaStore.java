@@ -39,7 +39,13 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if properties is null
      */
-    void setConfig(Properties properties) throws MoriaStoreConfigurationException;
+    void setConfig(Properties properties)
+            throws MoriaStoreConfigurationException;
+
+    /**
+     * Stops this instance of the store.
+     */
+    void stop();
 
     /**
      * Creates an authentication attempt based on a service request.
@@ -62,7 +68,8 @@ public interface MoriaStore {
      *          if any of the arguments are null, and if responseURLPrefix and servicePrincipal are zero length
      */
     String createAuthnAttempt(final String[] requestAttributes, final String responseURLPrefix, final String responseURLPostfix,
-            final boolean forceInteractiveAuthentication, final String servicePrincipal) throws MoriaStoreException;
+                              final boolean forceInteractiveAuthentication, final String servicePrincipal)
+            throws MoriaStoreException;
 
     /**
      * Gets the authentication attempt assosiated with the ticket given as argument.
@@ -99,7 +106,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if attributes is null
      */
-    String cacheUserData(final HashMap attributes) throws MoriaStoreException;
+    String cacheUserData(final HashMap attributes)
+            throws MoriaStoreException;
 
     /**
      * Return the userdata assosiated with the incoming ticket, which must be either a
@@ -120,8 +128,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if ticketId is null or zero length
      */
-    CachedUserData getUserData(final String proxyTicketId, final String servicePrincipal) throws InvalidTicketException,
-            NonExistentTicketException, MoriaStoreException;
+    CachedUserData getUserData(final String proxyTicketId, final String servicePrincipal)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**
      * Creates a service ticket that the service will use when requesting user attributes after a
@@ -139,8 +147,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if loginTicketId is null or zero length
      */
-    String createServiceTicket(final String loginTicketId) throws InvalidTicketException, NonExistentTicketException,
-            MoriaStoreException;
+    String createServiceTicket(final String loginTicketId)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**
      * Create a new ticket granting ticket, using a sso ticket.
@@ -160,8 +168,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if any of the arguments are null or zero length
      */
-    String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal) throws InvalidTicketException,
-            NonExistentTicketException, MoriaStoreException;
+    String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**
      * Create a new proxy ticket from a TGT and assosiate the new ticket with the same user data as
@@ -203,8 +211,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if loginTicketId is null or zero length, or transientAttributes is null
      */
-    void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes) throws InvalidTicketException,
-            NonExistentTicketException, MoriaStoreException;
+    void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**
      * Provide transient attributes to be copied form a cached user data object to and stored with authentication attempt.
@@ -223,8 +231,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if loginTicketId is null or zero length, or transientAttributes is null
      */
-    void setTransientAttributes(final String loginTicketId, final String ssoTicketId) throws InvalidTicketException,
-            NonExistentTicketException, MoriaStoreException;
+    void setTransientAttributes(final String loginTicketId, final String ssoTicketId)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**
      * Removes a ssoTicket from the store.
@@ -240,5 +248,6 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if ssoTicketId is null or zero length
      */
-    void removeSSOTicket(final String ssoTicketId) throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
+    void removeSSOTicket(final String ssoTicketId)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 }
