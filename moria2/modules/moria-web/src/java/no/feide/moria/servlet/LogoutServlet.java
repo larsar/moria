@@ -43,6 +43,7 @@ public class LogoutServlet extends HttpServlet {
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
+        // TODO: Do not throw exceptions, set INTERNAL SERVER ERRROR status
         RequestDispatcher rd = getServletContext().getRequestDispatcher("/logout.jsp");
         rd.include(request, response);
     }
