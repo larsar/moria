@@ -950,8 +950,6 @@ public final class MoriaController {
      *             <code>servicePrincipal</code> is null/empty.
      * @throws InoperableStateException
      *             If the controller is not ready to use.
-     * @throws InvalidTicketException
-     *             If userorg in not set in the proxy ticket.
      * @throws UnknownTicketException
      *             If the proxy ticket is invalid or does not exist.
      */

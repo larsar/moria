@@ -45,9 +45,16 @@ public class AttribsHandler extends DefaultHandler {
         indexcounter = 0;
     }
 
+    /** Hash map of parsed attributes. */
     private HashMap adata;
+
+    /** The attribute being parsed. */
     private AttribsData currentattribute;
+
+    /** String value of current attribute. */
     private String currentchars;
+
+    /** Attribute's number. */
     private int indexcounter;
 
     /**

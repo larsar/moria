@@ -279,7 +279,7 @@ extends HttpServlet {
 
     /**
      * Displays the login page. The method fills the request object with values
-     * and then passes the request to the jsp.
+     * and then passes the request to the JSP.
      * @param request
      *            The HTTP request.
      * @param response
@@ -287,9 +287,9 @@ extends HttpServlet {
      * @param errorType
      *            The type of the error set by the caller.
      * @throws IOException
-     *             Required by interface.
+     *             When the JSP throws this exception.
      * @throws ServletException
-     *             Required by interface.
+     *             When the JSP throws this exception.
      */
     // TODO: Elaborate JavaDoc
     private void showLoginPage(final HttpServletRequest request, final HttpServletResponse response, String errorType)

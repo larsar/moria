@@ -112,7 +112,7 @@ implements Serializable, DirectoryManagerIndex {
      * Dummy implementation.
      *
      * @return The hashcode.
-     * @throw UnsupportedOperationException Always.
+     * @throws UnsupportedOperationException Always.
      */
      public final int hashCode() {
          throw new UnsupportedOperationException();

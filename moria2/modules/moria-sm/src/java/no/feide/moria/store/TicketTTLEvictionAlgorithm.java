@@ -48,17 +48,17 @@ import EDU.oswego.cs.dl.util.concurrent.WriterPreferenceReadWriteLock;
  */
 public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
 
-    /** */
+    /** The logger used by this class. */
     private final MessageLogger messageLogger = new MessageLogger(TicketTTLEvictionAlgorithm.class);
 
-    /** */
+    /** Synchronized list of nodes. */
     private SyncList nodeList;
 
-    /** */
+    /** Synchronized hash map of nodes. */
     private SyncMap nodeMap;
 
     /**
-     *
+     * Constructs a new instance.
      */
     public TicketTTLEvictionAlgorithm() {
         super();
@@ -67,6 +67,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
+     * Perfoms the eviction algorithm. Called periodically.
      * @see org.jboss.cache.eviction.EvictionAlgorithm#process(org.jboss.cache.eviction.Region)
      */
     public final void process(final Region region)
@@ -103,6 +104,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
+     * Adds nodes to eviction data structures.
      * @param region Region of tree.
      * @param fqn    Fully qualified name.
      */
@@ -119,6 +121,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
+     * Removes nodes from eviction data structures.
      * @param fqn Fully qualified name.
      */
     private void processRemovedNodes(final Fqn fqn) {
@@ -127,6 +130,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
+     * Prunes a region of the tree.
      * @param region Region of tree.
      * @throws  EvictionException
      *            If eviction is interrupted or fails.
@@ -168,14 +172,20 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
-     *
+     * Represents a cache node.
      */
     private static class NodeEntry {
 
+        /** Eviction time. */
         private final Long evictionTime;
 
+        /** Fully qualified name. */
         private final Fqn fqn;
 
+        /** Constructs a new instance.
+         * @param evictionTime Eviction time.
+         * @param fqn          Fully qualified name.
+         */
         public NodeEntry(final Long evictionTime, final Fqn fqn) {
             this.evictionTime = evictionTime;
             this.fqn = fqn;

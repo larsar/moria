@@ -100,7 +100,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     private TreeCache cache;
 
     /**
-     * Create new instance.
+     * Creates a new instance.
      */
     public TicketTTLEvictionPolicy() {
         messageLogger = new MessageLogger(TicketTTLEvictionPolicy.class);
@@ -252,7 +252,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     }
 
     /**
-     * Parse the config retrieved from TreeCache.getEvictionPolicyConfig(). Populates
+     * Parses the config retrieved from TreeCache.getEvictionPolicyConfig(). Populates
      * the regionValues array.
      *
      * @param config configuration for this eviction policy
@@ -354,7 +354,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     }
 
     /**
-     * Get the region values.
+     * Gets the region values.
      *
      * @return Array containing the region values.
      */
@@ -363,7 +363,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     }
 
     /**
-     * Get a region value.
+     * Gets a region value.
      *
      * @param fqn Fully quailified name.
      * @return A region value.
@@ -389,8 +389,10 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
         /** Time to live. */
         long timeToLive;
 
-        /** String representation.
-         * @return The string representation. */
+        /**
+         * Returns a string representation.
+         * @return The string representation.
+         */
         public String toString() {
             return "[" + regionName + ", " + timeToLive + "]";
         }
