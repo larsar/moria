@@ -134,7 +134,7 @@ public final class RequestUtil {
      * <br>
      * <br>
      * Current value is <code>PATH_PREFIX + "cookie.org.ttl"</code>.
-     * @see PROP_COOKIE_ORG
+     * @see #PROP_COOKIE_ORG
      */
     public static final String PROP_COOKIE_ORG_TTL = PATH_PREFIX + "cookie.org.ttl";
 
@@ -188,7 +188,7 @@ public final class RequestUtil {
      * <em>This property is required</em><br>
      * <br>
      * Current value is <code>PATH_PREFIX + "cookie.denysso.ttl"</code>.
-     * @see PROP_COOKIE_DENYSSO
+     * @see #PROP_COOKIE_DENYSSO
      */
     public static final String PROP_COOKIE_DENYSSO_TTL = PATH_PREFIX + "cookie.denysso.ttl";
 

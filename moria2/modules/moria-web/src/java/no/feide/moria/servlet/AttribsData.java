@@ -59,7 +59,7 @@ public class AttribsData implements Comparator {
      * @param ad1 The first object.
      * @param ad2 The second object.
      * @return < 0 if object 1 index is less than object 2, > 0 if object 2 index i larger.
-     * @see Comparator.compare
+     * @see Comparator#compare
      */
     public int compare(Object ad1, Object ad2){
         AttribsData adata1 = (AttribsData) ad1;

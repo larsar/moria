@@ -78,7 +78,8 @@ public class AttribsHandler extends DefaultHandler {
      * @throws SAXException
      *          Required by interface.
      *  
-     * @see DefaultHandler.startElement for information about the parameters
+     * @see org.xml.sax.helpers.DefaultHandler#startElement
+     *          for information about the parameters
      */
     public void startElement(String namespaceURI, String sName, String qName, Attributes attrs) throws SAXException {
         String eName = sName;
@@ -106,7 +107,8 @@ public class AttribsHandler extends DefaultHandler {
      * @throws SAXException
      *          Required by interface.
      * 
-     * @see DefaultHandler.endElement for information about the parameters
+     * @see org.xml.sax.helpers.DefaultHandler#endElement
+     *          for information about the parameters
      */
     public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
         String eName = sName;
@@ -132,7 +134,8 @@ public class AttribsHandler extends DefaultHandler {
      * @throws SAXException
      *          Required by interface.
      * 
-     * @see DefaultHandler.characters for information about the parameters
+     * @see org.xml.sax.helpers.DefaultHandler#characters
+     *          for information about the parameters
      */
     public void characters(char buf[], int offset, int len) throws SAXException {
         String s = new String(buf, offset, len);

@@ -47,7 +47,7 @@ import org.apache.axis.encoding.ser.VectorSerializerFactory;
  * of how to access the Moria SOAP interface.<br>
  * <br>
  * This implementation uses Axis for its remote operations, for details on how
- * this is done refer to the private methods
+ * this is done, refer to the private methods
  * <ul>
  * <li><code>initiateAuthentication</code>
  * <li><code>getUserAttributes</code>
@@ -84,11 +84,9 @@ import org.apache.axis.encoding.ser.VectorSerializerFactory;
  * @see #initiateAuthentication(String[], String, String, boolean)
  * @see #getUserAttributes(String)
  * @see #PARAM_TICKET
- * @see #SERVICE_ENDPOINT
- * @see #MAIN_ATTRIBUTE_REQUEST
- * @see #CLIENT_USERNAME
- * @see #CLIENT_PASSWORD
- * @see #SERVICE_ENDPOINT
+ * @see RequestUtil#PROP_DEMO_MASTER_ATTRIBUTE_REQUEST
+ * @see RequestUtil#PROP_DEMO_SLAVE_ATTRIBUTE_REQUEST
+ * @see RequestUtil#PROP_DEMO_SERVICE_ENDPOINT
  */
 public class DemoServlet
 extends HttpServlet {
@@ -123,7 +121,7 @@ extends HttpServlet {
      *             handles the GET request.
      * @throws javax.servlet.ServletException
      *             If the request for the GET could not be handled.
-     * @see javax.servlet.http.HttpServlet.doGet(javax.servlet.http.HttpServletRequest,
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)

@@ -82,13 +82,13 @@ public class InformationServlet extends HttpServlet {
      * <li><code>RequestUtil.PROP_INFORMATION_URL_PREFIX</code>
      * <li><code>RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML</code>
      * </ul>
-     * @see RequestUtil.PROP_COOKIE_LANG
-     * @see RequestUtil.PROP_COOKIE_LANG_TTL
-     * @see RequestUtil.PROP_COOKIE_DENYSSO
-     * @see RequestUtil.PROP_COMMON
-     * @see RequestUtil.PROP_LOGIN_TICKET_PARAM
-     * @see RequestUtil.PROP_INFORMATION_URL_PREFIX
-     * @see RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML
+     * @see RequestUtil#PROP_COOKIE_LANG
+     * @see RequestUtil#PROP_COOKIE_LANG_TTL
+     * @see RequestUtil#PROP_COOKIE_DENYSSO
+     * @see RequestUtil#PROP_COMMON
+     * @see RequestUtil#PROP_LOGIN_TICKET_PARAM
+     * @see RequestUtil#PROP_INFORMATION_URL_PREFIX
+     * @see RequestUtil#PROP_INFORMATION_FEIDEATTRIBS_XML
      */
     final String[] REQUIRED_PARAMETERS = {
         RequestUtil.PROP_COOKIE_LANG,
