@@ -44,7 +44,6 @@
         <fileset dir="${soap_libs}" includes="*.jar"/>
         <fileset dir="dist" includes="*.jar"/>
         <fileset file="${soap_stubs}"/>
-        <fileset file="${servlet_jar}"/>
       </classpath>
     </javac>
       
@@ -85,7 +84,6 @@
       <classpath>
         <fileset dir="${soap_libs}" includes="*.jar"/>
         <fileset file="${soap_stubs}"/>
-        <fileset file="${servlet_jar}"/>
       </classpath>
     </javac>
     <jar destfile="dist/moriaAuthenticationFilter.jar" basedir="build/filter"/>
@@ -104,7 +102,6 @@
          <fileset dir="${include_libs}">
           <include name="*.jar"/>
         </fileset>
-        <fileset file="${servlet_jar}"/>
       </classpath>
     </javadoc>
   </target>

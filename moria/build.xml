@@ -16,10 +16,10 @@
   <target name="prepare"
           description="Prepare build directory">
  
-      <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
+      <condition property="wscompile" value="${jwsdp_home}/jaxrpc/bin/wscompile.bat">
         <os family="windows"/>
      </condition>
-     <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.sh">
+     <condition property="wscompile" value="${jwsdp_home}/jaxrpc/bin/wscompile.sh">
         <not>
            <os family="windows"/>
         </not>
@@ -79,7 +79,6 @@
         <fileset dir="${jaxrpc_libs}">
           <include name="*.jar"/>
         </fileset>
-        <fileset file="${servlet_jar}"/>
       </classpath>
     </javac>
   </target>
@@ -107,6 +106,7 @@
       <fileset dir="build">
         <include name="WEB-INF/**"/>
         <include name="templates/**"/>
+        <exclude name="**/servlet.jar"/>
       </fileset>
     </jar>
  
