@@ -2,6 +2,8 @@
 
 <!-- $Id$ -->
 
+<!-- Module: moria-am -->
+
 <project
    xmlns:j="jelly:core"
    xmlns:m="jelly:maven"
