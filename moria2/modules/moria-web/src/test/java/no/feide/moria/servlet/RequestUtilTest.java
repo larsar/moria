@@ -13,10 +13,12 @@ import java.io.IOException;
 
 
 /**
+ * Test case for the RequestUtil class.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class RequestUtilTest extends TestCase {
+public final class RequestUtilTest extends TestCase {
 
     /**
      * Initiate all tests.
@@ -32,7 +34,7 @@ public class RequestUtilTest extends TestCase {
      *
      * @see RequestUtil#createCookie(java.lang.String, java.lang.String, int)
      */
-    public void testGetCookieValue() {
+    public final void testGetCookieValue() {
 
         /* Illegal parameters */
         try {
@@ -50,9 +52,9 @@ public class RequestUtilTest extends TestCase {
         assertNull("Should be null",RequestUtil.getCookieValue("foo", null));
 
         /* Match */
-        String name = "name";
-        String value = "value";
-        Cookie[] cookies = new Cookie[]{new Cookie("foo", "bar"), new Cookie(name, value)};
+        final String name = "name";
+        final String value = "value";
+        final Cookie[] cookies = new Cookie[]{new Cookie("foo", "bar"), new Cookie(name, value)};
 
 
         assertEquals("Should be equal input, normal use", value, RequestUtil.getCookieValue(name, cookies));
@@ -66,7 +68,7 @@ public class RequestUtilTest extends TestCase {
      *
      * @see RequestUtil#createCookie(java.lang.String, java.lang.String, int)
      */
-    public void testCreateCookie() {
+    public final void testCreateCookie() {
 
         /* Illegal parameters */
         try {
@@ -111,7 +113,7 @@ public class RequestUtilTest extends TestCase {
      *
      * @see RequestUtil#getBundle(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
-    public void testGetBundle() {
+    public final void testGetBundle() {
         ResourceBundle bundle;
 
         /* Illegal parameters */
@@ -161,7 +163,7 @@ public class RequestUtilTest extends TestCase {
         checkBundle("nb", bundle);
 
         /* Browser specified language */
-        String acceptLang = "fo, nb;q=0.92, da;q=0.3, sv-se;q=0.81, sv;q=0.77";
+        final String acceptLang = "fo, nb;q=0.92, da;q=0.3, sv-se;q=0.81, sv;q=0.77";
         bundle = RequestUtil.getBundle("test", null, null, null, acceptLang, "wrong");
         checkBundle("nb", bundle);
 
@@ -211,8 +213,8 @@ public class RequestUtilTest extends TestCase {
      * @param bundle   the bundle to verify
      */
     private void checkBundle(final String language, final ResourceBundle bundle) {
-        String bundleLang = bundle.getLocale().getLanguage();
-        String bundleContentLang = (String) bundle.getObject("lang");
+        final String bundleLang = bundle.getLocale().getLanguage();
+        final String bundleContentLang = (String) bundle.getObject("lang");
         assertEquals("Expected language differs from bundle content", language, bundleContentLang);
         assertEquals("Expected language differs from bundle language", language, bundleLang);
     };
@@ -222,7 +224,7 @@ public class RequestUtilTest extends TestCase {
      *
      * @see RequestUtil#sortedAcceptLang(java.lang.String)
      */
-    public void testSortedAcceptLang() {
+    public final void testSortedAcceptLang() {
 
         /* Illegal arguments */
         try {
@@ -237,9 +239,9 @@ public class RequestUtilTest extends TestCase {
         }
 
 
-        String acceptLang = "en, sv;q=0.77, no;q=0.92, fo;err=0.88, da;q=0.3, no-nn;q=0.81";
-        String[] expectedLangList = new String[]{"en", "no", "nn", "sv", "da"};
-        String[] actualLangList = RequestUtil.sortedAcceptLang(acceptLang);
+        final String acceptLang = "en, sv;q=0.77, no;q=0.92, fo;err=0.88, da;q=0.3, no-nn;q=0.81";
+        final String[] expectedLangList = new String[]{"en", "no", "nn", "sv", "da"};
+        final String[] actualLangList = RequestUtil.sortedAcceptLang(acceptLang);
 
         /* Check every element in the lists */
         if (expectedLangList.length != actualLangList.length) {
@@ -259,7 +261,7 @@ public class RequestUtilTest extends TestCase {
      * @throws IOException
      * @see RequestUtil#parseConfig(java.util.Properties, java.lang.String, java.lang.String)
      */
-    public void testParseConfig() throws IOException {
+    public final void testParseConfig() throws IOException {
         Properties props = new Properties();
         props.load(this.getClass().getResourceAsStream("/web-test-valid.properties"));
 
@@ -311,8 +313,8 @@ public class RequestUtilTest extends TestCase {
         } catch (IllegalStateException success) {
         }
 
-        TreeMap expected = new TreeMap();
-        TreeMap actual;
+        final TreeMap expected = new TreeMap();
+        final TreeMap actual;
         expected.put("University of Oslo", "uio.no");
         expected.put("UNINETT", "uninett.no");
 
@@ -340,7 +342,7 @@ public class RequestUtilTest extends TestCase {
      *
      * @see RequestUtil#insertLink(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
-    public void testInsertLink() {
+    public final void testInsertLink() {
         /* Illegal parameters */
         try {
             RequestUtil.insertLink(null, "data string", "Client", "http://moria.sf.net/");
@@ -383,10 +385,10 @@ public class RequestUtilTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        String link = "<a href=\"http://moria.sf.net/\">Client</a>";
-        String url = "http://moria.sf.net/";
-        String name = "Client";
-        String token = "CLIENT_LINK";
+        final String link = "<a href=\"http://moria.sf.net/\">Client</a>";
+        final String url = "http://moria.sf.net/";
+        final String name = "Client";
+        final String token = "CLIENT_LINK";
         String data;
         String expected;
 

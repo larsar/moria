@@ -85,7 +85,6 @@ public class ClientServlet extends HttpServlet {
                     false,
                     request.getParameter("principal"));
         } catch (IllegalInputException e) {
-            // TODO:  Set error message
             error = true;
             request.setAttribute("error", e);
 

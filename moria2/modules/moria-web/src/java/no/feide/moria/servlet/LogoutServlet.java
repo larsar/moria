@@ -35,24 +35,21 @@ import no.feide.moria.controller.MoriaController;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * This servlet handles logout request. It will invalidate the SSO ticket
- * in the underlying store and remove the cookie form the client.
- * <p>
- * It uses two properties from the config:
- * <dl>
- *  <dt>no.feide.moria.web.sso_cookie.name</dt>
- *  <dd>The the cookie name</dd>
- *  <dt>no.feide.moria.web.logout.url_param</dt>
- *  <dd>The name of the optional parameter in the request holding the
- *      redirect url.</dd>
- * </dl>
+ * This servlet handles logout request. It will invalidate the SSO ticket in the underlying store and remove the cookie
+ * form the client.
+ * <p/>
+ * It uses two properties from the config: <dl> <dt>no.feide.moria.web.sso_cookie.name</dt> <dd>The the cookie name</dd>
+ * <dt>no.feide.moria.web.logout.url_param</dt> <dd>The name of the optional parameter in the request holding the
+ * redirect url.</dd> </dl>
  *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
 public final class LogoutServlet extends HttpServlet {
 
-    /** The logger used in this class. */
+    /**
+     * The logger used in this class.
+     */
     private MessageLogger messageLogger;
 
     /**
@@ -65,24 +62,23 @@ public final class LogoutServlet extends HttpServlet {
     /**
      * Handles the GET requests.
      *
-     * @param request
-     *          the HTTP request object
-     * @param response
-     *          the HTTP response object
+     * @param request  the HTTP request object
+     * @param response the HTTP response object
      */
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) {
 
-        Properties config = RequestUtil.getConfig(getServletContext());
+        final Properties config = RequestUtil.getConfig(getServletContext());
 
         String ssoCookieName = config.getProperty(RequestUtil.PROP_COOKIE_SSO);
 
         if (ssoCookieName == null || ssoCookieName.equals("")) {
             ssoCookieName = "MoriaSSOCookie";
-            messageLogger.logWarn("Parameter: " + RequestUtil.PROP_COOKIE_SSO + " not set in config. Using default value: "
-                    + ssoCookieName);
+            messageLogger.logWarn("Parameter: " + RequestUtil.PROP_COOKIE_SSO
+                                  + " not set in config. Using default value: "
+                                  + ssoCookieName);
         }
 
-        Cookie[] cookies = request.getCookies();
+        final Cookie[] cookies = request.getCookies();
         String cookieValue = null;
 
         if (cookies != null) {
@@ -109,7 +105,7 @@ public final class LogoutServlet extends HttpServlet {
         }
 
         if (controllerFailed) {
-            RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("JSP-Error.JSP");
+            final RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("JSP-Error.JSP");
 
             try {
                 requestDispatcher.forward(request, response);
@@ -122,7 +118,8 @@ public final class LogoutServlet extends HttpServlet {
 
         /* Remove cookie if set. */
         if (cookieValue != null) {
-            Cookie ssoCookie = RequestUtil.createCookie(config.getProperty(RequestUtil.PROP_COOKIE_SSO), cookieValue, 0);
+            final Cookie ssoCookie = RequestUtil.createCookie(config.getProperty(RequestUtil.PROP_COOKIE_SSO),
+                                                              cookieValue, 0);
             response.addCookie(ssoCookie);
         }
 
@@ -133,11 +130,12 @@ public final class LogoutServlet extends HttpServlet {
 
         if (urlParam == null) {
             urlParam = "redirURL";
-            messageLogger.logWarn("Parameter: " + RequestUtil.PROP_LOGOUT_URL_PARAM + " not set in config. Using default value: "
-                    + urlParam);
+            messageLogger.logWarn("Parameter: " + RequestUtil.PROP_LOGOUT_URL_PARAM
+                                  + " not set in config. Using default value: "
+                                  + urlParam);
         }
 
-        String url = request.getParameter(urlParam);
+        final String url = request.getParameter(urlParam);
 
         if (url != null) {
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
@@ -150,10 +148,8 @@ public final class LogoutServlet extends HttpServlet {
     /**
      * Handles POST requests.  Just calls doGet().
      *
-     * @param request
-     *          the HTTP request object
-     * @param response
-     *          the HTTP response object
+     * @param request  the HTTP request object
+     * @param response the HTTP response object
      */
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
         doGet(request, response);
@@ -162,10 +158,8 @@ public final class LogoutServlet extends HttpServlet {
     /**
      * Dispatches request to JSP.
      *
-     * @param request
-     *          the HTTP request object
-     * @param response
-     *          the HTTP response object
+     * @param request  the HTTP request object
+     * @param response the HTTP response object
      */
     private void showPage(final HttpServletRequest request, final HttpServletResponse response) {
         /* Resource bundle. */
@@ -174,11 +168,13 @@ public final class LogoutServlet extends HttpServlet {
             langFromCookie = RequestUtil.getCookieValue((String) RequestUtil.getConfig(getServletContext()).get(
                     RequestUtil.PROP_COOKIE_LANG), request.getCookies());
         }
-        ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), langFromCookie, null, request
-                .getHeader("Accept-Language"), "en");
+        final ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), langFromCookie,
+                                                            null,
+                                                            request.getHeader("Accept-Language"),
+                                                            "en");
         request.setAttribute("bundle", bundle);
 
-        RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("Logout.JSP");
+        final RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("Logout.JSP");
 
         try {
             requestDispatcher.forward(request, response);

@@ -44,9 +44,9 @@ import javax.servlet.http.Cookie;
 public final class RequestUtil {
 
     /**
-     * Prefix for properties in config
+     * Prefix for properties in config.
      */
-    public static final String PATH_PREFIX = "no.feide.moria.web.";
+    private static final String PATH_PREFIX = "no.feide.moria.web.";
 
     /**
      * Property name for: Config.
@@ -198,7 +198,7 @@ public final class RequestUtil {
      */
     public static final String ATTR_CLIENT_URL = "clientURL";
     /**
-     * Attribute in request object: Language bundle
+     * Attribute in request object: Language bundle.
      */
     public static final String ATTR_BUNDLE = "bundle";
 
@@ -248,7 +248,6 @@ public final class RequestUtil {
      * @param browserLang      language requested by the users browser, can be null
      * @param moriaLang        default language for Moria, cannot be null
      * @return the requested bundle
-     * @throws MissingResourceException if no bundle is found
      */
     public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final String langFromCookie,
                                            final String serviceLang, final String browserLang, final String moriaLang) {
@@ -262,7 +261,7 @@ public final class RequestUtil {
         }
 
         /* Build array of preferred language selections. */
-        Vector langSelections = new Vector();
+        final Vector langSelections = new Vector();
 
         /* Parameter. */
         if (requestParamLang != null && !requestParamLang.equals("")) {
@@ -281,7 +280,7 @@ public final class RequestUtil {
 
         /* Browser. */
         if (browserLang != null && !browserLang.equals("")) {
-            String[] browserLangs = sortedAcceptLang(browserLang);
+            final String[] browserLangs = sortedAcceptLang(browserLang);
             for (int i = 0; i < browserLangs.length; i++) {
                 langSelections.add(browserLangs[i]);
             }
@@ -326,7 +325,7 @@ public final class RequestUtil {
             fallback = null;
         }
 
-        Locale locale = new Locale(lang);
+        final Locale locale = new Locale(lang);
         ResourceBundle bundle = null;
         try {
             bundle = ResourceBundle.getBundle(bundleName, locale);
@@ -395,7 +394,7 @@ public final class RequestUtil {
             throw new IllegalArgumentException("validDays must be a >= 0.");
         }
 
-        Cookie cookie = new Cookie(cookieName, cookieValue);
+        final Cookie cookie = new Cookie(cookieName, cookieValue);
         cookie.setMaxAge(validHours * 60 * 60); // Hours to seconds
         cookie.setVersion(0);
         return cookie;
@@ -414,11 +413,11 @@ public final class RequestUtil {
             throw new IllegalArgumentException("acceptLang must be a non-empty string.");
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(acceptLang, ",");
-        HashMap weightedLangs = new HashMap();
+        final StringTokenizer tokenizer = new StringTokenizer(acceptLang, ",");
+        final HashMap weightedLangs = new HashMap();
 
         while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
+            final String token = tokenizer.nextToken();
             String lang = token;
             boolean ignore = false;
             String weight = "1.0";
@@ -453,8 +452,8 @@ public final class RequestUtil {
             }
         }
 
-        Vector sortedLangs = new Vector();
-        String[] sortedKeys = (String[]) weightedLangs.keySet().toArray(new String[weightedLangs.size()]);
+        final Vector sortedLangs = new Vector();
+        final String[] sortedKeys = (String[]) weightedLangs.keySet().toArray(new String[weightedLangs.size()]);
         Arrays.sort(sortedKeys, Collections.reverseOrder());
 
         for (int i = 0; i < sortedKeys.length; i++) {
@@ -484,30 +483,28 @@ public final class RequestUtil {
             throw new IllegalArgumentException("language must be a non-empty string.");
         }
 
-        String value = config.getProperty(element + "_" + language);
+        final String value = config.getProperty(element + "_" + language);
         if (value == null) {
             throw new IllegalStateException("No elements of type '" + element + "' in config.");
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(value, ",");
-        TreeMap names = new TreeMap();
+        final StringTokenizer tokenizer = new StringTokenizer(value, ",");
+        final TreeMap names = new TreeMap();
 
         while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            int index = token.indexOf(":");
+            final String token = tokenizer.nextToken();
+            final int index = token.indexOf(":");
 
             /* Abort if there is no separator in token */
             if (index == -1) {
-                // TODO: Log
                 throw new IllegalStateException("Config has wrong format.");
             }
 
-            String shortName = token.substring(0, index);
-            String longName = token.substring(index + 1, token.length());
+            final String shortName = token.substring(0, index);
+            final String longName = token.substring(index + 1, token.length());
 
             /* Abort if there is more than one separator in one token */
             if (shortName.indexOf(":") != -1 || longName.indexOf(":") != -1) {
-                // TODO: Log
                 throw new IllegalStateException("Config has wrong format.");
             }
 
@@ -542,7 +539,7 @@ public final class RequestUtil {
             throw new IllegalArgumentException("url must be a non-empty string");
         }
 
-        String link = "<a href=\"" + url + "\">" + name + "</a>";
+        final String link = "<a href=\"" + url + "\">" + name + "</a>";
 
         return data.replaceAll(token, link);
     }
@@ -553,7 +550,6 @@ public final class RequestUtil {
      *
      * @param context ServletContext containing the configuration.
      * @return the configuration
-     * @throws IllegalStateException if the config is not set in the context
      */
     static Properties getConfig(final ServletContext context) {
         /* Validate parameters */
@@ -561,7 +557,7 @@ public final class RequestUtil {
             throw new IllegalArgumentException("context must be a non-empty string");
         }
 
-        Properties config;
+        final Properties config;
 
         /* Validate config */
         try {

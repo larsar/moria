@@ -48,40 +48,45 @@ import java.util.Map;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class LoginServlet extends HttpServlet {
+public final class LoginServlet extends HttpServlet {
 
-    MessageLogger messageLogger = new MessageLogger(LoginServlet.class);
+    /** Logger. */
+    private final MessageLogger messageLogger = new MessageLogger(LoginServlet.class);
 
     /**
      * Intitiates the controller.
+     *
+     * @throws UnavailableException if the controller could not be initialized
      */
     public void init() throws UnavailableException {
         try {
             MoriaController.initController(getServletContext());
         } catch (Exception e) {
-            String message = "Controller initialization failed";
+            final String message = "Controller initialization failed";
             messageLogger.logCritical(message, e);
             throw new UnavailableException(message + ": " + e.getMessage());
         }
     }
 
     /**
-     * Handles the GET requests.
+     * Handles the GET requests. The GET request should contain a login ticket as parameter. A SSO ticket can also be
+     * presented by the user's web browser (in form of a cookie). The method will try to perform a SSO authentication if
+     * the conditions for this is met, else it will present the login page to the user.
      *
      * @param request  the HTTP request object
      * @param response the HTTP response object
-     * @throws IOException
-     * @throws ServletException
+     * @throws IOException      required by interface
+     * @throws ServletException required by interface
      */
-    public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
-        Properties config = getConfig();
+        final Properties config = getConfig();
 
         /* Public computer (deny SSO)? */
-        String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO),
-                                                          request.getCookies());
+        final String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO),
+                                                                request.getCookies());
 
-        boolean denySSO;
+        final boolean denySSO;
         if (denySSOChoice == null || denySSOChoice.equals("false") || denySSOChoice.equals("")) {
             request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(false));
             denySSO = false;
@@ -92,11 +97,12 @@ public class LoginServlet extends HttpServlet {
 
         /* Single Sign On */
         if (!denySSO) {
-            String serviceTicket;
+            final String serviceTicket;
             try {
-                String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
-                String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_SSO),
-                                                                request.getCookies());
+                final String loginTicketId = request.getParameter(
+                        config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
+                final String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_SSO),
+                                                                      request.getCookies());
                 if (ssoTicketId != null) {
                     serviceTicket = MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
 
@@ -118,31 +124,42 @@ public class LoginServlet extends HttpServlet {
         showLoginPage(request, response, null);
     }
 
-    public final void doPost(final HttpServletRequest request, final HttpServletResponse response)
+    /**
+     * Handles the POST requests. The POST request indicates that the user is trying to authenticate. If the
+     * authentication is successful, the user is redirected back to the originating web service, else the user is
+     * presented with an error message.
+     *
+     * @param request  the HTTP request
+     * @param response the HTTP response
+     * @throws IOException      required by interface
+     * @throws ServletException required by interface
+     */
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
-        Properties config = getConfig();
+        final Properties config = getConfig();
 
         /* Login ticket */
-        String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
+        final String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
 
         /* SSO ticket */
-        String ssoTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_COOKIE_SSO));
+        final String ssoTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_COOKIE_SSO));
 
-        String username = request.getParameter(RequestUtil.PARAM_USERNAME);
-        String password = request.getParameter(RequestUtil.PARAM_PASSWORD);
+        /* Credentials */
+        final String username = request.getParameter(RequestUtil.PARAM_USERNAME);
+        final String password = request.getParameter(RequestUtil.PARAM_PASSWORD);
         String org = request.getParameter(RequestUtil.PARAM_ORG);
 
-        /* Wash SSO selection input */
+        /* User's SSO selection */
         String denySSOStr = request.getParameter(RequestUtil.PARAM_DENYSSO);
-        boolean denySSO = (denySSOStr != null && denySSOStr.equals("true"));
+        final boolean denySSO = (denySSOStr != null && denySSOStr.equals("true"));
         if (denySSO) {
             denySSOStr = "true";
         } else {
             denySSOStr = "false";
         }
 
-        /* Set cookie and mark request for SSO denial */
-        Cookie denySSOCookie =
+        /* Set cookie and mark request for SSO denial/allowance */
+        final Cookie denySSOCookie =
                 RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO), denySSOStr,
                                          new Integer((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO_TTL)).intValue());
         response.addCookie(denySSOCookie);
@@ -165,8 +182,8 @@ public class LoginServlet extends HttpServlet {
         }
 
         /* Attempt login */
-        Map tickets;
-        String redirectURL;
+        final Map tickets;
+        final String redirectURL;
         try {
             tickets = MoriaController.attemptLogin(loginTicketId, ssoTicketId, username + "@" + org, password);
             redirectURL = MoriaController.getRedirectURL((String) tickets.get(MoriaController.SERVICE_TICKET));
@@ -185,18 +202,17 @@ public class LoginServlet extends HttpServlet {
         } catch (IllegalInputException e) {
             showLoginPage(request, response, RequestUtil.ERROR_NO_CREDENTIALS);
             return;
-            /* This should not happen. Programming error. */
         }
 
         /* Authentication has been successful. Remember SSO ticket and organization. */
-        Cookie orgCookie =
+        final Cookie orgCookie =
                 RequestUtil.createCookie(RequestUtil.PROP_COOKIE_ORG,
                                          request.getParameter(RequestUtil.PARAM_ORG),
-                                         new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue());
+                                         new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
         response.addCookie(orgCookie);
 
         if (!denySSO) {
-            Cookie ssoTicketCookie =
+            final Cookie ssoTicketCookie =
                     RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO),
                                              (String) tickets.get(MoriaController.SSO_TICKET),
                                              new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
@@ -211,20 +227,21 @@ public class LoginServlet extends HttpServlet {
     /**
      * Displays the login page. The method fills the request object with values and then pass the request to the jsp.
      *
-     * @param request
-     * @param response
-     * @throws IOException
-     * @throws ServletException
+     * @param request   the HTTP requeest
+     * @param response  the HTTP response
+     * @param errorType the type of the error set by the caller
+     * @throws IOException      required by interface
+     * @throws ServletException required by interface
      */
     private void showLoginPage(final HttpServletRequest request, final HttpServletResponse response, String errorType)
             throws IOException, ServletException {
 
-        Properties config = getConfig();
+        final Properties config = getConfig();
         HashMap serviceProperties = null;
 
 
         /* Ticket */
-        String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
+        final String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
 
         /* Base URL */
         request.setAttribute(RequestUtil.ATTR_BASE_URL,
@@ -259,12 +276,13 @@ public class LoginServlet extends HttpServlet {
             langFromCookie = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG),
                                                         request.getCookies());
         }
-        ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN,
-                                                      request.getParameter(RequestUtil.PARAM_LANG),
-                                                      langFromCookie,
-                                                      serviceLang,
-                                                      request.getHeader("Accept-Language"),
-                                                      (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
+        final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN,
+                                                            request.getParameter(RequestUtil.PARAM_LANG),
+                                                            langFromCookie,
+                                                            serviceLang,
+                                                            request.getHeader("Accept-Language"),
+                                                            (String) config.get(
+                                                                    RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
         request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
 
         /* Configured values */
@@ -307,7 +325,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         /* Process jsp */
-        RequestDispatcher rd = getServletContext().getNamedDispatcher("Login.JSP");
+        final RequestDispatcher rd = getServletContext().getNamedDispatcher("Login.JSP");
         rd.forward(request, response);
     }
 
@@ -316,10 +334,9 @@ public class LoginServlet extends HttpServlet {
      * sent to this servlet.
      *
      * @return the configuration
-     * @throws IllegalStateException if the config is not set in the context
      */
     private Properties getConfig() {
-        Properties config;
+        final Properties config;
 
         /* Validate config */
         try {
