@@ -262,7 +262,6 @@ public class Session {
         // Look up through backend.
         try {
             
-
             // TODO: Double LDAP lookups. Might be a performance issue.
             // Move cache to User?
             if (cachedAttributes == null) {
@@ -271,8 +270,9 @@ public class Session {
             }
 
             HashMap noCachedAttributes = new HashMap();
-            if (noneSsoAttributes != null)
+            if (noneSsoAttributes.length > 0) {
                 noCachedAttributes = user.lookup(noneSsoAttributes);
+            }
 
 
             locked = true;
@@ -280,7 +280,6 @@ public class Session {
 
             return genAttrResult(cachedAttributes, noCachedAttributes, request);
 
-            //return user.lookup(request);
         } catch (BackendException e) {
             log.severe("BackendException caught and re-thrown as SessionException");
             throw new SessionException(e);
