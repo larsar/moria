@@ -19,6 +19,7 @@
 
 package no.feide.moria.directory.backend;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -345,7 +346,8 @@ implements DirectoryManagerBackend {
      *         those attributes that could actually be read, this may be an
      *         empty <code>HashMap</code>. Returns an empty
      *         <code>HashMap</code> if <code>attributes</code> is
-     *         <code>null</code> or an empty array.
+     *         <code>null</code> or an empty array. Note that binary values
+     *         are mapped to <code>String</code> using ISO-8859-1.
      * @throws BackendException
      *             If unable to read the attributes from the backend.
      * @throws NullPointerException
@@ -396,9 +398,23 @@ implements DirectoryManagerBackend {
                 ArrayList newValues = new ArrayList(oldAttr.size());
                 for (int j = 0; j < oldAttr.size(); j++) {
                     try {
-                        newValues.add(new String((String) oldAttr.get(j)));
+                        
+                        // We either have a String or a byte[].
+                        String newValue = null;
+                        try {
+                            newValue = new String((String) oldAttr.get(j));
+                        } catch (ClassCastException e) {
+                            
+                            // Map byte[] to String, using ISO-8859-1 encoding.
+                            newValue = new String((byte[]) oldAttr.get(j), "ISO-8859-1");
+                            
+                        }
+                        newValues.add(newValue);
+                        
                     } catch (NamingException e) {
                         throw new BackendException("Unable to read attribute value of '" + oldAttr.getID() + "' from '" + url + "'", e);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new BackendException("Unable to use ISO-8859-1 encoding", e);
                     }
                 }
                 newAttrs.put(attributes[i], (String[]) newValues.toArray(new String[] {}));
