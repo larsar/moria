@@ -457,8 +457,8 @@ public final class MoriaControllerTest extends TestCase {
         final String serviceTicketId = (String) tickets.get(MoriaController.SERVICE_TICKET);
         try {
             MoriaController.getUserAttributes(serviceTicketId, "invalidPrincipal");
-            fail("UnknownTicketException should be raised, wrong principal.");
-        } catch (UnknownTicketException success) {
+            fail("AuthorizationException should be raised, wrong principal.");
+        } catch (AuthorizationException success) {
         }
 
         /* Content */
@@ -872,6 +872,11 @@ public final class MoriaControllerTest extends TestCase {
 
         /* Unauthorized request */
         try {
+            MoriaController.verifyUserExistence("doesNotExist", validPrincipal);
+            fail("AuthorizationException should be raised, userId is not valid, organization can not be found.");
+        } catch (AuthorizationException success) {
+        }
+        try {
             MoriaController.verifyUserExistence(validUsername, "limited");
             fail("AuthorizationException should be raised, service is not allowed to perform operation.");
         } catch (AuthorizationException success) {
@@ -885,8 +890,9 @@ public final class MoriaControllerTest extends TestCase {
         /* Normal use */
         assertTrue("UserId should be valid: '" + validUsername + "'",
                    MoriaController.verifyUserExistence(validUsername, validPrincipal));
-        assertFalse("UserId should not be valid: 'doesNotExist'",
-                    MoriaController.verifyUserExistence("doesNotExist", validPrincipal));
+        //TODO fix this
+        //assertFalse("UserId should not be valid: 'doesNotExist'",
+        //            MoriaController.verifyUserExistence("doesNotExist", validPrincipal));
 
     }
 
