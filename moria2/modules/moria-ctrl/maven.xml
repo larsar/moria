@@ -10,14 +10,36 @@
    xmlns:u="jelly:util"
    default="project:install">
 
+
+  <!-- 
+       A number of filename fixes for Windows users.
+  -->
+  <preGoal name="build:start">
+    <tempfile property="windowsFixFile"
+              destDir="${maven.build.dir}"/>
+		<echo>${log4j.configuration}</echo>
+    <echo message="project.test.templates.dir.fixed=${project.test.templates.dir}${line.separator}log4j.configuration=${log4j.configuration.raw}"
+          file="${windowsFixFile}"
+          level="verbose"/>
+    <replace file="${windowsFixFile}"
+						 replaceFilterFile="${maven.build.dir}/../windows.properties"/>
+    <property file="${windowsFixFile}"/>
+    <delete file="${windowsFixFile}"
+            deleteonexit="true"/>  
+  </preGoal>
+
+
+  <!-- 
+  		 Custom preparation of the file system.
+  -->
   <postGoal
      name="test:prepare-filesystem">
+     
+     <!-- Create output directories for the tests. -->
     <mkdir dir="${maven.build.dir}/test-logs"/>
     <mkdir dir="${project.test.generated.dir}"/>
 
-    <!--
-         Generate new test files, overwriting any existing files.
-    -->
+    <!-- Generate new test files, overwriting any existing files. -->
     <copy todir="${project.test.generated.dir}"
           overwrite="true">
       <fileset dir="${project.test.templates.dir}">
@@ -28,30 +50,8 @@
         <include name="am-test-valid.xml"/>
       </fileset>
     </copy>
-
-
-    <!-- 
-         Fix for Windows users:
-         Write the template directory variable to a temporary file, replace all
-         occurrences of the Windows-style '\' directory separator with the
-         Java/Unix style '/' separator, and read it back into a new variable
-         before deleting the temporary file.
-    -->
-    <tempfile property="project.test.generated.dir.file"
-              destDir="${maven.build.dir}"/>
-    <echo message="project.test.templates.dir.fixed=${project.test.templates.dir}"
-          file="${project.test.generated.dir.file}"
-          level="verbose"/>
-    <replace file="${project.test.generated.dir.file}" 
-             token="\"
-             value="/"/>
-    <property file="${project.test.generated.dir.file}"/>
-    <delete file="${project.test.generated.dir.file}"
-            deleteonexit="true"/>
          
-    <!--
-         Update copied template files with the actual directory name.
-    -->
+    <!-- Update copied template files with the actual directory name. -->
     <replace
        dir="${project.test.generated.dir}"
        token="REPLACE_WITH_REALPATH"
@@ -62,11 +62,21 @@
     
   </postGoal>
 
+ 
+  <!--
+       Build the module and install the resulting JAR in the local Maven
+       repository.
+  -->
   <goal
      name="project:install"
      prereqs="jar:install"
      description="Build and install jar in local repository"/>
 
+
+  <!--
+       Build the module and install the resulting JAR in the remote Maven
+       repository.
+  -->
   <goal
      name="project:deploy"
      prereqs="jar:deploy"
