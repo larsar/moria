@@ -30,51 +30,57 @@ import java.rmi.RemoteException;
 public interface AuthenticationIF extends Remote {
 
     /**
+     * Initiates authentication.
+     *
      * The initial call done by services to start a login attempt.
      *
      * @param attributes
-     *          the attributes the service wants returned on login
+     *          The attributes the service wants returned on login
      * @param returnURLPrefix
-     *          the prefix of the url the user is to be returned to
+     *          The prefix of the url the user is to be returned to
      * @param returnURLPostfix
-     *          the optional postfix of the return url
+     *          The optional postfix of the return url
      * @param forceInteractiveAuthentication
-     *          wether or not cookie based authentication (SSO-Light)
-     *          should be allowed
-     * @return the Moria url the client is to be redirected to
+     *          Whether or not cookie based authentication (SSO Light)
+     *          should be allowed.
+     * @return The Moria url the client is to be redirected to.
      * @throws RemoteException
-     *          if anything fails during the call
+     *          If anything fails during the call.
      */
     String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix,
             boolean forceInteractiveAuthentication) throws RemoteException;
 
     /**
+     * Performs direct non-interactive authentication.
+     *
      * A redirect- and html-less login method.  Only to be used in
      * special cases where the client for some reason does not
      * support the standard login procedure.  Inherently insecure as
      * the service will have knowledge of the clear-text password.
      *
      * @param attributes
-     *          the attributes the service wants returned on login
+     *          The attributes the service wants returned on login.
      * @param username
-     *          the user name of the user to be authenticated
+     *          The user name of the user to be authenticated.
      * @param password
-     *          the password of the user to be authenticated
-     * @return array of attributes as requested
+     *          The password of the user to be authenticated.
+     * @return Array of attributes as requested.
      * @throws RemoteException
-     *          if anything fails during the call
+     *          If anything fails during the call.
      */
     Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
 
     /**
+     * Gets user attributes.
+     *
      * Called by the service when the user returns after an successful
      * login.
      *
      * @param serviceTicket
-     *          the ticket included in the return request issued by the client
-     * @return array of attributes as requested in initiateAuthentication
+     *          The ticket included in the return request issued by the client.
+     * @return Array of attributes as requested in initiateAuthentication.
      * @throws RemoteException
-     *          if anything fails during the call
+     *          If anything fails during the call.
      */
     Attribute[] getUserAttributes(String serviceTicket) throws RemoteException;
 
@@ -82,10 +88,10 @@ public interface AuthenticationIF extends Remote {
      * Verifies the existence of a given user in the underlying directories.
      *
      * @param username
-     *          the username to be validated
-     * @return true if the user is found
+     *          The username to be validated.
+     * @return true If the user is found.
      * @throws RemoteException
-     *          if anything fails during the call
+     *          If anything fails during the call.
      */
     boolean verifyUserExistence(String username) throws RemoteException;
 }

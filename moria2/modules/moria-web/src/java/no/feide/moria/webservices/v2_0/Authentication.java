@@ -70,7 +70,7 @@ public final class Authentication implements AuthenticationIF {
 
     /**
      * Default constructor.
-     * Initiates the logger.
+     * Initializes the logger.
      */
     public Authentication() {
         messageLogger = new MessageLogger(Authentication.class);
