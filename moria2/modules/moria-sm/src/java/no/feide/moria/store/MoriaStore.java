@@ -63,24 +63,24 @@ public interface MoriaStore {
             final boolean forceInteractiveAuthentication, final String servicePrincipal) throws MoriaStoreException;
 
     /**
-     * Gets the authentication attempt assosiated with the ticket given as argument. Should return
-     * null if no Authentication attempt is found.
+     * Gets the authentication attempt assosiated with the ticket given as argument.
      *
      * @param ticketId
-     *          the ticket from the incoming client request
+     *          the ticket from the incoming client request (must be LOGIN or SERVICE)
      * @param keep
      *          if true the authnAttempt and ticket will be kept in the store after this operation
      * @param servicePrincipal
      *          the principal of the service requesting the operation (null if login ticket is supplied)
      * @return the MoriaAuthnAttempt assosiated with the ticket
      * @throws InvalidTicketException
-     *          if the incoming ticket is not a login ticket
+     *          if the incoming ticket is found to be invalid
      * @throws NonExistentTicketException
      *          thrown if ticket does not exist
      * @throws MoriaStoreException
      *          thrown if the operation fails
      * @throws IllegalArgumentException
-     *          if loginTicketId is null or zero length
+     *          if ticketId is null or zero length and if no servicePrincipal is
+     *          supplied with a service ticket
      */
     MoriaAuthnAttempt getAuthnAttempt(final String ticketId, final boolean keep, final String servicePrincipal)
             throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
