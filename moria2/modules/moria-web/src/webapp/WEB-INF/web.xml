@@ -32,6 +32,11 @@
   </servlet>
 
   <servlet>
+    <servlet-name>Client</servlet-name>
+    <servlet-class>no.feide.moria.servlet.ClientServlet</servlet-class>
+  </servlet>
+
+  <servlet>
     <display-name>Moria Axis Servlet</display-name>
     <servlet-name>AxisServlet</servlet-name>
     <servlet-class>no.feide.moria.servlet.SimpleAxisServlet</servlet-class>
@@ -45,6 +50,11 @@
   <servlet-mapping>
     <servlet-name>Logout</servlet-name>
     <url-pattern>/Logout</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>Client</servlet-name>
+    <url-pattern>/Client</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
