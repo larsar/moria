@@ -18,6 +18,7 @@
 package no.feide.moria.servlet;
 
 import java.util.Properties;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -96,6 +97,9 @@ public class LoginServlet extends VelocityServlet {
     /** Flag if the user should be displayed a complete list of attributes. */
     private boolean showAllAttributes = false;
 
+    /** Default language */
+    private static String defaultLang;
+
     /** Timer for the session time out service. */
     Timer sessionTimer = new Timer(true);
 
@@ -111,6 +115,10 @@ public class LoginServlet extends VelocityServlet {
         log.finer("init()");
         
         try {
+            
+            /* Set default language */
+            defaultLang = Configuration.getProperty("no.feide.moria.defaultLanguage");
+
             /* Initialize session timeout timer */
             int sessionDelaySec = new Integer(Configuration.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
             log.config("Starting time out service. Repeat every "+sessionDelaySec+" seconds.");
@@ -240,9 +248,10 @@ public class LoginServlet extends VelocityServlet {
         String bundleName = "login";
         String acceptLanguage = request.getHeader("Accept-Language");
         String sessionID = null;
+        String selectedLanguage = defaultLang;
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
-
+        
         if (session != null) {
             sessionID = session.getID();
 
@@ -284,6 +293,8 @@ public class LoginServlet extends VelocityServlet {
                 lang = lang.substring(0, index);
             }
             
+            selectedLanguage = lang;
+                            
             locale = new Locale(lang);
             bundle = ResourceBundle.getBundle(bundleName, locale);
 
@@ -301,7 +312,7 @@ public class LoginServlet extends VelocityServlet {
 
         /* Should never happen, but just in case. */
         if (bundle == null)
-            bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
+            bundle = ResourceBundle.getBundle(bundleName, new Locale(defaultLang));
        
 
         String wsName = null;
@@ -342,7 +353,30 @@ public class LoginServlet extends VelocityServlet {
                 }
             }
         }
-        context.put("preset_realm", realm);
+
+        
+        /* List of organizations */
+        HashMap orgNames = Configuration.getOrgNames(selectedLanguage);
+        if (orgNames == null)
+            orgNames = Configuration.getOrgNames(defaultLang);
+        
+        // Sort list by organization name
+        String  orgList  = "";
+        String[] orgNamesStr = (String[]) orgNames.keySet().toArray(new String[orgNames.size()]);
+        Arrays.sort(orgNamesStr);
+
+        // Create option for selection list
+        for (int i = 0; i < orgNamesStr.length; i++) {
+
+            String orgShort = (String) orgNamesStr[i];
+            if (!realm.equals(orgShort))
+                orgList += "<option value=\""+orgShort+"\">"+orgNames.get(orgShort)+"</option>";
+            else
+                orgList += "<option selected=\"true\" value=\""+orgShort+"\">"+orgNames.get(orgShort)+"</option>";
+        }
+
+        context.put("orgListOptions", orgList);
+
 
         /* Set or reset error messages */
         if (errorType != null) {
@@ -507,12 +541,9 @@ public class LoginServlet extends VelocityServlet {
         String realm    = request.getParameter("realm");
         String password = request.getParameter("password");
 
-        /* Add .no to realm as default. */
-        if (realm.indexOf(".") == -1) 
-            realm += ".no";
 
         /* Concatinate realm with username */
-        if (realm != null && !realm.equals(""))
+        if ((realm != null && !realm.equals("")) && (username != null && username.indexOf("@") == -1))
             username += "@"+realm;
 
         /* Get session */
