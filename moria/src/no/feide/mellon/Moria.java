@@ -105,6 +105,17 @@ public class Moria {
             throw new MoriaException("RemoteException caught", e);
         }
     }
+
+
+    /**
+     * Returns the address of the service used.
+     * @return The service's endpoint address.
+     */
+    public String getServiceAddress() {
+	log.finer("getServiceAddress()");
+
+	return (String)stub._getProperty(Stub.ENDPOINT_ADDRESS_PROPERTY);
+    }
     
     
     /**
