@@ -6,13 +6,13 @@
     typeNamespaceBase="https://login.feide.no/moria">
 
     <endpoint
-        name="FeideAuthentication"
-        displayName="FEIDE Authentication"
+        name="MoriaAuthentication"
+        displayName="Moria Authentication"
         interface="no.feide.moria.service.AuthenticationIF"  
         implementation="no.feide.moria.service.AuthenticationImpl"/> 
  
     <endpointMapping
-        endpointName="FeideAuthentication"
-        urlPattern="/FeideAuthentication"/>
+        endpointName="MoriaAuthentication"
+        urlPattern="/MoriaAuthentication"/>
 
 </webServices>
