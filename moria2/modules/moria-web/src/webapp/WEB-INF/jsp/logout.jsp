@@ -30,7 +30,7 @@ try {
   <body>
   <table summary="Layout-tabell" class="invers" border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tbody><tr valign="middle">
-	<td class="logo" width="76"><a href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><img src="../resource/logo-lilla.gif" alt="FEIDE" border="0" height="41" width="76"></a></td>
+	<td class="logo" width="76"><a href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><img src="../resource/logo-lilla.gif" alt="<%=pconfig.get(RequestUtil.PROP_FAQ_OWNER)%>" border="0" height="41" width="76"></a></td>
 	<td width="0%"><a class="noline" href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><%=bundle.getString("header_feide")%></a></td>
 	<td class="dekor1" width="100%">&nbsp;</td>
 	</tr></tbody></table>

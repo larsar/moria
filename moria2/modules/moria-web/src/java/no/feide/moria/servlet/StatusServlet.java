@@ -184,7 +184,7 @@ extends HttpServlet {
         out.println("<table summary=\"Layout-tabell\" class=\"invers\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">");
         out.println("<tbody><tr valign=\"middle\">");
         out.println("<td class=\"logo\" width=\"76\"><a href=" + config.get(RequestUtil.RESOURCE_LINK) + ">");
-        out.println("<img src=\"../resource/logo-lilla.gif\" alt=\"FEIDE\" border=\"0\" height=\"41\" width=\"76\"></a></td>");
+        out.println("<img src=\"../resource/logo-lilla.gif\" alt=" + config.get(RequestUtil.PROP_FAQ_OWNER) + " border=\"0\" height=\"41\" width=\"76\"></a></td>");
         out.println("<td width=\"0%\"><a class=\"noline\" href=" + config.get(RequestUtil.RESOURCE_LINK) + ">");
         out.println(bundle.getString("header_feide") + "</a></td>");
         out.println("<td width=\"35%\">&nbsp;</td>");
