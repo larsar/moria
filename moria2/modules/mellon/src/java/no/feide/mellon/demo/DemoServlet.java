@@ -25,18 +25,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import no.feide.moria.webservices.v2_1.Attribute;
+import no.feide.moria.webservices.v2_1.AuthenticationSoapBindingStub;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
-import no.feide.mellon.MoriaAttribute;
-import no.feide.mellon.Moria;
 
 /**
  * This is a simple demonstration servlet, primarily intended as a code example
@@ -214,7 +215,10 @@ extends HttpServlet {
             }
 
             // Prepare API.
-            Moria service = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_MASTER_USERNAME), config.getProperty(CONFIG_MASTER_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
+            //Moria service = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_MASTER_USERNAME), config.getProperty(CONFIG_MASTER_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
+            AuthenticationSoapBindingStub service = new AuthenticationSoapBindingStub(new URL(config.getProperty(CONFIG_SERVICE_ENDPOINT)), null);
+            service.setUsername(config.getProperty(CONFIG_MASTER_USERNAME));
+            service.setUsername(config.getProperty(CONFIG_MASTER_PASSWORD));
 
             // Do we have a ticket?
             final String ticket = request.getParameter(PARAM_TICKET);
@@ -239,7 +243,7 @@ extends HttpServlet {
 
                 // Get and display attributes.
                 // TODO: Catch exceptions here.
-                MoriaAttribute[] attributes = service.getUserAttributes(ticket);
+                Attribute[] attributes = service.getUserAttributes(ticket);
                 out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
                 for (int i = 0; i < attributes.length; i++) {
 
@@ -281,7 +285,10 @@ extends HttpServlet {
 
                     // We now have a proxy ticket; now let's fake our own
                     // subsystem. Retrieve and display some attributes.
-                    Moria subservice = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_SLAVE_USERNAME), config.getProperty(CONFIG_SLAVE_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
+                    //Moria subservice = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_SLAVE_USERNAME), config.getProperty(CONFIG_SLAVE_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
+                    AuthenticationSoapBindingStub subservice = new AuthenticationSoapBindingStub(new URL(config.getProperty(CONFIG_SERVICE_ENDPOINT)), null);
+                    subservice.setUsername(config.getProperty(CONFIG_SLAVE_USERNAME));
+                    subservice.setPassword(config.getProperty(CONFIG_SLAVE_PASSWORD));
                     attributes = subservice.proxyAuthentication(convert(config.getProperty(CONFIG_SLAVE_ATTRIBUTE_REQUEST)), proxyTicket);
                     out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
                     for (int i = 0; i < attributes.length; i++) {
