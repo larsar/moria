@@ -57,11 +57,11 @@ public class Credentials {
         if (username == null)
             throw new NullPointerException("User name cannot be NULL");
         if (username.length() == 0)
-            throw new NullPointerException("User name cannot be an empty string");
+            throw new IllegalArgumentException("User name cannot be an empty string");
         if (password == null)
             throw new NullPointerException("Password cannot be NULL");
         if (password.length() == 0)
-            throw new NullPointerException("Password cannot be an empty string");
+            throw new IllegalArgumentException("Password cannot be an empty string");
 
         this.username = username;
         this.password = password;
@@ -70,7 +70,7 @@ public class Credentials {
 
 
     /**
-     * Retrieve the username part of the credentials.
+     * Retrieves the username part of the credentials.
      * @return A newly allocated <code>String</code> containing the username.
      */
     public String getUsername() {
@@ -81,7 +81,7 @@ public class Credentials {
 
 
     /**
-     * Retrieve the password part of the credentials.
+     * Retrieves the password part of the credentials.
      * @return A newly allocated <code>String</code> containing the password.
      */
     public String getPassword() {

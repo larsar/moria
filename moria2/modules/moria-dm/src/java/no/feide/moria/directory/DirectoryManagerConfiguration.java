@@ -106,7 +106,7 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Get the backend configuration element.
+     * Gets the backend configuration element.
      * @return A copy of the backend configuration element, as per
      *         <code>Element.clone()</code>.
      * @see Element#clone()
@@ -119,10 +119,10 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Parse the subsection of the configuration file related to the index and
-     * update the configuration. <br>
+     * Parses the subsection of the configuration file related to the index and
+     * updates the configuration. <br>
      * <br>
-     * If more than one <code>Index</code> element is found only the first is
+     * If more than one <code>Index</code> element is found, only the first is
      * considered.
      * @param rootElement
      *            The root configuration element. Cannot be <code>null</code>.
@@ -162,7 +162,7 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Get the serialized index file name.
+     * Gets the serialized index file name.
      * @return The index file name.
      */
     public String getIndexFilename() {
@@ -173,7 +173,7 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Get the index update frequency.
+     * Gets the index update frequency.
      * @return The index update frequency, in milliseconds.
      */
     public long getIndexUpdateFrequency() {
@@ -184,8 +184,8 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Parse the subsection of the configuration file common to all backend
-     * implementations and update the configuration. <br>
+     * Parses the subsection of the configuration file common to all backend
+     * implementations and updates the configuration. <br>
      * <br>
      * This method will only consider the attribute <code>class</code> in the
      * <code>Backend</code> element; further parsing of the element is left to
@@ -230,7 +230,7 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Get the backend factory class implementation.
+     * Gets the backend factory class implementation.
      * @return The backend factory class.
      */
     public Class getBackendFactoryClass() {

@@ -70,18 +70,19 @@ public class DirectoryManager {
 
 
     /**
-     * Set or update the Directory Manager's configuration. The first time this
-     * method is used it will force an initial index update by reading the index
+     * Sets or updates the Directory Manager's configuration. The first time 
+     * this
+     * method is used, it will force an initial index update by reading the 
+     * index
      * through <code>IndexUpdater.readIndex()</code>.
      * @param config
      *            The configuration. The actual parsing is done by the
      *            <code>DirectoryManagerConfiguration</code> constructor.
-     * @throws IllegalArgumentException
-     *             If <code>config</code> is <code>null</code>.
      * @throws DirectoryManagerConfigurationException
-     *             If unable to set the initial configuration; that is, the
-     *             Directory Manager has not previous working configuration to
-     *             fall back on (in which case a warning will be logged
+     *             If unable create a new configuration object from config
+     *             or config is null, and also not able to fall back to a
+     *             previous working configuration to
+     *             fall back to (in which case a warning will be logged
      *             instead). Also thrown if unable to resolve the backend
      *             factory class (as specified in the configuration file) or if
      *             unable to instantiate this class.
@@ -148,7 +149,7 @@ public class DirectoryManager {
 
 
     /**
-     * Set or update the internal index structure. Used by
+     * Sets or updates the internal index structure. Used by
      * <code>IndexUpdater.run()</code> to periodically update the index.
      * @param newIndex
      *            The new index object. A <code>null</code> value is taken to
@@ -172,7 +173,7 @@ public class DirectoryManager {
 
 
     /**
-     * Check that a user actually exists by polling the underlying backend.
+     * Checks that a user actually exists by querying the underlying backend.
      * @param sessionTicket
      *            Passed on to instances of <code>DirectoryManagerBackend</code>,
      *            for logging purposes. May be <code>null</code> or an empty
@@ -238,14 +239,12 @@ public class DirectoryManager {
      *         will be returned. This still indicates a successful
      *         authentication.
      * @throws BackendException
-     *             Subclasses of <code>BackendException</code> is thrown if an
+     *             A subclass of <code>BackendException</code> is thrown if an
      *             error is encountered when operating the backend.
      * @throws AuthenticationFailedException
      *             If we managed to access the backend, and the authentication
      *             failed. In other words, the user credentials are incorrect.
      *             Also thrown if the user credentials are <code>null</code>.
-     * @throws BackendException
-     *             If there was a problem accessing the backend.
      * @throws IllegalStateException
      *             If attempting to use this method without successfully using
      *             <code>setConfig(Properties)</code> first.
@@ -290,7 +289,7 @@ public class DirectoryManager {
 
 
     /**
-     * Resolve the realm of a given username. Even for usernames on the form
+     * Resolves the realm of a given username. Even for usernames on the form
      * <i>user@realm </i> this method should be used, since it is possible to
      * retain such a username even when changing one's realm or home
      * organization.
@@ -308,7 +307,7 @@ public class DirectoryManager {
 
 
     /**
-     * Stop the Directory Manager. <br>
+     * Stops the Directory Manager. <br>
      * <br>
      * Will stop the index updater thread. Note that the Directory Manager may
      * be used after <code>stop()</code>, but this is discouraged.

@@ -29,12 +29,12 @@ import no.feide.moria.log.MessageLogger;
 
 /**
  * This is the task responsible for periodically checking for a new index file,
- * and, if necessary update the existing index. <br>
+ * and if necessary, update the existing index. <br>
  * <br>
  * Note that this implementation relies on
  * <code>no.feide.moria.directory.index.SerializableIndex</code> as the index
  * implementation. To change the index implementation, the method
- * <code>readIndex()</code> need to be modified.
+ * <code>readIndex()</code> needs to be modified.
  */
 public class IndexUpdater
 extends TimerTask {
@@ -101,18 +101,12 @@ extends TimerTask {
      * Note that this method is also called by
      * <code>DirectoryManager.setConfig(Properties)</code> to force through an
      * initial update of the index.
-     * @param filename
-     *            The filename of the index. Cannot be <code>null</code>.
      * @return The newly read index, as an object implementing the
      *         <code>DirectoryManagerIndex</code> interface. Will return
      *         <code>null</code> if this method has already been used to
      *         successfully read an index file, and the file has not been
      *         updated since (based on the file's timestamp on disk, as per the
      *         <code>File.lastModified()</code> method).
-     * @throws DirectoryManagerConfigurationException
-     *             If the index file does not exist, or if unable to read from
-     *             the file, or if unable to instantiate the index as a
-     *             <code>DirectoryManagerIndex</code> object.
      * @see java.io.File#lastModified()
      * @see DirectoryManager#setConfig(Properties)
      */
