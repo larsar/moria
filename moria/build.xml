@@ -201,7 +201,7 @@
   <target name="mellon:jar"
           description="Mellon API: Create JAR file"
           depends="mellon:compile">
-    <delete file="dist/feide-mellon-api-*.jar"/>
+    <delete file="dist/feide-mellon-api*.jar"/>
     <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build.mellon/api"/>
   </target>
 
@@ -229,8 +229,8 @@
   <target name="mellon:clean"
           description="Mellon API: Clean up">
     <delete dir="build.mellon"/>
-    <delete file="dist/feide-mellon-filter.jar"/>
-    <delete file="dist/feide-mellon-api-*.jar"/>
+    <delete file="dist/feide-mellon-filter*.jar"/>
+    <delete file="dist/feide-mellon-api*.jar"/>
   </target>
     
 
@@ -252,8 +252,8 @@
   <target name="mellon:filter:jar"
           description="Mellon filter: Create JAR file"
           depends="mellon:filter:compile">
-    <delete file="dist/feide-mellon-filter.jar"/>
-    <jar destfile="dist/feide-mellon-filter.jar" basedir="build.mellon/filter"/>
+    <delete file="dist/feide-mellon-filter*.jar"/>
+    <jar destfile="dist/feide-mellon-filter-${mellon_tag}.jar" basedir="build.mellon/filter"/>
   </target>
 
   
