@@ -264,10 +264,6 @@ public class LoginServlet extends VelocityServlet {
         try {
             
             Session session = sessionStore.getSession(id);
-
-            if (session == null) {
-                return genLoginTemplate(request, response, context, null, NOSESSION);
-            }
             
             // Should also generate new sessionID
             // (SessionStore.confirmSession()) to avoid the web
@@ -275,6 +271,10 @@ public class LoginServlet extends VelocityServlet {
             return genLoginTemplate(request, response, context, session.getID(), null);
         }
         
+        catch (NoSuchSessionException e) {
+                return genLoginTemplate(request, response, context, null, NOSESSION);
+        }
+
         catch (SessionException e) {
             
             return genLoginTemplate(request, response, context, null, GENERIC);
@@ -310,12 +310,12 @@ public class LoginServlet extends VelocityServlet {
         // Get session
         try {
             session = sessionStore.getSession(id);
-            if (session == null) {
-                return genLoginTemplate(request, response, context, null, NOSESSION);
-            }
-
         }
         
+        catch (NoSuchSessionException e) {
+            return genLoginTemplate(request, response, context, null, NOSESSION);
+        }
+
         catch (SessionException e) {
             return genLoginTemplate(request, response, context, null, GENERIC);
         }
