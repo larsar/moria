@@ -7,18 +7,27 @@
 			import="no.feide.moria.servlet.RequestUtil,
                  java.util.ResourceBundle,
                  java.util.TreeMap,
-                 java.util.Iterator" %>
-<%ResourceBundle bundle = (ResourceBundle) request.getAttribute("bundle");%>
+                 java.util.Iterator, 
+                 java.util.Properties" %>
+<%ResourceBundle bundle = (ResourceBundle) request.getAttribute("bundle");
+
+Properties pconfig;
+try {
+  pconfig = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
+} catch (IllegalStateException e) {
+  pconfig = null;
+}%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title><%=bundle.getString("header_title")%></title>
+<link rel="icon" href="../resource/favicon.ico" type="image/png">
 <style type="text/css">
-  body {font-family: verdana, arial;}
-  input {font-family: verdana, arial;}
+@import url("../resource/stil.css");
 </style>
+<link rel="author" href="mailto:<%=pconfig.get(RequestUtil.RESOURCE_MAIL)%>">
+<title><%=bundle.getString("header_title")%></title>
 <script type="text/javascript" language="JavaScript">
 <!--
 function fokuser(){document.loginform.username.focus();}
@@ -27,15 +36,14 @@ function fokuser(){document.loginform.username.focus();}
 </head>
 <body onload="fokuser()">
 
-<table summary="" cellpadding="5" cellspacing="5" border="0" width="100%">
-  <tr valign="top">
-    <td width="5%" rowspan="3">&nbsp;</td>
-    <td colspan="2">
-      <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%">
-      <tr>
-        <td colspan="2" style="text-align:right">
-<font size="-1">
-        <%
+<table summary="Layout-tabell" class="invers" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="middle">
+<td class="logo" width="76"><a href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><img src="../resource/logo-lilla.gif" alt="FEIDE" border="0" height="41" width="76"></a></td>
+<td width="0%"><a class="noline" href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><%=bundle.getString("header_feide")%></a></td>
+<td width="35%">&nbsp;<td>
+
+<!-- Language selection -->
+<%
         TreeMap languages = (TreeMap) request.getAttribute(RequestUtil.ATTR_LANGUAGES);
         Iterator it = languages.keySet().iterator();
         while(it.hasNext()) {
@@ -44,14 +52,16 @@ function fokuser(){document.loginform.username.focus();}
             if (request.getAttribute(RequestUtil.ATTR_SELECTED_LANG).equals(shortName)) {%>
                 [<%=longName%>]
             <%} else {%>
-                <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>"><%=longName%></A>
+                <td align="centre"><small><a class="invers" href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>"><%=longName%></a></small></td>
             <%}%>
         <%}%>
-</font>
+<td class="dekor1" width="100%">&nbsp;</td>
+</tr></tbody></table> 
 
-	</td>
-      </tr>
-
+<div class="midt">
+<table cellspacing="0">
+<tbody><tr valign="top">
+<td class="kropp">
         <tr>
           <td valign="middle">&nbsp;
           </td>
@@ -60,13 +70,12 @@ function fokuser(){document.loginform.username.focus();}
               <tr>
                 <td valign="top"><font size="+3"Moria</font> -&nbsp;</td>
                 <td><font size="-1"><b><%=bundle.getString("body_title")%></b><br>
-
-</font></td>
+				</font></td>
               </tr>
             </table>
           </td>
         </tr>
-      </table>
+      <!--/table-->
     </td>
     <td width="5%" rowspan="2">&nbsp;</td>
   </tr>
@@ -202,5 +211,15 @@ function fokuser(){document.loginform.username.focus();}
 
 </tr>
 </table>
+</tbody>
+</div>
+
+<p>
+<table summary="Layout-tabell" class="invers" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr class="bunn" valign="middle">
+<td class="invers" align="left"><small><a class="invers" href="mailto:<%=pconfig.get(RequestUtil.RESOURCE_MAIL)%>"><%=pconfig.get(RequestUtil.RESOURCE_MAIL)%></a></small></td>
+<td class="invers" align="right"><small><%=pconfig.get(RequestUtil.RESOURCE_DATE)%></small></td>
+</tr></tbody></table></p>
+
 </body>
 </html>

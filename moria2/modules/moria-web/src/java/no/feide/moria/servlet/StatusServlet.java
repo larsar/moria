@@ -148,7 +148,7 @@ extends HttpServlet {
         
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01" + "Transitional//EN\">\n";
+        String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
         
         /* Resource bundle. */
         String language = null;
@@ -173,13 +173,23 @@ extends HttpServlet {
         
         
         // Header
-        out.println(docType + "<html><head><title>" + bundle.getString("header_title") + "</title></head><body>");
+        out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+        out.println(docType + "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=" + bundle.getLocale() + ">"); 
+        out.println("<head><link rel=\"icon\" href=\"../resource/favicon.ico\" type=\"image/png\">"); 
+        out.println("<style type=\"text/css\">\n@import url(\"../resource/stil.css\");\n</style>");
+        out.println("<link rel=\"author\" href=\"mailto:" + config.get(RequestUtil.RESOURCE_MAIL)+ "\">");
+        out.println("<title>" + bundle.getString("header_title") + "</title></head><body>");
         
-        // Language selection
-     	out.println("<table summary=\"\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\">");
-        out.println("<tr>");
-            out.println("<td colspan=\"2\" style=\"text-align:right\">");
-            out.println("<font size=\"-1\">");
+        //Layout table
+        out.println("<table summary=\"Layout-tabell\" class=\"invers\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">");
+        out.println("<tbody><tr valign=\"middle\">");
+        out.println("<td class=\"logo\" width=\"76\"><a href=" + config.get(RequestUtil.RESOURCE_LINK) + ">");
+        out.println("<img src=\"../resource/logo-lilla.gif\" alt=\"FEIDE\" border=\"0\" height=\"41\" width=\"76\"></a></td>");
+        out.println("<td width=\"0%\"><a class=\"noline\" href=" + config.get(RequestUtil.RESOURCE_LINK) + ">");
+        out.println(bundle.getString("header_feide") + "</a></td>");
+        out.println("<td width=\"35%\">&nbsp;</td>");
+        
+        	// Language selection
             TreeMap languages = (TreeMap)RequestUtil.parseConfig(config, RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON);
             Iterator it = languages.keySet().iterator();
             while(it.hasNext()) {
@@ -188,13 +198,17 @@ extends HttpServlet {
                 if (RequestUtil.ATTR_SELECTED_LANG.equals(shortName)) {
                     out.println("[" + longName + "]");
                 } else
-                    out.println("<A href=" + config.get(RequestUtil.PROP_FAQ_STATUS) + "?" + RequestUtil.PARAM_LANG + "=" + shortName + ">" + longName + "</A>");
+                    out.println("<td align=\"centre\"><small><a class=\"invers\" href ="
+                            + config.get(RequestUtil.PROP_FAQ_STATUS) + "?" + RequestUtil.PARAM_LANG + "=" + shortName + ">" + longName
+                            + "</a></small></td>");
                 }
-            
-        out.println("</font>");
-    	out.println("</td>");
-        out.println("</tr>");  
-        out.println("</table>");
+         
+        //More Layout
+        out.println("<td class=\"dekor1\" width=\"100%\">&nbsp;</td></tr></tbody></table>");
+        out.println("<div class=\"midt\">");
+        out.println("<table cellspacing=\"0\">");
+        out.println("<tbody><tr valign=\"top\">");
+        out.println("<td class=\"kropp\">");
                 
         // Check status
         Map statusMap = MoriaController.getStatus();
@@ -288,9 +302,22 @@ extends HttpServlet {
         // Done with all test users.
         out.println("</table>");
         
+        //Layout
+        out.println("</tr>");
+        out.println("</table>");
+        out.println("</tbody>");
+        out.println("</div>");
+
+        out.println("<p>");
+        out.println("<table summary=\"Layout-tabell\" class=\"invers\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">");
+        out.println("<tbody><tr class=\"bunn\" valign=\"middle\">");
+        out.println("<td class=\"invers\" align=\"left\"><small><a class=\"invers\" href=\"mailto:"
+                + config.get(RequestUtil.RESOURCE_MAIL) + "\">" + config.get(RequestUtil.RESOURCE_MAIL) + "</a></small></td>");
+        out.println("<td class=\"invers\" align=\"right\"><small>" + config.get(RequestUtil.RESOURCE_DATE) + "</small></td>");
+        out.println("</tr></tbody></table></p>");
+        
         // Finish up.
         out.println("</body></html>");
-
     }
 
 

@@ -32,48 +32,39 @@ final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_FAQ,
 request.getHeader("Accept-Language"), "nb");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-	  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= bundle.getLocale() %>" >
 <head>
-  <meta name="generator" content="HTML Tidy, see www.w3.org">
-  <title><%= bundle.getString("header_title") %></title>
-  <link rel="stylesheet" href="html.css" type="text/css">
-  <meta name="generator" content="DocBook XSL Stylesheets V1.60.1">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="icon" href="../resource/favicon.ico" type="image/png">
+<style type="text/css">
+@import url("../resource/stil.css");
+</style>
+<link rel="author" href="mailto:<%=pconfig.get(RequestUtil.RESOURCE_MAIL)%>">
+<title><%=bundle.getString("header_title")%></title>
 </head>
 
-<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<div class="article" lang="en">
-<div class="titlepage">
-<div>
-<div>
-<h1 class="title"><a name="d0e1"></a><%=bundle.getString("header_title")%></h1>
-</div>
-</div>
-<hr>
-</div>
+<body>
 
-<div class="toc">
+<table summary="Layout-tabell" class="invers" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="middle">
+<td class="logo" width="76"><a href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><img src="../resource/logo-lilla.gif" alt="FEIDE" border="0" height="41" width="76"></a></td>
+<td width="0%"><a class="noline" href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><%=bundle.getString("header_feide")%></a></td>
+<td class="dekor1" width="100%">&nbsp;</td>
+</tr></tbody></table>
+
+<div class="kropp">
 <dl>
 <dt>1. <a href="#d0e5"><%=bundle.getString("q1")%></a></dt>
 
 <dt>2. <a href="#d0e31"><%=bundle.getString("q2")%></a></dt>
 
-<dt>3. <a href="#d0e54"><%=bundle.getString("q3")%></a></dt>
+<dt>3. <a href="#d0e59"><%=bundle.getString("q3")%></a></dt>
 
-<dt>4. <a href="#d0e59"><%=bundle.getString("q0")%></a></dt>
+<dt>4. <a href="#d0e64"><%=bundle.getString("q0")%></a></dt>
 </dl>
-</div>
 
-<div class="section" lang="en">
-<div class="titlepage">
-<div>
-<div>
-<h2 class="title" style="clear: both"><a name="d0e5"></a>1.&nbsp;<%=bundle.getString("q1")%></h2>
-
-</div>
-</div>
-</div>
+<h2><a name="d0e5"></a>1.&nbsp;<%=bundle.getString("q1")%></h2>
 
 <p><%=bundle.getString("answer1_1")%>:</p>
 
@@ -105,21 +96,13 @@ if ((owner == null) || owner.length() == 0)
 
 </li>
 </ol>
-</div>
 
 <p><%=bundle.getString("answer1_7")%></p>
 </div>
 
-<div class="section" lang="en">
-<div class="titlepage">
-<div>
-<div>
-<h2 class="title" style="clear: both"><a name="
-d0e31"></a>2.&nbsp;<%=bundle.getString("q2")%></h2>
 
-</div>
-</div>
-</div>
+<h2><a name="d0e31"></a>2.&nbsp;<%=bundle.getString("q2")%></h2>
+
 
 <p><%=bundle.getString("answer2_1")%>:</p>
 
@@ -146,36 +129,20 @@ d0e31"></a>2.&nbsp;<%=bundle.getString("q2")%></h2>
 </li>
 
 </ul>
-</div>
 
 <p><%=bundle.getString("answer2_8")%></p>
 
 </div>
 
-<div class="section" lang="en">
-<div class="titlepage">
 <div>
-
-<div>
-<h2 class="title" style="clear: both"><a name="
-d0e59"></a>4.&nbsp;<%=bundle.getString("q3")%></h2>
-</div>
-</div>
-</div>
+<h2><a name="d0e59"></a>3.&nbsp;<%=bundle.getString("q3")%></h2>
 
 <p><%=bundle.getString("answer3_1")%></p>
 
 </div>
 
-<div class="section" lang="en">
-<div class="titlepage">
 <div>
-<div>
-<h2 class="title" style="clear: both"><a name="
-d0e64"></a>5.&nbsp;<%=bundle.getString("q0")%></h2>
-</div>
-</div>
-</div>
+<h2><a name="d0e64"></a>4.&nbsp;<%=bundle.getString("q0")%></h2>
 
 <p>
 <%=bundle.getString("answer0_1")%>
@@ -184,8 +151,15 @@ d0e64"></a>5.&nbsp;<%=bundle.getString("q0")%></h2>
 <p>
 <%=bundle.getString("answer0_4")%>
 </p>
+</tbody>
 </div>
 </div>
+
+<table summary="Layout-tabell" class="invers" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr class="bunn" valign="middle">
+<td class="invers" align="left"><small><a class="invers" href="mailto:<%=pconfig.get(RequestUtil.RESOURCE_MAIL)%>"><%=pconfig.get(RequestUtil.RESOURCE_MAIL)%></a></small></td>
+<td class="invers" align="right"><small><%=pconfig.get(RequestUtil.RESOURCE_DATE)%></small></td>
+</tr></tbody></table>
 
 </body>
 </html>
