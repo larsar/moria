@@ -103,17 +103,17 @@ public class Moria {
     
     /**
      * Returns user data from Moria. A remote procedure call is sent
-     * to Moria, requesting user data. If an empty HashMap is
+     * to Moria, requesting user data. If an empty array is
      * returned, the user has been authenticated but no more
      * information is available to the webservice. If the web service
      * has requested (and been authorized) user attributes, the
-     * HashMap will contain the requested user data.
+     * array will contain the requested user data.
      * @param id
      * @return The attributes requested when the session was established,
      *         or an empty set if no attributes were requested.
      * @throws MoriaException If a RemoteException is caught.
      */
-    public HashMap getAttributes(String id)
+    public Attributes[] getAttributes(String id)
     throws MoriaException {
         log.finer("getAttributes(String)");
         
