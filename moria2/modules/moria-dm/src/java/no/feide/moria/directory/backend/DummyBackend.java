@@ -67,13 +67,13 @@ implements DirectoryManagerBackend {
                 }
 
                 // Map an attribute to its values.
-                attributes.put(attribute.getAttribute("name").getValue().toLowerCase(), values);
+                attributes.put(attribute.getAttributeValue("name").toLowerCase(), values);
 
             }
 
             // Add a new user.
-            DummyUser newUser = new DummyUser(user.getAttribute("name").getValue(), user.getAttribute("password").getValue(), attributes);
-            users.put(user.getAttribute("name").getValue().toLowerCase(), newUser);
+            DummyUser newUser = new DummyUser(user.getAttributeValue("name"), user.getAttributeValue("password"), attributes);
+            users.put(user.getAttributeValue("name").toLowerCase(), newUser);
 
         }
 
