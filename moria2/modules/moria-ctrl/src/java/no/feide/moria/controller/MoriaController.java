@@ -510,4 +510,31 @@ public class MoriaController {
             throw new AuthorizationException("Attribute does not exist");
         }
     }
+
+    /**
+     * Get the total status of the controller. The method returns a HashMap with Boolean values.
+     * The following elements are in the map:
+     * init: <code>true</code> if the <code>initController</code> method has been called, else <code>false</code>
+     * dm: <code>true</code> if the <code>DirectoryManager.setConfig</conde> method has been called, else <code>false</code>
+     * sm: <code>true</code> if the <code>MoriaStore.setConfig</conde> method has been called, else <code>false</code>
+     * am: <code>true</code> if the <code>AuthorizationManager.setConfig</conde> method has been called, else <code>false</code>
+     * moria: <code>true</code> all the above are true (the controller is ready to use)
+     *
+     * @see MoriaController#initController(javax.servlet.ServletContext)
+     * @see DirectoryManager#setConfig(java.util.Properties)
+     * @see MoriaStore#setConfig(java.util.Properties)
+     * @see AuthorizationManager#setConfig(java.util.Properties)
+     * @return
+     */
+    public final HashMap getStatus() {
+        HashMap totalStatus = new HashMap();
+        totalStatus.put("init", isInitialized);
+        totalStatus.put("dm", new Boolean(dmReady));
+        totalStatus.put("sm", new Boolean(smReady));
+        totalStatus.put("am", new Boolean(amReady));
+        totalStatus.put("moria", new Boolean(ready));
+
+        return totalStatus;
+    }
+
 }
