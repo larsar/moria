@@ -12,7 +12,12 @@ import no.feide.moria.log.MessageLogger;
 
 /**
  * This is the task responsible for periodically checking for a new index file,
- * and, if necessary update the existing index.
+ * and, if necessary update the existing index. <br>
+ * <br>
+ * Note that this implementation relies on
+ * <code>no.feide.moria.directory.index.SerializableIndex</code> as the index
+ * implementation. To change the index implementation, the method
+ * <code>readIndex()</code> need to be modified.
  */
 public class IndexUpdater
 extends TimerTask {
