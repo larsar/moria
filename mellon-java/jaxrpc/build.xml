@@ -90,5 +90,46 @@
     <delete dir="dist"/>
     <delete file="Authentication.wsdl"/>
   </target>
+  
+  
+  <!-- Targets to build the command-line Mellon test application. -->
+  <target name="test:prepare"
+          description="Mellon test: Prepare">
+    <mkdir dir="build/test"/>
+    <mkdir dir="dist"/>
+  </target>
+  
+  <target name="test:compile"
+          description="Mellon test: Compile source"
+          depends="test:prepare">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build/test"
+           includes="no/feide/mellon/jaxrpc/test/*">
+      <classpath>
+        <fileset dir="${include_libs}" includes="*.jar"/>
+        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
+      </classpath>
+    </javac>
+  </target>
+  
+  <target name="test:run"
+          description="Mellon test: Run the application">
+    <java classname="no.feide.mellon.jaxrpc.test.MellonTest"
+          fork="true">
+      <classpath>
+        <pathelement location="build/test"/>
+        <pathelement location="dist/feide-mellon-api-${mellon_tag}.jar"/>        
+        <fileset dir="${include_libs}">
+          <include name="**/*.jar"/>
+        </fileset>  		        
+      </classpath>
+    </java>
+  </target>
+  
+  <target name="test:clean"
+          description="Mellon test: clean up">
+    <delete dir="build/test"/>
+  </target>  
     
 </project>
