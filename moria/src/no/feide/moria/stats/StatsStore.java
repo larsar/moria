@@ -164,7 +164,8 @@ public class StatsStore {
     /**
      * Log a login attempt for a given web service.
      * @param wsname The name of the web service
-     * @param result The result of the login attempt: "SUCCESS", "FAILED" or "SSO"
+     * @param result The result of the login attempt: "SUCCESS",
+     * "FAILED" or "SSO"
      */
     public void loginAttempt(String wsID, String result) {
         getWSStats(wsID).loginAttempt(result);
@@ -187,7 +188,6 @@ public class StatsStore {
 
 
 
-
     /**
      * Log when a session times out, for a given web service.
      * @param wsname The name of the web service
@@ -196,6 +196,7 @@ public class StatsStore {
     public void sessionTimeout(String wsID, String type) {
         getWSStats(wsID).sessionTimeout(type);
     }
+
 
 
     /**
