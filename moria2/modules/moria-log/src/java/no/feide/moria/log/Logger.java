@@ -41,10 +41,11 @@ public final class Logger {
     /*
      * Log levels used by this system
      */
-    public static final int LEVEL_INFO = 0x01;
+    public static final int LEVEL_CRITICAL = 0x01;
     public static final int LEVEL_WARN = 0x02;
-    public static final int LEVEL_DEBUG = 0x03;
-
+    public static final int LEVEL_INFO = 0x03;
+    public static final int LEVEL_DEBUG = 0x04;
+    
     /**
      * @param properties
      */
