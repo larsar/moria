@@ -151,4 +151,14 @@
     </javadoc>
   </target>
 
+  <target name="deploy-docs"
+          description="Deploy docs to Moria web site.">
+    <exec executable="ssh">
+       <arg line="login.sf.net rm -r /home/groups/m/mo/moria/htdocs/doc"/>
+    </exec>
+    <exec executable="scp">
+       <arg line="-r dist/doc login.sf.net:/home/groups/m/mo/moria/htdocs" />
+    </exec>
+  </target>    
+
 </project>
