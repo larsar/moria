@@ -115,7 +115,6 @@ public class DirectoryManager {
         indexTimer.scheduleAtFixedRate(indexUpdater, configuration.getIndexUpdateFrequency(), configuration.getIndexUpdateFrequency());
 
         // Set the backend factory class and set its configuration.
-        // TODO: Gracefully handle switch between backend factories? Unlikely...
         Constructor constructor = null;
         try {
 
@@ -177,15 +176,12 @@ public class DirectoryManager {
         if (configuration == null)
             throw new IllegalStateException("Configuration not set");
 
-        // TODO: Implement a backend pool.
-
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
         IndexedReference[] references = index.lookup(username);
         if (references != null) {
 
-            // Found a reference. Now open it.
-            // TODO: Use secondary references as fallback if the first fails.
+            // Found at least one reference.
             backend.open(references);
 
         } else {
@@ -246,15 +242,12 @@ public class DirectoryManager {
         if (userCredentials == null)
             throw new AuthenticationFailedException("User credentials cannot be NULL");
 
-        // TODO: Implement a backend pool.
-
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
         IndexedReference[] references = index.lookup(userCredentials.getUsername());
         if (references != null) {
 
-            // Found a reference. Now open it.
-            // TODO: Use secondary references as fallback if the first fails.
+            // Found at least one reference.
             backend.open(references);
 
         } else {
