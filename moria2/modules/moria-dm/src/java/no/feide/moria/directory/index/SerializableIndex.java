@@ -1,6 +1,7 @@
 package no.feide.moria.directory.index;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -72,22 +73,29 @@ implements Serializable, DirectoryManagerIndex {
      *         <code>null</code> if no such reference was found.
      * @see DirectoryManagerIndex#lookup(String)
      */
-    public IndexedReference lookup(final String id) {
+    public IndexedReference[] lookup(final String id) {
 
         // Sanity check.
         if (id == null)
             return null;
+        
+        ArrayList newReferences = new ArrayList();
 
         // Do we have an explicit match? That is, an exception from the
         // association rule?
         if (exceptions.containsKey(id))
-            return new IndexedReference(new String[] {(String)exceptions.get(id)}, true);
+            newReferences.add(new IndexedReference(new String[] {(String)exceptions.get(id)}, true));
 
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
-        if ((i < 0) || (!associations.containsKey(id.substring(i+1))))
-        	return null;
-        return new IndexedReference((String[])associations.get(id.substring(i+1)), false);
+        if ((i > 0) && (associations.containsKey(id.substring(i+1))))
+        	newReferences.add(new IndexedReference((String[])associations.get(id.substring(i+1)), false));
+        
+        // Did we find any references?
+        if (newReferences.size() == 0)
+            return null;
+        else
+            return (IndexedReference[])newReferences.toArray(new IndexedReference[] {});
 
     }
 

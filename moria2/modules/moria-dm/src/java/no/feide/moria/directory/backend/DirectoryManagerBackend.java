@@ -12,10 +12,11 @@ public interface DirectoryManagerBackend {
 
     /**
      * Opens a new backend connection.
-     * @param reference
-     *            The backend reference in question. Cannot be <code>null</code>.
+     * @param references
+     *            The backend references in question. Cannot be
+     *            <code>null</code>, and must contain at least one reference.
      */
-    public void open(IndexedReference reference);
+    public void open(IndexedReference[] references);
 
 
     /**

@@ -179,12 +179,12 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        IndexedReference reference = index.lookup(username);
-        if (reference != null) {
+        IndexedReference[] references = index.lookup(username);
+        if (references != null) {
 
             // Found a reference. Now open it.
             // TODO: Use secondary references as fallback if the first fails.
-            backend.open(reference);
+            backend.open(references);
 
         } else {
 
@@ -243,12 +243,12 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        IndexedReference reference = index.lookup(userCredentials.getUsername());
-        if (reference != null) {
+        IndexedReference[] references = index.lookup(userCredentials.getUsername());
+        if (references != null) {
 
             // Found a reference. Now open it.
             // TODO: Use secondary references as fallback if the first fails.
-            backend.open(reference);
+            backend.open(references);
 
         } else {
 

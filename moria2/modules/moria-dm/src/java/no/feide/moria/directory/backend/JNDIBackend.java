@@ -45,7 +45,7 @@ implements DirectoryManagerBackend {
     private final MessageLogger log = new MessageLogger(JNDIBackend.class);
 
     /** The external reference of this backend. */
-    private IndexedReference myReference;
+    private IndexedReference[] myReferences;
 
     /** The connection timeout used. */
     private final int myTimeout;
@@ -96,19 +96,24 @@ implements DirectoryManagerBackend {
     /**
      * Open this backend. Does not actually initialize the network connection to
      * the external LDAP.
-     * @param reference
+     * @param references
      *            The external reference to the LDAP server. Cannot be
-     *            <code>null</code>.
+     *            <code>null</code>, and must contain at least one reference.
      * @throws IllegalArgumentException
-     *             If <code>reference</code> is <code>null</code>.
+     *             If <code>reference</code> is <code>null</code>, or an
+     *             empty array.
      */
-    public void open(IndexedReference reference) {
+    public void open(IndexedReference[] references) {
 
         // Sanity check.
-        if (reference == null)
-            throw new IllegalArgumentException("Reference cannot be NULL");
+        if ((references == null) || (references.length == 0))
+            throw new IllegalArgumentException("Reference cannot be NULL or an empty array");
 
-        myReference = new IndexedReference(reference.getReferences(), reference.isExplicitlyIndexed());
+        // Create a local copy of the references.
+        ArrayList newReferences = new ArrayList(references.length);
+        for (int i = 0; i < references.length; i++)
+            newReferences.add(references[i]);
+        myReferences = (IndexedReference[]) newReferences.toArray(new IndexedReference[] {});
 
     }
 
@@ -119,9 +124,8 @@ implements DirectoryManagerBackend {
      * @return <code>true</code> if the user can be looked up through JNDI,
      *         otherwise <code>false</code>.
      */
-    public boolean userExists(final String username)
-    throws BackendException {
-       
+    public boolean userExists(final String username) throws BackendException {
+
         // Sanity check.
         if ((username == null) || (username.length() == 0))
             return false;
@@ -167,40 +171,46 @@ implements DirectoryManagerBackend {
 
         try {
 
-            // Map user ID domain to LDAP URL and connect to server.
-            // TODO: Get eduPersonPrincipalName attribute name from
-            // configuration.
-            String pattern = "eduPersonPrincipalName=" + username;
+            // TODO: Add support for more than one reference.
+            // Connect to server using the default environment.
             Hashtable env = new Hashtable(defaultEnv);
-
-            // TODO: Add support for more than one reference?
-
-            env.put(Context.PROVIDER_URL, myReference);
+            env.put(Context.PROVIDER_URL, myReferences[0].getReferences()[0]);
             try {
                 ldap = new InitialLdapContext(env, null);
             } catch (CommunicationException e) {
                 throw new BackendException("Unable to connect to " + env.get(Context.PROVIDER_URL));
             }
 
-            // Search for user element.
-            // TODO: Not to be done if reference is an explicit reference?
-            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
-            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-            rdn = ldapSearch(pattern);
-            if (rdn == null) {
+            // Skip search phase if the reference(s) are explicit.
+            if (myReferences[0].isExplicitlyIndexed()) {
 
-                // No user element found. Try to guess the DN anyway.
-                log.logWarn("No subtree match for " + pattern + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL));
-                rdn = userCredentials.getUsername();
-                // TODO: Get uid attribute name from configuration.
-                rdn = "uid=" + rdn.substring(0, rdn.indexOf('@'));
-                log.logWarn("Guessing on RDN " + rdn);
+                // Add the explicit reference; no search phase.
+                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, myReferences[0].getReferences()[0]);
 
+            } else {
+
+                // Anonymous search using the implicit reference.
+                // TODO: Get eduPersonPrincipalName attribute name from
+                // configuration.
+                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
+                ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
+                String pattern = "eduPersonPrincipalName=" + username;
+                rdn = ldapSearch(pattern);
+                if (rdn == null) {
+
+                    // No user element found. Try to guess the DN anyway.
+                    log.logWarn("No subtree match for " + pattern + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL));
+                    rdn = userCredentials.getUsername();
+                    // TODO: Get uid attribute name from configuration.
+                    rdn = "uid=" + rdn.substring(0, rdn.indexOf('@'));
+                    log.logWarn("Guessing on RDN " + rdn);
+
+                }
+                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
             }
 
             // Authenticate.
             ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
-            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
             try {
                 ldap.reconnect(null);
@@ -290,7 +300,7 @@ implements DirectoryManagerBackend {
         } catch (NamingException e) {
 
             // Not being able to close the connection is a non-critical error.
-            log.logWarn("Unable to close backend connection to " + myReference);
+            log.logWarn("Unable to close backend connection");
 
         }
 

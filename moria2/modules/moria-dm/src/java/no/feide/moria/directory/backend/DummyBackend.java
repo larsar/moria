@@ -3,8 +3,10 @@ package no.feide.moria.directory.backend;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import no.feide.moria.directory.Credentials;
+import no.feide.moria.directory.DirectoryManagerConfigurationException;
 import no.feide.moria.directory.index.IndexedReference;
 
 import org.jdom.Element;
@@ -40,11 +42,15 @@ implements DirectoryManagerBackend {
      */
     protected DummyBackend(final Element config) {
 
-        // Get Dummy element.
+        // Get Dummy element, with sanity check.
         final Element dummy = config.getChild("Dummy");
+        if (dummy == null)
+            throw new DirectoryManagerConfigurationException("Missing Dummy element");
 
         // Parse any user elements.
         users = new HashMap();
+        if (dummy.getChildren("User") == null)
+            throw new DirectoryManagerConfigurationException("Missing User element(s)");
         final Iterator userElements = dummy.getChildren("User").iterator();
         while (userElements.hasNext()) {
 
@@ -83,11 +89,11 @@ implements DirectoryManagerBackend {
     /**
      * Does nothing, but needed to fulfill the
      * <code>DirectoryManagerBackend</code> interface.
-     * @param reference
+     * @param references
      *            Ignored.
      * @see DirectoryManagerBackend#open(IndexedReference)
      */
-    public void open(final IndexedReference reference) {
+    public void open(final IndexedReference[] references) {
 
         // Does nothing.
 
