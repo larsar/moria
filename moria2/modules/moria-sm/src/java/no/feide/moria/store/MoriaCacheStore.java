@@ -81,494 +81,8 @@ public final class MoriaCacheStore implements MoriaStore {
         } catch (RuntimeException re) {
             throw re;
         } catch (Exception e) {
-            throw new MoriaStoreException("Unable to create TreeCache instance", e);
+            throw new MoriaStoreException("Unable to create TreeCache instance.", e);
         }
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#createAuthnAttempt(java.lang.String[], java.lang.String,
-     *      java.lang.String, boolean, java.lang.String)
-     */
-    public String createAuthnAttempt(final String[] requestedAttributes, final String responseURLPrefix,
-            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
-            throws MoriaStoreException {
-
-        MoriaTicket ticket = null;
-        MoriaAuthnAttempt authnAttempt;
-
-        if (requestedAttributes == null) {
-            throw new IllegalArgumentException("requestedAttributes cannot be null");
-        }
-
-        if (responseURLPrefix == null) {
-            throw new IllegalArgumentException("responseURLPrefix cannot be null");
-        }
-
-        if (responseURLPostfix == null) {
-            throw new IllegalArgumentException("responseURLPostfix cannot be null");
-        }
-
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal cannot be null or empty string");
-        }
-
-        ticket = new MoriaTicket(MoriaTicketType.LOGIN_TICKET, servicePrincipal, loginTicketTTL);
-
-        authnAttempt = new MoriaAuthnAttempt(requestedAttributes, responseURLPrefix, responseURLPostfix,
-                forceInteractiveAuthentication, servicePrincipal);
-        insertIntoStore(ticket, authnAttempt, null);
-
-        return ticket.getTicketId();
-    }
-
-    /**
-     * Insert a authentication attempt or cached user data into the cache. Either authnAttempt or
-     * cachedUserData must be null.
-     *
-     * @param ticket
-     *          the ticket to connect to the inserted object
-     * @param authnAttempt
-     *          the authentication attempt to store
-     * @param cachedUserData
-     *          the user data to store
-     * @throws IllegalArgumentException
-     *          if ticket is null, if and only if not one of the data objects are set
-     * @throws MoriaStoreException
-     *          thrown if operations on the TreeCache fails
-     */
-    private void insertIntoStore(final MoriaTicket ticket, final MoriaAuthnAttempt authnAttempt, final CachedUserData cachedUserData)
-            throws MoriaStoreException {
-
-        /* Validate parameters */
-        if (ticket == null) {
-            throw new IllegalArgumentException("ticket cannot be null");
-        }
-
-        if (authnAttempt == null && cachedUserData == null) {
-            throw new IllegalArgumentException("authnAttempt and cachedUserData cannot both be null.");
-        }
-
-        if (authnAttempt != null && cachedUserData != null) {
-            throw new IllegalArgumentException("Either authnAttempt or cachedUserData must be null.");
-        }
-
-        Fqn fqn = new Fqn(new Object[] {ticket.getTicketType(), ticket.getTicketId()});
-        HashMap data = new HashMap();
-        data.put(TICKET_TYPE_ATTRIBUTE, ticket.getTicketType());
-        data.put(TTL_ATTRIBUTE, ticket.getExpiryTime());
-        data.put(PRINCIPAL_ATTRIBUTE, ticket.getServicePrincipal());
-
-        if (authnAttempt != null) {
-            data.put(DATA_ATTRIBUTE, authnAttempt);
-        } else {
-            data.put(DATA_ATTRIBUTE, cachedUserData);
-        }
-
-        try {
-            store.put(fqn, data);
-        } catch (RuntimeException re) {
-            throw re;
-        } catch (Exception e) {
-            throw new MoriaStoreException("Insertion into store failed", e);
-        }
-    }
-
-    /**
-     * Removes a ticket, and possibly a connected userdata or authnAttempt from the cache.
-     *
-     * @param ticket
-     *          the ticket to be removed
-     * @throws IllegalArgumentException
-     *          if the ticketId is null
-     * @throws MoriaStoreException
-     *          if an exception is thrown when operating on the store
-     */
-    private void removeFromStore(final MoriaTicket ticket) throws MoriaStoreException {
-
-        /* Validate parameters. */
-        if (ticket == null) {
-            throw new IllegalArgumentException("ticketId cannot be null");
-        }
-
-        Fqn fqn = new Fqn(new Object[] {ticket.getTicketType(), ticket.getTicketId()});
-
-        try {
-            store.remove(fqn);
-        } catch (RuntimeException re) {
-            throw re;
-        } catch (Exception e) {
-            throw new MoriaStoreException("Removal from store failed", e);
-        }
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#getAuthnAttempt(java.lang.String, boolean)
-     */
-    public MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException,
-            MoriaStoreException {
-
-        if (loginTicketId == null || loginTicketId.equals("")) {
-            throw new IllegalArgumentException("loginTicketId must be a non-empty string");
-        }
-
-        MoriaTicket ticket = getTicketFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
-
-        if (ticket == null) {
-            throw new InvalidTicketException("Ticket does not exist");
-        }
-
-        /* Validate ticket. */
-        validateTicket(ticket, MoriaTicketType.LOGIN_TICKET, null);
-
-        MoriaAuthnAttempt authnAttempt = null;
-
-        Fqn fqn = new Fqn(new Object[] {ticket.getTicketType(), ticket.getTicketId()});
-
-        if (store.exists(fqn)) {
-            Object dataObject;
-
-            try {
-                dataObject = store.get(fqn).get(DATA_ATTRIBUTE);
-            } catch (LockingException e) {
-                throw new MoriaStoreException("Locking of store failed", e);
-            } catch (TimeoutException e) {
-                throw new MoriaStoreException("Access to store timed out", e);
-            }
-
-            /* authnAttempt will remain null if the returned object is of incorrect type. */
-            if (dataObject instanceof MoriaAuthnAttempt) {
-                authnAttempt = (MoriaAuthnAttempt) dataObject;
-            }
-
-            if (!keep) {
-                removeFromStore(ticket);
-            }
-        }
-        return authnAttempt;
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
-     */
-    public String cacheUserData(final HashMap attributes) throws MoriaStoreException {
-
-        if (attributes == null) {
-            throw new IllegalArgumentException("attributes cannot be null");
-        }
-
-        CachedUserData userData = new CachedUserData(attributes);
-        /* Create new SSO ticket with null-value servicePrincipal. */
-        MoriaTicket ssoTicket = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, ssoTicketTTL);
-        insertIntoStore(ssoTicket, null, userData);
-
-        return ssoTicket.getTicketId();
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#getUserData(java.lang.String)
-     */
-    public CachedUserData getUserData(final String ticketId) throws InvalidTicketException, MoriaStoreException {
-
-        /* Validate argument */
-        if (ticketId == null || ticketId.equals("")) {
-            throw new IllegalArgumentException("loginTicketId must be a non-empty string");
-        }
-
-        MoriaTicketType[] potentialTicketTypes = new MoriaTicketType[] {MoriaTicketType.SSO_TICKET,
-                MoriaTicketType.TICKET_GRANTING_TICKET, MoriaTicketType.PROXY_TICKET};
-
-        CachedUserData cachedUserData = null;
-
-        /* Itterate over the potential ticket types looking for an ticket instance. */
-        for (int i = 0; i < potentialTicketTypes.length; i++) {
-
-            Fqn fqn = new Fqn(new Object[] {potentialTicketTypes[i], ticketId});
-
-            if (store.exists(fqn)) {
-                Node node;
-                try {
-                    node = store.get(fqn);
-                } catch (LockingException e) {
-                    throw new MoriaStoreException("Locking of store failed", e);
-                } catch (TimeoutException e) {
-                    throw new MoriaStoreException("Access to store failed", e);
-                }
-
-                /* Check node/ticket validity (TTL). */
-                MoriaTicket ticket = new MoriaTicket(ticketId, potentialTicketTypes[i], (String) node.get(PRINCIPAL_ATTRIBUTE),
-                        (Long) node.get(TTL_ATTRIBUTE));
-                validateTicket(ticket, potentialTicketTypes[i], null);
-
-                Object dataObject = node.get(DATA_ATTRIBUTE);
-                /* cachedUserData will remain null if the returned object is of incorrect type. */
-                if (dataObject instanceof CachedUserData) {
-                    cachedUserData = (CachedUserData) dataObject;
-                }
-                /* Break the for-loop if a ticket was found. */
-                break;
-            }
-        }
-        return cachedUserData;
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#createServiceTicket(java.lang.String, java.lang.String)
-     */
-    public String createServiceTicket(final String loginTicketId, final String targetServicePrincipal)
-            throws InvalidTicketException, MoriaStoreException {
-
-        /* Validate arguments */
-        if (loginTicketId == null || loginTicketId.equals("")) {
-            throw new IllegalArgumentException("loginTicketId must be a non-empty string");
-        }
-        if (targetServicePrincipal == null || targetServicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
-
-        MoriaTicket loginTicket = getTicketFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
-        validateTicket(loginTicket, MoriaTicketType.LOGIN_TICKET, targetServicePrincipal);
-
-        /*
-         * Create new service ticket and assosiate it with the same authentication attempt as the
-         * login ticket
-         */
-        MoriaTicket serviceTicket = new MoriaTicket(MoriaTicketType.SERVICE_TICKET, loginTicket.getServicePrincipal(),
-                serviceTicketTTL);
-        insertIntoStore(serviceTicket, getAuthnAttempt(loginTicketId, true), null);
-        return serviceTicket.getTicketId();
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#createTicketGrantingTicket(java.lang.String,
-     *      java.lang.String)
-     */
-    public String createTicketGrantingTicket(final String ticketId, final String targetServicePrincipal)
-            throws InvalidTicketException, MoriaStoreException {
-
-        /* Validate arguments */
-        if (ticketId == null || ticketId.equals("")) {
-            throw new IllegalArgumentException("ticketId must be a non-empty string");
-        }
-
-        if (targetServicePrincipal == null || targetServicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
-
-        /*
-         * Create new ticket granting ticket and assosiate it with the same user data as the sso
-         * ticket.
-         */
-        MoriaTicket tgTicket;
-        CachedUserData userData = getUserData(ticketId);
-
-        if (userData == null) {
-            throw new InvalidTicketException("SSO ticket has no data assosiated with it");
-        }
-
-        tgTicket = new MoriaTicket(MoriaTicketType.TICKET_GRANTING_TICKET, targetServicePrincipal, tgTicketTTL);
-        insertIntoStore(tgTicket, null, userData);
-
-        return tgTicket.getTicketId();
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#createProxyTicket(java.lang.String, java.lang.String, java.lang.String)
-     */
-    public String createProxyTicket(final String tgTicketId, final String servicePrincipal, final String targetServicePrincipal)
-            throws InvalidTicketException, MoriaStoreException {
-
-        /* Validate arguments */
-        if (tgTicketId == null || tgTicketId.equals("")) {
-            throw new IllegalArgumentException("tgTicketId must be a non-empty string");
-        }
-
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
-
-        if (targetServicePrincipal == null || targetServicePrincipal.equals("")) {
-            throw new IllegalArgumentException("targetServicePrincipal must be a non-empty string");
-        }
-
-        MoriaTicket tgTicket = getTicketFromStore(MoriaTicketType.TICKET_GRANTING_TICKET, tgTicketId);
-
-        if (tgTicket == null) {
-            return null;
-        }
-
-        validateTicket(tgTicket, MoriaTicketType.TICKET_GRANTING_TICKET, servicePrincipal);
-        CachedUserData userData = getUserData(tgTicketId);
-
-        if (userData == null) {
-            return null;
-        }
-
-        MoriaTicket proxyTicket = new MoriaTicket(MoriaTicketType.PROXY_TICKET, targetServicePrincipal, proxyTicketTTL);
-        insertIntoStore(proxyTicket, null, userData);
-
-        return proxyTicket.getTicketId();
-    }
-
-    /**
-     * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String, java.util.HashMap)
-     */
-    public void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes)
-            throws InvalidTicketException, MoriaStoreException {
-        /* Validate arguments */
-        if (loginTicketId == null || loginTicketId.equals("")) {
-            throw new IllegalArgumentException("loginTicketId must be a non-empty string.");
-        }
-
-        if (transientAttributes == null) {
-            throw new IllegalArgumentException("transientAttributes cannot be null.");
-        }
-
-        MoriaTicket loginTicket = getTicketFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
-
-        if (loginTicket == null) {
-            throw new InvalidTicketException("Ticket does not exist in store.");
-        }
-
-        validateTicket(loginTicket, MoriaTicketType.LOGIN_TICKET, null);
-        MoriaAuthnAttempt authnAttempt = getAuthnAttempt(loginTicketId, true);
-
-        if (authnAttempt == null) {
-            throw new IllegalStateException("AuthenticationAttempt does not exist in store.");
-        }
-
-        authnAttempt.setTransientAttributes(transientAttributes);
-
-        /* Insert into cache again to trigger distributed update. */
-        insertIntoStore(loginTicket, authnAttempt, null);
-    }
-
-    /**
-     * Check validity of ticket against type and expiry time.
-     *
-     * @param ticket
-     *          ticket to be checked
-     * @param type
-     *          the expected type of the ticket
-     * @param servicePrincipal
-     *          the service expected to be assosiated with this ticket
-     * @throws InvalidTicketException
-     *          thrown if ticket is found invalid
-     * @throws IllegalArgumentException
-     *          if ticket is null
-     */
-    private void validateTicket(final MoriaTicket ticket, final MoriaTicketType type, final String servicePrincipal)
-            throws InvalidTicketException {
-        validateTicket(ticket, new MoriaTicketType[] {type}, servicePrincipal);
-    }
-
-    /**
-     * Check validity of ticket against a set of types and expiry time.
-     *
-     * @param ticket
-     *          ticket to be checked
-     * @param types
-     *          array of valid types for the ticket
-     * @param servicePrincipal
-     *          the service that is using the ticket. May be null if no
-     *          service is available.
-     * @throws InvalidTicketException
-     *          thrown if the ticket is found to be invalid
-     * @throws IllegalArgumentException
-     *          if ticket is null
-     */
-    private void validateTicket(final MoriaTicket ticket, final MoriaTicketType[] types, final String servicePrincipal)
-            throws InvalidTicketException {
-
-        /* Validate arguments. */
-        if (ticket == null) {
-            throw new IllegalArgumentException("ticket cannot be null.");
-        }
-
-        if (types == null) {
-            throw new IllegalArgumentException("types cannot be null.");
-        }
-
-        /*
-         * Check if it still is valid. We let the dedicated vacuming-service take care of
-         * removing it at later time, so we just throw an exception.
-         */
-        if (ticket.hasExpired()) {
-            String message = "Ticket has expired.";
-            messageLogger.logInfo(message, ticket.getTicketId());
-            throw new InvalidTicketException(message);
-        }
-
-        /* Authorize the caller. */
-        if (servicePrincipal != null && !ticket.getServicePrincipal().equals(servicePrincipal)) {
-            String message = "Illegal use of ticket by service: " + servicePrincipal;
-            messageLogger.logWarn(message, ticket.getTicketId());
-            throw new InvalidTicketException(message);
-        }
-
-        /* Loop through ticket types until valid type found. */
-        boolean valid = false;
-
-        for (int i = 0; i < types.length; i++) {
-            if (ticket.getTicketType().equals(types[i])) {
-                valid = true;
-                break;
-            }
-        }
-
-        /* Throw exception if all types were invalid. */
-        if (!valid) {
-            String message = "Ticket has wrong type: " + ticket.getTicketType();
-            messageLogger.logWarn(message, ticket.getTicketId());
-            throw new InvalidTicketException(message);
-        }
-    }
-
-    /**
-     * Retrives a ticket instance from the store.
-     *
-     * @param ticketType
-     *          the type of the ticket
-     * @param ticketId
-     *          the id of the ticket
-     * @return a ticket instance
-     * @throws MoriaStoreException
-     *          thrown if operations on the TreeCache fails
-     */
-    MoriaTicket getTicketFromStore(final MoriaTicketType ticketType, final String ticketId) throws MoriaStoreException {
-
-        /* Validate parameters. */
-        if (ticketType == null) {
-            throw new IllegalArgumentException("ticketType cannot be null.");
-        }
-
-        if (ticketId == null || ticketId.equals("")) {
-            throw new IllegalArgumentException("ticketId must be a non-empty string.");
-        }
-
-        /* The name of the node to be retrived. */
-        Fqn fqn = new Fqn(new Object[] {ticketType, ticketId});
-
-        /* Return null if the node does not exist. */
-        if (store.exists(fqn)) {
-            /* The object to hold the node that will be retrived from the store. */
-            Node node;
-            try {
-                node = store.get(fqn);
-            } catch (LockingException e) {
-                throw new MoriaStoreException("Locking of store failed", e);
-            } catch (TimeoutException e) {
-                throw new MoriaStoreException("Access to store timed out", e);
-            }
-
-            if (node == null) {
-                return null;
-            } else {
-                return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node
-                        .get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE));
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -582,6 +96,8 @@ public final class MoriaCacheStore implements MoriaStore {
      *
      * @param properties
      *          the properties used to configure the store
+     * @throws IllegalArgumentException
+     *          if properties is null
      */
     public void setConfig(final Properties properties) {
 
@@ -644,5 +160,642 @@ public final class MoriaCacheStore implements MoriaStore {
 
         /* Set the configuration state of this instance to true. */
         isConfigured = true;
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#createAuthnAttempt(java.lang.String[], java.lang.String,
+     *      java.lang.String, boolean, java.lang.String)
+     */
+    public String createAuthnAttempt(final String[] requestedAttributes, final String responseURLPrefix,
+            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
+            throws MoriaStoreException {
+
+        MoriaTicket ticket = null;
+        MoriaAuthnAttempt authnAttempt;
+
+        if (requestedAttributes == null) {
+            throw new IllegalArgumentException("requestedAttributes cannot be null.");
+        }
+
+        if (responseURLPrefix == null || responseURLPrefix.equals("")) {
+            throw new IllegalArgumentException("responseURLPrefix cannot be null or empty string.");
+        }
+
+        if (responseURLPostfix == null) {
+            throw new IllegalArgumentException("responseURLPostfix cannot be null.");
+        }
+
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal cannot be null or empty string.");
+        }
+
+        authnAttempt = new MoriaAuthnAttempt(requestedAttributes, responseURLPrefix, responseURLPostfix,
+                forceInteractiveAuthentication, servicePrincipal);
+
+        ticket = new MoriaTicket(MoriaTicketType.LOGIN_TICKET, servicePrincipal, loginTicketTTL, authnAttempt);
+
+        insertIntoStore(ticket);
+
+        return ticket.getTicketId();
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#getAuthnAttempt(java.lang.String, boolean, java.lang.String)
+     */
+    public MoriaAuthnAttempt getAuthnAttempt(final String ticketId, final boolean keep, final String servicePrincipal)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+
+        /* Validate ticketId. */
+        if (ticketId == null || ticketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId must be a non-empty string.");
+        }
+
+        MoriaTicketType[] potentialTicketTypes = new MoriaTicketType[] {MoriaTicketType.LOGIN_TICKET,
+                MoriaTicketType.SERVICE_TICKET};
+
+        MoriaTicket ticket = getFromStore(potentialTicketTypes, ticketId);
+
+        if (ticket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        if (ticket.getTicketType().equals(MoriaTicketType.LOGIN_TICKET)) {
+            validateTicket(ticket, MoriaTicketType.LOGIN_TICKET, null);
+        } else {
+            /* Validate servicePrincipal. Can not be null for service tickets. */
+            if (servicePrincipal == null || servicePrincipal.equals("")) {
+                throw new IllegalArgumentException("servicePrincipal must be a non-empty string for service tickets.");
+            }
+            validateTicket(ticket, MoriaTicketType.SERVICE_TICKET, servicePrincipal);
+        }
+
+        MoriaAuthnAttempt authnAttempt = null;
+
+        MoriaStoreData data = ticket.getData();
+
+        if (data != null && data instanceof MoriaAuthnAttempt) {
+            authnAttempt = (MoriaAuthnAttempt) data;
+        } else {
+            throw new InvalidTicketException("No authentication attempt associated with ticket.");
+        }
+
+        /* Delete the ticket if so indicated. */
+        if (!keep) {
+            removeFromStore(ticket);
+        }
+
+        return authnAttempt;
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
+     */
+    public String cacheUserData(final HashMap attributes) throws MoriaStoreException {
+
+        /* Validate argument. */
+        if (attributes == null) {
+            throw new IllegalArgumentException("attributes cannot be null");
+        }
+
+        CachedUserData userData = new CachedUserData(attributes);
+        /* Create new SSO ticket with null-value servicePrincipal. */
+        MoriaTicket ssoTicket = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, ssoTicketTTL, userData);
+        insertIntoStore(ssoTicket);
+
+        return ssoTicket.getTicketId();
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#getUserData(java.lang.String, java.lang.String)
+     */
+    public CachedUserData getUserData(final String ticketId, final String servicePrincipal) throws NonExistentTicketException,
+            InvalidTicketException, MoriaStoreException {
+
+        /* Validate argument. */
+        if (ticketId == null || ticketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId must be a non-empty string.");
+        }
+
+        MoriaTicketType[] potentialTicketTypes = new MoriaTicketType[] {MoriaTicketType.SSO_TICKET,
+                MoriaTicketType.TICKET_GRANTING_TICKET, MoriaTicketType.PROXY_TICKET};
+
+        MoriaTicket ticket = getFromStore(potentialTicketTypes, ticketId);
+
+        if (ticket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        if (!ticket.getTicketType().equals(MoriaTicketType.SSO_TICKET)) {
+            if (servicePrincipal == null || servicePrincipal.equals("")) {
+                throw new IllegalArgumentException("servicePrincipal must be a non-empty string for this ticket type.");
+            }
+        }
+
+        validateTicket(ticket, potentialTicketTypes, servicePrincipal);
+
+        CachedUserData cachedUserData = null;
+
+        MoriaStoreData data = ticket.getData();
+
+        if (data != null && data instanceof CachedUserData) {
+            cachedUserData = (CachedUserData) data;
+        } else {
+            throw new InvalidTicketException("No user data associated with ticket.");
+        }
+
+        return cachedUserData;
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#createServiceTicket(java.lang.String)
+     */
+    public String createServiceTicket(final String loginTicketId) throws InvalidTicketException, NonExistentTicketException,
+            MoriaStoreException {
+
+        /* Validate argument. */
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId must be a non-empty string");
+        }
+
+        MoriaTicket loginTicket = getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
+
+        if (loginTicket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        /* Primarily to check timestamp. */
+        validateTicket(loginTicket, MoriaTicketType.LOGIN_TICKET, null);
+
+        /*
+         * Create new service ticket and associate it with the same authentication
+         * attempt as the login ticket.
+         */
+        MoriaAuthnAttempt authnAttempt = null;
+
+        MoriaStoreData data = loginTicket.getData();
+
+        if (data != null && data instanceof MoriaAuthnAttempt) {
+            authnAttempt = (MoriaAuthnAttempt) data;
+        } else {
+            throw new InvalidTicketException("No authentication attempt associated with login ticket.");
+        }
+
+        MoriaTicket serviceTicket = new MoriaTicket(MoriaTicketType.SERVICE_TICKET, loginTicket.getServicePrincipal(),
+                serviceTicketTTL, authnAttempt);
+        insertIntoStore(serviceTicket);
+        /*  Delete the now used login ticket. */
+        removeFromStore(loginTicket);
+
+        return serviceTicket.getTicketId();
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#createTicketGrantingTicket(java.lang.String,
+     *      java.lang.String)
+     */
+    public String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+
+        /* Validate arguments. */
+        if (ssoTicketId == null || ssoTicketId.equals("")) {
+            throw new IllegalArgumentException("ticketId must be a non-empty string");
+        }
+
+        if (targetServicePrincipal == null || targetServicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
+
+        MoriaTicket ssoTicket = getFromStore(MoriaTicketType.SSO_TICKET, ssoTicketId);
+
+        if (ssoTicket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        /* Primarily to check timestamp. */
+        validateTicket(ssoTicket, MoriaTicketType.SSO_TICKET, null);
+
+        /*
+         * Create new ticket granting ticket and associate it with the same
+         * user data as the SSO ticket.
+         */
+        CachedUserData cachedUserData = null;
+
+        MoriaStoreData data = ssoTicket.getData();
+
+        if (data != null && data instanceof CachedUserData) {
+            cachedUserData = (CachedUserData) data;
+        } else {
+            throw new InvalidTicketException("No user data associated with SSO ticket.");
+        }
+
+        MoriaTicket tgTicket = new MoriaTicket(MoriaTicketType.TICKET_GRANTING_TICKET, targetServicePrincipal, tgTicketTTL,
+                cachedUserData);
+        insertIntoStore(tgTicket);
+
+        return tgTicket.getTicketId();
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#createProxyTicket(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public String createProxyTicket(final String tgTicketId, final String servicePrincipal, final String targetServicePrincipal)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+
+        /* Validate arguments. */
+        if (tgTicketId == null || tgTicketId.equals("")) {
+            throw new IllegalArgumentException("tgTicketId must be a non-empty string.");
+        }
+
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string.");
+        }
+
+        if (targetServicePrincipal == null || targetServicePrincipal.equals("")) {
+            throw new IllegalArgumentException("targetServicePrincipal must be a non-empty string.");
+        }
+
+        MoriaTicket tgTicket = getFromStore(MoriaTicketType.TICKET_GRANTING_TICKET, tgTicketId);
+
+        if (tgTicket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        /* Primarily to check timestamp. */
+        validateTicket(tgTicket, MoriaTicketType.TICKET_GRANTING_TICKET, servicePrincipal);
+
+        /*
+         * Create new ticket granting ticket and associate it with the same
+         * user data as the TG ticket.
+         */
+        CachedUserData cachedUserData = null;
+
+        MoriaStoreData data = tgTicket.getData();
+
+        if (data != null && data instanceof CachedUserData) {
+            cachedUserData = (CachedUserData) data;
+        } else {
+            throw new InvalidTicketException("No user data associated with ticket granting ticket.");
+        }
+
+        MoriaTicket proxyTicket = new MoriaTicket(MoriaTicketType.PROXY_TICKET, targetServicePrincipal, proxyTicketTTL,
+                cachedUserData);
+        insertIntoStore(proxyTicket);
+
+        return proxyTicket.getTicketId();
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String, java.util.HashMap)
+     */
+    public void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+
+        /* Validate arguments. */
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId must be a non-empty string.");
+        }
+
+        if (transientAttributes == null) {
+            throw new IllegalArgumentException("transientAttributes cannot be null.");
+        }
+
+        MoriaTicket loginTicket = getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
+
+        if (loginTicket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        /* Primarily to check timestamp. */
+        validateTicket(loginTicket, MoriaTicketType.LOGIN_TICKET, null);
+
+        MoriaAuthnAttempt authnAttempt = null;
+
+        MoriaStoreData data = loginTicket.getData();
+
+        if (data != null && data instanceof MoriaAuthnAttempt) {
+            authnAttempt = (MoriaAuthnAttempt) data;
+        } else {
+            throw new InvalidTicketException("No authentication attempt associated with login ticket.");
+        }
+
+        authnAttempt.setTransientAttributes(transientAttributes);
+
+        /* Insert into cache again to trigger distributed update. */
+        insertIntoStore(loginTicket);
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String, java.lang.String)
+     */
+    public void setTransientAttributes(final String loginTicketId, final String ssoTicketId) throws InvalidTicketException,
+            NonExistentTicketException, MoriaStoreException {
+
+        /* Validate arguments. */
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId must be a non-empty string.");
+        }
+
+        if (ssoTicketId == null || ssoTicketId.equals("")) {
+            throw new IllegalArgumentException("ssoTicketId must be a non-empty string.");
+        }
+
+        MoriaTicket loginTicket = getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
+
+        if (loginTicket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        MoriaTicket ssoTicket = getFromStore(MoriaTicketType.SSO_TICKET, ssoTicketId);
+
+        if (ssoTicket == null) {
+            throw new NonExistentTicketException();
+        }
+
+        /* Primarily to check timestamp. */
+        validateTicket(loginTicket, MoriaTicketType.LOGIN_TICKET, null);
+        validateTicket(ssoTicket, MoriaTicketType.SSO_TICKET, null);
+
+        CachedUserData cachedUserData = null;
+        MoriaAuthnAttempt authnAttempt = null;
+
+        MoriaStoreData ssoData = ssoTicket.getData();
+
+        if (ssoData != null && ssoData instanceof CachedUserData) {
+            cachedUserData = (CachedUserData) ssoData;
+        } else {
+            throw new InvalidTicketException("No cached user data associated with sso ticket.");
+        }
+
+        MoriaStoreData loginData = loginTicket.getData();
+
+        if (loginData != null && loginData instanceof MoriaAuthnAttempt) {
+            authnAttempt = (MoriaAuthnAttempt) loginData;
+        } else {
+            throw new InvalidTicketException("No authentication attempt associated with login ticket.");
+        }
+
+        /* Transfer cached userdata to login attempt. */
+        authnAttempt.setTransientAttributes(cachedUserData.getAttributes());
+
+        /* Insert into cache again to trigger distributed update. */
+        insertIntoStore(loginTicket);
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#removeSSOTicket(java.lang.String)
+     */
+    public void removeSSOTicket(final String ssoTicketId) throws InvalidTicketException, NonExistentTicketException,
+            MoriaStoreException {
+
+        /* Validate parameter. */
+        if (ssoTicketId == null || ssoTicketId.equals("")) {
+            throw new IllegalArgumentException("ticketType cannot be null.");
+        }
+
+        MoriaTicket ssoTicket = getFromStore(MoriaTicketType.SSO_TICKET, ssoTicketId);
+
+        if (ssoTicket != null) {
+            removeFromStore(ssoTicket);
+        } else {
+            throw new NonExistentTicketException();
+        }
+    }
+
+    /**
+     * Check validity of ticket against type and expiry time.
+     *
+     * @param ticket
+     *          ticket to be checked
+     * @param ticketType
+     *          the expected type of the ticket
+     * @param servicePrincipal
+     *          the service expected to be associated with this ticket
+     * @throws IllegalArgumentException
+     *          if ticket is null, or ticketType is null or zero length
+     * @throws InvalidTicketException
+     *          thrown if ticket is found invalid
+     */
+    private void validateTicket(final MoriaTicket ticket, final MoriaTicketType ticketType, final String servicePrincipal)
+            throws InvalidTicketException {
+        validateTicket(ticket, new MoriaTicketType[] {ticketType}, servicePrincipal);
+    }
+
+    /**
+     * Check validity of ticket against a set of types and expiry time.
+     *
+     * @param ticket
+     *          ticket to be checked
+     * @param ticketTypes
+     *          array of valid types for the ticket
+     * @param servicePrincipal
+     *          the service that is using the ticket. May be null if no
+     *          service is available.
+     * @throws IllegalArgumentException
+     *          if ticket is null, or ticketType is null or zero length
+     * @throws InvalidTicketException
+     *          thrown if the ticket is found to be invalid
+     */
+    private void validateTicket(final MoriaTicket ticket, final MoriaTicketType[] ticketTypes, final String servicePrincipal)
+            throws InvalidTicketException {
+
+        /* Validate arguments. */
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket cannot be null.");
+        }
+
+        if (ticketTypes == null || ticketTypes.length < 1) {
+            throw new IllegalArgumentException("ticketTypes cannot be null or zero length.");
+        }
+
+        /*
+         * Check if it still is valid. We let the dedicated vacuming-service take care of
+         * removing it at later time, so we just throw an exception.
+         */
+        if (ticket.hasExpired()) {
+            String message = "Ticket has expired.";
+            messageLogger.logInfo(message, ticket.getTicketId());
+            throw new InvalidTicketException(message);
+        }
+
+        /* Authorize the caller. */
+        if (servicePrincipal != null && !ticket.getServicePrincipal().equals(servicePrincipal)) {
+            String message = "Illegal use of ticket by service: " + servicePrincipal;
+            messageLogger.logWarn(message, ticket.getTicketId());
+            throw new InvalidTicketException(message);
+        }
+
+        /* Loop through ticket types until valid type found. */
+        boolean valid = false;
+
+        for (int i = 0; i < ticketTypes.length; i++) {
+            if (ticket.getTicketType().equals(ticketTypes[i])) {
+                valid = true;
+                break;
+            }
+        }
+
+        /* Throw exception if all types were invalid. */
+        if (!valid) {
+            String message = "Ticket has wrong type: " + ticket.getTicketType();
+            messageLogger.logWarn(message, ticket.getTicketId());
+            throw new InvalidTicketException(message);
+        }
+    }
+
+    /**
+     * Retrives a ticket instance which may be one of a number of types.
+     *
+     * @param ticketTypes
+     *          array of potential ticket types for the ticket id
+     * @param ticketId
+     *          id of the ticket to be retrived
+     * @return a ticket or null of none found
+     * @throws IllegalArgumentException
+     *          if the any of arguments are null value or zero length
+     * @throws MoriaStoreException
+     *          if access to the store failed in some way.
+     */
+    MoriaTicket getFromStore(final MoriaTicketType[] ticketTypes, final String ticketId) throws MoriaStoreException {
+
+        /* Validate parameters. */
+        if (ticketTypes == null || ticketTypes.length < 1) {
+            throw new IllegalArgumentException("ticketTypes cannot be null or zero length.");
+        }
+
+        if (ticketId == null || ticketId.equals("")) {
+            throw new IllegalArgumentException("ticketId must be a non-empty string.");
+        }
+
+        MoriaTicket ticket = null;
+
+        /* Itterate of type array. Break if ticket is returned. */
+        for (int i = 0; i < ticketTypes.length; i++) {
+            ticket = getFromStore(ticketTypes[i], ticketId);
+            if (ticket != null)
+                break;
+        }
+
+        return ticket;
+    }
+
+    /**
+     * Retrives a ticket instance from the store.
+     *
+     * @param ticketType
+     *          the type of the ticket
+     * @param ticketId
+     *          the id of the ticket
+     * @return a ticket instance
+     * @throws IllegalArgumentException
+     *          if ticketType is null, or ticketId is null or an empty string
+     * @throws MoriaStoreException
+     *          thrown if operations on the TreeCache fails
+     */
+    MoriaTicket getFromStore(final MoriaTicketType ticketType, final String ticketId) throws MoriaStoreException {
+
+        /* Validate parameters. */
+        if (ticketType == null) {
+            throw new IllegalArgumentException("ticketType cannot be null.");
+        }
+
+        if (ticketId == null || ticketId.equals("")) {
+            throw new IllegalArgumentException("ticketId must be a non-empty string.");
+        }
+
+        /* The name of the node to be retrived. */
+        Fqn fqn = new Fqn(new Object[] {ticketType, ticketId});
+
+        /* Return null if the node does not exist. */
+        if (store.exists(fqn)) {
+            /* The object to hold the node that will be retrived from the store. */
+            Node node;
+
+            try {
+                node = store.get(fqn);
+            } catch (LockingException e) {
+                throw new MoriaStoreException("Locking of store failed", e);
+            } catch (TimeoutException e) {
+                throw new MoriaStoreException("Access to store timed out", e);
+            }
+
+            if (node == null) {
+                return null;
+            } else {
+                return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node
+                        .get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE), (MoriaStoreData) node.get(DATA_ATTRIBUTE));
+            }
+        }
+
+        /* Return null if node isn't found. */
+        return null;
+    }
+
+    /**
+     * Insert a authentication attempt or cached user data into the cache. Either authnAttempt or
+     * cachedUserData must be null.
+     *
+     * @param ticket
+     *          the ticket to connect to the inserted object
+     * @throws IllegalArgumentException
+     *          if ticket is null
+     * @throws MoriaStoreException
+     *          thrown if operations on the TreeCache fails
+     */
+    private void insertIntoStore(final MoriaTicket ticket) throws MoriaStoreException {
+
+        /* Validate parameters */
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket cannot be null.");
+        }
+
+        Fqn fqn = new Fqn(new Object[] {ticket.getTicketType(), ticket.getTicketId()});
+
+        HashMap attributes = new HashMap();
+        attributes.put(TICKET_TYPE_ATTRIBUTE, ticket.getTicketType());
+        attributes.put(TTL_ATTRIBUTE, ticket.getExpiryTime());
+        attributes.put(PRINCIPAL_ATTRIBUTE, ticket.getServicePrincipal());
+        attributes.put(DATA_ATTRIBUTE, ticket.getData());
+
+        try {
+            store.put(fqn, attributes);
+        } catch (RuntimeException re) {
+            throw re;
+        } catch (Exception e) {
+            throw new MoriaStoreException("Insertion into store failed.", e);
+        }
+    }
+
+    /**
+     * Removes a ticket, and possibly a connected userdata or authnAttempt from the cache.
+     *
+     * @param ticket
+     *          the ticket to be removed
+     * @throws IllegalArgumentException
+     *          if ticket is null
+     * @throws NonExistentTicketException
+     *          if the ticket does not exist
+     * @throws MoriaStoreException
+     *          if an exception is thrown when operating on the store
+     */
+    private void removeFromStore(final MoriaTicket ticket) throws NonExistentTicketException, MoriaStoreException {
+
+        /* Validate parameters. */
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticketId cannot be null.");
+        }
+
+        Fqn fqn = new Fqn(new Object[] {ticket.getTicketType(), ticket.getTicketId()});
+
+        if (store.exists(fqn)) {
+            try {
+                store.remove(fqn);
+            } catch (RuntimeException re) {
+                throw re;
+            } catch (Exception e) {
+                throw new MoriaStoreException("Removal from store failed.", e);
+            }
+        } else {
+            throw new NonExistentTicketException();
+        }
     }
 }
