@@ -63,7 +63,7 @@ import no.feide.moria.store.NonExistentTicketException;
 public final class MoriaController {
     
     /**
-     * Ticket type constant, indicating a SSO ticket, for use when returning a
+     * Ticket type constant, indicating an SSO ticket, for use when returning a
      * HashMap of two tickets.
      * @see MoriaController#attemptLogin(java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.String)
@@ -1370,7 +1370,7 @@ public final class MoriaController {
 
 
     /**
-     * Invalidates a SSO ticket. After the invalidation, the ticket cannot be
+     * Invalidates an SSO ticket. After the invalidation, the ticket cannot be
      * used any more.
      * @param ssoTicketId
      *            The ticket to be invalidated.
