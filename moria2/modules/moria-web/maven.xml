@@ -34,10 +34,21 @@
     <attainGoal name="project:wsdl2java"/>
   </preGoal>
 
+  <!-- Remember to remove when source eventually is added -->
+
+  <postGoal name="xdoc:register-reports">
+    <attainGoal name="maven-javadoc-plugin:deregister"/>  
+  </postGoal>
+
   <goal
     name="project:wsdl2java"
     description="Generate Java clients from a wsdl url"
     prereqs="java:prepare-filesystem">
+
+    <exec executable="sed"
+	  output="src/webapp/WEB-INF/Authentication.wsdl">
+      <arg line="s!REPLACE_WITH_ACTUAL_URL!${project.wsdl.url}! src/wsdl/Authentication.wsdl"/>
+    </exec>
 
     <taskdef
       name="axis-wsdl2java"
@@ -48,7 +59,9 @@
     <axis-wsdl2java
       url="${project.axis.wsdl.url}"
       output="${project.axis.generated.src}"
-      testCase="${project.axis.testCase}"
+      serverside="${project.axis.serverside}"
+      skeletondeploy="${project.axis.skeletondeploy}"
+      testcase="${project.axis.testcase}"
       verbose="${project.axis.verbose}"/>
   </goal>
 
