@@ -5,8 +5,6 @@ import java.util.Hashtable;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
-import no.feide.moria.service.SessionDescriptor;
-import no.feide.moria.service.UserAttribute;
 import org.doomdark.uuid.UUIDGenerator;
 
 public class SessionStore {

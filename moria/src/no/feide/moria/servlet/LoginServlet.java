@@ -282,7 +282,7 @@ public class LoginServlet extends VelocityServlet {
             // Should also generate new sessionID
             // (SessionStore.confirmSession()) to avoid the web
             // service to do authentication without users intervention.
-            return genLoginTemplate(request, response, context, session.getDescriptor().getID(), null);
+            return genLoginTemplate(request, response, context, session.getID(), null);
         }
         
         catch (SessionException e) {
@@ -343,7 +343,7 @@ public class LoginServlet extends VelocityServlet {
                 }
 
                 else
-                    return genLoginTemplate(request, response, context, session.getDescriptor().getID(), AUTHFAILED);
+                    return genLoginTemplate(request, response, context, session.getID(), AUTHFAILED);
             }
         } 
         
@@ -364,8 +364,8 @@ public class LoginServlet extends VelocityServlet {
          * include the updated session ID. */
 
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
-        response.setHeader("Location", session.getDescriptor().getURL()+"?id="+session.getDescriptor().getID());
-        log.info("Redirect to Mellon: "+session.getDescriptor().getURL()+"?id="+session.getDescriptor().getID());
+        response.setHeader("Location", session.getRedirectURL());
+        log.info("Redirect to Mellon: "+session.getRedirectURL());
     
         return null; // Do not use template for redirect.
     }

@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
+import java.util.HashMap;
 import javax.xml.rpc.Stub;
 import no.feide.moria.service.*;
 
@@ -102,7 +103,7 @@ public class Moria {
      * @return A Moria session descriptor.
      * @throws MoriaException If a RemoteException is caught.
      */
-    public SessionDescriptor requestSession(String[] attributes, String prefix, String postfix) 
+    public String requestSession(String[] attributes, String prefix, String postfix) 
     throws MoriaException {
         log.finer("requestSession(String[], String, String)");
         
@@ -122,7 +123,7 @@ public class Moria {
      * @return
      * @throws MoriaException If a RemoteException is caught.
      */
-    public UserAttribute[] getAttributes(String id)
+    public HashMap getAttributes(String id)
     throws MoriaException {
         log.finer("getAttributes(String)");
         
@@ -135,26 +136,6 @@ public class Moria {
         }
     }
     
-    
-    /**
-     * Wrapper for same JAX-RPC stub of same name.
-     * @param id
-     * @return The concatenated string <code>[prefix][id][postfix]</code>
-     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
-     *         parameter strings given to <code>requestSession</code>.
-     * @throws MoriaException If a RemoteException is caught.
-     */
-    public String verifySession(String id)
-    throws MoriaException {
-        log.finer("verifySession(String)");
-        
-	AuthenticationIF service = (AuthenticationIF)stub;
-        try {
-            return service.verifySession(id);
-        } catch (RemoteException e) {
-            log.severe("RemoteException caught and re-thrown as MoriaException");
-            throw new MoriaException("RemoteException caught", e);
-        }
-    }    
+
     
 }

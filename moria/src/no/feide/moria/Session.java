@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
-import no.feide.moria.service.UserAttribute;
 
 public class Session {
     
@@ -90,7 +89,7 @@ public class Session {
         if (user != null) {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
-            log.fine("Good authN.")
+            log.fine("Good authN.");
             return true;
         }
         
@@ -195,7 +194,7 @@ public class Session {
      * Returns the session's current ID.
      * @return Current session ID.
      */
-    protected String getID() {
+    public String getID() {
         log.finer("getID()");
         
         return sessionID;

@@ -106,19 +106,23 @@ implements AuthenticationIF, ServiceLifecycle {
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught.
      */
-    public SessionDescriptor requestSession(String[] attributes, String prefix, String postfix)
+    public String requestSession(String[] attributes, String prefix, String postfix)
     throws RemoteException {
         log.finer("requestSession(String[], String, String)");
         
         // TODO:
         // Make a test URL from pre/post and check URL validity. Throw if not.
-        // Add a superclass to RemoteException to signal URL invalid?
+        // Add a subclass to RemoteException to signal URL invalid?
         
+        System.out.println("FOO");
+
         try {
 	    Principal p = ctx.getUserPrincipal();
 	    log.fine("Client service requesting session: "+p);
+        System.out.println("FOO2");
             Session session = sessionStore.createSession(attributes, prefix, postfix, p);
-            return session.getDescriptor();
+        System.out.println("FOO3");
+            return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");
             throw new RemoteException("SessionException caught", e);
@@ -140,9 +144,7 @@ implements AuthenticationIF, ServiceLifecycle {
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught.
      */
-    // TODO:
-    // Obsolete. Return redirect URL as String Session ID not needed.
-    public SessionDescriptor requestSession(String prefix, String postfix)
+    public String requestSession(String prefix, String postfix)
     throws RemoteException {
         log.finer("requestSession(String, String)");
 
@@ -150,43 +152,6 @@ implements AuthenticationIF, ServiceLifecycle {
     }
     
     
-    /**
-     * Verify a Moria session; that is, check that exists and has been
-     * through authentication.
-     * @param id The session ID.
-     * @return The concatenated string <code>[prefix][id][postfix]</code>
-     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
-     *         parameter strings given to <code>requestSession</code>.
-     * @throws RemoteException If a SessionException or a
-     *                         BackendException is caught. Also thrown if
-     *                         the current client's identity (as found in
-     *                         the context) is different from the identity
-     *                         of the client service originally requesting
-     *                         the session.
-     */
-    public String verifySession(String id)
-    throws RemoteException {
-        log.finer("verifySession(String)");
-        
-        try {
-
-	    // Check the client identity.
-	    assertPrincipals(ctx.getUserPrincipal(), id);
-            
-            // Look up session.
-            Session session = sessionStore.getSession(id);
-            if ( (session == null) || !session.isAuthenticated() ) {
-                log.warning("No such session: "+id);
-                return null;
-            }
-
-        } catch (SessionException e) {
-            log.severe("SessionException caught, and re-thrown as RemoteException");
-            throw new RemoteException("SessionException caught", e);
-        }
-
-        return ""; // Should return something...
-    }
 
 
     /* Return the previously requested user attributes.
@@ -199,7 +164,7 @@ implements AuthenticationIF, ServiceLifecycle {
      *                         of the client service originally requesting
      *                         the session.
      */
-    public UserAttribute[] getAttributes(String id)
+    public HashMap getAttributes(String id)
     throws RemoteException {
         log.finer("getAttributes(String)");
 
@@ -210,7 +175,7 @@ implements AuthenticationIF, ServiceLifecycle {
 
 	    // Return attributes.
             Session session = sessionStore.getSession(id);
-            UserAttribute[] result = session.getAttributes();
+            HashMap result = session.getAttributes();
             sessionStore.deleteSession(session);
             return result;
 
@@ -240,36 +205,36 @@ implements AuthenticationIF, ServiceLifecycle {
      */
     // TODO:
     // For single-use, add attribute request and remove ID. Combines everything in AuthNServiceClient.
-    public SessionDescriptor requestUserAuthentication(String id, String username, String password)
-    throws RemoteException {
-        log.finer("requestUserAuthentication(String, String, String)");
+//     public SessionDescriptor requestUserAuthentication(String id, String username, String password)
+//     throws RemoteException {
+//         log.finer("requestUserAuthentication(String, String, String)");
 
-        try {
+//         try {
 
-	    // Check the client identity.
-	    assertPrincipals(ctx.getUserPrincipal(), id);
+// 	    // Check the client identity.
+// 	    assertPrincipals(ctx.getUserPrincipal(), id);
 
-            // Look up session.
-            Session session = sessionStore.getSession(id);
-            if (session == null) {
-                log.severe("Invalid session ID: "+id);
-                throw new RemoteException("Invalid session ID: "+id);
-            }
+//             // Look up session.
+//             Session session = sessionStore.getSession(id);
+//             if (session == null) {
+//                 log.severe("Invalid session ID: "+id);
+//                 throw new RemoteException("Invalid session ID: "+id);
+//             }
             
-            // Authenticate through session.
-            if (session.authenticateUser(new Credentials(username, password)))
-                return session.getDescriptor();
-            else
-                return null;
+//             // Authenticate through session.
+//             if (session.authenticateUser(new Credentials(username, password)))
+//                 return session.getDescriptor();
+//             else
+//                 return null;
 
-        } catch (SessionException e) {
-            log.severe("SessionException caught and re-thrown as RemoteException");
-            throw new RemoteException("SessionException caught", e);
-        } catch (BackendException e) {
-            log.severe("BackendException caught and re-thrown as RemoteException");
-            throw new RemoteException("BackendException caught", e);
-        }
-    }
+//         } catch (SessionException e) {
+//             log.severe("SessionException caught and re-thrown as RemoteException");
+//             throw new RemoteException("SessionException caught", e);
+//         } catch (BackendException e) {
+//             log.severe("BackendException caught and re-thrown as RemoteException");
+//             throw new RemoteException("BackendException caught", e);
+//         }
+//     }
 
 
     /**

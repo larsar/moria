@@ -14,7 +14,6 @@ import javax.naming.*;
 import javax.naming.directory.*;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapReferralException;
-import no.feide.moria.service.UserAttribute;
 
 
 /**
