@@ -265,8 +265,9 @@ public class Session {
         // Look up through backend.
         try {
             
-            // TODO: Double LDAP lookups. Might be a performance issue.
-            // Move cache to User?
+            /* Double LDAP-lookup to simplify separation of attributes that are allowed to be cached and not. 
+            	In case of bottleneck, rewrite to do one fetch.
+            */
             if (cachedAttributes == null) {
                 Vector ssoAttributes = AuthorizationData.getInstance().getSsoAttributes();
                 cachedAttributes = user.lookup((String[]) ssoAttributes.toArray(new String[ssoAttributes.size()]));
