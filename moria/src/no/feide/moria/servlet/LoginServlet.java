@@ -61,28 +61,25 @@ public class LoginServlet extends VelocityServlet {
      */
     protected Properties loadConfiguration(ServletConfig config )
         throws IOException, FileNotFoundException {
-        
-        try {
-            System.getProperties().load(getClass().getResourceAsStream("/Moria.xml"));
-        }
-
-        catch (FileNotFoundException e) {
-            log.severe("FileNotFoundException caught.");
-        } 
-        
-        catch (IOException e) {
-            log.severe("IOException caught.");
-        }
-        
-
-
+  
         log.finer("loadConfiguration(ServletConfig)");
-        loginURL = System.getProperty("no.feide.mellon.LoginURL");
 
-        System.out.println("loginURL: "+loginURL);
+
+        if (System.getProperty("no.feide.moria.config.file") == null) {
+            log.fine("no.feide.moria.config.file not set; default is \"/moria.properties\"");
+            System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
+        }
+        else {
+            log.fine("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
+            System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
+        }
+
+
+        loginURL = System.getProperty("no.feide.moria.LoginURL");
 
         Properties p = new Properties();
-        String path = System.getProperty("no.feide.mellon.servlet.TemplateDir");
+        String path = System.getProperty("no.feide.moria.servlet.TemplateDir");
+
 
         /* If path is null, log it. */ // Should also abort?
         if (path == null) {
