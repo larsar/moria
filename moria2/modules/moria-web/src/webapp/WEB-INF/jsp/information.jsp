@@ -81,7 +81,7 @@
           relevance = bundle.getString(relevance);
 		%>
           <tr>
-            <td align=left><A HREF="<%= link %>"> <%= description %></A></td>
+            <td align=left><A HREF="<%= link %>" TARGET="_blank"> <%= description %></A></td>
             <td align=center><%= userstring %></td>
             <td align=center><%= relevance %></td>
           </tr>
