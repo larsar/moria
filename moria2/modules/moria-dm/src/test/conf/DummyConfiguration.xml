@@ -7,10 +7,16 @@
   
 	<Backend class="no.feide.moria.directory.backend.DummyBackendFactory">
 	    <Dummy>
-			<User name="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base">
-				<Attribute name="someAttribute">
-					<Value>someValue</Value>
-				</Attribute>
+			<User name="user@some.realm" password="password">
+				<Attribute name="attr1">
+					<Value>value1</Value>
+				</Attribute>	
+				<Attribute name="attr2">
+					<Value>value2</Value>
+				</Attribute>	
+				<Attribute name="attr3">
+					<Value>value3</Value>
+				</Attribute>										
 			</User>
 		</Dummy>
 	</Backend>
