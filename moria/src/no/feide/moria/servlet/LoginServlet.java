@@ -76,6 +76,9 @@ public class LoginServlet extends MoriaServlet {
     /** Constant for property lookup. */
     private static String NOORG    = "noorg";
 
+	/** Constant for property lookup. */
+	private static String ERRORG    = "errorg";
+
     /** Constant for property lookup. */
     private static String GENERIC    = "generic";
 
@@ -256,7 +259,7 @@ public class LoginServlet extends MoriaServlet {
 
         context.put("orgShorts", orgShorts);
         context.put("sortedOrgNames", sortedOrgNames);
-
+        
 
         /* Set or reset error messages */
         if (errorType != null) {
@@ -405,6 +408,24 @@ public class LoginServlet extends MoriaServlet {
 
 
     /**
+	 * @param request
+	 * @param response
+	 * @param context
+	 * @return
+	 * @throws ParseErrorException
+	 * @throws ResourceNotFoundException
+	 * @throws Exception
+	 */
+	/**
+	 * @param request
+	 * @param response
+	 * @param context
+	 * @return
+	 * @throws ParseErrorException
+	 * @throws ResourceNotFoundException
+	 * @throws Exception
+	 */
+	/**
      *  Authenticates the user based on the http request. The request
      *  should be supplied with parameters (from the login form) with
      *  username and password. The user is authenticated and
@@ -453,6 +474,10 @@ public class LoginServlet extends MoriaServlet {
             if (!realm.equals("") && (username != null && username.indexOf("@") == -1))
                 username += "@"+realm;
         }
+
+		/* Check validity of realm */
+		if (!Configuration.getOrgNames("nb").containsKey(realm))
+			return genLoginTemplate(request, response, context, session, ERRORG);
 
         String log_prefix = "Authentication attempt from "+username+": ";
 
