@@ -50,13 +50,14 @@ public final class ConfigurationManagerTest extends TestCase {
      */
     public void testCreateConfigurationManager() throws ConfigurationManagerException {
 
-        /* No base config property */
-        System.setProperty(configBaseProperty, "");
+        /* Base config property is null. */
         try {
             new ConfigurationManager();
             fail("BaseConfigException should be raised, system property is null");
         } catch (BaseConfigException success) {
         }
+        
+        /* Base config property is an empty string. */
         System.setProperty(configBaseProperty, "");
         try {
             new ConfigurationManager();
