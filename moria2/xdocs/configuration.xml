@@ -145,6 +145,9 @@ no.feide.moria.web.cookie.org.ttl=240
 
 # Default language for Moria
 no.feide.moria.web.login.default_language=en
+
+# URL parameter for redirecting after Single Sign-On ticket removal
+no.feide.moria.web.logout.url_param=redirUrl         
         </source>
       </section>
 
