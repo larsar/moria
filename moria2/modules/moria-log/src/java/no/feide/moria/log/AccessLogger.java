@@ -128,7 +128,7 @@ public final class AccessLogger implements Serializable {
         buffer.append(servicePrincipal != null ? "\"" + servicePrincipal + "\" " : "\"-\" ");
         buffer.append(userId != null ? "\"" + userId + "\"" : "\"-\"");
         buffer.append(incomingTicketId != null ? "\"" + incomingTicketId + "\" " : "\"-\" ");
-        buffer.append(outgoingTicketId != null ? "\"" + outgoingTicketId + "\"" : "\"-\"");
+        buffer.append(outgoingTicketId != null ? "\"" + outgoingTicketId + "\" " : "\"-\" ");
 
         return buffer.toString();
     }
