@@ -88,7 +88,8 @@ public final class AccessStatusType implements Serializable {
     /**
      * Access log type used to indicate that the principal is invalid for the requested attributes.
      */
-    public static final AccessStatusType GET_USER_ATTRIBUTES_DENIED_INVALID_PRINCIPAL = new AccessStatusType("GET USER ATTRIBUTES DENIED INVALID PRINCIPAL");
+    public static final AccessStatusType GET_USER_ATTRIBUTES_DENIED_INVALID_PRINCIPAL = new AccessStatusType(
+            "GET USER ATTRIBUTES DENIED INVALID PRINCIPAL");
     /**
      * Access log type used to indicate that the service requests illegal attributes.
      */
