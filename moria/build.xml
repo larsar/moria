@@ -177,9 +177,11 @@
     <mkdir dir="build.mellon/filter"/>
     <mkdir dir="build.mellon/demo/WEB-INF/classes"/>
     <copy todir="build.mellon/demo/WEB-INF/lib">
+<!--
       <fileset dir="moria/lib/">
 	<include name="**/*.jar"/>
-      </fileset>
+      </fileset> 
+-->
       <fileset dir="lib/">
 	<include name="**/*.jar"/>
       </fileset>
