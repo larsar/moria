@@ -40,50 +40,36 @@ public class AuthorizationAttributeTest extends TestCase {
 		return new TestSuite(AuthorizationAttributeTest.class);
 	}
 
-	public void testSecLevel() {
-		Assert.assertEquals("UNKNOWN", AuthorizationAttribute.secLevelName(0));
-		Assert.assertEquals("LOW", AuthorizationAttribute.secLevelName(1));
-		Assert.assertEquals("MEDIUM", AuthorizationAttribute.secLevelName(2));
-		Assert.assertEquals("HIGH", AuthorizationAttribute.secLevelName(3));
-		Assert.assertEquals("UNKNOWN", AuthorizationAttribute.secLevelName(4));
-	}
-
 	/**
 	 * Test constructor.
 	 */
 	public void testNewAuthorizationAttribute() {
 		AuthorizationAttribute attribute;
-		String name = "foobar";
-		String medium = "MEDIUM";
-		int secHigh = 3;
-		int secMed = 2;
+		String attrName = "attr1";
 
-		attribute = new AuthorizationAttribute(name, true, medium);
+		attribute = new AuthorizationAttribute("attr1", true, 1);
 
-		// Verify values of variables set in constructor
-		Assert.assertEquals("Name should be equal", name, attribute.getName());
-		Assert.assertTrue("Should allow SSO",attribute.getAllowSSO());
-		Assert.assertEquals("SecLevel should be 'medium'",secMed, attribute.getSecLevel());
+		/* Verify values of variables set in constructor */
+		Assert.assertEquals("Name differs", "attr1", attribute.getName());
+		Assert.assertTrue("Should allow SSO", attribute.getAllowSSO());
+		Assert.assertEquals("SecLevel differs", 1, attribute.getSecLevel());
 
-		// Invalid secLevel, should throw exception
+		/* Invalid secLevel */
 		try {
-			attribute = new AuthorizationAttribute(name, true, null);
+			attribute = new AuthorizationAttribute("attr2", true, -1);
 			fail("IllegalArgumentException should be raised.");
+		} catch (IllegalArgumentException success) {
 		}
-		catch (IllegalArgumentException success) {}
-		
+
+		/* Invalid name */
 		try {
-			attribute = new AuthorizationAttribute(name, true, "");
-			fail("IllegalArgumentException should be raised.");
+			attribute = new AuthorizationAttribute("", true, 2);
+			fail("Should raise IllegalArgumentException (name = empty string");
+		} catch (IllegalArgumentException success) {
 		}
-		catch (IllegalArgumentException success) {}
-		
-	
-		// No name
+
 		try {
-			attribute = new AuthorizationAttribute(null, true, medium);
-			fail("Should raise IllegalArgumentException (name = null)");
-			attribute = new AuthorizationAttribute("", true, medium);
+			attribute = new AuthorizationAttribute("", true, 2);
 			fail("Should raise IllegalArgumentException (name = empty string");
 		} catch (IllegalArgumentException success) {
 		}
@@ -93,23 +79,36 @@ public class AuthorizationAttributeTest extends TestCase {
 	 * Test equality of objects.
 	 */
 	public void testEquals() {
+		AuthorizationAttribute masterAttr = new AuthorizationAttribute("foo", false, 2);
 
 		Assert.assertTrue(
-			"Identical objects",
-			new AuthorizationAttribute("foo", false, "HIGH").equals(
-				new AuthorizationAttribute("foo", false, "HIGH")));
+			"Object should be identical",
+			masterAttr.equals(new AuthorizationAttribute("foo", false, 2)));
+		Assert.assertFalse("Name differs", masterAttr.equals(new AuthorizationAttribute("bar", false, 2)));
+		Assert.assertFalse("AllowSSO differs", masterAttr.equals(new AuthorizationAttribute("foo", true, 2)));
 		Assert.assertFalse(
-			"Different name",
-			new AuthorizationAttribute("foo", false, "HIGH").equals(
-				new AuthorizationAttribute("bar", false, "HIGH")));
-		Assert.assertFalse(
-			"Different allowSSO value",
-			new AuthorizationAttribute("foo", false, "HIGH").equals(
-				new AuthorizationAttribute("foo", true, "HIGH")));
-		Assert.assertFalse(
-			"Different secLevel",
-			new AuthorizationAttribute("foo", false, "HIGH").equals(
-				new AuthorizationAttribute("foo", false, "LOW")));
+			"SecLevel differs",
+			masterAttr.equals(new AuthorizationAttribute("foo", false, 0)));
 	}
 
+	/**
+	 * Test equality of objects.
+	 */
+	public void testHashCode() {
+		AuthorizationAttribute masterAttr = new AuthorizationAttribute("foo", false, 2);
+
+		Assert.assertEquals(
+			"Object should be identical",
+			masterAttr.hashCode(),
+			new AuthorizationAttribute("foo", false, 2).hashCode());
+		Assert.assertFalse(
+			"Name differs",
+			masterAttr.hashCode() == new AuthorizationAttribute("bar", false, 2).hashCode());
+		Assert.assertFalse(
+			"AllowSSO differs",
+			masterAttr.hashCode() == new AuthorizationAttribute("foo", true, 2).hashCode());
+		Assert.assertFalse(
+			"SecLevel differs",
+			masterAttr.hashCode() == new AuthorizationAttribute("foo", false, 0).hashCode());
+	}
 }

@@ -33,6 +33,9 @@ import java.util.Iterator;
  */
 public class AuthorizationAttribute {
 
+	/** Cached hashCode */
+	private volatile int hashCode = 0;
+
 	/** Used for logging. */
 	private static Logger log = Logger.getLogger(AuthorizationAttribute.class.toString());
 
@@ -40,13 +43,10 @@ public class AuthorizationAttribute {
 	private String name = null;
 
 	/** Is this attribute allowd in use with SSO */
-	private Boolean allowSSO = null;
+	private boolean allowSSO = false;
 
 	/** Security level */
-	private int secLevel = 3;
-
-	/** Security level register */
-	private static HashMap secLevels = initSecLevels();
+	private int secLevel = 2;
 
 	/**
 	 * Private constructor. Should not be called by any one.
@@ -56,6 +56,8 @@ public class AuthorizationAttribute {
 		super();
 	}
 
+	// TODO: Implement hashCode()
+
 	/**
 	 * Constructor. Name of attribute must be a non-empty string. Security
 	 * level can be set to "LOW", "MEDIUM" or " "HIGH", it defaults to "HIGH".
@@ -63,23 +65,18 @@ public class AuthorizationAttribute {
 	 * @param name Name of attribute
 	 * @param allowSSO Allow use of SSO with this attribute
 	 */
-	AuthorizationAttribute(String name, boolean sso, String secLevelStr) throws IllegalArgumentException {
+	AuthorizationAttribute(String name, boolean allowSSO, int secLevel) throws IllegalArgumentException {
 
 		if (name == null || name.equals("")) {
 			throw new IllegalArgumentException("Name must be a non-empty string.");
 		}
 
-		if (secLevelStr == null || secLevelStr.equals("")) {
-			throw new IllegalArgumentException("SecLevel must be a non-empty string.");
+		if (secLevel < 0) {
+			throw new IllegalArgumentException("SecLevel must be >= 0");
 		}
 
-		if (!secLevels.containsKey(secLevelStr)) {
-			log.warning("Invalid attribute secLevel: \"" + secLevelStr + "\" Set to default (HIGH).");
-			secLevelStr = "HIGH";
-		}
-
-		secLevel = ((Integer) secLevels.get(secLevelStr)).intValue();
-		this.allowSSO = new Boolean(sso);
+		this.secLevel = secLevel;
+		this.allowSSO = allowSSO;
 		this.name = name;
 	}
 
@@ -101,34 +98,20 @@ public class AuthorizationAttribute {
 	}
 
 	/**
-	 * Initialize security level register.
+	 * Generates a hashCode from the objects attributes. 'name', 'secLevel' and
+	 * 'allowSSO' are used for the computation.
 	 * 
-	 * @return HashMap with seclevels
+	 * @return The hashcode for this object.
 	 */
-	private static HashMap initSecLevels() {
-		HashMap secLevels = new HashMap();
-		secLevels.put("HIGH", new Integer(3));
-		secLevels.put("MEDIUM", new Integer(2));
-		secLevels.put("LOW", new Integer(1));
-		return secLevels;
-	}
-
-	/**
-	 * Find the name for a given security level.
-	 * 
-	 * @param level Security level
-	 * @return Security level name
-	 */
-	public static String secLevelName(int level) {
-
-		for (Iterator it = secLevels.keySet().iterator(); it.hasNext();) {
-			String key = (String) it.next();
-			if (((Integer) secLevels.get(key)).intValue() == level)
-				return key;
+	public int hashCode() {
+		if (hashCode == 0) {
+			int result = 17;
+			result = 37 * result + name.hashCode();
+			result = 37 * result + secLevel;
+			result = 37 * result + (allowSSO ? 0 : 1);
+			hashCode = result;
 		}
-
-		log.warning("Unknown security level: " + level);
-		return "UNKNOWN";
+		return hashCode;
 	}
 
 	/**
@@ -153,6 +136,13 @@ public class AuthorizationAttribute {
 	 * @return True if the attribute can be used with SSO, else false
 	 */
 	public boolean getAllowSSO() {
-		return allowSSO.booleanValue();
+		return allowSSO;
+	}
+
+	/**
+	 * @return 
+	 */
+	public String toString() {
+		return ("Attribute name: "+name+" secLevel: "+secLevel+" allowSSO: "+allowSSO);
 	}
 }
