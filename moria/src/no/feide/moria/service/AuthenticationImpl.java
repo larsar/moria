@@ -253,8 +253,8 @@ implements AuthenticationIF, ServiceLifecycle {
             }
 
             if (session.isLocked()) {
-                log.warning(log_prefix+"DENIED, Session is locked");
-                throw new RemoteException("No such session.");
+                log.warning(log_prefix+"DENIED, Session "+id+" is locked");
+                throw new RemoteException("No such session: "+id);
             }
 
             assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
