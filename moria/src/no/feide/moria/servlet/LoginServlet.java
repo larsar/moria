@@ -52,7 +52,7 @@ public class LoginServlet extends VelocityServlet {
     private static String AUTHFAILED = "auth";
     private static String UNKNOWN    = "unknown";
 
-    Preferences prefs;
+    Preferences prefs, localPrefs;
     String loginURL;
 
     SessionStore sessionStore = SessionStore.getInstance();
@@ -84,14 +84,15 @@ public class LoginServlet extends VelocityServlet {
         
 
 
-        prefs = Preferences.userNodeForPackage(LoginServlet.class);
+        localPrefs = Preferences.userNodeForPackage(LoginServlet.class);
+        prefs = Preferences.userNodeForPackage(Session.class);
         log.finer("loadConfiguration(ServletConfig)");
         loginURL = prefs.get("LoginURL", null);
-        
-        Properties p = new Properties();
-        String path = prefs.get("TemplateDir", null);
 
-        System.out.println("path: "+path);
+        System.out.println("loginURL: "+loginURL);
+
+        Properties p = new Properties();
+        String path = localPrefs.get("TemplateDir", null);
 
         /* If path is null, log it. */ // Should also abort?
         if (path == null) {
@@ -251,6 +252,7 @@ public class LoginServlet extends VelocityServlet {
         else 
             context.remove("loginURL");
 
+
         return getTemplate("login.vtl");
     }
 
@@ -274,7 +276,9 @@ public class LoginServlet extends VelocityServlet {
         String id = request.getParameter("id");
         
         try {
+            
             Session session = sessionStore.getSession(id);
+
             if (session == null) {
                 return genLoginTemplate(request, response, context, null, NOSESSION);
             }
@@ -286,6 +290,7 @@ public class LoginServlet extends VelocityServlet {
         }
         
         catch (SessionException e) {
+            
             return genLoginTemplate(request, response, context, null, UNKNOWN);
         }
     }
@@ -335,6 +340,8 @@ public class LoginServlet extends VelocityServlet {
             Credentials c = new Credentials(username, password);
             if (!session.authenticateUser(c)) {
                 log.info("Authentication failed");
+        
+                session = sessionStore.getSession(id);
 
                 if (session == null) {
                     // Max login tries has been reached. Session is
