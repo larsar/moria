@@ -211,7 +211,7 @@ implements AuthenticationIF, ServiceLifecycle {
             Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);      
             
             /* Turn of SSO if required by web service. */
-            if (!denySso) 
+            if (denySso) 
                 session.denySso();
 
             return session.getRedirectURL();
