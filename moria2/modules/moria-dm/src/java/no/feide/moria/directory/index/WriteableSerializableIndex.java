@@ -1,6 +1,8 @@
 package no.feide.moria.directory.index;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Adds updater methods to the <code>SerializableIndex</code> object. Index
@@ -12,7 +14,8 @@ extends SerializableIndex
 implements Serializable {
 
     /**
-     * Add a new realm-to-base association to the index.
+     * Add a new realm-to-base association to the index. Should only be used to
+     * build a new index, not to update an existing index.
      * @param realm
      *            The realm (typically user realm) related to this base. Cannot
      *            be <code>null</code>.
@@ -30,7 +33,22 @@ implements Serializable {
         if (base == null)
             throw new IllegalArgumentException("Base cannot be NULL");
 
-        associations.put(realm, base);
+        // New association or updating an existing?
+        if (associations.containsKey(realm)) {
+
+            // Update existing association.
+            List oldBase = (List) associations.get(realm);
+            oldBase.add(base);
+            associations.put(realm, oldBase);
+
+        } else {
+
+            // Create new association.
+            LinkedList newBase = new LinkedList();
+            newBase.add(base);
+            associations.put(realm, newBase);
+
+        }
 
     }
 

@@ -1,9 +1,8 @@
 package no.feide.moria.directory.index;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * The serializable index. Used for offline generation of a new index.
@@ -15,24 +14,24 @@ implements Serializable {
      * Internal list of associaitons. Protected, for the benefit of
      * <code>WriteableSerializableIndex</code>.
      */
-    protected Map associations = Collections.synchronizedMap(new HashMap());
+    protected HashMap associations = new HashMap();
 
 
     /**
-     * Get a base associated with a realm
+     * Get the bases associated with a realm.
      * @param realm
      *            The realm associated with this base. cannot be
      *            <code>null</code>.
-     * @return The base associated with this realm, or <code>null</code> if no
+     * @return The bases associated with this realm, or <code>null</code> if no
      *         such association was found.
      */
-    public String getAssociation(final String realm) {
+    public List getAssociation(final String realm) {
 
         // Sanity check.
         if (realm == null)
             throw new IllegalArgumentException("Realm cannot be NULL");
 
-        return new String((String) associations.get(realm));
+        return (List)associations.get(realm);
 
     }
 
