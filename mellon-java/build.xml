@@ -10,9 +10,9 @@
   <target name="jaxrpc"
    	      description="Build all"
    	      depends="prepare">
-   	      <ant dir="jaxrpc" target="wscompile"/>
-   	      <ant dir="common" target="build"/>
-   	      <ant dir="common" target="servlet"/>
+   	      <ant dir="jaxrpc" target="jaxrpc:wscompile"/>
+   	      <ant dir="common" target="common:build"/>
+   	      <ant dir="common" target="common:servlet"/>
    	      <copy todir="dist">
    	        <fileset dir="common/dist" includes="*"/>
    	        <fileset dir="jaxrpc/dist" includes="*"/>
@@ -21,9 +21,9 @@
 
  <target name="axis"
    	      description="Build all"
-   	      depends="prepare">
-   	      <ant dir="common" target="build"/>
-   	      <ant dir="axis" target="build"/>
+   	      depends="prepare,jaxrpc">
+   	      <ant dir="common" target="common:build"/>
+   	      <ant dir="axis" target="axis:build"/>
    	      <ant dir="common" target="servlet"/>
    	      <copy todir="dist">
    	        <fileset dir="common/dist" includes="*"/>
@@ -39,9 +39,9 @@
   
   <target name="clean"
   		  description="Clean all">
-  		  <ant dir="common" target="clean"/>
-  		  <ant dir="jaxrpc" target="clean"/>
-  		  <ant dir="axis"   target="clean"/>
+  		  <ant dir="common" target="common:clean"/>
+  		  <ant dir="jaxrpc" target="jaxrpc:clean"/>
+  		  <ant dir="axis"   target="axis:clean"/>
   		  <delete dir="dist"/>
   </target>
   
