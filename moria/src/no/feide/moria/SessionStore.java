@@ -38,7 +38,6 @@ public class SessionStore {
     static private SessionStore me;
     
     /** Contains all active session objects. Key is current session ID. */
-    //private Hashtable sessions = new Hashtable();
     Map sessions = null;
     
     
@@ -102,7 +101,6 @@ public class SessionStore {
         log.finer("generateSessionID()");
 
         // Try 20 times to generate a unique session ID, then give up.
-        //SessionStore sessionStore = SessionStore.getInstance();
         String generated = null;
         int count = 0;
         do {
@@ -134,9 +132,6 @@ public class SessionStore {
     throws SessionException {
         log.finer("createSession(String[], String, String, Principal)");
 
-        // TODO:
-        // Authorize client service; attribute request valid?
-        
         String sessionID = generateSessionID();
         Session session = new Session(sessionID, attributes, prefix, postfix, client, ws);
         synchronized (sessions) {
