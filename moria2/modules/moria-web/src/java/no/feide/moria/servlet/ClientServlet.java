@@ -69,25 +69,35 @@ public class ClientServlet extends HttpServlet {
             throws IOException, ServletException {
         // TODO: Do not throw exceptions, set INTERNAL SERVER ERRROR status
         String jspLocation = getServletContext().getInitParameter("jsp.location");
-
         String moriaID = null;
+        boolean error = false;
+
         try {
             MoriaController.initController(getServletContext());
-            moriaID = MoriaController.initiateAuthentication(new String[]{"attr1"}, request.getRequestURL().toString(), "", false, "test");
+            moriaID = MoriaController.initiateAuthentication(request.getParameter("attributes").split(","),
+                    request.getParameter("urlPrefix"),
+                    request.getParameter("urlPostfix"),
+                    false,
+                    request.getParameter("principal"));
         } catch (IllegalInputException e) {
-            System.out.println("IllegalInputException: " + e);
+            // TODO:  Set error message
+            error = true;
+            request.setAttribute("error", e);
 
         } catch (AuthorizationException e) {
-            System.out.println("Authorization exception: " + e);
+            error = true;
+            request.setAttribute("error", e);
         }
 
-        Properties config = (Properties) getServletContext().getAttribute("config");
-        String redirectURL =  config.getProperty("loginURLPrefix") + "?" + config.getProperty("loginTicketID") + "=" + moriaID;
-        ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-        ((HttpServletResponse) response).setHeader("Location", redirectURL);
-
-        RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/client.jsp");
-        rd.include(request, response);
+        if (!error) {
+            Properties config = (Properties) getServletContext().getAttribute("config");
+            String redirectURL = config.getProperty("loginURLPrefix") + "?" + config.getProperty("loginTicketID") + "=" + moriaID;
+            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            ((HttpServletResponse) response).setHeader("Location", redirectURL);
+        } else {
+            RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/client.jsp");
+            rd.include(request, response);
+        }
     }
 
 
