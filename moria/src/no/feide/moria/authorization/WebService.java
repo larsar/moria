@@ -59,6 +59,47 @@ public class WebService {
     }
 
 
+
+
+    /**
+     * Check all if all the requested attributes are legal for this
+     * web service.
+     * @param requestedAttributes Names of all requested attributes.
+     */
+    public boolean allowAccessToAttributes(String requestedAttributes[]) {
+        boolean allow = true;
+        for (int i = 0; i < requestedAttributes.length; i++) {
+            if (!attributes.containsKey(requestedAttributes[i])) {
+                allow = false;
+                break;
+            }
+        }
+        return allow;
+    }
+
+
+
+
+    /**
+     * Check attributes for use with SSO. If all attributes are
+     * registered in the web services's attributes list and all
+     * attributes are allowed to use with SSO, then so be it.
+     * @param requestedAttributes The names of all requested attributes
+     */
+    public boolean allowSsoForAttributes(String requestedAttributes[]) {
+        boolean allow = true;
+        for (int i = 0; i < requestedAttributes.length; i++) {
+            String attrName = requestedAttributes[i];
+            if (!attributes.containsKey(attrName) || !((Boolean) attributes.get(attrName)).booleanValue()) {
+                allow = false;
+                break;
+            }
+        }
+        return allow;
+    }
+
+
+
     
     /**
      * Flatten all attributes into one HashMap (profiles.attributes +
@@ -165,7 +206,7 @@ public class WebService {
     /**
      * Get home page URL
      */
-    protected String getUrl() {
+    public String getUrl() {
         log.finer("getUrl()");
         return url;
     }
@@ -173,7 +214,7 @@ public class WebService {
     /**
      * Get web service name
      */
-    protected String getName() {
+    public String getName() {
         log.finer("getName()");
         return name;
     }
@@ -190,7 +231,7 @@ public class WebService {
     /**
      * Get web service's unique id.
      */
-    protected String getId() {
+    public String getId() {
         log.finer("getId()");
         return id;
     }
