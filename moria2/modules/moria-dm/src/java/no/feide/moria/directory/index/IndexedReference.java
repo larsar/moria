@@ -19,7 +19,8 @@
 package no.feide.moria.directory.index;
 
 /**
- * Represents an indexed reference to an external element. Used to differ
+ * Represents an indexed reference to an external element. Used to 
+ * distinguish
  * between explicitly and implicitly indexed references.
  */
 public class IndexedReference {
@@ -59,7 +60,7 @@ public class IndexedReference {
 
 
     /**
-     * Get the external references.
+     * Gets the external references.
      * @return One or more external references.
      */
     public String[] getReferences() {
@@ -70,7 +71,7 @@ public class IndexedReference {
 
 
     /**
-     * Check whether this reference is an explicit reference to an external
+     * Checks whether this reference is an explicit reference to an external
      * element, or an implicit reference to a search base of some sort.
      * @return <code>true</code> if this is a fully qualified external
      *         reference to an element, otherwise <code>false</code>.

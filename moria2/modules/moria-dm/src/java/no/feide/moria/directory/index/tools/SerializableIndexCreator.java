@@ -45,8 +45,8 @@ public class SerializableIndexCreator {
 
 
     /**
-     * Main method. Will read the index file, write the index object, and
-     * finally verify that the generated and written contents match.
+     * Main method. Reads the index file, writes the index object, and
+     * finally verifies that the generated and written contents match.
      * @param args
      *            First element should be the index specification file, second
      *            element should be the index object output file.

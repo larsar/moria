@@ -58,8 +58,10 @@ implements Serializable, DirectoryManagerIndex {
      * <br>
      * Note that for convenience (and/or laziness) this method relies on the
      * <code>String</code> representation as given by <code>toString()</code>.
+     * @param obj
+     *          The other <code>SerializableIndex</code> object to compare to.
      * @return <code>true</code> if two <code>SerializableIndex</code>
-     *         objects are equal, otherwise <code>false</code>. To instances
+     *         objects are equal, otherwise <code>false</code>. Two instances
      *         are equal if and only if their lists of associations, exceptions
      *         and realms are equal.
      * @see java.lang.Object#equals(java.lang.Object)
@@ -102,17 +104,17 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
-     * Look up an element reference from the index based on its logical ID
+     * Looks up an element reference from the index based on its logical ID
      * (typically username). <br>
      * <br>
      * Note that looking up in the association list requires the logical ID to
-     * be on the form <code>identificator-at-realm</code>, similar to an
+     * be on the form <code>identifier-at-realm</code>, similar to an
      * email address. This is <em>not</em> a requirement for looking up
      * references in the exception list, and therefore the 'at' character is not
      * required in the logical ID.
      * @param id
-     *            The logical identificator to look up.
-     * @return One or more references matching the given identificator, or
+     *            The logical identifier to look up.
+     * @return One or more references matching the given identifier, or
      *         <code>null</code> if no such reference was found.
      * @see DirectoryManagerIndex#getReferences(String)
      */
@@ -144,16 +146,16 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
-     * Look up which realm a given identificator belongs to.
+     * Looks up which realm a given identifier belongs to.
      * @param id
-     *            The logical identificator to get realm for.
-     * @return The resolved realm for this identificator, or <code>null</code>
+     *            The logical identifier to get realm for.
+     * @return The resolved realm for this identifier, or <code>null</code>
      *         if no such realm could be found.
      * @see DirectoryManagerIndex#getRealm(String)
      */
     public String getRealm(String id) {
 
-        // Do we have an exception matching this identificator with an explicit
+        // Do we have an exception matching this identifier with an explicit
         // realm?
         if (realms.containsKey(id))
             return (String) realms.get(id);
@@ -170,7 +172,7 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
-     * Add a new realm-to-base association to the index. Any modification of the
+     * Adds a new realm-to-base association to the index. Any modification of the
      * index will result in any existing association with the same realm to be
      * appended with the new realm. <br>
      * <br>
@@ -219,7 +221,7 @@ implements Serializable, DirectoryManagerIndex {
      * associations) to this index. Any modifications to an already existing
      * exception will result in the old references being replaced.
      * @param id
-     *            The identificator for this exception, typically a user ID.
+     *            The identifier for this exception, typically a user ID.
      *            Cannot be <code>null</code>.
      * @param reference
      *            The reference. In practical use this will be an LDAP element
@@ -228,10 +230,10 @@ implements Serializable, DirectoryManagerIndex {
      *            Cannot be <code>null</code>.
      * @param realm
      *            The actual realm of the reference, which may not be given by
-     *            the identificator (on the form <i>user@realm </i>, for
+     *            the identifier (on the form <i>user@realm </i>, for
      *            example). Since moving between realms while keeping an
-     *            unchanged identificator is possible, this must be accounted
-     *            for.
+     *            unchanged identifier is possible, this must be taken into
+     *            account.
      * @throws IllegalArgumentException
      *             If either <code>id</code> or <code>reference</code> is
      *             <code>null</code>.
@@ -252,7 +254,7 @@ implements Serializable, DirectoryManagerIndex {
 
     /**
      * Gives a string representation of the object, for visual debugging.
-     * @return The object represented as a <code>String</code>; includes
+     * @return The object represented as a <code>String</code>, includes
      *         separate lists of associations and exceptions.
      */
     public String toString() {
