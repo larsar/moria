@@ -34,8 +34,8 @@ public class WebServiceStats {
     int loginAttemptSuccess = 0;
 
     int createdSessions = 0;
-    int deniedSessionsAuthentication = 0;
     int deniedSessionsAuthorization  = 0;
+    int deniedSessionsURL  = 0;
 
     int sessionsTimeoutSSO = 0;
     int sessionsTimeoutAUTH= 0;
@@ -77,9 +77,9 @@ public class WebServiceStats {
         if (type.equals("SUCCESS"))
             createdSessions++;
 
-        else if (type.equals("AUTHN")) 
-            deniedSessionsAuthentication++;
-
+        else if (type.equals("URL"))
+            deniedSessionsURL++;
+        
         else if (type.equals("AUTHO")) 
             deniedSessionsAuthorization++;
             
@@ -87,8 +87,6 @@ public class WebServiceStats {
 
     protected void sessionTimeout(String type) {
         timeStamp();
-
-        System.out.println("TYPE: "+type);
 
         if (type.equals("SSO"))
             sessionsTimeoutSSO++;
@@ -115,11 +113,14 @@ public class WebServiceStats {
         if (type.equals("created"))
             return createdSessions;
 
-        else if (type.equals("deniedAuthentication"))
-            return deniedSessionsAuthentication;
-        
+        else if (type.equals("active"))
+            return createdSessions-(sessionsTimeoutAUTH+sessionsTimeoutSSO+sessionsTimeoutUSER);
+
         else if (type.equals("deniedAuthorization"))
             return deniedSessionsAuthorization;
+        
+        else if (type.equals("deniedURL"))
+            return deniedSessionsURL;
 
         else if (type.equals("timeoutAuth"))
             return sessionsTimeoutAUTH;
@@ -137,7 +138,7 @@ public class WebServiceStats {
             return loginAttemptFailed;
 
         else 
-            return 0;
+            return -1;
     }
 
 
