@@ -368,6 +368,8 @@ public class MoriaController {
             throw new IllegalInputException("URLPostfix cannot be null.");
         }
 
+        // TODO: Must authorize operation, probably best done in authorizationCheck()
+
         /* Authorization */
         authorizationCheck(servicePrincipal, attributes, AccessStatusType.ATTRIBUTES_ACCESS_DENIED_INITIATE);
         /* URL validation */
@@ -482,6 +484,8 @@ public class MoriaController {
             throw new IllegalInputException("servicePrincipal must be a non-empty string");
         }
 
+        // TODO: Must authorize operation, probably best done in authorizationCheck()
+
         /* Authorize service */
         authorizationCheck(servicePrincipal, requestedAttributes, AccessStatusType.ATTRIBUTES_ACCESS_DENIED_DIRECT);
 
@@ -518,6 +522,8 @@ public class MoriaController {
         if (!ready) {
             throw new InoperableStateException("Controller is not ready");
         }
+        // TODO: Must authorize operation, probably best done in authorizationCheck()
+
 
         /* Validate arguments */
 
@@ -549,6 +555,8 @@ public class MoriaController {
         if (!ready) {
             throw new InoperableStateException("Controller is not ready");
         }
+        // TODO: Must authorize operation, probably best done in authorizationCheck()
+
 
         /* Validate arguments */
 
@@ -564,19 +572,21 @@ public class MoriaController {
     }
 
     /**
-     * @param username
+     * @param userId
      * @param servicePrincipal
      * @return
      * @throws AuthorizationException
      * @throws IllegalInputException
      */
-    public static boolean verifyUserExistence(final String username, final String servicePrincipal)
+    public static boolean verifyUserExistence(final String userId, final String servicePrincipal)
             throws AuthorizationException, IllegalInputException, InoperableStateException {
         // TOOD: Implement
         /* Check controller state */
         if (!ready) {
             throw new InoperableStateException("Controller is not ready");
         }
+
+        // TODO: Must authorize operation, probably best done in authorizationCheck()
 
         /* Validate arguments */
 
@@ -634,7 +644,7 @@ public class MoriaController {
      *
      * @param sc the servletContext from the caller
      */
-    public static void initController(ServletContext sc) {
+    public static void initController(final ServletContext sc) {
 
         /* Abort if called multiple times */
         synchronized (isInitialized) {
@@ -654,7 +664,7 @@ public class MoriaController {
      * @param url the URL to validate
      * @return true if the URL is valid, else false
      */
-    static boolean isLegalURL(String url) {
+    static boolean isLegalURL(final String url) {
         // TODO: Implement a more complete URL validator
 
         if (url == null || url.equals("")) {
@@ -684,7 +694,7 @@ public class MoriaController {
      * @return a HashMap with service properties
      * @throws UnknownTicketException if the ticket does not point to a authentication attempt
      */
-    public static HashMap getServiceProperties(String loginTicketId)
+    public static HashMap getServiceProperties(final String loginTicketId)
             throws UnknownTicketException, InoperableStateException, IllegalInputException {
 
         /* Check controller state */
@@ -692,16 +702,9 @@ public class MoriaController {
             throw new InoperableStateException("Controller is not ready");
         }
 
-        if (loginTicketId == null || loginTicketId.equals("")) {
-            throw new IllegalInputException("loginTicketId must be a non-empty string");
-        }
-
-        if (!ready) {
-            throw new InoperableStateException("Controller is not ready");
-        }
         /* Validate arguments */
         if (loginTicketId == null || loginTicketId.equals("")) {
-            throw new IllegalArgumentException("loginTicketId must be a non-empty string, was: " + loginTicketId);
+            throw new IllegalInputException("loginTicketId must be a non-empty string, was: " + loginTicketId);
         }
 
         MoriaAuthnAttempt authnAttempt;
@@ -733,7 +736,7 @@ public class MoriaController {
      * @return int describing the security level for the requested attributes in the authentication attempt
      * @throws UnknownTicketException if the ticket does is invalid
      */
-    public static int getSecLevel(String loginTicketId)
+    public static int getSecLevel(final String loginTicketId)
             throws UnknownTicketException, InoperableStateException, AuthorizationException {
         /* Check controller state */
         if (!ready) {
@@ -768,6 +771,10 @@ public class MoriaController {
             // TODO: Log, should never happen since getSeclevel is used on login page, attrs allready authorized
             throw new AuthorizationException("Attribute does not exist");
         }
+    }
+
+    public static void invalidateSSOTicket(final String ssoTicketId) {
+        // TODO: Implement
     }
 
     /**
