@@ -27,6 +27,9 @@
             <Subsystem name="sub1"/>
             <Subsystem name="sub2"/>
         </Subsystems>
+        <OrgsAllowed>
+            <Organization name ="some.realm"/>
+		    </OrgsAllowed>
     </Client>
 
     <Client name="sub1">
@@ -49,6 +52,9 @@
         <Subsystems>
             <Subsystem name="sub2"/>
         </Subsystems>
+        <OrgsAllowed>
+            <Organization name ="some.realm"/>
+		    </OrgsAllowed>
     </Client>
 
     <Client name="limited">
@@ -68,8 +74,9 @@
         <Operations>
             <Operation name="InteractiveAuth"/>
         </Operations>
-        <Subsystems>
-        </Subsystems>
+        <OrgsAllowed>
+            <Organization name ="some.realm"/>
+		    </OrgsAllowed>
     </Client>
 
 
