@@ -743,10 +743,10 @@ static int mf_global_init(apr_pool_t *pconf, apr_pool_t *plog,
 	void *data;
 
 	/* we want to make sure that the contents of this function is ran once,
-     * and onle once. */
+	 * and only once. */
 	apr_pool_userdata_get(&data, userdata_key, s->process->pool);
 	if (!data) {
-		apr_pool_userdata_set((conse void *)1, userdata_key,
+		apr_pool_userdata_set((const void *)1, userdata_key,
 		                      apr_pool_cleanup_null, s->process->pool);
 	} else {
 		return OK;
