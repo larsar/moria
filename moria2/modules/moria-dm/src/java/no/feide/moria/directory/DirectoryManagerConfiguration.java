@@ -16,31 +16,14 @@ import org.jdom.input.SAXBuilder;
  */
 public class DirectoryManagerConfiguration {
 
-    /** Internal representation of the index configuration. */
-    private static HashMap indexConfig;
+    /** Internal representation of the index class. */
+    private static Class indexClass;
+
+    /** Internal representation of the backend class. */
+    private static Class backendFactoryClass;
+
     
-    /** Internal representation of the backend configuration. */
-    private static HashMap backendConfig;
-
-
-    private static void error(String message, Throwable cause)
-    throws DirectoryManagerConfigurationException {
-
-        // Set up logging.
-        // TODO: Make sure it works.
-        //MessageLogger messageLog = new
-        // MessageLogger(DirectoryManagerConfiguration.class);
-
-        // TODO: Differ between critical and warning depending on existing
-        // configuration.
-        //messageLog.logCritical(message);
-        throw new DirectoryManagerConfigurationException(message, cause);
-
-    }
-
-
     /**
-     * 
      * @param config
      * @throws DirectoryManagerConfigurationException
      */
@@ -49,26 +32,24 @@ public class DirectoryManagerConfiguration {
 
         // Sanity check.
         if (config == null)
-            error("Parameter cannot be NULL", null);
+            DirectoryManager.error("Parameter cannot be NULL", null);
 
         // Preparing to read configuration from file.
         String configFile = (String) config.get("directoryConfiguration");
         if (configFile == null || configFile.equals(""))
-            error("Missing basic directory configuration (directoryConfiguration not set)", null);
+            DirectoryManager.error("Missing basic directory configuration (directoryConfiguration not set)", null);
 
         // Read index (not the index files themselves, mind you) and backend
         // configuration.
         SAXBuilder builder = new SAXBuilder();
         try {
-            Element rootElement = builder.build(new File(configFile)).getRootElement(); 
-            HashMap indexConfig = parseIndexConfig(rootElement);
-            HashMap backendConfig = parseBackendConfig(rootElement);
-            System.err.println(indexConfig.toString());
-            System.err.println(backendConfig.toString());
+            Element rootElement = builder.build(new File(configFile)).getRootElement();
+            parseIndexConfig(rootElement);
+            parseBackendConfig(rootElement);
         } catch (IOException e) {
-            error("Unable to read from configuration file", e);
+            DirectoryManager.error("Unable to read from configuration file", e);
         } catch (JDOMException e) {
-            error("Unable to parse configuration file", e);
+            DirectoryManager.error("Unable to parse configuration file", e);
         }
 
     }
@@ -92,7 +73,7 @@ public class DirectoryManagerConfiguration {
         // Get the element, with sanity checks.
         List elements = rootElement.getChildren(name);
         if (elements.size() != 1)
-            error(name + " element not unique in configuration file", null);
+            DirectoryManager.error(name + " element not unique in configuration file", null);
         elements = null; // Cleanup.
 
         return rootElement.getChild(name);
@@ -101,21 +82,21 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Parse the subsection of the configuration file related to the index.
+     * Parse the subsection of the configuration file related to the index and
+     * update the configuration.
      * @param rootElement
      *            The root configuration element.
-     * @return The index configuration, presented as a hash map.
      * @throws DirectoryManagerConfigurationException
      *             If the root element is missing, or if the section of the
      *             configuration file relating to the index cannot be parsed as
      *             expected.
      */
-    private static HashMap parseIndexConfig(Element rootElement)
+    private static void parseIndexConfig(Element rootElement)
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
         if (rootElement == null)
-            error("Missing root element in configuration file", null);
+            DirectoryManager.error("Missing root element in configuration file", null);
 
         // Get the index element, with sanity checks.
         Element indexElement = getUniqueElement(rootElement, "Index");
@@ -124,30 +105,43 @@ public class DirectoryManagerConfiguration {
         // Get index class, with sanity checks.
         Attribute a = getUniqueElement(indexElement, "Class").getAttribute("name");
         if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
-            error("Index class not set in configuration file", null);
-        indexConfig.put("indexClass", a.getValue());
-
-        return indexConfig;
+            DirectoryManager.error("Index class not set in configuration file", null);
+        try {
+            indexClass = Class.forName(a.getValue());
+        } catch (ClassNotFoundException e) {
+            DirectoryManager.error("Index class " + a.getValue() + " not found", e);
+        }
 
     }
 
 
     /**
-     * Parse the subsection of the configuration file related to the backend.
+     * Get the index class implementation.
+     * @return The index class.
+     */
+    public static Class getIndexClass() {
+
+        return indexClass;
+
+    }
+
+
+    /**
+     * Parse the subsection of the configuration file related to the backend and
+     * update the configuration.
      * @param rootElement
      *            The root configuration element.
-     * @return The backend configuration, presented as a hash map.
      * @throws DirectoryManagerConfigurationException
      *             If the root element is missing, or if the section of the
      *             configuration file relating to the backend cannot be parsed
      *             as expected.
      */
-    private static HashMap parseBackendConfig(Element rootElement)
+    private static void parseBackendConfig(Element rootElement)
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
         if (rootElement == null)
-            error("Missing root element in configuration file", null);
+            DirectoryManager.error("Missing root element in configuration file", null);
 
         // Get the backend element, with sanity checks.
         Element backendElement = getUniqueElement(rootElement, "Backend");
@@ -156,10 +150,23 @@ public class DirectoryManagerConfiguration {
         // Get backend class, with sanity checks.
         Attribute a = getUniqueElement(backendElement, "Class").getAttribute("name");
         if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
-            error("Backend class not set in configuration file", null);
-        backendConfig.put("backendClass", a.getValue());
+            DirectoryManager.error("Backend class not set in configuration file", null);
+        try {
+            backendFactoryClass = Class.forName(a.getValue());
+        } catch (ClassNotFoundException e) {
+            DirectoryManager.error("Backend factory class " + a.getValue() + " not found", e);
+        }
 
-        return backendConfig;
+    }
+    
+    
+    /**
+     * Get the backend factory class implementation.
+     * @return The backend factory class.
+     */
+    public static Class getBackendFactoryClass() {
+
+        return backendFactoryClass;
 
     }
 
