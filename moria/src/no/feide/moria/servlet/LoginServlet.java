@@ -251,7 +251,7 @@ public class LoginServlet extends MoriaServlet {
             realm = getCookieValue("realm", request);
         }
        
-        if (realm == null || realm.equals("")) {
+        if ((realm == null || realm.equals("")) && session != null) {
         	realm = session.getWebService().getDefaultOrg();
         }
       	
