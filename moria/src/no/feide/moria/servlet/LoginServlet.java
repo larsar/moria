@@ -72,7 +72,7 @@ import com.oreilly.servlet.LocaleNegotiator;
  * @author Lars Preben S. Arnesen l.p.arnesen@usit.uio.no
  * @version $Id$
  */
-public class LoginServlet extends VelocityServlet {
+public class LoginServlet extends MoriaServlet {
     
     /** Used for logging. */
     private static Logger log = Logger.getLogger(LoginServlet.class.toString());
@@ -129,7 +129,6 @@ public class LoginServlet extends VelocityServlet {
             defaultLang = Configuration.getProperty("no.feide.moria.defaultLanguage");
 
             /* Initialize session timeout timer */
-            // TODO: Hmmm. Should this be done here? (LP, 13.05.2003)
             int sessionDelaySec = new Integer(Configuration.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
             log.config("Starting time out service. Repeat every "+sessionDelaySec+" seconds.");
             sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelaySec*1000);
@@ -158,48 +157,6 @@ public class LoginServlet extends VelocityServlet {
         sessionTimer.cancel();
     }
    
-
-
-    /**
-     * Called by the VelocityServlet init(). Reads the template path
-     * from Properties.
-     * @throws IOException If a <code>ConfigurationException</code> is
-     *                     caught.
-     */
-    protected Properties loadConfiguration(ServletConfig config )
-    throws IOException, FileNotFoundException {
-        log.finer("loadConfiguration(ServletConfig)");
-
-        try {
-            
-            loginURL = Configuration.getProperty("no.feide.moria.LoginURL");
-
-            Properties p = new Properties();
-            String path = Configuration.getProperty("no.feide.moria.servlet.TemplateDir");
-            
-
-            p.setProperty("file.resource.loader.cache", "true");
-            p.setProperty("file.resource.loader.modificationCheckInterval","0");
-
-            /* If path is null, log it. */ 
-            if (path == null) {
-                log.severe("Path to Velocity templates not set.");
-                throw new FileNotFoundException("Template path not found.");
-            }
-
-            p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH,  path);
-            p.setProperty("runtime.log", Configuration.getProperty("no.feide.moria.VelocityLog"));
-            
-            return p;
-            
-        } catch (ConfigurationException e) {
-            log.severe("ConfigurationException caught and re-thrown as IOException");
-            throw new IOException("ConfigurationException caught");
-        }
-    }
-
-
-
 
 
 
@@ -274,68 +231,12 @@ public class LoginServlet extends VelocityServlet {
 
         context.put("availableLanguages", availableLanguages);
 
-        /* Select language. Prefer: URL parameter, Cookie, Browser setting */
-        String overrideLang = request.getParameter("lang");
-        if (overrideLang == null) 
-            overrideLang = getCookieValue("lang", request);
 
-        if (overrideLang != "") {
-            setCookieValue("lang", overrideLang, response);
-            acceptLanguage = overrideLang;
-        }
-
-        else if (acceptLanguage == null || acceptLanguage.equals("")) 
-            acceptLanguage = defaultLang;
-
-        StringTokenizer tokenizer = new StringTokenizer(acceptLanguage, ",");
-        Locale locale = null;
-
-        /* Find fallback resource bundle. */
-        try {
-            fallback = ResourceBundle.getBundle(bundleName, new Locale("bogus"));
-        }
-        catch (MissingResourceException e) {
-            /* No fallback */
-        }            
-
-        /* Parse Accept-Language and find matching resource bundle */
-        while (tokenizer.hasMoreTokens()) {
-            String lang = tokenizer.nextToken();
-            int index;
-
-            /* Languages are devided by ";" */
-            if ((index = lang.indexOf(";")) != -1) {
-                lang = lang.substring(0, index);
-            }
-
-            lang = lang.trim();
-
-            /* Language and country is devided by "-" (optional) */
-            if ((index = lang.indexOf("-")) != -1) {
-                lang = lang.substring(0, index);
-            }
-            
-            selectedLanguage = lang;
-
-            locale = new Locale(lang);
-            bundle = ResourceBundle.getBundle(bundleName, locale);
-
-            /* Abort search if a bundle (not fallback) is found */
-            if (bundle != fallback) 
-                break;
-
-            /* About search if the fallback bundle is actually requested */
-            else if (bundle == fallback && locale.getLanguage().equals(Locale.getDefault().getLanguage()))
-                break;
-
-        }
+        HashMap bundleData = getBundle("login", request, response, defaultLang);
+        bundle = (ResourceBundle) bundleData.get("bundle");
+        selectedLanguage = (String) bundleData.get("selectedLanguage");
 
         context.put("selectedLanguage", selectedLanguage);
-
-        /* Should never happen, but just in case. */
-        if (bundle == null)
-            bundle = ResourceBundle.getBundle(bundleName, new Locale(defaultLang));
-       
 
         String wsName = null;
         String wsURL  = null;
@@ -345,20 +246,7 @@ public class LoginServlet extends VelocityServlet {
             wsURL  = session.getWebService().getUrl();
         }
 
-        /* Set template-variables from properties */
-        for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
-            String key = (String) e.nextElement();
-            String value = bundle.getString(key);
-            int index;
-            
-            /* This changes WS_NAME to hyperlink in all property
-             * strings from the bundle.*/
-            if ((index = value.indexOf("WS_NAME")) != -1 && wsName != null) {
-                value = value.substring(0, index)+"<A href=\""+wsURL+"\">"+wsName+"</A>"+value.substring(index+7, value.length());
-            }
-
-            context.put(key, value);
-        }   
+        loadBundleIntoContext(bundle, context, wsName, wsURL);
 
         /* Get realm from cookie or parameter. */
         String realm = "";
@@ -688,6 +576,4 @@ public class LoginServlet extends VelocityServlet {
         cookie.setVersion(1);
         response.addCookie(cookie);
     }
-
 }
-
