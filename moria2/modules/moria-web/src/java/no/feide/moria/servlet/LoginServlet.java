@@ -89,8 +89,8 @@ extends HttpServlet {
 
     /**
      * Handles the GET requests. The GET request should contain a login ticket
-     * as parameter, with . A SSO ticket can also be presented by the user's web
-     * browser (in form of a cookie). The method will try to perform a SSO
+     * as parameter, with . An SSO ticket can also be presented by the user's web
+     * browser (in form of a cookie). The method will try to perform an SSO
      * authentication if the conditions for this is met, else it will present
      * the login page to the user.
      * @param request

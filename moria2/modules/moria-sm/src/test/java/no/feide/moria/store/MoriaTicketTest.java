@@ -35,7 +35,7 @@ import junit.framework.TestSuite;
  */
 public class MoriaTicketTest extends TestCase {
     
-    /** Dummy organization identificator. */ 
+    /** Dummy organization identifier. */ 
     private final String dummyOrg = "dummyOrg";
 
     String id1;

@@ -105,7 +105,7 @@ public final class SimpleAxisServlet extends AxisServlet {
             return;
         }
 
-        /* Retrive axis engine */
+        /* Retrieve axis engine */
         try {
             axisEngine = getEngine();
         } catch (AxisFault fault) {
@@ -243,7 +243,7 @@ public final class SimpleAxisServlet extends AxisServlet {
         /* The object representing the requested web service. */
         SOAPService service = null;
 
-        /* Retrive instance of AXIS engine. */
+        /* Retrieve instance of AXIS engine. */
         try {
             axisEngine = getEngine();
         } catch (AxisFault fault) {
@@ -264,7 +264,7 @@ public final class SimpleAxisServlet extends AxisServlet {
         String serviceName = request.getServletPath();
 
         /*
-         * Retrive SOAP service object. Throw NullPointerException and return
+         * Retrieve SOAP service object. Throw NullPointerException and return
          * if SOAP service is null.
          */
         try {
@@ -340,13 +340,13 @@ public final class SimpleAxisServlet extends AxisServlet {
         }
 
         /*
-         * If we're unable to retrive the content type, set it to a default
+         * If we're unable to retrieve the content type, set it to a default
          * value.
          */
         try {
             response.setContentType(responseMessage.getContentType(messageContext.getSOAPConstants()));
         } catch (AxisFault af) {
-            handleException("Unable to retrive content type of response", af, request, response);
+            handleException("Unable to retrieve content type of response", af, request, response);
             // TODO: Verify default content type for SOAP messages
             response.setContentType("application/soap+xml");
         }

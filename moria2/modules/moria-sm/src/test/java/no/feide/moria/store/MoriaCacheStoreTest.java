@@ -45,7 +45,7 @@ public class MoriaCacheStoreTest extends TestCase {
     /** TTL percentage property. */
     final String realTTLPercentagePropertyName = "no.feide.moria.store.real_ttl_percentage";
     
-    /** Dummy organization identificator. */ 
+    /** Dummy organization identifier. */ 
     private final String dummyOrg = "dummyOrg";
 
     /** The instance of the store. */
@@ -179,7 +179,7 @@ public class MoriaCacheStoreTest extends TestCase {
     }
 
     /**
-     * Test creation + retrival and removal.
+     * Test creation + retrieval and removal.
      *
      * @throws InvalidTicketException
      */
@@ -392,7 +392,7 @@ public class MoriaCacheStoreTest extends TestCase {
     }
 
     /**
-     * Test user data retrival.
+     * Test user data retrieval.
      *
      * @throws InvalidTicketException
      */
