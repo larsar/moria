@@ -9,13 +9,11 @@
   <!-- Targets to build the Mellon API. -->
   <target name="common:prepare"
           description="Mellon API: Prepare build directory">
- 
     <mkdir dir="build/utils"/>
     <mkdir dir="build/filter"/>
     <mkdir dir="build/demo/WEB-INF/classes"/>
     <copy todir="build/demo/WEB-INF/lib" file="${soap_stubs}"/>
     <mkdir dir="dist"/>
-    
     <mkdir dir="build/demo"/>
     <mkdir dir="dist"/>
     <delete file="build/demo/WEB-INF/web.xml"/>
@@ -24,18 +22,14 @@
     <echo message="Using config: ${mellon_config}"/>
     <copy file="${mellon_config}"
           toFile="build/demo/WEB-INF/classes/mellon.properties"/>
-    
-    
   </target>
 
   <target name="common:build"
    	      description="Build all"
    	      depends="common:filter"/>
   
-
   <target name="common:servlet"
-          description="Mellon demo: Compile source"
-          depends="common:filter">
+          description="Mellon demo: Compile source">
     <javac srcdir="src"
            debug="true"
            destdir="build/demo/WEB-INF/classes"
@@ -46,16 +40,14 @@
         <fileset file="${soap_stubs}"/>
       </classpath>
     </javac>
-      
     <delete file="dist/feide-mellon-demo.war"/>
     <copy todir="build/demo/WEB-INF/lib">
       <fileset dir="dist" includes="**/feide-mellon*.jar"/>
       <fileset dir="dist" includes="*.jar"/>
       <fileset file="${soap_connector}"/>
-      <fileset dir="${soap_libs}" includes="*.jar"/>
+      <fileset dir="${soap_libs}" includes="*.jar" excludes="servlet.jar"/>
     </copy>      
-      
-      <jar destfile="dist/feide-mellon-demo.war" basedir="build/demo"/>
+    <jar destfile="dist/feide-mellon-demo.war" basedir="build/demo"/>
   </target>
 
  <target name="common:utils"
@@ -71,8 +63,7 @@
       </classpath>
     </javac>
     <jar destfile="dist/moriaUtils.jar" basedir="build/utils"/>
-    </target>
-
+ </target>
 
  <target name="common:filter"
           description="Mellon demo: Compile source"
@@ -89,9 +80,6 @@
     <jar destfile="dist/moriaAuthenticationFilter.jar" basedir="build/filter"/>
  </target>
 
-
-   
-
   <target name="javadoc"
           description="Mellon API: Generate JavaDoc">
     <javadoc sourcepath="."
@@ -105,7 +93,6 @@
       </classpath>
     </javadoc>
   </target>
-
 
   <target name="common:clean"
           description="Mellon API: Clean up">
