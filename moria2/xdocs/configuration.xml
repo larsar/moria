@@ -48,7 +48,7 @@ $Id$
       <p>
         JSP is used for the user login and logout page and Moria ships with standard versions of both.
 
-        <br/><b>TODO: How to localize</b>
+        <br/><b>TODO: How to localize? (Bjørn Ola)</b>
       </p>
     </section>
 
@@ -57,9 +57,10 @@ $Id$
       <p>
         Moria is dependent on two system properties which has to be specified as system properties in the VM.
         <source>
-          no.feide.moria.configuration.base=/full/path/to/configuration_managers.properties
+# The configuration managers property file
+no.feide.moria.configuration.base=/full/path/to/configuration_managers.properties
         </source>
-        <br/><b>TODO: Logging property</b>
+        <br/><b>TODO: Logging property (Bjørn Ola)</b>
       </p>
       </section>
 
@@ -270,12 +271,15 @@ no.feide.moria.web.login.default_language=en
       </section>
 
       <section name="Store manager">
+        <b>TODO: Bjørn Ola</b>
       </section>
 
       <section name="Directory manager">
+        <b>TODO: Cato</b>
       </section>
 
       <section name="Logging">
+        <b>TODO: Bjørn Ola</b>
       </section>
 
 
