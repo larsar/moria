@@ -38,21 +38,21 @@ public class NonExistentTicketException extends Exception {
     /**
      * @see java.lang.Exception(java.lang.String)
      */
-    public NonExistentTicketException(String message) {
+    public NonExistentTicketException(final String message) {
         super(message);
     }
 
     /**
      * @see java.lang.Exception(java.lang.Throwable)
      */
-    public NonExistentTicketException(Throwable cause) {
+    public NonExistentTicketException(final Throwable cause) {
         super(cause);
     }
 
     /**
      * @see java.lang.Exception(java.lang.String, java.lang.Throwable)
      */
-    public NonExistentTicketException(String message, Throwable cause) {
+    public NonExistentTicketException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
