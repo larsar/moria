@@ -42,8 +42,8 @@ import no.feide.moria.directory.index.IndexedReference;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * Represents a user in the backend. Used to authenticate users and retrieve the
- * associated attributes.
+ * Java Naming and Directory Interface (JNDI) backend. Used to authenticate 
+ * users and retrieve the associated attributes.
  */
 public class JNDIBackend
 implements DirectoryManagerBackend {
@@ -60,10 +60,10 @@ implements DirectoryManagerBackend {
     /** Default initial LDAP context environment. */
     private Hashtable defaultEnv;
 
-    /** The attribute name holding the username. */
+    /** The name of the attribute holding the username. */
     private String usernameAttribute;
 
-    /** The attribute name used to guess a user's (R)DN. */
+    /** The name of the attribute used to guess a user's (R)DN. */
     private String guessedAttribute;
 
     /** The session ticket used when logging from this instance. */
@@ -71,9 +71,9 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Protected constructor. Will create an initial default context environment
-     * and add support for referrals, a fix for OpenSSL aliases, and enable SSL
-     * as default.
+     * Protected constructor. Creates an initial default context environment
+     * and adds support for referrals, a fix for OpenSSL aliases, and enables
+     * SSL as default.
      * @param sessionTicket
      *            The session ticket for this instance, used when logging. May
      *            be <code>null</code> (which is treated as an empty string)
@@ -139,7 +139,7 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Open this backend. Does not actually initialize the network connection to
+     * Opens this backend. Does not actually initialize the network connection to
      * the external LDAP.
      * @param references
      *            The external reference to the LDAP server. Cannot be
@@ -164,12 +164,12 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Check whether a user element exists, based on its username value.
+     * Checks whether a user element exists, based on its username value.
      * @param username
      * @return <code>true</code> if the user can be looked up through JNDI,
      *         otherwise <code>false</code>.
-     * @throws IllegalStateException
-     *             If this method is used before the backend has been opened.
+     * @throws BackendException
+     *             If there is a problem accessing the backend.
      */
     public boolean userExists(final String username) throws BackendException {
 
@@ -214,7 +214,7 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Authenticate the user using the supplied credentials and retrieve the
+     * Authenticates the user using the supplied credentials and retrieves the
      * requested attributes.
      * @param userCredentials
      *            User's credentials. Cannot be <code>null</code>.
@@ -222,6 +222,8 @@ implements DirectoryManagerBackend {
      * @return <code>false</code> if authentication was unsuccessful (bad or
      *         <code>null</code> username/password), otherwise
      *         <code>true</code>.
+     * @throws AuthenticationFailedException
+     *             If the authentication fails.
      * @throws BackendException
      *             If there is a problem accessing the backend.
      * @throws IllegalArgumentException
@@ -332,14 +334,13 @@ implements DirectoryManagerBackend {
      *            The requested attribute's names.
      * @return The requested attributes (<code>String</code> names and
      *         <code>String[]</code> values), if they did exist in the
-     *         external backend. Otherwise will return an incomplete list of
-     *         those attributes that could actually be read; this may be an
-     *         empty <code>HashMap</code>. Will also return an empty
+     *         external backend. Otherwise returns
+     *         those attributes that could actually be read, this may be an
+     *         empty <code>HashMap</code>. Returns an empty
      *         <code>HashMap</code> if <code>attributes</code> is
      *         <code>null</code> or an empty array.
      * @throws BackendException
-     *             If unable to read the attributes from the backend using
-     *             <code>InitialDirContext.getAttributes(String, String[])</code>.
+     *             If unable to read the attributes from the backend.
      * @throws NullPointerException
      *             If <code>ldap</code> or <code>rdn</code> is
      *             <code>null</code>.
@@ -405,7 +406,7 @@ implements DirectoryManagerBackend {
     /**
      * Does nothing, but needed to fulfill the
      * <code>DirectoryManagerBackend</code> interface. Actual backend
-     * connections are closed where used.
+     * connections are closed after each use.
      * @see DirectoryManagerBackend#close()
      */
     public void close() {
@@ -416,14 +417,14 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Do a subtree search for an element given a pattern. Only the first
+     * Does a subtree search for an element given a pattern. Only the first
      * element found is considered, and all references are searched in order
      * until either a match is found or no more references are left to search.
      * @param ldap
      *            A prepared LDAP context.
      * @param pattern
      *            The search pattern. Must not include the character '*' or the
-     *            substring '\2a' due to possible LDAP exploits.
+     *            substring '\2a' to prevent possible LDAP exploits.
      * @return The element's relative DN, or <code>null</code> if none was
      *         found. <code>null</code> is also returned if the search pattern
      *         contains an illegal character or substring.
@@ -493,8 +494,7 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Common code used to create a new connection to a given backend provider
-     * URL.
+     * Creates a new connection to a given backend provider URL.
      * @param url
      *            The backend provider URL.
      * @return The opened backend connection.

@@ -35,7 +35,7 @@ implements DirectoryManagerBackendFactory {
 
 
     /**
-     * Configure use of the dummy backends. May be called repeatedly to update
+     * Configures use of the dummy backends. May be called repeatedly to update
      * used configuration. <br>
      * <br>
      * Note that much of the parsing of the configuration element is done in the

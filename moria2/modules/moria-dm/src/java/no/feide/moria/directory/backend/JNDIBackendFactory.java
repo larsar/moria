@@ -26,7 +26,7 @@ import no.feide.moria.directory.DirectoryManagerConfigurationException;
 import org.jdom.Element;
 
 /**
- * Factory class for dummy backends.
+ * Factory class for JNDI backends.
  */
 public class JNDIBackendFactory
 implements DirectoryManagerBackendFactory {
@@ -53,12 +53,12 @@ implements DirectoryManagerBackendFactory {
 
 
     /**
-     * Used to set the factory-specific configuration. Must be called before
+     * Sets the factory-specific configuration. Must be called before
      * creating a new backend, or the backend will not work as intended. <br>
      * <br>
      * Note that using this method with an updated configuration that modifies
      * any JVM global settings (currently all settings in the
-     * <code>Security</code> element) will likely cause any open backend
+     * <code>Security</code> element) is likely to cause any open backend
      * connections to fail.
      * @param config
      *            The configuration for this backend factory. The root node must
@@ -85,11 +85,13 @@ implements DirectoryManagerBackendFactory {
      *             If <code>config</code> is null.
      * @throws DirectoryManagerConfigurationException
      *             If the configuration element is not a <code>JNDI</code>
-     *             element, or if the optional <code>Truststore</code> element
+     *             <code>Backend</code> element, or if the optional
+     *             <code>Truststore</code> element
      *             is found, but without either of the <code>filename</code>
      *             or <code>password</code> attributes. Also thrown if the
      *             <code>timeout</code> attribute contains an illegal timeout
-     *             value, if the <code>guess</code> attribute does not exist,
+     *             value, if the <code>username</code> attribute does not 
+     *             exist, if the <code>guess</code> attribute does not exist,
      *             or if the <code>filename</code> file does not exist.
      * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
@@ -160,12 +162,13 @@ implements DirectoryManagerBackendFactory {
 
 
     /**
-     * Creates a new <code>DummyBackend</code> instance.
+     * Creates a new <code>JNDIBackend</code> instance.
      * @param sessionTicket
      *            The session ticket passed on to instances of
      *            <code>DirectoryManagerBackend</code> (actually
      *            <code>JNDIBackend</code> instances) for logging purposes.
      *            May be <code>null</code> or an empty string.
+     * @return    The new JNDIBackend.
      * @see DirectoryManagerBackendFactory#createBackend(String)
      */
     public DirectoryManagerBackend createBackend(final String sessionTicket) {

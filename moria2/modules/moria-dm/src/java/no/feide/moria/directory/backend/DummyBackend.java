@@ -54,8 +54,10 @@ implements DirectoryManagerBackend {
      *            Allows for easy configuration of test cases, without having to
      *            rely on an external backend source. See the supplied dummy
      *            configuration for a workable example. Note that attribute and
-     *            user names are case-insensitive, while attribute values are
+     *            user names are case insensitive, while attribute values are
      *            stored as specified in the configuration.
+     * @throws DirectoryManagerConfigurationException
+     *            If config lacks a mandatory element.
      */
     protected DummyBackend(final Element config) {
 
@@ -118,7 +120,7 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Will check whether a user exists.
+     * Checks whether a user exists.
      * @param username
      *            The username. Case is ignored.
      * @see DirectoryManagerBackend#userExists(String)
@@ -133,8 +135,17 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Will authenticate a user, if the user exists and the username equals the
+     * Authenticates a user, if the user exists and the username equals the
      * password.
+     * @param userCredentials
+     *            The user's credentials. Cannot be <code>null</code>.
+     * @param attributeRequest
+     *            A list of requested attributes from the user object. May be
+     *            <code>null</code> or an empty array. Not case sensitive.
+     * @throws AuthenticationFailedException
+     *             If the authentication fails.
+     * @throws IllegalArgumentException
+     *             If userCredentials are <code>null</code>.
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)

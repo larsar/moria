@@ -27,9 +27,9 @@ import java.util.List;
 public class DummyUser {
 
     /**
-     * This user's attributes; the keys are attribute names as
-     * <code>String</code> s and the values are attribute values as
-     * <code>List</code>s. private HashMap myAttributes; /**
+     * This user's attributes. The keys are attribute names as
+     * <code>String</code>s and the values are attribute values as
+     * <code>List</code>s.
      */
     private HashMap myAttributes;
 
@@ -49,7 +49,7 @@ public class DummyUser {
      * @param attributes
      *            The user's attributes, if any. Should contain attribute names
      *            as keys (<code>String</code>s) and attribute values as
-     *            values (<code>List</code> s).
+     *            values (<code>List</code>s).
      * @throws IllegalArgumentException
      *             If <code>username</code> or <code>password</code> is
      *             <code>null</code>.
@@ -75,13 +75,17 @@ public class DummyUser {
 
 
     /**
-     * "Authenticate" this user, by doing a case-insensitive match on username
+     * "Authenticates" this user, by doing a case-insensitive match on username
      * and case-sensitive match on password.
      * @param username
      *            The username to match. Cannot be <code>null</code>.
      * @param password
      *            The password to match. Cannot be <code>null</code>.
      * @return
+     *            true if authentication succeeds, false otherwise.
+     * @throws IllegalArgumentException
+     *             If <code>username</code> or <code>password</code> is
+     *             <code>null</code>.
      */
     public boolean authenticate(final String username, final String password) {
 
@@ -98,9 +102,9 @@ public class DummyUser {
 
 
     /**
-     * Get this user's attributes.
-     * @param The
-     *            attribute request. Case is ignored.
+     * Gets this user's attributes.
+     * @param request
+     *         The attribute request. Case is ignored.
      * @return The requested user's attributes, if any were found. Note that the
      *         attribute names returned will match the case of the attribute
      *         names in the request.
