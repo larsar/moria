@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -230,7 +231,9 @@ public class LoginServlet extends VelocityServlet {
         }
 
         catch( Exception e ) {
-            log.severe("Unspecified error during template parsing: " + e);
+            StringWriter stackTrace = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTrace));
+            log.severe("Unspecified error during template parsing: \n" + stackTrace.toString());
             throw new ServletException(e);
         }
         
