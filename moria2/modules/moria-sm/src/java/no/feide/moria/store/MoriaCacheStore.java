@@ -257,6 +257,21 @@ implements MoriaStore {
 
 
     /**
+     * @param ticketID
+     *            The ticket ID. Must be a non-empty string.
+     * @param keep
+     *            If <code>false</code>, the ticket will be removed from the
+     *            store before returning. Otherwise keep the ticket.
+     * @param servicePrincipal
+     *            The principal used by the service to authenticate itself to
+     *            Moria. May be <code>null</code>.
+     * @throws IllegalArgumentException
+     *             If ticket ID is <code>null</code> or an empty string.
+     * @throws NonExistentTicketException
+     *             If the ticket does not exist in the store.
+     * @throws InvalidTicketException
+     *             If the ticket is not associated with an authentication
+     *             attempt.
      * @see no.feide.moria.store.MoriaStore#getAuthnAttempt(java.lang.String,
      *      boolean, java.lang.String)
      */
@@ -264,36 +279,41 @@ implements MoriaStore {
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
 
-        /* Validate ticketId. */
-        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("loginTicketId must be a non-empty string."); }
+        // Sanity checks.
+        if (ticketId == null || ticketId.equals(""))
+            throw new IllegalArgumentException("Ticket ID must be a non-empty string");
 
+        // Accepted ticket types; login ticket or service ticket.
         MoriaTicketType[] potentialTicketTypes = new MoriaTicketType[] {MoriaTicketType.LOGIN_TICKET, MoriaTicketType.SERVICE_TICKET};
 
+        // Get ticket from store.
         MoriaTicket ticket = getFromStore(potentialTicketTypes, ticketId);
+        if (ticket == null) {
+            log.logInfo("Ticket '" + ticketId + "' does not exist in the store");
+            throw new NonExistentTicketException(ticketId);
+        }
 
-        if (ticket == null) { throw new NonExistentTicketException(ticketId); }
-
-        if (ticket.getTicketType().equals(MoriaTicketType.LOGIN_TICKET)) {
+        // Validate ticket, depending on type.
+        if (ticket.getTicketType().equals(MoriaTicketType.LOGIN_TICKET))
             validateTicket(ticket, MoriaTicketType.LOGIN_TICKET, null);
-        } else {
+        else
             validateTicket(ticket, MoriaTicketType.SERVICE_TICKET, servicePrincipal);
-        }
 
+        // Is this ticket associated with an authentication attempt?
         MoriaAuthnAttempt authnAttempt = null;
-
         MoriaStoreData data = ticket.getData();
-
-        if (data != null && data instanceof MoriaAuthnAttempt) {
+        if (data != null && data instanceof MoriaAuthnAttempt)
             authnAttempt = (MoriaAuthnAttempt) data;
-        } else {
-            throw new InvalidTicketException("No authentication attempt associated with ticket. [" + ticketId + "]");
-        }
+        else
+            throw new InvalidTicketException("No authentication attempt associated with ticket '" + ticketId + "'");
 
         /* Delete the ticket if so indicated. */
         if (!keep) {
+            log.logInfo("Removing ticket '" + ticketId + "' from store");
             removeFromStore(ticket);
         }
 
+        // Return the authentication attempt.
         return authnAttempt;
     }
 
@@ -712,7 +732,7 @@ implements MoriaStore {
         // Sanity checks.
         if (ticketType == null)
             throw new IllegalArgumentException("Ticket type cannot be null");
-        if (ticketId == null || ticketId.equals("")) 
+        if (ticketId == null || ticketId.equals(""))
             throw new IllegalArgumentException("Ticket ID must be a non-empty string");
 
         // The name of the TreeCache node to be retrived.
@@ -721,7 +741,7 @@ implements MoriaStore {
         // Does the node exist at all?
         if (!store.exists(fqn))
             return null;
-            
+
         // Look up the node.
         Node node = null;
         try {
@@ -734,13 +754,13 @@ implements MoriaStore {
 
         // Sanity check.
         if (node == null) {
-            log.logInfo(ticketType.toString()+" '"+ticketId+"' exists, but cannot be found");
+            log.logInfo(ticketType.toString() + " '" + ticketId + "' exists, but cannot be found");
             return null;
         }
-        
+
         // Return the node.
         return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node.get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE), (MoriaStoreData) node.get(DATA_ATTRIBUTE));
-        
+
     }
 
 
