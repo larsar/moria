@@ -551,7 +551,7 @@ public class LoginServlet extends MoriaServlet {
         Cookie cookie = new Cookie(cookieName, cookieValue);
         int validDays = new Integer(Configuration.getProperty("no.feide.moria.servlet.cookieValidDays")).intValue();
         cookie.setMaxAge(validDays*24*60*60); // Days to seconds
-        cookie.setVersion(1);
+        cookie.setVersion(0); // IE won't store cookies if using version 1 (RFC 2109).
         response.addCookie(cookie);
     }
 }
