@@ -238,6 +238,8 @@ public class DirectoryManager {
         // Sanity checks.
         if (configuration == null)
             throw new IllegalStateException("Configuration not set");
+        if (index == null)
+            throw new IllegalStateException("Index has not been initialized");
         if (userCredentials == null)
             throw new AuthenticationFailedException("User credentials cannot be NULL");
 
