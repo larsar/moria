@@ -24,11 +24,9 @@ package no.feide.moria.controller;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import no.feide.moria.store.InvalidTicketException;
 
 import java.util.HashMap;
-
-import no.feide.moria.store.InvalidTicketException;
-import no.feide.moria.store.UnknownTicketException;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -218,7 +216,7 @@ public class MoriaControllerTest extends TestCase {
      * @see MoriaController#getServiceProperties(java.lang.String)
      */
 
-    public void testGetServiceProperties() throws IllegalInputException, AuthorizationException, InvalidTicketException {
+    public void testGetServiceProperties() throws IllegalInputException, AuthorizationException, UnknownTicketException {
         controllerInitialization();
         /* Invalid arguments */
         try {

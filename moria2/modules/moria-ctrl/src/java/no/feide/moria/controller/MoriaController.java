@@ -27,7 +27,6 @@ import no.feide.moria.store.InvalidTicketException;
 import no.feide.moria.store.MoriaAuthnAttempt;
 import no.feide.moria.store.MoriaStore;
 import no.feide.moria.store.MoriaStoreFactory;
-import no.feide.moria.store.UnknownTicketException;
 
 import javax.servlet.ServletContext;
 import java.util.HashMap;
@@ -375,18 +374,24 @@ public class MoriaController {
      *
      * @param loginTicketId
      * @return a HashMap with service properties
-     * @throws InvalidTicketException if the ticket does not point to a authentication attempt
+     * @throws UnknownTicketException if the ticket does not point to a authentication attempt
      */
-    public static HashMap getServiceProperties(String loginTicketId) throws InvalidTicketException {
+    public static HashMap getServiceProperties(String loginTicketId) throws UnknownTicketException {
         /* Validate arguments */
         if (loginTicketId == null || loginTicketId.equals("")) {
             throw new IllegalArgumentException("loginTicketId must be a non-empty string, was: " + loginTicketId);
         }
 
-        MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(loginTicketId, true);
+        try {
+            MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(loginTicketId, true);
+            return authzManager.getServiceProperties(authnAttempt.getServicePrincipal());
+        } catch (InvalidTicketException e) {
+            // TODO: Log? (should have been logged by sublayer)
+            throw new UnknownTicketException("Ticket does not exist");
+        }
+
         // TODO: Finish implementation
-        return authzManager.getServiceProperties(authnAttempt.getServicePrincipal());
-    }
+        }
 
     /**
      * Get the seclevel for an authentication attempt.
