@@ -65,7 +65,7 @@
        excludes="project.xml"
        goals="site:generate"
        banner="Deploying site"
-       ignoreFailures="true"/>
+       ignoreFailures="false"/>
 
     <attainGoal name="site:generate"/>
   </goal>
