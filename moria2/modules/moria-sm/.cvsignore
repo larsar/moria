@@ -5,3 +5,4 @@ target
 .project
 moria-sm.ipr
 moria-sm.iws
+build.properties
