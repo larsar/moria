@@ -32,7 +32,7 @@ public class DirectoryManager {
      * Set the directory manager's configuration.
      * @param config
      *            The configuration. Must include the property
-     *            <code>directoryConfiguration</code> that points to a file
+     *            <code>no.feide.moria.directory.configuration</code> that points to a file
      *            containing the Directory Manager configuration.
      */
     public static void setConfig(final Properties config) {
@@ -61,7 +61,7 @@ public class DirectoryManager {
 
         }
 
-        // Set the index class.
+        // Set the index class and configure the index.
         // TODO: Initialize index update.
         // TODO: Gracefully handle switch between index classes?
         Constructor constructor = null;
