@@ -188,17 +188,6 @@ extends HttpServlet {
         final String password = request.getParameter(RequestUtil.PARAM_PASSWORD);
         String org = request.getParameter(RequestUtil.PARAM_ORG);
 
-        // Parse organization, if set in username, and validate results.
-        if (username.indexOf("@") != -1)
-            org = username.substring(username.indexOf("@") + 1, username.length());
-        if (org == null || org.equals("") || org.equals("null")) {
-            showLoginPage(request, response, RequestUtil.ERROR_NO_ORG);
-            return;
-        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE)).containsValue(org)) {
-            showLoginPage(request, response, RequestUtil.ERROR_INVALID_ORG);
-            return;
-        }
-
         // Did the user choose to deny SSO?
         String denySSOStr = request.getParameter(RequestUtil.PARAM_DENYSSO);
         final boolean denySSO = (denySSOStr != null && denySSOStr.equals("true"));
@@ -211,6 +200,17 @@ extends HttpServlet {
         final Cookie denySSOCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO), denySSOStr, new Integer((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO_TTL)).intValue());
         response.addCookie(denySSOCookie);
         request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(denySSO));
+
+        // Parse organization, if set in username, and validate results.
+        if (username.indexOf("@") != -1)
+            org = username.substring(username.indexOf("@") + 1, username.length());
+        if (org == null || org.equals("") || org.equals("null")) {
+            showLoginPage(request, response, RequestUtil.ERROR_NO_ORG);
+            return;
+        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE)).containsValue(org)) {
+            showLoginPage(request, response, RequestUtil.ERROR_INVALID_ORG);
+            return;
+        }
 
         // Store user's organization selection in cookie.
         final Cookie orgCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getParameter(RequestUtil.PARAM_ORG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
