@@ -182,5 +182,51 @@ extends TestCase {
         }
 
     }
+    
+    
+    /**
+     * Test configuration with unknown index class.
+     */
+    public void testMissingIndexClass() {
+        
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, "src/test/conf/MissingIndexClassConfiguration.xml");
+
+        try {
+            
+            // Test bogus config.
+            dm.setConfig(config);
+            Assert.fail("Managed to set up bad configuration");
+         
+            
+        } catch (DirectoryManagerConfigurationException e) {
+            // Expected.
+        }
+        
+    }
+    
+    
+    /**
+     * Test configuration with missing index file.
+     */
+    public void testMissingIndexFile() {
+        
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, "src/test/conf/MissingIndexFileConfiguration.xml");
+
+        try {
+            
+            // Test bogus config.
+            dm.setConfig(config);
+            Assert.fail("Managed to set up bad configuration");
+         
+            
+        } catch (DirectoryManagerConfigurationException e) {
+            // Expected.
+        }
+        
+    }
 
 }
