@@ -33,37 +33,50 @@
       <classpath refid="maven.dependency.classpath"/>
     </taskdef>
 
-    <!-- Iterate over WSDL files -->
-
+    <!-- Iterate over WSDL files. -->
+		<echo>project.wsdl.versions=${project.wsdl.versions}</echo>
     <u:tokenize var="versionList" delim=",">${project.wsdl.versions}</u:tokenize>
 
     <j:set var="wsdlName" value="Authentication.wsdl"/>
+    
+    <!-- A number of filename fixes for Windows users. -->
+    <tempfile property="windowsFixFile"
+              destDir="${maven.build.dir}"/>
+    <echo message="project.wsdl.baseuri.fixed=${project.wsdl.baseuri}${line.separator}maven.build.dir.fixed=${maven.build.dir}"
+          file="${windowsFixFile}"
+          level="verbose"/>
+    <replace file="${windowsFixFile}"
+						 replaceFilterFile="${maven.build.dir}/../windows.properties"/>
+    <property file="${windowsFixFile}"/>
+    <delete file="${windowsFixFile}"
+            deleteonexit="true"/>
 
+    <!-- Iterate over each WSDL version listed. -->
     <j:forEach var="version" items="${versionList}">
-      <j:set var="inFile" value="${project.wsdl.baseuri}/${version}/${wsdlName}"/>
-      <j:set var="outDir" value="${maven.build.dir}/axis/wsdl/${version}"/>
+    
+      <j:set var="inFile" value="${project.wsdl.baseuri.fixed}/${version}/${wsdlName}"/>
+      <j:set var="outDir" value="${maven.build.dir.fixed}/axis/wsdl/${version}"/>
       <u:available uri="${inFile}">
-	<echo>Proccesing: ${inFile}</echo>
+				<echo>Processing: ${inFile}</echo>
 
-	<mkdir dir="${outDir}"/>
-	<get src="${inFile}" dest="${outDir}/${wsdlName}"/>
+				<mkdir dir="${outDir}"/>
+				<get src="${inFile}" dest="${outDir}/${wsdlName}"/>
 
-	<replace
-	   file="${outDir}/${wsdlName}"
-	   token="REPLACE_WITH_ACTUAL_URL"
-	   value="${project.deploy.url.prefix}/${version}/Authentication"/>
+				<replace file="${outDir}/${wsdlName}"
+	               token="REPLACE_WITH_ACTUAL_URL"
+	               value="${project.deploy.url.prefix}/${version}/Authentication"/>
 
-	<!-- Generate skeletons for each wsdl -->
-
-	<axis-wsdl2java
-	   url="file://${outDir}/${wsdlName}"
-	   output="${project.axis.generated.src.dir}"
-	   serverside="${project.axis.serverside}"
-	   skeletondeploy="${project.axis.skeletondeploy}"
-	   testcase="${project.axis.testcase}"
-	   verbose="${project.axis.verbose}"/>
+	      <!-- Generate skeletons for each wsdl -->
+				<axis-wsdl2java url="file://${outDir}/${wsdlName}"
+				                output="${project.axis.generated.src.dir}"
+	 	                    serverside="${project.axis.serverside}"
+		                    skeletondeploy="${project.axis.skeletondeploy}"
+		                    testcase="${project.axis.testcase}"
+		                    verbose="${project.axis.verbose}"/>
       </u:available>
+      
     </j:forEach>
+    
   </goal>
 
   <goal
