@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!--
-Copyright (c) 2004 UNINETT FAS
+Copyright (c) 2004 UNINETT
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -32,8 +32,8 @@ $Id$
     <section name="Introduction">
       <p>
         Moria is software for providing authentication over HTTP using multiple directory backends.
-        The software designed with a servlet frontend both to the service provider and the user;
-        the service frontend is SOAP based and HTML is used for the interactive user interface.
+        The software is designed with a servlet frontend both to the service provider and the user;
+        the service frontend is SOAP based, and HTML is used for the interactive user interface.
       </p>
       <p>
         The authentication design is described in detail in the <a href="design.html">design document</a>.
@@ -67,9 +67,9 @@ no.feide.moria.configuration.base=/full/path/to/configuration_managers.propertie
       <section name="Configuration manager">
         <p>
           <b>TODO: Required system property</b><br/>
-          The Configuration Manager reads and watches the configuratin file for all modules.
+          The Configuration Manager reads and watches the configuration file for all modules.
           When a module's configuration file is changed, the CM pushes the updated configuration to the module.
-          Configuration files for all modules can be changed runtime without restart of moria,
+          Configuration files for all modules can be changed runtime without restart of Moria,
           but changes in the base configuration (CM config file) requires a restart of Moria.
         </p>
         <p>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!--
-Copyright (c) 2004 UNINETT FAS
+Copyright (c) 2004 UNINETT
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -31,39 +31,39 @@ $Id$
 
     <section name="Introduction">
 
-      <p>FEIDE (Federated Electronic Identity for Education) is a project
-    with the goal of establishing a common electronic identity for Norwegian
-    academic users. The three main parts are</p>
+      <p>FEIDE is Federated Electronic Identity for Education, providing a 
+        federated  electronic identity for Norwegian academic users.
+        Identity management is done locally.
+        The three main parts are</p>
 
       <ul>
         <li>
-        user administration and defining inter-institutional role definitions
+          user management and inter-institutional role definitions
         </li>
         <li>
-          common access control for Internet services with well defined
+          access control for Internet services,
           authentication and authorization mechanisms
         </li>
 
         <li>
-          secure electronic ID built on public key encryption
+          support for electronic ID built on public key encryption
         </li>
       </ul>
 
       <p>
-        FEIDE consists of several sub-projects, one of them with the goal
+        FEIDE consists of several projects. Moria's goal is
         to create a HTTP based authentication service for web resource providers.
-        This sub-project has been named <i>Moria</i>.
       </p>
 
       <p>
-        In FEIDE each academic institution has its own user management system
-        for their students and employees, but services at one institution should
-        be able to allow access to a user from another institution without
-        importing that user into its own user administration system. FEIDE
-        requires access to an LDAP front end of the user administration system
-        (Enterprise Directory System) to provide such service. Potentially more
-        than hundred institutions with a total of a few hundred thousand users
-        will be a part of FEIDE. The number of services that requires access to
+        In FEIDE each academic organization has its own user management system
+        for their students and employees. Services at one organization should
+        be able to allow access to a user from another without
+        importing the user account into its own user management system. FEIDE
+        requires access to an LDAP front end of the user management system
+        (Enterprise Directory Service) to provide such service. Potentially more
+        than hundred organizations with a total of several hundred thousand users
+        will participate in FEIDE. The number of services that requires access to
         user data from FEIDE are expected to be in the hundreds, if not thousands.
         In this scenario FEIDE cannot trust every one of the FEIDE enabled
         services (services that receives user data from FEIDE). Without such trust
@@ -94,48 +94,53 @@ $Id$
     <section name="Interactive Authentication">
 
       <p>Moria consists of two interfaces: a SOAP based interface for the
-    client (web resource) and a html interface for the user.</p>
+    client (web resource) and a HTML interface for the user.</p>
 
       <table>
         <tr><th>Name</th><th>Explanation</th></tr>
         <tr>
-          <td>Enterprise Directory Server</td>
+          <td>Enterprise Directory Service</td>
           <td>LDAP (Lightweight Directory Access Protocol) server used by
-            each institution/organization</td>
+            each organization.  Information about each user is available in
+	    a format specified in FEIDE schema definitions.</td>
         </tr>
         <tr>
           <td>Moria</td>
-          <td>FEIDE's Login Service</td>
+          <td>FEIDE's login service</td>
         </tr>
         <tr>
           <td>Web resource</td>
-          <td>The service (client) that requires authentication and user
-            information</td>
+          <td>The service that requires authentication and user information</td>
         </tr>
-      </table>
+        <tr>
+          <td>User agent</td>
+          <td>The web client used by the end user.</td>
+        </tr>
+       </table>
 
       <p>
         When a web resource requires user authentication, it requests an
         authentication session from Moria. The request contains two parameters: a
-        list of requested attributes and a URL that the user will be redirected
-        back to after successful authentication. (The URL will be supplied with a
-        ticked for retrieval of the requested user attributes.) Moria requires
-        that the web service has been authenticated and principal is sent with
-        the request. If the client is unknown to Moria, or a known client
-        requests attributes (or operations) that it's not authorized access to,the request will
-        be denied. If Moria accepts the client's request, a URL to Moria's
-        login page is returned to the client. The URL contains a ticked that
+        list of requested attributes and a URL that the user agent will be redirected
+        back to after successful authentication. The URL will be supplied with a
+        ticked for retrieval of the requested user attributes. Moria requires
+        that the web service itself has been authenticated.  The request will
+        be denied if the resource is unknown to Moria, or a known resource
+        requests attributes (or operations) where it is not authorized.
+	If Moria accepts the resource's request, a URL to Moria's
+        login page is returned to the resource for redistribution to the user agent.
+	The URL contains a ticket that
         connects the user to the created authentication session
-        and client then sends a 302 redirect response to the users web browser,
-        with the Location header set to be the URL returned from Moria.</p>
+        and client then sends a <em>302 redirect</em> response to the users web browser,
+        with the <em>Location</em> header set to be the URL returned from Moria.</p>
 
       <p>
-        The user's browser now performs a GET request for Moria's
+        The user agent now performs a <em>GET</em> request for Moria's
         login page. The supplied ticket (login ticket) is verified and if the
         session exists a login page is returned to the user. The login page
         contains the name of the resource and what kind of data it has requested
-        about the user. The browser then sends a POST request with the users
-        user-name and password, to Moria.
+        about the user. The user fills in user-name and password, and the user agent then
+        sends a <em>POST</em> request with the users user-name and password to Moria.
       </p>
 
       <p>
@@ -163,73 +168,41 @@ $Id$
 
       <img src="interactive_auth.png"/>
 
-      <ol>
-        <li>
-          <strong>User requests a web resource (1)</strong><br/>
 
-          The user requests a access restricted web resource, typically by
-          a GET request from a web browser.
-        </li>
-
-        <li>
-          <strong>The web resource requests an authentication session
-          from Moria(2,3)</strong><br/>
-
-          A request for an authentication session is sent from the web
+      <dl>
+	<dt>(1) User requests a web resource</dt>
+	<dd>The user requests a access restricted web resource, typically by
+          a GET request from a web browser. </dd>
+	<dt>(2,3) The web resource requests an authentication session from Moria</dt>
+	<dd>A request for an authentication session is sent from the web
           resource service to Moria. Moria responds by returning the URL for the
-          login page.
-        </li>
-
-        <li>
-          <strong>The users browser is redirected to the FEIDE login
-          page (4-6)</strong><br/>
-
-          A redirect response is sent to the users browser, with the
+          login page.  </dd>
+	<dt>(4-6) The users browser is redirected to the FEIDE login page </dt>
+	<dd>A redirect response is sent to the users browser, with the
           location header set to the URL that Moria returned. The browser then
           sends a GET request for the login page and the user is presented with
-          a login form.
-        </li>
-
-        <li>
-          <strong>User-name and password are transmitted to the login
-          service (7)</strong><br/>
-
-          The user submits a HTML form with his/her user-name and password
-          to Moria.
-        </li>
-
-        <li>
-          <strong>Authentication (8,9)</strong><br/>
-
-          The user is authenticated against his/her home organizations directory
-          service and the user attributes are stored in Moria.
-        </li>
-
-        <li>
-          <strong>Redirect back to the web resource service (10,11)</strong><br/>
-
-          The user is redirected back to the web resource, with a ticked
+          a login form.  </dd>
+	<dt>(7) User-name and password are transmitted to the login service</dt>
+	<dd>The user submits a HTML form with his/her user-name and password
+          to Moria.  </dd>
+	<dt>(8,9) Authentication</dt>
+	<dd>The user is authenticated against his/her home organizations directory
+          service and the user attributes are stored in Moria.  </dd> 
+	<dt>(10,11) Redirect back to the web resource service</dt>
+	<dd>The user is redirected back to the web resource, with a ticked
           supplied in the URL. This ticket is generated after a successful
-          authentication.
-        </li>
-
-        <li>
-          <strong>Retrieval of the user attributes (12,13)</strong><br/>
-
-          The client requests the user attributes from Moria, identified
+          authentication.  </dd>
+	<dt>(12,13) Retrieval of the user attributes</dt>
+	<dd>The client requests the user attributes from Moria, identified
           by the ticket. If the ticket is valid and the client is the one that
           requested the authentication in the first place, Moria returns the
           requested user attributes - if any. If no user attributes are
           requested (or available) an empty data set is returned as a
-          confirmation that the user is authenticated but no data is available.
-        </li>
+          confirmation that the user is authenticated but no data is available. </dd> 
+	<dt>(14) Access to the web resource</dt>
+	<dd>The web resource is returned to the user agent </dd>
+      </dl>
 
-        <li>
-          <strong>Access to the web resource(14)</strong><br/>
-
-          The web resource is returned to the user's client.
-        </li>
-      </ol>
     </section>
 
     <section name="Single Sign-On">
@@ -238,7 +211,7 @@ $Id$
         "Single Sign-On" is a term with various interpretations. For a user Single Sign-On
         is to supply his/her password once and be able to use a variety of different
         services without re-typing the password. In this paper we will
-        use the term "Ticket based reauthentication" for this type of Single Sing-On.
+        use the term "Ticket based re-authentication" for this type of Single Sing-On.
       </p>
 
       <p>
@@ -251,25 +224,25 @@ $Id$
     <subsection name="Ticket Based Reauthentication">
 
       <p>
-        The ticked based reauthentication uses the existing Moria model. The
+        The ticked based re-authentication uses the existing Moria model. The
         first time a user logs into a service via Moria, a SSO ticked is stored in a
         cookie. The next time the user is redirected to Moria for login Moria uses
         the ticket to find the authentication session from last login. If it still
         exist (i.e. the session has not timed out), the user is immediately
         redirected back to the web service and the web service get access to the
-        cached user data. If reauthentication cannot be used, the user is
+        cached user data. If re-authentication cannot be used, the user is
         presented with a login form and a regular authentication process is
         performed.
       </p>
 
       <p>
-        There are three scenarios when ticked based reauthentication fails,
+        There are three scenarios when ticked based re-authentication fails,
         and a normal authentication process is required:
       </p>
 
       <ul>
         <li>
-          The ticket refers to a non-existing set of userdata. This
+          The ticket refers to a non-existing set of user data. This
           happens when the a SSO ticket times out and thus is removed from the
           ticket store or if the ticket has been removed for any other reason.
         </li>
@@ -284,7 +257,7 @@ $Id$
         <li>
           The web service insists that the user performs a regular
           authentication. Before critical operations, typically writing data,
-          some services want to reauthenticate the user to be sure that no
+          some services want to re-authenticate the user to be sure that no
           impersonator issues commands as the user. When requesting a user
           authentication the web service can insist that SSO should not be used..
         </li>
@@ -384,7 +357,7 @@ $Id$
         Moria consists of several modules that performs a specific task. All requests
         from the web service are sent through the Axis servlet, and the user's requests
         are sent through the Login servlet. From the servlets all requests are sent to
-        the Controller intermediator for processing.
+        the Controller intermediary for processing.
         <img src="moria2.png"/>
       </p>
 
@@ -398,7 +371,7 @@ $Id$
           are processed by the controller. Validation of input is one of the
           controllers major tasks, and if a request is invalid an exception is
           thrown back to the caller. The other main function of the controller is to
-          provide an easy interface for the servlets handeling logging, exception and
+          provide an easy interface for the servlets handling logging, exception and
           forwarding requests down to the proper module.
         </p>
       </subsection>
@@ -452,14 +425,14 @@ $Id$
           After the authentication attempt has been initiated from the web service through the
           Axis servlet, the user is redirected to the login servlet. If the user has been
           authenticated previously, has a valid Single Sign-On ticket and the web service is authorized
-          to use Single Sign-On, the user is not presented with the login page, but rediercted
+          to use Single Sign-On, the user is not presented with the login page, but redirected
           back to the web service. Otherwise a login page is displayed to the user and he/she
           has to supply his/her username and password. After a successful authentication the
           user is redirected back to the web service that requested the authentication.
         </p>
         <p>
           The logout servlet has a simple task: remove the Single Sign-On ticket from and prevent
-          that the user is automatically signed into other web services without reauthentication.
+          that the user is automatically signed into other web services without re-authentication.
           All web services can send the user to the logout page, but naturally the logout servlet
           cannot remove the web service's internal sessions. When a web service redirects a
           user to the logout servlet it can also specify a redirect URL that the logout servlet
