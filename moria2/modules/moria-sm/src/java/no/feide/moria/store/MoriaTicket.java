@@ -80,7 +80,8 @@ final class MoriaTicket implements Serializable {
             throw new IllegalArgumentException("ticketId cannot be null or an empty string");
         this.ticketId = ticketId;
 
-        /* Correctness is guaranteed by the type class. */
+        if (ticketType == null)
+            throw new IllegalArgumentException("ticketType cannot be null");
         this.ticketType = ticketType;
 
         /* Undefined servicePrincipal is only allowed for SSO tickets. */
@@ -90,7 +91,7 @@ final class MoriaTicket implements Serializable {
             throw new IllegalArgumentException("servicePrincipal must be null when creating a SSO ticket");
         this.servicePrincipal = servicePrincipal;
 
-        if (timeToLive.longValue() < 0)
+        if (timeToLive == null || timeToLive.longValue() < 0)
             throw new IllegalArgumentException("expiryTime must be a positive integer");
         this.expiryTime = new Long(new Date().getTime() + timeToLive.longValue() * 1000);
     }

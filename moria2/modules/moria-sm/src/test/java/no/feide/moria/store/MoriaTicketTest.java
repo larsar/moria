@@ -82,14 +82,27 @@ public class MoriaTicketTest extends TestCase {
     public void testConstructor()
         throws IllegalArgumentException, InvalidTicketException, InterruptedException {
 
-        /* Test for illegal id */
+        /* Test for illegal id. */
         try {
             MoriaTicket ticket = new MoriaTicket(null, MoriaTicketType.LOGIN_TICKET, principal1, new Long(5));
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
-        /* Test for illegal principal */
+        try {
+            MoriaTicket ticket = new MoriaTicket("", MoriaTicketType.LOGIN_TICKET, principal1, new Long(5));
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Test for illegal ticket. */
+        try {
+            MoriaTicket ticket = new MoriaTicket(id1, null, principal1, new Long(5));
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Test for illegal principal. */
         try {
             MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, null, new Long(5));
             fail("An IllegalArgumentException should have been thrown");
@@ -97,19 +110,32 @@ public class MoriaTicketTest extends TestCase {
         }
 
         try {
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, "", new Long(5));
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* SSO must have null principal. */
+        try {
             MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, principal1, new Long(5));
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success){
         }
 
-        /* Test for illegal time to live */
+        /* Test for illegal time to live. */
+        try {
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, null);
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException e) {
+        }
+
         try {
             MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(-1));
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException e) {
         }
-
-        /* Test for expiry */
+        
+        /* Test for expiry. */
         MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(1));
         Thread.sleep(1001);
         assertTrue("Ticket should have expired", ticket.hasExpired());
