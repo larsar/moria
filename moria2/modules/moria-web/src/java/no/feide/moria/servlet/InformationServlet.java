@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Arrays;
-import java.util.Collections;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -65,13 +64,6 @@ public class InformationServlet extends HttpServlet {
      *  Current value is "info"
      */ 
     private String PRINCIPAL = "info";
-
-    /** 
-     * HashMap used for storing userattributes (one for each loginTicket), 
-     * so that refresh can be used and language can be changed. Synchronize
-     * it so that multiple threads can work on this map. 
-     */
-    private Map storeduserdata = Collections.synchronizedMap(new HashMap());
     
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(InformationServlet.class);
@@ -81,15 +73,17 @@ public class InformationServlet extends HttpServlet {
      * <br>
      * Current required parameters are:
      * <ul>
-     ** <li><code>RequestUtil.PROP_COOKIE_LANG</code>
-     ** <li><code>RequestUtil.PROP_COOKIE_LANG_TTL</code>
-     ** <li><code>RequestUtil.PROP_COMMON</code>
-     ** <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
-     ** <li><code>RequestUtil.PROP_INFORMATION_URL_PREFIX</code>
-     ** <li><code>RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML</code>
+     * <li><code>RequestUtil.PROP_COOKIE_LANG</code>
+     * <li><code>RequestUtil.PROP_COOKIE_LANG_TTL</code>
+     * <li><code>RequestUtil.PROP_COOKIE_DENYSSO</code>
+     * <li><code>RequestUtil.PROP_COMMON</code>
+     * <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
+     * <li><code>RequestUtil.PROP_INFORMATION_URL_PREFIX</code>
+     * <li><code>RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML</code>
      * </ul>
      * @see RequestUtil.PROP_COOKIE_LANG
      * @see RequestUtil.PROP_COOKIE_LANG_TTL
+     * @see RequestUtil.PROP_COOKIE_DENYSSO
      * @see RequestUtil.PROP_COMMON
      * @see RequestUtil.PROP_LOGIN_TICKET_PARAM
      * @see RequestUtil.PROP_INFORMATION_URL_PREFIX
@@ -98,6 +92,7 @@ public class InformationServlet extends HttpServlet {
     final String[] REQUIRED_PARAMETERS = {
         RequestUtil.PROP_COOKIE_LANG,
         RequestUtil.PROP_COOKIE_LANG_TTL,
+        RequestUtil.PROP_COOKIE_DENYSSO,
         RequestUtil.PROP_COMMON,
         RequestUtil.PROP_LOGIN_TICKET_PARAM,
         RequestUtil.PROP_INFORMATION_URL_PREFIX,
@@ -190,7 +185,6 @@ public class InformationServlet extends HttpServlet {
 
             if (userdata != null) {
                 for (int j = 0; j < userdata.length; j++) {
-                    // log.logInfo("found data for '" + key2 + "' = " + userdata[j]);
                     userstring += userdata[j];
                     userstring += "<BR>";
                 }
@@ -233,12 +227,12 @@ public class InformationServlet extends HttpServlet {
         if (config == null) 
             throw new IllegalStateException("Config is not set in context.");
         
-            // Are we missing some required properties?
-            for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-                String requiredParameter = REQUIRED_PARAMETERS[i];
-                if ((requiredParameter == null) || (requiredParameter.equals(""))) {
+        // Are we missing some required properties?
+        for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
+            String requiredParameter = REQUIRED_PARAMETERS[i];
+            if ((requiredParameter == null) || (requiredParameter.equals(""))) {
                     throw new IllegalStateException("Required parameter '" + requiredParameter + "' is not set");
-                }
+            }
         }
         return config;
         
@@ -257,17 +251,15 @@ public class InformationServlet extends HttpServlet {
             throws ServletException, IOException {      
         if (getAttribs() == null) throw new IOException("feideattribs.xml not parsed");
 
-        String loginTicketId = request.getParameter("moriaID");
+        String ticketId = request.getParameter("moriaID");
 
         if (request.getParameter("logout") != null) {
             log.logInfo("Logout received");
-            if (loginTicketId != null) {
-                storeduserdata.remove(loginTicketId);
-            }
             final RequestDispatcher rd = getServletContext().getNamedDispatcher("Logout");
             rd.forward(request, response);
             return;
         }
+        
         /*
          * Makes a Properties object named config, which gets the config
          * from the getConfig() method
@@ -283,9 +275,7 @@ public class InformationServlet extends HttpServlet {
         /* Resource bundle. */
         String langFromCookie = null;
         if (config != null && request.getCookies() != null) {
-            langFromCookie = RequestUtil.getCookieValue((String) config
-                    .get(RequestUtil.PROP_COOKIE_LANG), request
-                    .getCookies());
+            langFromCookie = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
         }
         
         /*Use default login language as default for the information servlet */
@@ -299,35 +289,36 @@ public class InformationServlet extends HttpServlet {
         request.setAttribute("bundle", bundle);        
         request.setAttribute("urlPrefix", config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX));
 
-        if (loginTicketId != null) {
-            // check for cached user data for this ticket
-            Map userData = (Map) storeduserdata.get(loginTicketId);            
-            if (userData == null) {
-              try {
-                userData = MoriaController.getUserAttributes(loginTicketId, PRINCIPAL);
-              }
-              catch (AuthorizationException e) {
-                  throw new ServletException("getUserAttributes: " + e.getMessage());
-                  
-              }
-              catch (IllegalInputException e) {
-                  log.logCritical("IllegalInputException in doGet()");
-              }
-              catch (UnknownTicketException e) {
-                  log.logCritical("UnknownTicketException in doGet()");               
-              }
-              catch (InoperableStateException e) {
-                  log.logCritical("InoperableStateException in doGet()");
-              }
-              
-              if (userData != null) {
-                  // cache user data to enable refresh and language change
-                  storeduserdata.put(loginTicketId, userData);
-              }
+        // update cookie if language has changed
+        boolean changelanguage = false;
+        if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
+            response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
+            changelanguage = true;
+        }
+        Map userData = null;
+        // to change language, we have to get a new ticket from the LoginServlet
+        if (ticketId != null && !changelanguage) {
+            try {
+                userData = MoriaController.getUserAttributes(ticketId, PRINCIPAL);
             }
-            if (userData == null) {
-                userData = new HashMap();
+            catch (AuthorizationException e) {
+                log.logCritical("AuthorizationException");
+                throw new ServletException(e);
             }
+            catch (IllegalInputException e) {
+                log.logCritical("IllegalInputException");
+                throw new ServletException(e);
+            }
+            catch (UnknownTicketException e) {
+                log.logCritical("UnknownTicketException");
+                throw new ServletException(e);
+            }
+            catch (InoperableStateException e) {
+                log.logCritical("InoperableStateException");
+                throw new ServletException(e);
+            }
+        }
+        if (userData != null) {
             // need userorg as an attribute in the JSP to be able to print
             // instructions on where to update the optional or mandatory info
             String [] userorgarray = (String[]) userData.get(RequestUtil.EDU_ORG_LEGAL_NAME);
@@ -343,13 +334,22 @@ public class InformationServlet extends HttpServlet {
             /* Configured values */
             request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, RequestUtil.parseConfig(config, RequestUtil.PROP_ORG, bundle.getLocale().getLanguage()));
             request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(config, RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
-            request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_INFORMATION_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + loginTicketId);
+            request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_INFORMATION_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + ticketId);
             request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
-            
-            // update cookie if language has changed
-            if (request.getParameter(RequestUtil.PARAM_LANG) != null)
-                response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
 
+            // only print language menu if SSO is enabled
+            final String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO), request.getCookies());
+            final boolean denySSO;
+            if (denySSOChoice == null || denySSOChoice.equals("false") || denySSOChoice.equals("")) {
+                // Deny SSO.
+                request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(false));
+                denySSO = false;
+
+            } else {
+                // Allow SSO.
+                request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(true));
+                denySSO = true;
+            }
             // print the table in the JSP
             final RequestDispatcher rd = getServletContext().getNamedDispatcher("Information.JSP");
             rd.forward(request, response);
@@ -393,34 +393,27 @@ public class InformationServlet extends HttpServlet {
             log.logInfo("Moria ID is now " + moriaID);
 
         } catch (IllegalInputException e) {
-            error = true;
             log.logCritical("IllegalInputException");
-            request.setAttribute("error", e);
+            throw new ServletException(e);
         } catch (AuthorizationException e) {
-            error = true;
             log.logCritical("AuthorizationException");
-            request.setAttribute("error", e);
+            throw new ServletException(e);
         } catch (InoperableStateException e) {
-            error = true;
             log.logCritical("InoperableStateException");
-            request.setAttribute("error", e);
+            throw new ServletException(e);
         }
 
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
             log.logCritical("Configuration: " + config.toString());
             String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + 
-                 "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID 
-                //  + "?" + "servicePrincipal" + principal
-                 ;
+                 "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
             log.logCritical("Redirect URL: " + redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             response.setHeader("Location", redirectURL);
         } else {
-            log.logCritical("error!");
-            // TODO: is this correct?
-            RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/information.jsp");
-            rd.include(request, response);
+            // should never happen
+            throw new ServletException("Unknown error in InformationServlet");
         }
     }
     
@@ -429,7 +422,7 @@ public class InformationServlet extends HttpServlet {
      * 
      * @return Comma-separated list of attributes
      */
-    String getAllAttributes() {
+    private String getAllAttributes() {
         String acc = "";
         HashMap feideattribs = getAttribs();
         for (Iterator iterator = feideattribs.keySet().iterator(); iterator.hasNext();) {

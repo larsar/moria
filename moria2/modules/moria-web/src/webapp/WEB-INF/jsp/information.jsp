@@ -21,17 +21,10 @@
 </head>
 <body>
   
-<!-- Do we have an error message? -->
-<%if (request.getAttribute("error") != null) {%>
-  <!-- Display error message. -->
-  <font color="red"><%=request.getAttribute("error")%></font>
-
 <!-- Do we have table data (attributes) to show? -->	
-<%} else if (tabledata != null) {%>
-   <!-- Logout-->
-   <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&logout=user_logout" %>"><%=bundle.getString("user_logout")%></A>
-   <br>
-      
+<%if (tabledata != null) {%>
+    <% if (!(((Boolean)request.getAttribute(RequestUtil.ATTR_SELECTED_DENYSSO)).booleanValue())) { %>
+       <!-- Language selection -->  
  	<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td colspan="2" style="text-align:right">
@@ -52,12 +45,21 @@
 	  </td>
     </tr>  
     </table>
-    <br>
-    <br>    
+    
+    <% } %> <!-- end of denySSO test -->
+   
+   <!-- Logout-->
+   <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&logout=user_logout" %>"><%=bundle.getString("user_logout")%></A>
+  
+
+    <br/>
+    <br/>    
       
      <p>
-     <b><%= bundle.getString("user_info") %> </b></br></br>
-        <center><table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
+     <b><center><%= bundle.getString("user_info") %> </b>
+     </p>
+     <!-- Show table with attributes, values and relevance -->
+        <p><table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
        	<th> <%= bundle.getString("tc_value") %> </th>
        	<th> <%= bundle.getString("tc_relevance") %> </th></tr>
 		<% 
