@@ -361,3 +361,15 @@
     </properties>
   </dependency>
   ">
+
+<!ENTITY dep-moria-attribute "
+  <dependency>
+    <groupId>moria</groupId>
+    <artifactId>moria-attribute</artifactId>
+    <version>1.0-b1-SNAPSHOT</version>
+    <type>jar</type>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
