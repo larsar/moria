@@ -1,5 +1,5 @@
 <project name="Mellon JAX-RPC"
-         default="jaxrpc:build"
+         default="jaxrpc:clean"
          basedir=".">
 
   <!-- User's properties override project defaults. -->
@@ -44,6 +44,7 @@
     <exec executable="${wscompile}">
       <arg line="-gen:client"/>
       <arg line="-d build/api"/>
+      <arg line="-keep"/>
       <arg line="-verbose"/>
       <arg line="config/jaxrpc.xml"/>
     </exec>
@@ -51,9 +52,8 @@
     <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build/api"/>    
   </target>
 
-  <target name="jaxrpc:build"
-          description="Mellon API: build source"
-          depends="jaxrpc:wscompile">
+  <target name="jaxrpc:compile"
+          description="Mellon API: build source">
     <javac srcdir="src"
            debug="true"
            destdir="build/connector"
