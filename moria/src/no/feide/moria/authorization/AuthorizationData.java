@@ -32,7 +32,17 @@ public class AuthorizationData {
     /** Timestamp for configuration file*/
     private long fileTimestamp = 0;
 
+    /** Singleton instance pointer */
+    private static AuthorizationData authData = null;
 
+    /**
+     * Get singleton instance.
+     */
+    public static AuthorizationData getInstance() {
+        if (authData == null) 
+            authData = new AuthorizationData();
+        return authData;
+    }
     
     /**
      * Regenerate the web service data structure if the xml
