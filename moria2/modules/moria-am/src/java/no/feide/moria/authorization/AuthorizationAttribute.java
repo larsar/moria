@@ -24,7 +24,7 @@ package no.feide.moria.authorization;
 
 /**
  * This class represents an LDAP attribute and is used for authorization of a
- * web service. Both Profile and WebService have lists of attributes.
+ * web service. Both {@link AuthorizationManager} and {@link AuthorizationClient} have lists of attributes.
  *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
