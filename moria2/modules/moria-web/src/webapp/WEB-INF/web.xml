@@ -1,75 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-         version="2.4">
 
 <!-- $Id$ -->
 
-<display-name>Moria</display-name>
-<description>Moria Web Authentication service</description>
+<web-app
+   xmlns="http://java.sun.com/xml/ns/j2ee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+   version="2.4">
 
-<!--
-    <servlet>
-        <servlet-name>Login</servlet-name>
-        <servlet-class>no.feide.moria.servlet.LoginServlet</servlet-class>
-    </servlet>
+  <display-name>Moria</display-name>
+  <description>Moria Web Authentication service</description>
 
-    <servlet>
-        <servlet-name>Logout</servlet-name>
-        <servlet-class>no.feide.moria.servlet.LogoutServlet</servlet-class>
-    </servlet>
--->
+  <context-param>
+    <param-name>jsp.location</param-name>
+    <param-value>/WEB-INF/jsp</param-value>
+  </context-param>
 
-<!--
-    <servlet-mapping>
-        <servlet-name>Login</servlet-name>
-        <url-pattern>/Login</url-pattern>
-    </servlet-mapping>
+  <servlet>
+    <servlet-name>Login</servlet-name>
+    <servlet-class>no.feide.moria.servlet.LoginServlet</servlet-class>
+  </servlet>
 
-    <servlet-mapping>
-        <servlet-name>Logout</servlet-name>
-        <url-pattern>/Logout</url-pattern>
-    </servlet-mapping>
--->
+  <servlet>
+    <servlet-name>Logout</servlet-name>
+    <servlet-class>no.feide.moria.servlet.LogoutServlet</servlet-class>
+  </servlet>
 
-<servlet>
-  <servlet-name>AxisServlet</servlet-name>
-  <display-name>Apache-Axis Servlet</display-name>
-  <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
-</servlet>
+  <servlet>
+    <servlet-name>AxisServlet</servlet-name>
+    <display-name>Moria Axis Servlet</display-name>
+    <servlet-class>no.feide.moria.servlet.AxisServlet</servlet-class>
+  </servlet>
 
-<servlet>
-  <servlet-name>AdminServlet</servlet-name>
-  <display-name>Admin Servlet</display-name>
-  <servlet-class>org.apache.axis.transport.http.AdminServlet</servlet-class>
-  <load-on-startup>100</load-on-startup>
-</servlet>
+  <servlet-mapping>
+    <servlet-name>Login</servlet-name>
+    <url-pattern>/Login</url-pattern>
+  </servlet-mapping>
 
-<!--
-<servlet-mapping>
-  <servlet-name>AxisServlet</servlet-name>
-  <url-pattern>/axis/*.jws</url-pattern>
-</servlet-mapping>
--->
-<servlet-mapping>
-  <servlet-name>AxisServlet</servlet-name>
-  <url-pattern>/servlet/AxisServlet</url-pattern>
-</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Logout</servlet-name>
+    <url-pattern>/Logout</url-pattern>
+  </servlet-mapping>
 
-<servlet-mapping>
-  <servlet-name>AxisServlet</servlet-name>
-  <url-pattern>/services/*</url-pattern>
-</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AxisServlet</servlet-name>
+    <url-pattern>/v1_0/Authentication</url-pattern>
+  </servlet-mapping>
 
-<servlet-mapping>
-  <servlet-name>AdminServlet</servlet-name>
-  <url-pattern>/servlet/AdminServlet</url-pattern>
-</servlet-mapping>
-
-<servlet-mapping>
-  <servlet-name>AxisServlet</servlet-name>
-  <url-pattern>/v1_1/Authentication</url-pattern>
-</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AxisServlet</servlet-name>
+    <url-pattern>/v1_1/Authentication</url-pattern>
+  </servlet-mapping>
 
 </web-app>
