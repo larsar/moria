@@ -26,11 +26,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import no.feide.moria.store.CachedUserData;
-import no.feide.moria.store.InvalidTicketException;
-import no.feide.moria.store.MoriaAuthnAttempt;
-import no.feide.moria.store.MoriaTicket;
-
 /**
  * Test class for classes implementing the MoriaStore interface.
  *
@@ -188,7 +183,11 @@ public class MoriaCacheStoreTest extends TestCase {
         }
 
         /* Wrong ticket */
-        assertNull("Invalid ticket, authnAttempt should be null", store.getAuthnAttempt("doesNotExist", false));
+        try {
+            assertNull("Invalid ticket, authnAttempt should be null", store.getAuthnAttempt("doesNotExist", false));
+            fail("InvalidTicketException should be raised, non-existing ticket.");
+        } catch (InvalidTicketException success) {
+        }
 
         String ticketId;
 
@@ -208,8 +207,11 @@ public class MoriaCacheStoreTest extends TestCase {
         /* Keep, no keep */
         authnAttempt = store.getAuthnAttempt(ticketId, false);
         assertNotNull("authnAttempt should not be null (cached)", authnAttempt);
-        authnAttempt = store.getAuthnAttempt(ticketId, true);
-        assertNull("authnAttempt should be null (removed from cache)", authnAttempt);
+        try {
+            store.getAuthnAttempt(ticketId, true);
+            fail("InvalidTicketException should be raised, non-existing ticket");
+        } catch (InvalidTicketException success) {
+        }
     }
 
     /**
