@@ -21,6 +21,9 @@
 package no.feide.moria.store;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class represents the different types of tickets used in Moria.
@@ -78,7 +81,11 @@ public final class MoriaTicketType implements Serializable {
      * Static array that hold all objects. Used by readResolve() to
      * return correct object after de-serialization.
      */
-    private static final MoriaTicketType[] TYPES = {LOGIN_TICKET, SERVICE_TICKET, SSO_TICKET, TICKET_GRANTING_TICKET, PROXY_TICKET};
+    private static final MoriaTicketType[] PRIVATE_TICKET_TYPES = {LOGIN_TICKET, SERVICE_TICKET, SSO_TICKET,
+            TICKET_GRANTING_TICKET, PROXY_TICKET};
+
+    /** Public representation of the ticket types. */
+    public static final List TICKET_TYPES = Collections.unmodifiableList(Arrays.asList(PRIVATE_TICKET_TYPES));
 
     /**
      * Needed for serialization to work.
@@ -86,6 +93,6 @@ public final class MoriaTicketType implements Serializable {
      * @return the local classloader representation of the object.
      */
     Object readResolve() {
-        return TYPES[ordinal];
+        return PRIVATE_TICKET_TYPES[ordinal];
     }
 }
