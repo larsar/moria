@@ -1,4 +1,4 @@
-<project name="Mellon common"
+<project name="Mellon"
          default="build"
          basedir=".">
 
@@ -10,8 +10,8 @@
   <target name="jaxrpc"
    	      description="Build all"
    	      depends="prepare">
+   	      <ant dir="jaxrpc" target="wscompile"/>
    	      <ant dir="common" target="build"/>
-   	      <ant dir="jaxrpc" target="build"/>
    	      <ant dir="common" target="servlet"/>
    	      <copy todir="dist">
    	        <fileset dir="common/dist" includes="*"/>
@@ -42,7 +42,7 @@
   		  <ant dir="common" target="clean"/>
   		  <ant dir="jaxrpc" target="clean"/>
   		  <ant dir="axis"   target="clean"/>
-  		  <deltree dir="dist"/>
+  		  <delete dir="dist"/>
   </target>
   
   
