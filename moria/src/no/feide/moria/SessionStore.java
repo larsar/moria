@@ -218,7 +218,7 @@ public class SessionStore {
     }
 
     
-    protected void checkTimeout(int timeout, int authTimeoutSec, int timeoutSso) {
+    protected void checkTimeout(int lifetimeLogin, int lifetimeAuth, int lifetimeSSO) {
 
         Vector invalidatedSessions = new Vector();
         Date start = new Date();
@@ -237,7 +237,7 @@ public class SessionStore {
                     
                     /* Look for timed out SSO sessions. */
                     if (session.isLocked() && 
-                        !session.isValid(now-timeoutSso)) {
+                        !session.isValidAt(now, lifetimeSSO)) {
                             log.info("Invalidating SSO session (timeout): "+session.getID());
                             stats.incStatsCounter(wsName, "timeoutSSO");
                             stats.decStatsCounter(wsName, "activeSessions");
@@ -245,7 +245,7 @@ public class SessionStore {
                     }
 
                     /* Web service to slow to fetch user attributes */
-                    else if (!session.isLocked() && !session.isValid(now-authTimeoutSec)) {
+                    else if (!session.isLocked() && !session.isValidAt(now, lifetimeAuth)) {
                             log.info("Invalidating authenticated session (Mellon timeout): "+session.getID());
                             stats.incStatsCounter(wsName, "timeoutMellon");
                             stats.decStatsCounter(wsName, "activeSessions");
@@ -255,7 +255,7 @@ public class SessionStore {
 
                 /* Time out due to missing login info from user */
                 else {
-                    if (!session.isValid(now-timeout)) {
+                    if (!session.isValidAt(now, lifetimeLogin)) {
                         log.info("Invalidating session (user timeout): "+session.getID());
                         stats.incStatsCounter(wsName, "timeoutUser");
                         stats.decStatsCounter(wsName, "activeSessions");
