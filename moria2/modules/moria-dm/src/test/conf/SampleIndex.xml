@@ -26,8 +26,9 @@ user ID.
 	
     <!--
 	     Associate the user ID with one user element reference, using SSL (port 636).
-	     This will override the above association.
+	     This will override the above association. The "realm" attribute is used to
+	     tie the user to a given organization, for authorization purposes.
     -->	
-	<Exception id="user@some.realm" reference="ldap://another.ldap.server:636/uid=user,ou=people,dc=another,dc=place"/>	
+	<Exception id="user@some.realm" reference="ldap://another.ldap.server:636/uid=user,ou=people,dc=another,dc=place" realm="some.realm"/>	
 	
 </Index>
