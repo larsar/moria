@@ -77,6 +77,8 @@ public class AuthenticationFilter implements Filter {
                  * session. The user should be redirected to this
                  * URL. */
                 try {
+                    // Should analyse URL so that ? isn't added if it
+                    // already exists.
                     redirectURL = moria.requestSession(new String[] {"cn", "uid"}, httpRequest.getRequestURL().toString()+"?moriaID=", "");
                 }
                 
