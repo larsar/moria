@@ -71,10 +71,6 @@ public final class MoriaTicket implements Serializable {
      *            the id of the service this ticket relates to
      * @param timeToLive
      *            the number of seconds this ticket should be considered valid
-     * @throws IllegalArgumentException
-     *             if any of the arguments are null
-     * @throws InvalidTicketException
-     *             if an illegal ticket type is specified
      */
     public MoriaTicket(final int ticketType, final String servicePrincipal, final long timeToLive) {
         this(MoriaTicket.newId(), ticketType, servicePrincipal, timeToLive);
@@ -91,10 +87,6 @@ public final class MoriaTicket implements Serializable {
      *            the id of the service this ticket relates to
      * @param timeToLive
      *            the number of seconds this ticket should be considered valid
-     * @throws IllegalArgumentException
-     *             if any of the arguments are null
-     * @throws InvalidTicketException
-     *             if an illegl ticket type is spesified
      */
     public MoriaTicket(String ticketId, int ticketType, String servicePrincipal, long timeToLive)  {
 
