@@ -41,12 +41,12 @@ import java.util.TimerTask;
  * <br/>
  * The configuration file has to contain properties that points to the other modules
  * properties files. These files kan be referenced by either full file path or as a resource
- * in the classpath. The <code>fileListenerIntervalSeconds</code> attribute specifies
- * the interval between each file poll. <br/>
+ * in the classpath. The <code>no.feide.moria.configuration.fileListenerIntervalSeconds</code>
+ * attribute specifies the interval between each file poll. <br/>
  * <p/>
  * <pre>
  * # Example content for ConfigurationManager properties
- * fileListenerIntervalSeconds=1
+ * no.feide.moria.configuration.fileListenerIntervalSeconds=1
  * no.feide.moria.configuration.sm=/sm-test-valid.properties
  * no.feide.moria.configuration.dm=/dm-test-valid.properties
  * no.feide.moria.configuration.am=/am-data.xml
