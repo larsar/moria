@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.TimerTask;
 import no.feide.moria.directory.index.DirectoryManagerIndex;
+import no.feide.moria.log.MessageLogger;
 
 /**
  * This is the task responsible for periodically checking for a new index file,
@@ -37,6 +38,9 @@ import no.feide.moria.directory.index.DirectoryManagerIndex;
  */
 public class IndexUpdater
 extends TimerTask {
+
+    /** Used for logging. */
+    private final MessageLogger log = new MessageLogger(IndexUpdater.class);
 
     /** The location of the index file. */
     private final String filename;
@@ -117,7 +121,7 @@ extends TimerTask {
         // Check if the index file exists.
         File indexFile = new File(filename);
         if (!indexFile.isFile())
-            throw new DirectoryManagerConfigurationException("Index file " + filename + " does not exist");
+            log.logInfo("Index file '" + filename + "' does not exist");
 
         // Check if we have received a newer index file than the one previously
         // read.
@@ -134,14 +138,16 @@ extends TimerTask {
             in.close();
 
         } catch (FileNotFoundException e) {
-            throw new DirectoryManagerConfigurationException("Index file " + filename + " does not exist");
+            // Unlikely we'll ever get here, but we have to catch the exception.
+            log.logInfo("Index file '" + filename + "' does not exist");
         } catch (IOException e) {
-            throw new DirectoryManagerConfigurationException("Unable to read index from file " + filename, e);
+            log.logInfo("Unable to read index from file '" + filename + "'", e);
         } catch (ClassNotFoundException e) {
-            throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
+            log.logInfo("Unable to instantiate index object", e);
         }
 
         timestamp = indexFile.lastModified();
+        log.logInfo("Index has been updated");
         return index;
 
     }

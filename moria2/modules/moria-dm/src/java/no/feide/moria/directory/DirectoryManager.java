@@ -162,7 +162,7 @@ public class DirectoryManager {
 
         // Sanity check.
         if ((newIndex == null) && (index == null))
-            throw new DirectoryManagerConfigurationException("Index not initialized but file " + configuration.getIndexFilename() + " still marked as outdated");
+            throw new DirectoryManagerConfigurationException("Unable to initialize index; aborting");
 
         // Update existing index.
         if (newIndex != null)
