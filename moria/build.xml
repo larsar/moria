@@ -13,6 +13,7 @@
            classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
 
 
+
   <!-- Common Mellon/Moria targets. -->
   <target name="all:clean"
           description="All: Clean up everything"
@@ -45,8 +46,8 @@
     <copy file="build.moria/WEB-INF/classes/login_nb.properties" tofile="build.moria/WEB-INF/classes/login_no.properties"/>
     <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
     <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
-    <delete file="build.moria/WEB-INF/classes/Moria.xml"/>
-    <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
+    <delete file="build.moria/WEB-INF/classes/moria.properties"/>
+    <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/moria.properties"/>
     <copy todir="build.moria/WEB-INF/lib">
       <fileset dir="moria/lib/">
 	<include name="**/*.jar"/>

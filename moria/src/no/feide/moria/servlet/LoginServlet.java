@@ -1,7 +1,6 @@
 package no.feide.moria.servlet;
 
 import java.util.Properties;
-import java.util.prefs.Preferences;
 import java.util.logging.Logger;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -33,7 +32,6 @@ import org.apache.velocity.servlet.VelocityServlet;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
-import java.util.prefs.InvalidPreferencesFormatException;
 import javax.xml.rpc.server.ServletEndpointContext;
 
 import com.oreilly.servlet.LocaleNegotiator;
@@ -52,7 +50,6 @@ public class LoginServlet extends VelocityServlet {
     private static String AUTHFAILED = "auth";
     private static String GENERIC    = "generic";
 
-    Preferences prefs, localPrefs;
     String loginURL;
 
     SessionStore sessionStore = SessionStore.getInstance();
@@ -60,13 +57,13 @@ public class LoginServlet extends VelocityServlet {
 
     /**
      *   Called by the VelocityServlet init(). Reads the template path
-     *   from Preferences.
+     *   from Properties.
      */
     protected Properties loadConfiguration(ServletConfig config )
         throws IOException, FileNotFoundException {
         
         try {
-            Preferences.importPreferences(getClass().getResourceAsStream("/Moria.xml"));
+            System.getProperties().load(getClass().getResourceAsStream("/Moria.xml"));
         }
 
         catch (FileNotFoundException e) {
@@ -75,28 +72,21 @@ public class LoginServlet extends VelocityServlet {
         
         catch (IOException e) {
             log.severe("IOException caught.");
-        } 
-
-        catch (InvalidPreferencesFormatException e) {
-            log.severe("InvalidPreferencesFormatException caught.");
- 
         }
         
 
 
-        localPrefs = Preferences.userNodeForPackage(LoginServlet.class);
-        prefs = Preferences.userNodeForPackage(Session.class);
         log.finer("loadConfiguration(ServletConfig)");
-        loginURL = prefs.get("LoginURL", null);
+        loginURL = System.getProperty("no.feide.mellon.LoginURL");
 
         System.out.println("loginURL: "+loginURL);
 
         Properties p = new Properties();
-        String path = localPrefs.get("TemplateDir", null);
+        String path = System.getProperty("no.feide.mellon.servlet.TemplateDir");
 
         /* If path is null, log it. */ // Should also abort?
         if (path == null) {
-            log.severe("Path to Velocity templates not set. (Preferences, Moria.xml)");
+            log.severe("Path to Velocity templates not set. (Properties, moria.properties)");
             path = "/";
         }
 

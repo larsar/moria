@@ -9,7 +9,6 @@ package no.feide.moria;
 import java.security.Security;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 import javax.naming.*;
 import javax.naming.directory.*;
 import javax.naming.ldap.InitialLdapContext;
@@ -58,12 +57,12 @@ public class User {
      *         or <code>null</code> username/password), otherwise an
      *         <code>User</code> element.
      * @throws BackendException If a NamingException is thrown, or if any of
-     *                          the following preferences cannot be found:
+     *                          the following properties cannot be found:
      *                          <ul>
-     *                           <li>Backend.LDAP.Host
-     *                           <li>Backend.LDAP.Port
-     *                           <li>Backend.LDAP.Base
-     *                           <li>Backend.LDAP.UIDAttribute
+     *                           <li>no.feide.moria.Backend.LDAP.Host
+     *                           <li>no.feide.moria.Backend.LDAP.Port
+     *                           <li>no.feide.moria.Backend.LDAP.Base
+     *                           <li>no.feide.moria.Backend.LDAP.UIDAttribute
      *                          </ul>
      *                          Also thrown if the type of credentials is not
      *                          supported.
@@ -85,24 +84,23 @@ public class User {
              (username.length() == 0) || (password.length() == 0) )
             return null;
         
-        // Get and verify preferences.
-        Preferences prefs = Preferences.userNodeForPackage(User.class);
-        String keyStore = prefs.get("Backend.LDAP.Keystore", null);
-        String keyStorePassword = prefs.get("Backend.LDAP.KeystorePassword", null);
-        String trustStore = prefs.get("Backend.LDAP.TrustStore", null);
-        String trustStorePassword = prefs.get("Backend.LDAP.TrustStorePassword", null);
-        String ldapHost = prefs.get("Backend.LDAP.Host", null);
+        // Get and verify properties.
+        String keyStore = System.getProperty("no.feide.moria.Backend.LDAP.Keystore");
+        String keyStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.KeystorePassword", null);
+        String trustStore = System.getProperty("no.feide.moria.Backend.LDAP.TrustStore");
+        String trustStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.TrustStorePassword", null);
+        String ldapHost = System.getProperty("no.feide.moria.Backend.LDAP.Host");
         if (ldapHost == null)
-            throw new BackendException("Required preference Backend.LDAP.Host not set");
-        String ldapPort = prefs.get("Backend.LDAP.Port", null);
+            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.Host not set");
+        String ldapPort = System.getProperty("no.feide.moria.Backend.LDAP.Port");
         if (ldapPort == null)
-            throw new BackendException("Required preference Backend.LDAP.Port not set");
-        String ldapBase = prefs.get("Backend.LDAP.Base", null);
+            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.Port not set");
+        String ldapBase = System.getProperty("no.feide.moria.Backend.LDAP.Base");
         if (ldapBase == null)
-            throw new BackendException("Required preference Backend.LDAP.Base not set");
-        String ldapUid = prefs.get("Backend.LDAP.UIDAttribute", null);
+            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.Base not set");
+        String ldapUid = System.getProperty("no.feide.moria.Backend.LDAP.UIDAttribute");
         if (ldapUid == null)
-            throw new BackendException("Required preference Backend.LDAP.UIDAttribute not set");
+            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.UIDAttribute not set");
         
         // Only enable SSL if all necessary info is available.
         Hashtable env = new Hashtable();

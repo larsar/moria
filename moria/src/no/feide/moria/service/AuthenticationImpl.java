@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.logging.*;
-import java.util.prefs.InvalidPreferencesFormatException;
-import java.util.prefs.Preferences;
 import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
@@ -41,15 +39,14 @@ implements AuthenticationIF, ServiceLifecycle {
 
 
     /**
-     * Service endpoint initialization. Will read the <code>Preferences</code>
+     * Service endpoint initialization. Will read the <code>Properties</code>
      * file found in the location given by the system property
      * <code>no.feide.moria.config.file</code>. If the property is not
-     * set, the default filename is <code>/Moria.xml</code>.
+     * set, the default filename is <code>/moria.properties</code>.
      * @param context The servlet context, used to find the user (client service)
      *                identity in later methods.
-     * @throws ServiceException If a FileNotFoundException, IOException
-     *                          or InvalidPreferencesFormatException is
-     *                          caught when reading the preferences file.
+     * @throws ServiceException If a FileNotFoundException or IOException id
+     *                          caught when reading the properties file.
      */
     public void init(Object context) 
     throws ServiceException {
@@ -57,15 +54,15 @@ implements AuthenticationIF, ServiceLifecycle {
 
 	ctx = (ServletEndpointContext)context;
 
-        // Read preferences.
+        // Read properties.
         try {
             if (System.getProperty("no.feide.moria.config.file") == null) {
-                log.fine("no.feide.moria.config.file not set; default is \"/Moria.xml\"");
-		Preferences.importPreferences(getClass().getResourceAsStream("/Moria.xml"));
+                log.fine("no.feide.moria.config.file not set; default is \"/moria.properties\"");
+                System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
             }
             else {
                 log.fine("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
-		Preferences.importPreferences(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
+                System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
             }
         } catch (FileNotFoundException e) {
             log.severe("FileNotFoundException caught and re-thrown as ServiceException");
@@ -73,9 +70,6 @@ implements AuthenticationIF, ServiceLifecycle {
         } catch (IOException e) {
             log.severe("IOException caught and re-thrown as ServiceException");
             throw new ServiceException("IOException caught", e);
-        } catch (InvalidPreferencesFormatException e) {
-            log.severe("InvalidPreferencesFormatException caught and re-thrown as ServiceException");
-            throw new ServiceException("InvalidPreferencesException caught", e);
         }
 
     }

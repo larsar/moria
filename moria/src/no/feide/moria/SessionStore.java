@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.logging.Logger;
-import java.util.prefs.InvalidPreferencesFormatException;
-import java.util.prefs.Preferences;
 import org.doomdark.uuid.UUIDGenerator;
 
 public class SessionStore {

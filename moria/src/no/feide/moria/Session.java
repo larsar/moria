@@ -3,7 +3,6 @@ package no.feide.moria;
 import java.security.Principal;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
 
@@ -29,9 +28,6 @@ public class Session {
 
     /** The user for this session, set after a successful authentication. */
     private static User user;
-    
-    /** Used to read preferences. */
-    private Preferences prefs = Preferences.userNodeForPackage(Session.class);
 
     /** The identity of the client service requesting this session. */
     private Principal client;
@@ -40,7 +36,7 @@ public class Session {
     /**
      * Protected constructor, only to be used by
      * <code>SessionStore<code>. The session URL is set to the
-     * authentication URL read from global preferences
+     * authentication URL read from global properties
      * (<code>no.feide.moria.LoginURL</code>).
      * @param sessionID The session's ID.
      * @param attributes The attributes requested for this session.
@@ -98,7 +94,7 @@ public class Session {
         log.fine("Authentication failed");
         failedLogins++;
         try {
-            Integer maxFailures = Integer.decode(prefs.get("MaxFailedLogins", "3"));
+            Integer maxFailures = Integer.decode(System.getProperty("no.feide.mellon.MaxFailedLogins", "3"));
             if (failedLogins == maxFailures.intValue()) {
                 // Remove ourselves from the session store.
                 log.fine("Invalidating session: "+sessionID);
@@ -140,7 +136,7 @@ public class Session {
         
         String retval = "";
         if (user == null) {
-            retval = prefs.get("LoginURL", null)+"?id="+sessionID;
+            retval = System.getProperty("no.feide.moria.LoginURL")+"?id="+sessionID;
         } else {
             if (urlPrefix != null)
                 retval = retval + urlPrefix;
