@@ -3,4 +3,7 @@ maven.log
 target
 .classpath
 .project
+*.ipr
+*.iws
+*.iml
 build.properties

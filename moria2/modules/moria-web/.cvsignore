@@ -3,6 +3,7 @@ maven.log
 target
 .classpath
 .project
-moria-web.ipr
-moria-web.iws
+*.ipr
+*.iws
+*.iml
 build.properties
