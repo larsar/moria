@@ -31,7 +31,7 @@ public class SessionStore {
      * Constructor. Kicks off the session store maintenance thread, to handle
      * session timeouts.
      */
-    public SessionStore() {
+    private SessionStore() {
         log.finer("SessionStore()");
         log.info("Read properties");
         // Read properties.
