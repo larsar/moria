@@ -216,7 +216,7 @@ public class SessionStore {
                 String wsName = session.getWebService().getId();
 
                 if (session.isAuthenticated()) {
-
+                    
                     /* Look for timed out SSO sessions. */
                     if (session.isLocked() && 
                         !session.isValid(now-timeoutSso)) {
@@ -226,8 +226,8 @@ public class SessionStore {
                     }
 
                     /* Web service to slow to fetch user attributes */
-                    else if (!session.isValid(now-authTimeoutSec)) {
-                            log.info("Invalidating authenticated session (timeout): "+session.getID());
+                    else if (!session.isLocked() && !session.isValid(now-authTimeoutSec)) {
+                            log.info("Invalidating authenticated session (Mellon timeout): "+session.getID());
                             stats.sessionTimeout(wsName, "AUTH");
                             invalidatedSessions.add(session);
                     }
@@ -236,7 +236,7 @@ public class SessionStore {
                 /* Time out due to missing login info from user */
                 else {
                     if (!session.isValid(now-timeout)) {
-                        log.info("Invalidating session (timeout): "+session.getID());
+                        log.info("Invalidating session (user timeout): "+session.getID());
                         stats.sessionTimeout(wsName, "USER");
                         invalidatedSessions.add(session);
                     }
