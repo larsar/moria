@@ -16,7 +16,7 @@
   -->
   <preGoal name="build:start">
     <tempfile property="windowsFixFile"
-              destDir="${maven.build.dir}"/>
+              destDir="${maven.build.dir}/.."/>
     <echo message="project.test.templates.dir.fixed=${project.test.templates.dir}${line.separator}log4j.configuration=${log4j.configuration.raw}"
           file="${windowsFixFile}"
           level="verbose"/>
