@@ -191,6 +191,13 @@ public class AuthorizationClientTest extends TestCase {
     public void testAllowSSOForAttributes() {
         AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptyMap);
 
+        /* Illegal arguments */
+        try {
+            client.allowSSOForAttributes(null);
+            fail("Should raise IllegalArgumentException, null value");
+        } catch (IllegalArgumentException success) {
+        }
+
         /* No registered attributes */
         Assert.assertFalse("Non existing attributes", client.allowSSOForAttributes(new String[]{"foo", "bar"}));
 
@@ -251,14 +258,10 @@ public class AuthorizationClientTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        try {
-            client.allowOperations(new String[]{});
-            fail("Should raise IllegalArgumentException, empty string array");
-        } catch (IllegalArgumentException success) {
-        }
 
         /* Legal arguments */
         Assert.assertTrue("Should be allowed", client.allowOperations(new String[]{"localAuth", "directAuth"}));
+        Assert.assertTrue("Should be allowed", client.allowOperations(new String[]{}));
         Assert.assertFalse("Should not be allowed", client.allowOperations(new String[]{"directAuth", "illegalOper"}));
     }
 
