@@ -7,27 +7,19 @@
    xmlns:m="jelly:maven"
    xmlns:u="jelly:util"
    default="project:install">
-
-  <goal
-     name="project:install"
-     description="Build and install this project in the local repository">
-
-    <attainGoal name="war:install"/>
-  </goal>
-
-  <!--
+  
   <preGoal
      name="java:compile">
-    <path
-       id="project.axis.compile.src.set"
-       location="${project.axis.generated.src.dir}"/>
-    <m:addPath
-       id="maven.compile.src.set"
-       refid="project.axis.compile.src.set"/>
-    <attainGoal name="project:wsdl2java"/>
-
+    <j:if test="${context.getVariable('project.axis.generate') == 'true'}">
+      <path
+	 id="project.axis.compile.src.set"
+	 location="${project.axis.generated.src.dir}"/>
+      <m:addPath
+	 id="maven.compile.src.set"
+	 refid="project.axis.compile.src.set"/>
+      <attainGoal name="project:wsdl2java"/>
+    </j:if>
   </preGoal>
-  -->
 
   <goal
      name="project:wsdl2java"
@@ -73,4 +65,15 @@
       </u:available>
     </j:forEach>
   </goal>
+
+  <goal
+     name="project:install"
+     prereqs="war:install"
+     description="Build and install war in local repository"/>
+
+  <goal
+     name="project:deploy"
+     prereqs="war:deploy"
+     description="Build and deploy war to remote repository"/>
+
 </project>
