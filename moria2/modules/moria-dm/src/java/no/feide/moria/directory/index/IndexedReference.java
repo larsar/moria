@@ -34,8 +34,8 @@ public class IndexedReference {
             throw new IllegalArgumentException("References cannot be NULL or an empty string");
 
         // Assignments.
-        myName = name;
-        myReferences = references;
+        myName = new String(name);
+        myReferences = (String[])references.clone();
         explicit = explicitReference;
 
     }
@@ -58,7 +58,7 @@ public class IndexedReference {
      */
     public String[] getReferences() {
 
-        return myReferences;
+        return (String[])myReferences.clone();
 
     }
 
