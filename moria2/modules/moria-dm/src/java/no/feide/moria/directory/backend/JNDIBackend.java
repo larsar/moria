@@ -346,7 +346,7 @@ implements DirectoryManagerBackend {
      *         those attributes that could actually be read, this may be an
      *         empty <code>HashMap</code>. Returns an empty
      *         <code>HashMap</code> if <code>attributes</code> is
-     *         <code>null</code> or an empty array. Note that binary values
+     *         <code>null</code> or an empty array. Note that attribute values
      *         are mapped to <code>String</code> using ISO-8859-1.
      * @throws BackendException
      *             If unable to read the attributes from the backend.
@@ -402,11 +402,11 @@ implements DirectoryManagerBackend {
                         // We either have a String or a byte[].
                         String newValue = null;
                         try {
-                            newValue = new String((String) oldAttr.get(j));
+                            newValue = new String(((String) oldAttr.get(j)).getBytes(), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
                         } catch (ClassCastException e) {
                             
                             // Map byte[] to String, using ISO-8859-1 encoding.
-                            newValue = new String((byte[]) oldAttr.get(j), "ISO-8859-1");
+                            newValue = new String((byte[]) oldAttr.get(j), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
                             
                         }
                         newValues.add(newValue);

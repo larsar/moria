@@ -28,6 +28,14 @@ import no.feide.moria.directory.index.IndexedReference;
  *
  */
 public interface DirectoryManagerBackend {
+    
+    
+    /**
+     * The character set used when encoding attribute values.<br>
+     * <br>
+     * Current value is <code>"ISO-8859-1"</code>. 
+     */
+    public static final String ATTRIBUTE_VALUE_CHARSET = "ISO-8859-1";
 
     /**
      * Opens a new backend connection.
@@ -61,6 +69,7 @@ public interface DirectoryManagerBackend {
      * @return The requested user attributes, if any are requested and if they
      *         can be retrieved from the backend following a successful
      *         authentication. Otherwise, an empty <code>HashMap</code>.
+     *         Attribute values should be encoded using ISO-8859-1.
      * @throws AuthenticationFailedException
      *             If the authentication fails.
      * @throws BackendException
