@@ -143,4 +143,19 @@
     </section>
   </section>
 </section>
+<section><title>Configuration example</title>
+<screen>
+FeideCacheSize 500     # 500 authorizations will be cached
+FeideCacheAge  250     # a cached auth will be valid 250 seconds
+
+&lt;Directory "/home/www/htdocs/secret"&gt;
+  FeideVariable id
+  FeideUrl https://login.feide.no/moria/Authentication
+  FeideServerUser server_user
+  FeideServerPassword sekrit
+  FeideRequire eduPersonAffiliation student employee
+  FeideDomain "Secret stuff"
+&lt;/Directory&gt;
+</screen>
+</section>
 </article>
