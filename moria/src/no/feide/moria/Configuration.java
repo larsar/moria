@@ -57,7 +57,7 @@ public class Configuration {
         "no.feide.moria.SessionSSOTimeout",
         "no.feide.moria.AuthenticatedSessionTimeout",
         "no.feide.moria.defaultLanguage",
-        "no.feide.moria.backend.ldap.url",
+        "no.feide.moria.backend.ldap.url1",
         "no.feide.moria.backend.ldap.usernameAttribute"
     };
 
@@ -177,7 +177,8 @@ public class Configuration {
     /**
      * Verify that a property is not null.
      */
-    private static void checkPropertyNotNull(String propertyName) throws ConfigurationException {
+    private static void checkPropertyNotNull(String propertyName)
+    throws ConfigurationException {
         String errorMessage;
         if (getProperty(propertyName) == null) {
             errorMessage = "Missed required property: "+propertyName;
