@@ -47,13 +47,14 @@ public abstract class RequestUtil extends HttpServlet {
      * Generate a resource bundle. The language of the resource bundle is selected
      * from the following priority list: URL parameter, cookie, service config, browser setting, Moria default
      *
-     * @param bundleName       name of the bundle to retrieve
-     * @param requestParamLang language specified as URL parameter
-     * @param cookies          cookies from the HTTP request
-     * @param serviceLang      default language specified by service
-     * @param browserLang      language requested by the users browser
-     * @param moriaLang        default language for Moria
-     * @return the requested bundle, null if no b
+     * @param bundleName       name of the bundle to retrieve, cannot be null
+     * @param requestParamLang language specified as URL parameter, can be null
+     * @param cookies          cookies from the HTTP request, can be null
+     * @param serviceLang      default language specified by service, can be null
+     * @param browserLang      language requested by the users browser, can be null
+     * @param moriaLang        default language for Moria, cannot be null
+     * @return the requested bundle
+     * @throws MissingResourceException if no bundle is found
      */
     public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final Cookie[] cookies,
                                            final String serviceLang, final String browserLang, final String moriaLang) {
