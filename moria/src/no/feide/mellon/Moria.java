@@ -109,7 +109,8 @@ public class Moria {
      * information is available to the webservice. If the web service
      * has requested (and been authorized) user attributes, the
      * HashMap will contain the requested user data.
-     * @param id
+     * @param id The session ID returned from Moria following a successful
+     *           authentication.
      * @return The attributes requested when the session was established,
      *         or an empty set if no attributes were requested.
      * @throws MoriaException If a RemoteException is caught.
