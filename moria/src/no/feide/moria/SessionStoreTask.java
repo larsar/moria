@@ -18,6 +18,8 @@ extends TimerTask {
      **/
     public void run() {
         log.finer("run()");
+
+        SessionStore.getInstance().checkTimeout(1);
         
         // TODO: Add session store maintenance operations here.
         //log.info("Cleaning up SessionStore - not.");

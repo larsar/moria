@@ -31,6 +31,9 @@ public class Session {
 
     /** The identity of the client service requesting this session. */
     private Principal client;
+
+    /** Timestamp - for invalidating session after time out. */
+    private long timestamp = new Date().getTime();
     
     
     /**
@@ -80,6 +83,8 @@ public class Session {
     public boolean authenticateUser(Credentials c)
     throws BackendException, SessionException {
         log.finer("authenticateUser(Credentials)");
+
+        timestamp = new Date().getTime();
                 
         // Authenticate user.
         user = User.authenticate(c);
@@ -214,6 +219,14 @@ public class Session {
 	log.finer("getClientPrincipal()");
 
 	return client;
+    }
+
+    
+    protected boolean isValid(double validUntil) {
+        if (timestamp < validUntil) 
+            return false;
+        else
+            return true;
     }
 
 }

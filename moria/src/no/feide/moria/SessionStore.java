@@ -168,4 +168,22 @@ public class SessionStore {
         log.fine("Session renamed to "+session.getID());
     }
 
+    
+    protected void checkTimeout(int minutes) {
+
+//         for (Enumeration e = sessions.keySet(); e.hasMoreElements();) {
+//             String key = (String) e.nextElement();
+//             Session session = (Session) sessions.get(key);
+            
+            
+            
+//             if (!session.isValid(new Date().getTime()-(minutes*60*1000))) {
+//                 log.info("Invalidating session (timeout): "+session.getID());
+//                 deleteSession(session);
+//             }
+//         }
+            
+
+    }
+
 }
