@@ -31,10 +31,12 @@ import java.util.Map;
 import java.util.HashSet;
 
 /**
+ * Test suite for the MoriaController class.
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
+ * @see MoriaController
  * @version $Revision$
  */
-public class MoriaControllerTest extends TestCase {
+public final class MoriaControllerTest extends TestCase {
 
     private String validPrefix, validPostfix, validPrincipal, validUsername, validPassword;
     private String[] validAttrs;
@@ -77,15 +79,18 @@ public class MoriaControllerTest extends TestCase {
      * Test the init() method.
      *
      * @see MoriaController#init()
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
      */
-    public void testInit() throws MoriaControllerException {
+    public static void testInit() throws MoriaControllerException {
         MoriaController.init();
     }
 
     /**
      * Verify that the controller initialization checks works and then initates the conftroller.
+     *
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
      */
-    private void controllerInitialization() throws MoriaControllerException {
+    private static void controllerInitialization() throws MoriaControllerException {
         /* Controller not initialized */
         MoriaController.stop();
         try {
@@ -102,31 +107,31 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Compares to Maps. The maps must have equal elements or the test will fail.
      *
-     * @param expected
-     * @param actual
+     * @param expected the expected result
+     * @param actual the actual result
      */
-    private void validateMaps(final Map expected, final Map actual) {
+    private static void validateMaps(final Map expected, final Map actual) {
         assertEquals("Expected and actual attributes length differs", expected.size(), actual.size());
 
-        Iterator itMap = expected.keySet().iterator();
+        final Iterator itMap = expected.keySet().iterator();
         while (itMap.hasNext()) {
-            String key = (String) itMap.next();
-            String[] expectedArr = (String[]) expected.get(key);
-            String[] actualArr = (String[]) actual.get(key);
+            final String key = (String) itMap.next();
+            final String[] expectedArr = (String[]) expected.get(key);
+            final String[] actualArr = (String[]) actual.get(key);
 
-            HashSet expectedValues = new HashSet();
+            final HashSet expectedValues = new HashSet();
             for (int i = 0; i < expectedArr.length; i++) {
                 expectedValues.add(expectedArr[i]);
             }
 
-            HashSet actualValues = new HashSet();
+            final HashSet actualValues = new HashSet();
             for (int i = 0; i < actualArr.length; i++) {
                 actualValues.add(actualArr[i]);
             }
 
-            Iterator itVals = expectedValues.iterator();
+            final Iterator itVals = expectedValues.iterator();
             while (itVals.hasNext()) {
-                String value = (String) itVals.next();
+                final String value = (String) itVals.next();
                 assertTrue("Expected value does not exist: '"+value+"'", actualValues.contains(value));
             }
 
@@ -136,8 +141,7 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Thest the initiateMoriaAuthentication method.
      *
-     * @throws AuthorizationException
-     * @throws IllegalInputException
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
      * @see MoriaController#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean,
             *      java.lang.String)
      */
@@ -181,7 +185,7 @@ public class MoriaControllerTest extends TestCase {
         }
 
         /* Illegal attribute request */
-        String[] attrs = new String[]{"illegal1", "illegal2"};
+        final String[] attrs = new String[]{"illegal1", "illegal2"};
         try {
             MoriaController.initiateAuthentication(attrs, validPrefix, validPostfix, false, validPrincipal);
             fail("AuthorizationException should be raised, illegal attributes request.");
@@ -205,9 +209,14 @@ public class MoriaControllerTest extends TestCase {
         assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
     }
 
+    /**
+     * Test the attemptLogin method.
+     * @see MoriaController#attemptLogin(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testAttemptLogin() throws MoriaControllerException {
-        String validSSOTicketId = "1234";
-        String validLoginTicketId = "4321";
+        final String validSSOTicketId = "1234";
+        final String validLoginTicketId = "4321";
 
         /* Check controller initialization */
         controllerInitialization();
@@ -268,7 +277,7 @@ public class MoriaControllerTest extends TestCase {
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
         Map tickets = MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword);
-        String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
+        final String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
 
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
@@ -319,12 +328,18 @@ public class MoriaControllerTest extends TestCase {
         loginTicketId =
         MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
         tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
-        Map actualAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
+        final Map actualAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
                                                             validPrincipal);
 
         validateMaps(expectedAttrs, actualAttrs);
     }
 
+    /**
+     * Test the attemptSingleSignOn method.
+     *
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     * @see MoriaController#attemptSingleSignOn(java.lang.String, java.lang.String)
+     */
     public void testAttemptSingleSignOn() throws MoriaControllerException {
         /* Check controller initialization */
         controllerInitialization();
@@ -390,12 +405,18 @@ public class MoriaControllerTest extends TestCase {
 
         newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                          validPrincipal);
-        String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
-        Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
+        final String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
+        final Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
 
         validateMaps(expectedAttrs, actualAttrs);
     }
 
+    /**
+     * Test the getUserAttributes method.
+     *
+     * @see MoriaController#getUserAttributes(java.lang.String, java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testGetUserAttributes() throws MoriaControllerException {
         /* Check controller initialization */
         controllerInitialization();
@@ -430,10 +451,10 @@ public class MoriaControllerTest extends TestCase {
         }
 
         /* Authorization */
-        String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+        final String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                       validPrincipal);
-        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
-        String serviceTicketId = (String) tickets.get(MoriaController.SERVICE_TICKET);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final String serviceTicketId = (String) tickets.get(MoriaController.SERVICE_TICKET);
         try {
             MoriaController.getUserAttributes(serviceTicketId, "invalidPrincipal");
             fail("UnknownTicketException should be raised, wrong principal.");
@@ -441,7 +462,7 @@ public class MoriaControllerTest extends TestCase {
         }
 
         /* Content */
-        Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
+        final Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
 
         validateMaps(expectedAttrs, actualAttrs);
 
@@ -459,7 +480,7 @@ public class MoriaControllerTest extends TestCase {
      *
      * @see MoriaController#isLegalURL(java.lang.String)
      */
-    public void testisLegalURL() {
+    public static void testisLegalURL() {
         // TODO: Test more illegal URL constructs
 
         /* Illegal parameters */
@@ -488,12 +509,9 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Test getServiceProperties method.
      *
-     * @throws IllegalInputException
-     * @throws AuthorizationException
-     * @throws UnknownTicketException
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
      * @see MoriaController#getServiceProperties(java.lang.String)
      */
-
     public void testGetServiceProperties() throws MoriaControllerException {
         controllerInitialization();
         /* Invalid arguments */
@@ -508,13 +526,19 @@ public class MoriaControllerTest extends TestCase {
         } catch (IllegalInputException success) {
         }
 
-        String ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+        final String ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
         //assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
-        HashMap properties = MoriaController.getServiceProperties(ticket);
+        final HashMap properties = MoriaController.getServiceProperties(ticket);
         assertEquals("Principal differs", validPrincipal, properties.get("name"));
     }
 
+    /**
+     * Tests the getSecLevel method.
+     *
+     * @see MoriaController#getSecLevel(java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testGetSecLevel() throws MoriaControllerException {
         controllerInitialization();
 
@@ -569,6 +593,12 @@ public class MoriaControllerTest extends TestCase {
         MoriaController.getSecLevel(ticket);
     }
 
+    /**
+     * Test the directNonInteractiveAuthentication method.
+     *
+     * @see MoriaController#directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String, java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testDirectNonInteractiveAuthentication() throws MoriaControllerException {
         controllerInitialization();
 
@@ -648,10 +678,16 @@ public class MoriaControllerTest extends TestCase {
 
     }
 
+    /**
+     * Test the proxyAuthentication method.
+     *
+     * @see MoriaController#proxyAuthentication(java.lang.String[], java.lang.String, java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testProxyAuthentication() throws MoriaControllerException {
         controllerInitialization();
 
-        String validProxyTicketId = "1234";
+        final String validProxyTicketId = "1234";
 
         /* Invalid arguments */
         try {
@@ -680,14 +716,14 @@ public class MoriaControllerTest extends TestCase {
         } catch (IllegalInputException success) {
         }
 
-        String[] attrsProxy = new String[]{"tgt"};
-        String loginTicketId = MoriaController.initiateAuthentication(attrsProxy, validPrefix, validPostfix, false,
+        final String[] attrsProxy = new String[]{"tgt"};
+        final String loginTicketId = MoriaController.initiateAuthentication(attrsProxy, validPrefix, validPostfix, false,
                                                                       validPrincipal);
-        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
         Map resultAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
                                                             validPrincipal);
         /* Ticket generation */
-        String tgt = (String) resultAttrs.get(MoriaController.TGT_IDENTIFIER);
+        final String tgt = (String) resultAttrs.get(MoriaController.TGT_IDENTIFIER);
         assertNotNull("TGT should not be null", tgt);
 
         /* Asking for more attributes than the ones that has been cached */
@@ -727,10 +763,16 @@ public class MoriaControllerTest extends TestCase {
         }
     }
 
+    /**
+     * Tests the getProxyTicket method.
+     *
+     * @see MoriaController#getProxyTicket(java.lang.String, java.lang.String, java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testGetProxyTicket() throws MoriaControllerException {
         controllerInitialization();
 
-        String validTGT = "1234";
+        final String validTGT = "1234";
 
         /* Validate arguments */
         try {
@@ -771,13 +813,13 @@ public class MoriaControllerTest extends TestCase {
         } catch (AuthorizationException success) {
         }
 
-        String loginTicketId = MoriaController.initiateAuthentication(new String[]{"tgt"}, validPrefix, validPostfix,
+        final String loginTicketId = MoriaController.initiateAuthentication(new String[]{"tgt"}, validPrefix, validPostfix,
                                                                       false, validPrincipal);
-        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
-        Map resultAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final Map resultAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
                                                             validPrincipal);
         /* Ticket generation */
-        String tgt = (String) resultAttrs.get("tgt");
+        final String tgt = (String) resultAttrs.get("tgt");
         assertNotNull("TGT should not be null", tgt);
 
 
@@ -789,14 +831,20 @@ public class MoriaControllerTest extends TestCase {
         }
 
         /* Validate proxy ticket */
-        String proxyTicket = MoriaController.getProxyTicket(tgt, "sub1", validPrincipal);
+        final String proxyTicket = MoriaController.getProxyTicket(tgt, "sub1", validPrincipal);
         assertNotNull("Proxy ticket should not be null", proxyTicket);
 
         /* Get attributes for proxy ticket */
-        Map actualAttrs = MoriaController.proxyAuthentication(new String[]{"attr1", "attr2"}, proxyTicket, "sub1");
+        final Map actualAttrs = MoriaController.proxyAuthentication(new String[]{"attr1", "attr2"}, proxyTicket, "sub1");
         validateMaps(expectedAttrs, actualAttrs);
     }
 
+    /**
+     * Tests the verifyUserExistence method.
+     *
+     * @see MoriaController#verifyUserExistence(java.lang.String, java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testVerifyUserExistence() throws MoriaControllerException {
         controllerInitialization();
 
@@ -842,6 +890,12 @@ public class MoriaControllerTest extends TestCase {
 
     }
 
+    /**
+     * Tests the invalidateSSOTicket method.
+     *
+     * @see MoriaController#invalidateSSOTicket(java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testInvalidateSSOTicket() throws MoriaControllerException {
         controllerInitialization();
 
@@ -863,8 +917,8 @@ public class MoriaControllerTest extends TestCase {
         /* Existing SSO ticket */
         String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                       validPrincipal);
-        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
-        String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
 
         /* Verify that SSO is possible */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
@@ -883,6 +937,12 @@ public class MoriaControllerTest extends TestCase {
         }
     }
 
+    /**
+     * Tests the getRedirectURL method.
+     *
+     * @see MoriaController#getRedirectURL(java.lang.String)
+     * @throws MoriaControllerException if any of the tests fail unexpectedly
+     */
     public void testGetRedirectURL() throws MoriaControllerException {
         controllerInitialization();
 
@@ -897,23 +957,12 @@ public class MoriaControllerTest extends TestCase {
             fail("IllegalInputException should be raised, serviceTicketId is an empty string.");
         } catch (IllegalInputException success) {
         }
-//        try {
-//            MoriaController.getRedirectURL("1234", null);
-//            fail("IllegalInputException should be raised, principal is null.");
-//        } catch (IllegalInputException success) {
-//        }
-//        try {
-//            MoriaController.getRedirectURL("1234", "");
-//            fail("IllegalInputException should be raised, principal is an empty string.");
-//        } catch (IllegalInputException success) {
-//        }
 
-         String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
-                                                                      validPrincipal);
-        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
-        String serviceTicket = (String) tickets.get(MoriaController.SERVICE_TICKET);
-        String actualURL = MoriaController.getRedirectURL(serviceTicket);
-        String expectedURL = validPrefix+serviceTicket+validPostfix;
+        final String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,                                                                      validPrincipal);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final String serviceTicket = (String) tickets.get(MoriaController.SERVICE_TICKET);
+        final String actualURL = MoriaController.getRedirectURL(serviceTicket);
+        final String expectedURL = validPrefix+serviceTicket+validPostfix;
         assertEquals("Redirect URL differs.", expectedURL, actualURL);
     }
 }

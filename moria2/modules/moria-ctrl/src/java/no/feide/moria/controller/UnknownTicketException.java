@@ -26,14 +26,14 @@ package no.feide.moria.controller;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class UnknownTicketException extends MoriaControllerException {
+public final class UnknownTicketException extends MoriaControllerException {
 
     /**
      * Basic constructor.
      *
      * @param message Exception message.
      */
-    public UnknownTicketException(String message) {
+    public UnknownTicketException(final String message) {
         super(message);
     }
 }

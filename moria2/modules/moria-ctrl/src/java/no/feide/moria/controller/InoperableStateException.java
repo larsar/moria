@@ -26,11 +26,14 @@ package no.feide.moria.controller;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class InoperableStateException extends MoriaControllerException {
+public final class InoperableStateException extends MoriaControllerException {
 
     /**
      * Basic constructor.
+     *
+     * @param message the exception message
      */
     public InoperableStateException(final String message) {
         super(message);
-    }}
+    }
+}
