@@ -65,8 +65,19 @@ public class WebService {
      * with the name of the web service). */
     private String url;
     
+    /** Language preferred by the web service. */
+    private String defaultLang;
 
-
+    /** The organization the webservice sets as default. Typically this is set to 
+     * the organization that the web service belongs to. */
+    private String defaultOrg;
+    
+    /** The organizations that the service belongs to. */
+    private String[] affiliations = new String[]{};
+    
+    /** Flag if the web service allows local authentication. */
+    private boolean allowLocalAuth = false;
+    
     /**
      * Constructor
      * @param id Unique id for the web service. 
@@ -284,5 +295,63 @@ public class WebService {
     }
 
 
+
+	/**
+	 * @return Returns the defaultLang.
+	 */
+	public String getDefaultLang() {
+		return defaultLang;
+	}
+
+	/**
+	 * @param defaultLang The defaultLang to set.
+	 */
+	void setDefaultLang(String preferredLanguage) {
+		this.defaultLang = preferredLanguage;
+	}
+
+	/**
+	 * @return Returns the defaultOrg.
+	 */
+	public String getDefaultOrg() {
+		return defaultOrg;
+	}
+
+	/**
+	 * @param defaultOrg The defaultOrg to set.
+	 */
+	void setDefaultOrg(String defaultOrg) {
+		this.defaultOrg = defaultOrg;
+	}
+
+	/**
+	 * @return Return true if the web service allows the use of secondary authentication
+	 * agains a another authentication mechanism.
+	 */
+	public boolean allowsLocalAuth() {
+		return allowLocalAuth;
+	}
+
+	/**
+	 * @param allowLocalAuth True if the web service allows secondary authentication methods,
+	 * else false.
+	 */
+	void setAllowLocalAuth(boolean allowLocalAuth) {
+		this.allowLocalAuth = allowLocalAuth;
+	}
+
+	/**
+	 * @return Returns the affiliations.
+	 */
+	String[] getAffiliations() {
+		return affiliations;
+	}
+
+	/**
+	 * @param affiliations The affiliations to set.
+	 */
+	void setAffiliations(String[] affiliation) {
+		this.affiliations = affiliation;
+	}
 
 }

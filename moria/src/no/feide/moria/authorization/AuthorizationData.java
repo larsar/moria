@@ -334,12 +334,29 @@ public class AuthorizationData {
             WebService ws = new WebService(wsElem.getAttribute("id"));
             webServices.put(ws.getId(), ws);
 
-            /* Set WebService's name and url */
+            /* Set WebService's parameters.*/
             String name = wsElem.getElementsByTagName("Name").item(0).getFirstChild().getNodeValue();
             String url = wsElem.getElementsByTagName("URL").item(0).getFirstChild().getNodeValue();
+			String defaultLang = ((Element)wsElem.getElementsByTagName("DefaultLang").item(0)).getAttribute("name");
+			String defaultOrg = ((Element)wsElem.getElementsByTagName("DefaultOrg").item(0)).getAttribute("name");
+			System.out.println(wsElem.getElementsByTagName("AllowLocalAuth").getLength());
+			boolean allowsLocalAuth = wsElem.getElementsByTagName("AllowLocalAuth").getLength() > 0;
             ws.setName(name);
             ws.setUrl(url);
-
+            ws.setDefaultLang(defaultLang);
+            ws.setDefaultOrg(defaultOrg);
+            ws.setAllowLocalAuth(allowsLocalAuth);
+            
+            /* Set WebService's affiliation. The organizations is ordered by a "order"-attribute. */
+            Element affiliationList = (Element) wsElem.getElementsByTagName("Affiliation").item(0);
+			NodeList organizations = affiliationList.getElementsByTagName("Organization");
+            Vector affiliations = new Vector();
+            
+            for (int j = 0; j < organizations.getLength(); j++) {
+				affiliations.add(((Element) organizations.item(j)).getAttribute("name"));
+            }
+            ws.setAffiliations((String[]) affiliations.toArray(new String[affiliations.size()]));
+                      
             /* Set WebService's attributes (allowed and denied) and
              * profiles */
             NodeList aaElems = wsElem.getElementsByTagName("AllowedAttributes");
@@ -425,6 +442,17 @@ public class AuthorizationData {
         System.out.println("***************************************************");
         System.out.println("  ID:\t\t"+ws.getId());
         System.out.println("  URL:\t\t"+ws.getUrl());
+		System.out.println("  Local Auth:\t"+ws.allowsLocalAuth());
+		System.out.println("  Default Lang:\t"+ws.getDefaultLang());
+		System.out.println("  Default Org:\t"+ws.getDefaultOrg());
+		System.out.print(  "  Affilations:\t");
+		
+		String[] affiliations = ws.getAffiliations();
+		for (int i = 0; i < affiliations.length; i++) {
+			System.out.print(affiliations[i]+" ");
+		}
+		System.out.println("");
+		
         System.out.println("  Attribute\t\t\tSSO\tSecLevel");
         System.out.println("  -------------------------------------------------");
 
