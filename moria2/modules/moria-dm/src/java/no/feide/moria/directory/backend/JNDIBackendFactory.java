@@ -1,9 +1,10 @@
 package no.feide.moria.directory.backend;
 
 import java.security.Security;
-import java.util.Properties;
 
-import no.feide.moria.log.MessageLogger;
+import no.feide.moria.directory.DirectoryManagerConfigurationException;
+
+import org.jdom.Element;
 
 /**
  * Factory class for dummy backends.
@@ -11,76 +12,93 @@ import no.feide.moria.log.MessageLogger;
 public class JNDIBackendFactory
 implements DirectoryManagerBackendFactory {
 
-    /** The message logger. */
-    private final static MessageLogger log = new MessageLogger(JNDIBackend.class);
-
-    /** Did we already initialize this backend factory? */
-    private static boolean initialized = false;
-
     /**
-     * The property used to set the Moria truststore. Currently set to
-     * <code>no.feide.moria.directory.backend.jndi.truststore</code>.
+     * The number of seconds before a backend connection times out. Default is
+     * 15 seconds.
      */
-    public static final String PROPERTIES_TRUSTSTORE = "no.feide.moria.directory.backend.jndi.truststore";
-
-    /**
-     * The property used to set the Moria truststore password. Currently set to
-     * <code>no.feide.moria.directory.backend.jndi.truststorepassword</code>.
-     */
-    public static final String PROPERTIES_TRUSTSTORE_PASSWORD = "no.feide.moria.directory.backend.jndi.truststorepassword";
+    private int backendTimeouts = 15;
 
 
     /**
      * Used to set the factory-specific configuration. Must be called before
      * creating a new backend, or the backend will not work as intended. <br>
      * <br>
-     * Note that the method will only take any action the very first time it is
-     * executed, since modifying the global SSL settings after any backend
-     * connections have been opened will result in an illegal state.
+     * Note that using this method with an updated configuration that modifies
+     * any JVM global settings (currently all settings in the
+     * <code>Security</code> element) will likely cause any open backend
+     * connections to fail.
      * @param config
-     *            The global configuration for this backend factory. May include
-     *            the following properties:
-     *            <ul>
-     *            <li><code>PROPERTIES_TRUSTSTORE</code> value <br>
-     *            Optional location of the Moria truststore file, which should
-     *            contain the cerfiticates required to trust the external LDAP
-     *            servers. Will be mapped to
-     *            <code>javax.net.ssl.truststore</code>.
-     *            <li><code>PROPERTIES_TRUSTSTORE_PASSWORD</code> value <br>
-     *            Optional truststore password used to access the truststore
-     *            file. Only relevant if the truststore file is set. Will be
-     *            mapped to <code>javax.net.ssl.truststorepassword</code>.
-     *            </ul>
-     *            Note that <code>config</code> is not stored internally.
+     *            The configuration for this backend factory. The root node must
+     *            be a <code>JNDI</code> element, containing an optional
+     *            <code>Security</code> element, which in turn may contain an
+     *            optional <code>Truststore</code> element. If the
+     *            <code>Truststore</code> exists, it must contain the
+     *            attributes <code>filename</code> and <code>password</code>,
+     *            giving the truststore file location and password,
+     *            respectively. The <code>JNDI</code> element may contain an
+     *            optional attribute <code>timeout</code>, which gives the
+     *            number of seconds before a backend connection should time out.
+     *            If this value is a negative number, the timeout value will be
+     *            set to zero (meaning the connection will never time out).
      * @throws IllegalArgumentException
      *             If <code>config</code> is null.
-     * @see #PROPERTIES_TRUSTSTORE
-     * @see #PROPERTIES_TRUSTSTORE_PASSWORD
+     * @throws DirectoryManagerConfigurationException
+     *             If the configuration element is not a <code>JNDI</code>
+     *             element, or if the optional <code>Truststore</code> element
+     *             is found, but without either of the <code>filename</code>
+     *             or <code>password</code> attributes. Also thrown if the
+     *             <code>timeout</code> attribute contains an illegal timeout
+     *             value.
+     * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
-    public synchronized void setConfig(final Properties config) {
+    public synchronized void setConfig(final Element config)
+    throws DirectoryManagerConfigurationException {
 
-        // Sanity check.
+        // Sanity checks.
         if (config == null)
             throw new IllegalArgumentException("Configuration cannot be NULL");
+        if (!config.getName().equalsIgnoreCase("JNDI"))
+            throw new DirectoryManagerConfigurationException("Unexpected configuration element (was " + config.getName() + ", expected JNDI)");
 
-        // Did we already set the one-time configuration?
-        if (initialized)
-            return;
-        
-        // TODO: Add support for javax.net.ssl.keystore(password).
+        // Get optional timeout value.
+        String timeout = config.getAttributeValue("timeout");
+        if (timeout != null)
+            try {
+                backendTimeouts = Integer.parseInt(timeout);
+            } catch (NumberFormatException e) {
+                throw new DirectoryManagerConfigurationException("\"" + timeout + "\" is not a legal timeout value", e);
+            }
+        if (backendTimeouts < 0)
+            backendTimeouts = 0;
 
-        // Get and verify some properties.
-        String s = config.getProperty(PROPERTIES_TRUSTSTORE);
-        if (s != null) {
-            System.setProperty("javax.net.ssl.truststore", s);
-            s = config.getProperty(PROPERTIES_TRUSTSTORE_PASSWORD);
-            if (s != null)
-                System.setProperty("javax.net.ssl.truststorepassword", s);
+        // TODO: Add support for javax.net.ssl.keystore.
+
+        // Get the optional Security element.
+        final Element securityElement = config.getChild("Security");
+        if (securityElement != null) {
+
+            // Get the optional Truststore element.
+            final Element trustStoreElement = securityElement.getChild("Truststore");
+            if (trustStoreElement != null) {
+
+                // Get truststore filename.
+                String value = trustStoreElement.getAttributeValue("filename");
+                if (value == null)
+                    throw new DirectoryManagerConfigurationException("Attribute \"filename\" not found in Truststore element");
+                System.setProperty("javax.net.ssl.truststore", value);
+
+                // Get truststore password.
+                value = trustStoreElement.getAttributeValue("password");
+                if (value == null)
+                    throw new DirectoryManagerConfigurationException("Attribute \"password\" not found in Truststore element");
+                System.setProperty("javax.net.ssl.truststorepassword", value);
+
+            }
+
         }
 
         // Wrap up.
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-        initialized = true;
 
     }
 
@@ -91,7 +109,7 @@ implements DirectoryManagerBackendFactory {
      */
     public DirectoryManagerBackend createBackend() {
 
-        return new JNDIBackend();
+        return new JNDIBackend(backendTimeouts);
 
     }
 
