@@ -224,7 +224,7 @@ public class RequestUtilTest extends TestCase {
      * @param language the expected language
      * @param bundle   the bundle to verify
      */
-    private void checkBundle(String language, ResourceBundle bundle) {
+    private void checkBundle(final String language, final ResourceBundle bundle) {
         String bundleLang = bundle.getLocale().getLanguage();
         String bundleContentLang = (String) bundle.getObject("lang");
         assertEquals("Expected language differs from bundle content", language, bundleContentLang);
@@ -331,18 +331,19 @@ public class RequestUtilTest extends TestCase {
         expected.put("UNINETT", "uninett.no");
 
         /* Correct syntax */
-        actual = RequestUtil.parseConfig(props, "org", "en");
+        actual = RequestUtil.parseConfig(props, LoginServlet.PROP_ORG, "en");
         assertTrue("TreeMaps doesn't match. Might be mismatch between config file and test code.", expected.equals(actual));
 
         /* Wrong syntax "," */
+        props = new Properties();
         props.load(this.getClass().getResourceAsStream("/web-test-invalid.properties"));
         try {
-            RequestUtil.parseConfig(props, "org", "en");
+            RequestUtil.parseConfig(props, LoginServlet.PROP_ORG, "en");
             fail("Should raise IllegalStateException, config separation error ':'");
         } catch (IllegalStateException success) {
         }
         try {
-            RequestUtil.parseConfig(props, "org", "en2");
+            RequestUtil.parseConfig(props, LoginServlet.PROP_ORG, "en2");
             fail("Should raise IllegalStateException, config separation error ','");
         } catch (IllegalStateException success) {
         }
