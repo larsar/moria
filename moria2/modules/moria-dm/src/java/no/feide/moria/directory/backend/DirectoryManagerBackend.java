@@ -9,6 +9,14 @@ import no.feide.moria.directory.UserAttribute;
 public interface DirectoryManagerBackend {
 
     /**
+     * Opens a new backend connection.
+     * @param reference The backend reference in question.
+     * @throws BackendException If the backend connection could not be made.
+     */
+    public void open(String reference)
+    throws BackendException;
+
+    /**
      * Will attempt to authenticate a user and retrieve a set of user
      * attributes.
      * @param userCredentials

@@ -11,6 +11,19 @@ public class DummyBackend
 implements DirectoryManagerBackend {
 
     /**
+     * Pro-forma implementation of the <code>open()</code> method. Does
+     * nothing.
+     * @param reference
+     *            Ignored.
+     */
+    public void open(String reference) {
+
+        // Does nothing.
+
+    }
+
+
+    /**
      * Will authenticate a user, if the user name is <code>test@feide.no</code>
      * and the password is <code>test</code>.
      * @see no.feide.moria.directory.backend.DirectoryManagerBackend#authenticate(Credentials,
