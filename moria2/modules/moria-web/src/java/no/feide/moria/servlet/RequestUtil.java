@@ -20,8 +20,6 @@
 
 package no.feide.moria.servlet;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -34,6 +32,14 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import no.feide.moria.log.MessageLogger;
+
 /**
  * This class is a toolkit for the servlets and it's main functionality is to retrieve
  * resource bundles.
@@ -41,7 +47,7 @@ import java.util.Vector;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public abstract class RequestUtil extends HttpServlet {
+public class RequestUtil {
 
     /**
      * Generate a resource bundle. The language of the resource bundle is selected
@@ -57,9 +63,9 @@ public abstract class RequestUtil extends HttpServlet {
      * @throws MissingResourceException if no bundle is found
      */
     public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final Cookie[] cookies,
-                                           final String serviceLang, final String browserLang, final String moriaLang) {
+            final String serviceLang, final String browserLang, final String moriaLang) {
 
-        /* Validate parameters */
+        /* Validate parameters. */
         if (bundleName == null || bundleName.equals("")) {
             throw new IllegalArgumentException("bundleName must be a non-empty string.");
         }
@@ -67,15 +73,15 @@ public abstract class RequestUtil extends HttpServlet {
             throw new IllegalArgumentException("moriaDefaultLang must be a non-empty string.");
         }
 
-        /* Build array of preferred language selections */
+        /* Build array of preferred language selections. */
         Vector langSelections = new Vector();
 
-        /* Parameter */
+        /* Parameter. */
         if (requestParamLang != null && !requestParamLang.equals("")) {
             langSelections.add(requestParamLang);
         }
 
-        /* Cookies */
+        /* Cookies. */
         if (cookies != null) {
             String cookieValue = getCookieValue("lang", cookies);
             if (cookieValue != null) {
@@ -83,12 +89,12 @@ public abstract class RequestUtil extends HttpServlet {
             }
         }
 
-        /* Service */
+        /* Service. */
         if (serviceLang != null && !serviceLang.equals("")) {
             langSelections.add(serviceLang);
         }
 
-        /* Browser */
+        /* Browser. */
         if (browserLang != null && !browserLang.equals("")) {
             String[] browserLangs = sortedAcceptLang(browserLang);
             for (int i = 0; i < browserLangs.length; i++) {
@@ -96,7 +102,7 @@ public abstract class RequestUtil extends HttpServlet {
             }
         }
 
-        /* Moria */
+        /* Moria. */
         if (moriaLang != null && !moriaLang.equals("")) {
             langSelections.add(moriaLang);
         }
@@ -121,7 +127,7 @@ public abstract class RequestUtil extends HttpServlet {
      */
     private static ResourceBundle locateBundle(final String bundleName, final String lang) {
 
-        /* Validate parameters */
+        /* Validate parameters. */
         if (bundleName == null || bundleName.equals("")) {
             throw new IllegalArgumentException("bundleName must be a non-empty string.");
         }
@@ -144,15 +150,14 @@ public abstract class RequestUtil extends HttpServlet {
             return bundle;
         }
 
-        /* Check if the fallback is actually requested */
+        /* Check if the fallback is actually requested. */
         if (bundle == fallback && locale.getLanguage().equals(Locale.getDefault().getLanguage())) {
             return bundle;
         }
 
-        /* No bundle found */
+        /* No bundle found. */
         return null;
     }
-
 
     /**
      * Return a requested cookie value from the HTTP request.
@@ -163,7 +168,7 @@ public abstract class RequestUtil extends HttpServlet {
      */
     public static String getCookieValue(final String cookieName, final Cookie[] cookies) {
 
-        /* Validate parameters */
+        /* Validate parameters. */
         if (cookieName == null || cookieName.equals("")) {
             throw new IllegalArgumentException("cookieName must be a non-empty string");
         }
@@ -193,7 +198,7 @@ public abstract class RequestUtil extends HttpServlet {
      */
     public static Cookie createCookie(final String cookieName, final String cookieValue, final int validDays) {
 
-        /* Validate parameters */
+        /* Validate parameters. */
         if (cookieName == null || cookieName.equals("")) {
             throw new IllegalArgumentException("cookieName must be a non-empty string.");
         }
@@ -234,19 +239,19 @@ public abstract class RequestUtil extends HttpServlet {
             String weight = "1.0";
             int index;
 
-            /* Language and weighting are devided by ";" */
+            /* Language and weighting are devided by ";". */
             if ((index = token.indexOf(";")) != -1) {
                 String parsedWeight;
                 lang = token.substring(0, index);
 
-                /* Weight data */
+                /* Weight data. */
                 parsedWeight = token.substring(index + 1, token.length());
                 parsedWeight = parsedWeight.trim();
                 if (parsedWeight.startsWith("q=")) {
                     parsedWeight = parsedWeight.substring(2, parsedWeight.length());
                     weight = parsedWeight;
                 } else {
-                    /* Format error, flag to ignore token */
+                    /* Format error, flag to ignore token. */
                     ignore = true;
                 }
             }
@@ -254,7 +259,7 @@ public abstract class RequestUtil extends HttpServlet {
             if (!ignore) {
                 lang = lang.trim();
 
-                /* Country and language is devided by "-" (optional) */
+                /* Country and language is devided by "-" (optional). */
                 if ((index = lang.indexOf("-")) != -1) {
                     lang = lang.substring(index + 1, lang.length());
                 }
@@ -295,7 +300,7 @@ public abstract class RequestUtil extends HttpServlet {
 
         String value = config.getProperty(element + "_" + language);
         if (value == null) {
-            throw new IllegalStateException("No elements of type '"+element+"' in config.");
+            throw new IllegalStateException("No elements of type '" + element + "' in config.");
         }
 
         StringTokenizer tokenizer = new StringTokenizer(value, ",");
@@ -340,24 +345,49 @@ public abstract class RequestUtil extends HttpServlet {
     public static String insertLink(String token, String data, String name, String url) {
         /* Validate parameters */
         if (token == null || token.equals("")) {
-            // TODO: Log
             throw new IllegalArgumentException("token must be a non-empty string");
         }
         if (data == null || data.equals("")) {
-            // TODO: Log
             throw new IllegalArgumentException("data must be a non-empty string");
         }
         if (name == null || name.equals("")) {
-            // TODO: Log
             throw new IllegalArgumentException("name must be a non-empty string");
         }
         if (url == null || url.equals("")) {
-            // TODO: Log
             throw new IllegalArgumentException("url must be a non-empty string");
         }
 
         String link = "<a href=\"" + url + "\">" + name + "</a>";
 
         return data.replaceAll(token, link);
+    }
+
+    /**
+     * Get the config from the context. The configuration is expected to be set
+     * by the controller before requests are sent to this servlet.
+     *
+     * @return the configuration
+     * @throws IllegalStateException if the config is not set in the context
+     */
+    static Properties getConfig(ServletContext context) {
+        /* Validate parameters */
+        if (context == null) {
+            throw new IllegalArgumentException("context must be a non-empty string");
+        }
+
+        Properties config;
+
+        /* Validate config */
+        try {
+            config = (Properties) context.getAttribute("no.feide.moria.web.config");
+        } catch (ClassCastException e) {
+            throw new IllegalStateException("Config is not correctly set in context. Not a java.util.Properties object.");
+        }
+
+        if (config == null) {
+            throw new IllegalStateException("Config is not set in context.");
+        }
+
+        return config;
     }
 }
