@@ -5,7 +5,7 @@
 
 <log4j:configuration
    xmlns:log4j="http://jakarta.apache.org/log4j/"
-   threshold="info"
+   threshold="all"
    debug="false">
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
@@ -16,7 +16,7 @@
   </appender>
 
   <appender name="ACCESS" class="org.apache.log4j.FileAppender">
-    <param name="File" value="target/logs/test-access.log"/>
+    <param name="File" value="target/test-logs/access.log"/>
     <param name="Append" value="true"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="[%d] %m%n"/>
@@ -24,7 +24,7 @@
   </appender>
 
   <appender name="MESSAGE" class="org.apache.log4j.FileAppender">
-    <param name="File" value="target/logs/test-message.log"/>
+    <param name="File" value="target/test-logs/message.log"/>
     <param name="Append" value="true"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n"/>
@@ -37,12 +37,12 @@
   </logger>
 
   <logger name="no.feide.moria" additivity="false">
-    <level value="info"/>
+    <level value="debug"/>
     <appender-ref ref="MESSAGE"/>
   </logger>
 
   <root>
-    <level value="info"/>
+    <level value="debug"/>
     <appender-ref ref="CONSOLE"/>
   </root>
 </log4j:configuration>
