@@ -192,14 +192,14 @@ public class AuthorizationData {
 
         /* Flatten datastructure for all web service objects. */
         for (Iterator iterator = newWebServices.keySet().iterator(); iterator.hasNext();) {
-            WebService ws = (WebService) newWebServices.get((String) iterator.next());
+            WebService ws = (WebService) newWebServices.get(iterator.next());
             ws.generateAttributeList(attributes);
         }
         
         /* Build array of attributes that are allowed to use in SSO. */
         Vector ssoAttributes = new Vector();
         for (Iterator it = attributes.keySet().iterator(); it.hasNext(); ) {
-            Attribute attr = (Attribute) attributes.get((String) it.next());
+            Attribute attr = (Attribute) attributes.get(it.next());
             if (attr.allowSso())
                 ssoAttributes.add(attr.getName());
         }
