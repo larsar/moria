@@ -173,7 +173,7 @@ implements DirectoryManagerBackendFactory {
      * @return    The new JNDIBackend.
      * @see DirectoryManagerBackendFactory#createBackend(String)
      */
-    public final DirectoryManagerBackend createBackend(final String sessionTicket) {
+    public final synchronized DirectoryManagerBackend createBackend(final String sessionTicket) {
 
         return new JNDIBackend(sessionTicket, backendTimeouts, useSSL, usernameAttribute, guessedAttribute);
 
