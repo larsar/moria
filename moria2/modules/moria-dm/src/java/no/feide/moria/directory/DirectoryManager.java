@@ -119,6 +119,10 @@ public class DirectoryManager {
     public UserAttribute[] authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws BackendException {
 
+        // Sanity check.
+        if (currentConfiguration == null)
+            throw new DirectoryManagerConfigurationException("Configuration not set");
+        
         // TODO: Implement a backend pool.
 
         // Do the call through a temporary backend instance.
