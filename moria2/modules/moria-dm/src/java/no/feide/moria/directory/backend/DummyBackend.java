@@ -1,10 +1,15 @@
 package no.feide.moria.directory.backend;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.index.IndexedReference;
 import no.feide.moria.log.MessageLogger;
+
+import org.jdom.Element;
 
 /**
  * Hard-coded dummy backend, for testing. Does not require an actual backend
@@ -16,27 +21,78 @@ implements DirectoryManagerBackend {
     /** Message logger. */
     private final MessageLogger log = new MessageLogger(DummyBackend.class);
 
-    /** The external reference. */
-    private String myReference;
+    /** Internal representation of user elements and their attributes. */
+    private HashMap userMap;
 
 
     /**
-     * Sets the external reference.
-     * @param reference
-     *            The external reference. Must include at least one actual
-     *            reference, equal to
-     *            <code>ldap://my.ldap.server:636/dc=search,dc=base</code>,
-     *            or any later authentication will fail.
+     * Set the configuration used by this instance.
+     * @param config
+     *            A <code>Backend</code> configuration element. Expects the
+     *            element to contain one or more <code>User</code> elements,
+     *            each with one or more <code>Attribute</code> elements, which
+     *            again have <code>Value</code> elements with exactly one
+     *            value child. Allows for easy configuration of test cases,
+     *            without having to rely on an external backend source. See the
+     *            supplied dummy configuration for a workable example. Note that
+     *            attribute and user names are case-insensitive, while attribute
+     *            values are stored as specified in the configuration.
      */
-    public void open(final IndexedReference reference) {
+    protected void setConfig(final Element config) {
 
-        myReference = new String(reference.getReferences()[0]);
+        // Parse any user elements.
+        userMap = new HashMap();
+        final Iterator users = config.getChildren("User").iterator();
+        while (users.hasNext()) {
+
+            // Parse any attribute elements.
+            HashMap attributeMap = new HashMap();
+            final Element user = (Element) users.next();
+            final Iterator attributes = user.getChildren("Attribute").iterator();
+            while (attributes.hasNext()) {
+
+                // Parse any value elements.
+                ArrayList valueList = new ArrayList();
+                final Element attribute = (Element) attributes.next();
+                final Iterator values = attribute.getChildren("Value").iterator();
+                while (values.hasNext()) {
+
+                    // Parse the attribute values.
+                    final Element value = (Element) values.next();
+                    valueList.add(value.getText());
+
+                }
+
+                // Map an attribute to its values.
+                attributeMap.put(attribute.getAttribute("name").getValue().toLowerCase(), valueList);
+
+            }
+
+            // Map an attribute to a user.
+            userMap.put(user.getAttribute("name").getValue().toLowerCase(), attributeMap);
+
+        }
+        
+        
 
     }
 
 
     /**
-     * Will check whether the user <code>user@some.realm</code> exists.
+     * Does nothing.
+     * @see DirectoryManagerBackend#open(IndexedReference)
+     */
+    public void open(final IndexedReference reference) {
+
+        // Ignored.
+
+    }
+
+
+    /**
+     * Will check whether a user exists.
+     * @param username
+     *            The username. Case is ignored.
      * @see DirectoryManagerBackend#userExists(String)
      */
     public boolean userExists(final String username) {
@@ -44,14 +100,14 @@ implements DirectoryManagerBackend {
         // Fake a test.
         if (username == null)
             return false;
-        return username.equalsIgnoreCase("user@some.realm");
+        return userMap.containsKey(username.toLowerCase());
 
     }
 
 
     /**
-     * Will authenticate a user successfully, if the user name is
-     * <code>user@some.realm</code> and the password is <code>password</code>.
+     * Will authenticate a user, if the user exists and the username equals the
+     * password.
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
@@ -62,12 +118,28 @@ implements DirectoryManagerBackend {
             throw new IllegalArgumentException("Credentials cannot be NULL");
 
         // "Authentication", sort of.
-        final String username = userCredentials.getUsername();
+        final String username = userCredentials.getUsername().toLowerCase();
         final String password = userCredentials.getPassword();
-        if (myReference.equalsIgnoreCase("ldap://my.ldap.server:636/dc=search,dc=base") && (username.equalsIgnoreCase("user@some.realm")) && (password.equals("password"))) {
+        if ((userMap.containsKey(username)) && password.equals(username)) {
 
-            // Successful authentication.
-            return prepareAttributes(attributeRequest);
+            // Successful authentication; user found.
+            HashMap requestedAttributes = new HashMap();
+            if ((attributeRequest != null) && (attributeRequest.length > 0)) {
+                
+                // Some attributes were requested.
+	            HashMap allAttributes = (HashMap) userMap.get(username);
+	            for (int i = 0; i < attributeRequest.length; i++)
+	                if (allAttributes.containsKey(attributeRequest[i].toLowerCase())) {
+	
+	                    // Requested attribute found.
+	                    List requestedValues = (List) allAttributes.get(attributeRequest[i].toLowerCase());
+	                    requestedAttributes.put(attributeRequest[i], requestedValues.toArray(new String[] {}));
+	
+	                }
+            }    
+	                
+            // Return found attributes.
+            return requestedAttributes;
 
         } else {
 
@@ -75,39 +147,6 @@ implements DirectoryManagerBackend {
             throw new AuthenticationFailedException('\"' + username + "\" failed authentication");
 
         }
-
-    }
-
-
-    /**
-     * Prepare and return a proper test attribute set.
-     * @param attributeRequest
-     *            Only the attribute <code>someAttribute</code> is considered.
-     *            Not case-sensitive and may be <code>null</code>.
-     * @return If the attribute is at all requested, will contain the attribute
-     *         <code>someAttribute</code> with the value
-     *         <code>someValue</code>. If not, will contain an empty
-     *         <code>HashMap</code>.
-     */
-    private HashMap prepareAttributes(final String[] attributeRequest) {
-
-        // Sanity check.
-        if (attributeRequest == null)
-            return new HashMap();
-
-        // Check whether someAttribute exists in the attribute request.
-        for (int i = 0; i < attributeRequest.length; i++)
-            if (attributeRequest[i].equalsIgnoreCase("someAttribute")) {
-
-                // Return a new attribute.
-                HashMap attributes = new HashMap();
-                attributes.put("someAttribute", new String[] {"someValue"});
-                return attributes;
-
-            }
-
-        // Return an empty HashMap.
-        return new HashMap();
 
     }
 
