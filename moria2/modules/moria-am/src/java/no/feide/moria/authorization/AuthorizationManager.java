@@ -36,8 +36,13 @@ import org.jdom.input.SAXBuilder;
  */
 public class AuthorizationManager {
 
-    /** List of client authorization objects. Must be synchronized. */
-    private Map authzClients = Collections.synchronizedMap(new HashMap());;
+    /**
+     * List of client authorization objects. Must be synchronized.
+     */
+    private Map authzClients = Collections.synchronizedMap(new HashMap());
+
+    /** True if the authorization manager is ready to be used */
+    private boolean activated = false;
 
     /**
      * Parses a XML element and creates a AuthorizationAttribute object in
@@ -236,11 +241,108 @@ public class AuthorizationManager {
     }
 
     /**
-     * Set the configuration data for this manager
+     * Return a client object for a given identifier.
+     *
+     * @param clientID the client object identifier
+     * @return the client object for the identifier
+     * @throws IllegalArgumentException if the client identifier is null or ""
+     */
+    private AuthorizationClient getAuthzClient(String clientID) {
+        /* Is the manager activated? */
+        if (activated == false) {
+            String message = "Authorization manager is not configured";
+            // TODO: Log
+            // MessageLogger.logCritical(message);
+            throw new NoConfigException(message);
+        }
+
+        /* Validate input parameters */
+        if (clientID == null || clientID.equals("")) {
+            String message = "clientID must be a non-empty string.";
+            // TODO: Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        return (AuthorizationClient) authzClients.get(clientID);
+    }
+
+    /**
+     * Validates a request for access to attributes for a given client/service.
+     *
+     * @param clientID the indentifier of the client
+     * @param requestedAttributes the list of requested attributes
+     * @return true if the service is allowed access, false if not or the client does not exist
+     */
+    public boolean allowAccessTo(String clientID, String[] requestedAttributes) {
+        AuthorizationClient authzClient = getAuthzClient(clientID);
+
+        if (authzClient == null) {
+            // TODO: Log
+            return false;
+        } else {
+            return authzClient.allowAccessTo(requestedAttributes);
+        }
+    }
+
+    /**
+     * Validates a request for access to SSO for a given client/service.
+     *
+     * @param clientID the indentifier of the client
+     * @param requestedAttributes the list of requested attributes
+     * @return true if the service is allowed access, false if not or the client does not exist
+     */
+    public boolean allowSSOForAttributes(String clientID, String[] requestedAttributes) {
+        AuthorizationClient authzClient = getAuthzClient(clientID);
+
+        if (authzClient == null) {
+            // TODO: Log
+            return false;
+        } else {
+            return authzClient.allowSSOForAttributes(requestedAttributes);
+        }
+    }
+
+    /**
+     * Validates a request for access to operations for a given client/service.
+     *
+     * @param clientID the indentifier of the client
+     * @param requestedOperations the list of requested operations
+     * @return true if the service is allowed access, false if not or the client does not exist
+     */
+    public boolean allowOperations(String clientID, String[] requestedOperations) {
+        AuthorizationClient authzClient = getAuthzClient(clientID);
+
+        if (authzClient == null) {
+            // TODO: Log
+            return false;
+        } else {
+            return authzClient.allowOperations(requestedOperations);
+        }
+    }
+
+    /**
+     * Swap the old client database with the supplied HashMap.
+     *
+     * @param newClients the new client database
+     */
+    synchronized void setAuthzClients(HashMap newClients) {
+        if (newClients == null) {
+            // TODO: Log
+            throw new IllegalArgumentException("newClients to be set cannot be null");
+        }
+        synchronized (authzClients) {
+            authzClients = Collections.synchronizedMap(newClients);
+            activated = true;
+        }
+    }
+
+    /**
+     * Set the configuration data for this manager.
      *
      * @param properties the properties containing the authorization database
      */
-    synchronized public void setConfig(Properties properties) {
+    public void setConfig(Properties properties) {
         if (properties == null) {
             throw new IllegalArgumentException("Properties cannot be null");
         }
@@ -256,22 +358,21 @@ public class AuthorizationManager {
         try {
             Document doc = builder.build(new File(fileName));
             HashMap newClients = parseRootElem(doc.getRootElement());
-            synchronized(authzClients) {
-                authzClients = Collections.synchronizedMap(newClients);
-            }
-
+            authzClients = newClients;
         } catch (JDOMException e) {
-            System.out.println("JDOMException");
             // TODO: Log
+            System.out.println("Error during parsing of authorization database file. Still using old database.");
+            e.printStackTrace();
             // MessageLogger.logWarning("Error during parsing of authorization database file. Still using old database.", e);
         } catch (IOException e) {
-            System.out.println("IOException");
             // TODO: Log
+            System.out.println("IOException during parsing of authorization database file. Still using old database.");
+            e.printStackTrace();
             // MessageLogger.logWarning("IOException during parsing of authorization database file. Still using old database.", e);
         } catch (IllegalConfigException e) {
-            System.out.println("IllegalConfigException");
-            e.printStackTrace();
             // TODO: Log
+            System.out.println("Error during authorization database generation. Still using old database.");
+            e.printStackTrace();
             // MessageLogger.logWarning("Error during authorization database generation. Still using old database.", e);
         }
     }
