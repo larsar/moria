@@ -74,7 +74,7 @@ extends HttpServlet {
      * @see RequestUtil.PROP_COOKIE_SSO
      * @see RequestUtil.PROP_COOKIE_SSO_TTL
      * @see RequestUtil.PROP_COOKIE_DENYSSO
-     * @see RequestUtil.PROP_COOKIE_DENYSSO_TTL 
+     * @see RequestUtil.PROP_COOKIE_DENYSSO_TTL
      * @see RequestUtil.PROP_COOKIE_LANG
      * @see RequestUtil.PROP_COOKIE_LANG_TTL
      * @see RequestUtil.PROP_COOKIE_ORG
@@ -106,7 +106,7 @@ extends HttpServlet {
     // parameters.
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
-       
+
         // Get current configuration.
         final Properties config = getConfig();
 
@@ -211,6 +211,10 @@ extends HttpServlet {
         response.addCookie(denySSOCookie);
         request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(denySSO));
 
+        // Store user's organization selection in cookie.
+        final Cookie orgCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getParameter(RequestUtil.PARAM_ORG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
+        response.addCookie(orgCookie);
+
         /* Attempt login */
         final Map tickets;
         final String redirectURL;
@@ -236,10 +240,7 @@ extends HttpServlet {
 
         // Authentication is now complete.
 
-        // Store user's organization selection in cookie.
-        final Cookie orgCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getParameter(RequestUtil.PARAM_ORG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
-        response.addCookie(orgCookie);
-
+        // If we didn't disallow SSO, then store the SSO ticket in a cookie.
         if (!denySSO) {
             final Cookie ssoTicketCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO), (String) tickets.get(MoriaController.SSO_TICKET), new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
             response.addCookie(ssoTicketCookie);
@@ -308,19 +309,19 @@ extends HttpServlet {
         request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, bundle.getLocale().getLanguage()));
         request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
 
-        /* Selected realm */
+        // Can we get organization from URL parameter?
         String selectedOrg = request.getParameter(RequestUtil.PARAM_ORG);
         if (selectedOrg == null || selectedOrg.equals("")) {
 
-            if (request.getCookies() != null) {
-                selectedOrg = RequestUtil.getCookieValue(RequestUtil.PROP_COOKIE_ORG, request.getCookies());
-            }
+            // Can we get organization from user's cookie?
+            if (request.getCookies() != null)
+                selectedOrg = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getCookies());
 
-            if (selectedOrg == null || selectedOrg.equals("")) {
-                if (serviceProperties != null) {
+            // Can we get organization from service configuration?
+            if (selectedOrg == null || selectedOrg.equals(""))
+                if (serviceProperties != null)
                     selectedOrg = (String) serviceProperties.get(RequestUtil.CONFIG_HOME);
-                }
-            }
+                
         }
         request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, selectedOrg);
 

@@ -243,7 +243,12 @@ public final class RequestUtil {
     public static final String PARAM_PASSWORD = "password";
 
     /**
-     * Parameter in request object: Organization.
+     * Organization URL parameter, used when overriding default organization in
+     * the URL redirecting a user from a service to Moria. Useful for services
+     * that wish to dynamically force use of a certain organization irrespective
+     * of the user's previous selections or the service defaults. <br>
+     * <br>
+     * Current value is <code>"org"</code>.
      */
     public static final String PARAM_ORG = "org";
 
@@ -510,8 +515,11 @@ public final class RequestUtil {
         // Return cookie value, if set.
         String value = null;
         for (int i = 0; i < cookies.length; i++) {
-            if (cookies[i].getName().equals(cookieName))
+            log.logInfo("Cookie name: "+cookies[i].getName());
+            if (cookies[i].getName().equals(cookieName)) {
+                log.logInfo("Found cookie; value is "+ cookies[i].getValue());
                 value = cookies[i].getValue();
+            }
         }
         return value;
 
