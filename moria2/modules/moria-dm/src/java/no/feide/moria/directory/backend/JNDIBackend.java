@@ -248,7 +248,7 @@ implements DirectoryManagerBackend {
 
                     // Skip search phase if the reference(s) are explicit.
                     String rdn = "";
-                    if (myReferences[0].isExplicitlyIndexed()) {
+                    if (myReferences[i].isExplicitlyIndexed()) {
 
                         // Add the explicit reference; no search phase, no RDN.
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, references[j].substring(references[j].lastIndexOf('/') + 1));
