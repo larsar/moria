@@ -15,25 +15,8 @@ implements Serializable, DirectoryManagerIndex {
      * <code>WriteableSerializableIndex</code>.
      */
     protected HashMap associations = new HashMap();
-
-
-    /**
-     * Get the bases associated with a realm.
-     * @param realm
-     *            The realm associated with this base. cannot be
-     *            <code>null</code>.
-     * @return The bases associated with this realm, or <code>null</code> if
-     *         no such association was found.
-     */
-    public List getAssociation(final String realm) {
-
-        // Sanity check.
-        if (realm == null)
-            throw new IllegalArgumentException("Realm cannot be NULL");
-
-        return (List) associations.get(realm);
-
-    }
+    
+    protected HashMap exceptions = new HashMap();
 
 
     /**
@@ -45,6 +28,18 @@ implements Serializable, DirectoryManagerIndex {
 
         return new HashMap(associations);
 
+    }
+    
+    
+    /**
+     * Get the exception object. Used by the <code>equals(Object)</code>
+     * method.
+     * @return The exceptions in this index.
+     */
+    public HashMap getExceptions() {
+        
+        return new HashMap(exceptions);
+        
     }
 
 
@@ -58,8 +53,12 @@ implements Serializable, DirectoryManagerIndex {
             return false;
         final SerializableIndex other = (SerializableIndex) obj;
 
-        // Verify contents.
+        // Verify associations.
         if (!other.getAssociations().equals(associations))
+            return false;
+        
+        // Verify exceptions.
+        if (!other.getExceptions().equals(exceptions))
             return false;
 
         return true;

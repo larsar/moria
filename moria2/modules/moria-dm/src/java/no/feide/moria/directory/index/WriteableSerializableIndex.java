@@ -52,4 +52,29 @@ implements Serializable {
 
     }
 
+
+    /**
+     * Add a new search exception to this index. Should only be used to build a
+     * new index, not to update an existing index.
+     * @param id
+     *            The identificator for this exception, typically a user ID.
+     *            Cannot be <code>null</code>.
+     * @param reference
+     *            The reference. In practical use this will be an LDAP search
+     *            base on the form
+     *            <code>ldap://some.ldap.server:636/dc=search,dc=base</code>.
+     *            Cannot be <code>null</code>.
+     */
+    public void addException(final String id, final String reference) {
+
+        // Sanity checks.
+        if (id == null)
+            throw new IllegalArgumentException("ID cannot be NULL");
+        if (reference == null)
+            throw new IllegalArgumentException("Reference cannot be NULL");
+
+        exceptions.put(id, reference);
+
+    }
+
 }
