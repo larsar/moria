@@ -13,11 +13,10 @@
 package no.feide.moria.directory;
 
 import java.util.Properties;
-//import junit.framework.Assert;
+import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import no.feide.moria.directory.DirectoryManagerConfiguration;
 
 /**
  * JUnit tests for the DirectoryManager class.
@@ -26,7 +25,17 @@ import no.feide.moria.directory.DirectoryManagerConfiguration;
 public class DirectoryManagerTest
 extends TestCase {
 
+    /** Internal representation of the configuration properties. */
     private Properties config;
+    
+    /** The user credentials used. */
+    private static final Credentials goodCredentials = new Credentials("test@feide.no", "test");
+    
+    /** The attribute request used. */
+    private static final String[] goodRequest = {"eduPersonAffiliation"};
+    
+    /** The expected attribute values. */
+    private static final String[] goodValues = {"Affiliate"}; 
 
 
     /**
@@ -39,6 +48,9 @@ extends TestCase {
     }
 
 
+    /**
+     * Prepare.
+     */
     public void setUp() {
 
         config = new Properties();
@@ -47,6 +59,9 @@ extends TestCase {
     }
 
 
+    /**
+     * Clean up.
+     */
     public void tearDown() {
 
         config = null;
@@ -54,11 +69,40 @@ extends TestCase {
     }
 
 
-    public void testConfiguration()
-    throws DirectoryManagerException {
+    /**
+     * Test the <code>setConfig(Properties)</code> method.
+     */
+    public void testSetConfig() {
 
-        DirectoryManagerConfiguration.read(config);
+        try {
+            DirectoryManager.setConfig(config);
+        } catch (DirectoryManagerConfigurationException e) {
+            Assert.fail("Unexpected DirectoryManagerConfigurationException");
+        }
 
+    }
+    
+    
+    /**
+     * Test the <code>authenticate(Credentials, String[])</code> method.
+     */
+    public void testAuthenticate() {
+        
+        // Authenticate.
+        UserAttribute[] attributes = null;
+        try {
+            attributes = DirectoryManager.authenticate(goodCredentials, goodRequest);
+        } catch (DirectoryManagerException e) {
+            Assert.fail("Unexpected DirectoryManagerException");
+        }
+        
+        // Verify attributes.
+        Assert.assertNotNull("No attributes returned", attributes);
+    	Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.length);
+    	String[] values = attributes[0].getValues();
+    	Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
+    	Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
+        
     }
 
 }
