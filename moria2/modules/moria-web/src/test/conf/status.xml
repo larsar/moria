@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<Testuserlist>
+
+   <User>
+      <Name>test@uninett.no</Name>
+      <Password>test</Password>
+   </User>
+
+   <User>
+      <Name>tull@tull.no</Name>
+      <Password>tull</Password>
+   </User>
+
+</Testuserlist>
