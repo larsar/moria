@@ -118,6 +118,14 @@
       </fileset>
     </jar>
   </target>
+  
+  <!-- Convenience target to deploy the WAR using a local script. -->
+  <target name="deploy"
+          description="Deploy WAR (requires local script)">
+    <echo message="Using deploy script: ${deploy_script}"/>
+    <exec executable="${deploy_script}">
+    </exec>
+  </target>
 
   <target name="docbook"
           description="Convert docbook documents to html/pdf">
