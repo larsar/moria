@@ -9,6 +9,7 @@
 
 <img class="logo" src="/element/feidelogo.png" alt="FEIDE-logo" border="0"/>
 
+#if ($userRole == "admin") 
 <h1>Moria</h1>
 
 <table>
@@ -79,6 +80,10 @@
 <br/>
 
 <h2>Clients</h2>
+#else
+<h2>Statistikk for: <i>$serviceName</i></h2>
+#end
+
 
 <table>
 
@@ -109,6 +114,7 @@
 <th class="thstat">Invalid URL</th>
 <th class="thstat">Attributes</th>
 </tr>
+
 
 #foreach( $wsName in $sortedWsNames)
 <tr>

@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import no.feide.moria.Configuration;
 import no.feide.moria.ConfigurationException;
 import no.feide.moria.authorization.AuthorizationData;
+import no.feide.moria.authorization.WebService;
 import no.feide.moria.stats.StatsStore;
 
 import org.apache.velocity.Template;
@@ -130,11 +132,41 @@ public class StatsServlet extends VelocityServlet {
             /* Web Services */
             HashMap wsStats = stats.getStats();
             context.put("wsStats", wsStats);
-            Object[] sortedWsNames =  wsStats.keySet().toArray();
-            Arrays.sort(sortedWsNames);
-
-            context.put("sortedWsNames", sortedWsNames);
-
+            
+            
+            String principalName = null;
+            
+            if (request.getUserPrincipal() != null) {
+            	principalName = request.getUserPrincipal().getName();
+            
+            if (principalName.equals("moria")) {
+            	Object[] sortedWsNames =  wsStats.keySet().toArray();
+            	Arrays.sort(sortedWsNames);
+				context.put("sortedWsNames", sortedWsNames);
+				context.put("userRole", "admin");
+            }
+            
+            else if (principalName.indexOf("_stats") != -1) {
+            	String serviceName = principalName.substring(0, principalName.indexOf("_stats"));
+            	WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
+				context.put("userRole", "user");
+            	
+            	if (ws != null) {
+            		context.put("sortedWsNames", new String[]{serviceName});
+            		context.put("serviceName", ws.getName());
+            	}
+            	
+            	else {
+            		context.remove("serviceName");
+            		context.remove("sortedWsNames");
+            	}
+            	
+            }
+            
+            else 
+            	context.remove("sortedWsNames");
+            }
+            
             /* Global counters */
             context.put("globalCounters", stats.getCounters());
 
