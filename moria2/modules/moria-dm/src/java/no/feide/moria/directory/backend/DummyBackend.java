@@ -1,7 +1,8 @@
 package no.feide.moria.directory.backend;
 
+import java.util.HashMap;
+
 import no.feide.moria.directory.Credentials;
-import no.feide.moria.directory.UserAttribute;
 import no.feide.moria.log.MessageLogger;
 
 /**
@@ -34,7 +35,7 @@ implements DirectoryManagerBackend {
      * @see no.feide.moria.directory.backend.DirectoryManagerBackend#authenticate(Credentials,
      *      String[])
      */
-    public UserAttribute[] authenticate(final Credentials userCredentials, final String[] attributeRequest)
+    public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws BackendException {
 
         // Sanity check.
@@ -66,25 +67,27 @@ implements DirectoryManagerBackend {
      *            Not case-sensitive and may be <code>null</code>.
      * @return If the attribute is at all requested, will contain the attribute
      *         <code>someAttribute</code> with the value
-     *         <code>someValue</code>. If not, will contain an empty array.
+     *         <code>someValue</code>. If not, will contain an empty <code>HashMap</code>.
      */
-    private UserAttribute[] prepareAttributes(final String[] attributeRequest) {
+    private HashMap prepareAttributes(final String[] attributeRequest) {
 
         // Sanity check.
         if (attributeRequest == null)
-            return new UserAttribute[] {};
+            return new HashMap();
 
         // Check whether someAttribute exists in the attribute request.
         for (int i = 0; i < attributeRequest.length; i++)
             if (attributeRequest[i].equalsIgnoreCase("someAttribute")) {
 
                 // Return a new attribute.
-                return new UserAttribute[] {new UserAttribute("someAttribute", new String[] {"someValue"})};
+                HashMap attributes = new HashMap();
+                attributes.put("someAttribute", new String[] {"someValue"});
+                return attributes;
 
             }
 
-        // Return an empty array.
-        return new UserAttribute[] {};
+        // Return an empty HashMap.
+        return new HashMap();
 
     }
 

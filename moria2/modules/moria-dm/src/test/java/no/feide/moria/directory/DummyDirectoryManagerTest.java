@@ -12,6 +12,7 @@
  */
 package no.feide.moria.directory;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import no.feide.moria.directory.backend.AuthenticationFailedException;
@@ -91,10 +92,10 @@ extends TestCase {
             
             // Test successful authentication.
             dm.setConfig(config);
-            UserAttribute[] attributes = dm.authenticate(goodCredentials, new String[] {});
+            HashMap attributes = dm.authenticate(goodCredentials, new String[] {});
             
             // Verify attributes.
-            Assert.assertEquals("Attributes were returned", attributes.length, 0);
+            Assert.assertEquals("Attributes were returned", attributes.size(), 0);
          
             
         } catch (DirectoryManagerException e) {
@@ -118,12 +119,12 @@ extends TestCase {
             
             // Test successful authentication.
             dm.setConfig(config);
-            UserAttribute[] attributes = dm.authenticate(goodCredentials, goodRequest);
+            HashMap attributes = dm.authenticate(goodCredentials, goodRequest);
             
             // Verify attributes.
             Assert.assertNotNull("No attributes returned", attributes);
-            Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.length);
-            String[] values = attributes[0].getValues();
+            Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.size());
+            String[] values = (String[])attributes.get(goodRequest[0]);
             Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
             Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
             
@@ -148,7 +149,8 @@ extends TestCase {
             
             // Test unsuccessful authentication.
             dm.setConfig(config);
-            UserAttribute[] attributes = dm.authenticate(badCredentials, new String[] {});
+            HashMap attributes = null;
+            attributes = dm.authenticate(badCredentials, new String[] {});
             Assert.assertNull("Attributes were returned", attributes);
             Assert.fail("Bad authentication succeeded");
             
@@ -170,7 +172,8 @@ extends TestCase {
         try {
             
             // Test authentication without configuration.
-            UserAttribute[] attributes = dm.authenticate(goodCredentials, goodRequest);
+            HashMap attributes = null;
+            attributes = dm.authenticate(goodCredentials, goodRequest);
             Assert.assertNull("Attributes were returned", attributes);
             Assert.fail("Authentication without configuration succeeded");
 

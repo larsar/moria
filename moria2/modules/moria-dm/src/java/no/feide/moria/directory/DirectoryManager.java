@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
@@ -104,20 +105,20 @@ public class DirectoryManager {
      *            The list of attribute names requested for retrieval after
      *            authentication.
      * @return The user attributes matching the attribute request, if those were
-     *         available. Otherwise an empty array, which still indicate a
-     *         successful authentication.
+     *         available. Otherwise an empty <code>HashMap</code>, which
+     *         still indicates a successful authentication.
      * @throws BackendException
      *             Subclasses of <code>BackendException</code> is thrown if an
      *             error is encountered when operating the backend, including if
      *             the authentication fails.
      */
-    public UserAttribute[] authenticate(final Credentials userCredentials, final String[] attributeRequest)
+    public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws BackendException {
 
         // Sanity check.
         if (currentConfiguration == null)
             throw new DirectoryManagerConfigurationException("Configuration not set");
-        
+
         // TODO: Implement a backend pool.
 
         // Do the call through a temporary backend instance.
@@ -128,7 +129,7 @@ public class DirectoryManager {
             backend.open((String) references.get(0));
         else
             throw new AuthenticationFailedException("User " + userCredentials.getUsername() + " is unknown");
-        UserAttribute[] attributes = backend.authenticate(userCredentials, attributeRequest);
+        HashMap attributes = backend.authenticate(userCredentials, attributeRequest);
         backend.close();
         return attributes;
 

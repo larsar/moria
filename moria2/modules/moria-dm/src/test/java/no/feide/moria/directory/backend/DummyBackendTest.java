@@ -1,8 +1,9 @@
 package no.feide.moria.directory.backend;
 
+import java.util.HashMap;
+
 import junit.framework.*;
 import no.feide.moria.directory.Credentials;
-import no.feide.moria.directory.UserAttribute;
 
 /**
  * JUnit tests for the <code>DummyBackend</code> class.
@@ -25,6 +26,12 @@ extends TestCase {
     /** The expected resulting value from the good attribute request. */
     private static final String[] goodValues = {"someValue"};
 
+    /** Working credentials. */
+    private static final Credentials goodCredentials = new Credentials("user@some.realm", "password");
+
+    /** Non-working credentials. */
+    private static final Credentials[] badCredentials = {new Credentials("user@another.realm", "password"), new Credentials("test@feide.no", "Test"), null};
+
 
     /**
      * Returns the full test suite.
@@ -44,7 +51,7 @@ extends TestCase {
 
         backend = new DummyBackend();
         Assert.assertNotNull("Failed to instantiate backend object", backend);
-        // Should really call open(), but won't do anything.
+        backend.open("foobar"); // Does nothing.
 
     }
 
@@ -54,30 +61,20 @@ extends TestCase {
      */
     public void tearDown() {
 
-        // Should really call close(), but won't do anything.
-        backend = null;
+        backend.close(); // Does nothing.
 
     }
 
 
     /**
-     * Test the <code>authenticate(Credentials, String[])</code> method.
+     * Test unsuccessful authentication without attribute request.
      */
-    public void testAuthenticate() {
-
-        // Prepare.
-        Credentials goodCredentials = new Credentials("user@some.realm", "password");
-        Credentials[] badCredentials = {new Credentials("user@another.realm", "password"), new Credentials("test@feide.no", "Test"), null};
-
-        UserAttribute goodAttribute = null;
-        goodAttribute = new UserAttribute("someAttribute", goodValues);
-        Assert.assertNotNull("User attribute was not instantiated", goodAttribute);
-        UserAttribute[] goodAttributes = {goodAttribute};
+    public void testBadAuthenticationWithoutAttributes() {
 
         // Test unsuccessful authentication.
         for (int i = 0; i < badCredentials.length; i++)
             try {
-                backend.authenticate(badCredentials[i], goodRequest);
+                backend.authenticate(badCredentials[i], null);
                 Assert.fail("Bad authentication succeeded");
             } catch (AuthenticationFailedException e) {
                 // Expected.
@@ -86,6 +83,14 @@ extends TestCase {
             } catch (BackendException e) {
                 Assert.fail("Unexpected BackendException");
             }
+
+    }
+
+
+    /**
+     * Test successful authentication without attribute request.
+     */
+    public void testGoodAuthenticationWithoutAttributes() {
 
         // Test successful authentication, without requested attributes.
         for (int i = 0; i < noRequests.length; i++)
@@ -97,9 +102,17 @@ extends TestCase {
                 Assert.fail("Unexpected BackendException");
             }
 
+    }
+
+
+    /**
+     * Test successful authentication with bad attribute request.
+     */
+    public void testGoodAuthenticationWithBadAttributes() {
+
         // Test successful authentication, with non-existing requested
         // attributes.
-        UserAttribute[] attributes = null;
+        HashMap attributes = null;
         try {
             attributes = backend.authenticate(goodCredentials, badRequest);
         } catch (AuthenticationFailedException e) {
@@ -108,10 +121,17 @@ extends TestCase {
             Assert.fail("Unexpected BackendException");
         }
         Assert.assertNotNull("No attributes returned", attributes);
-        Assert.assertEquals("Non-existing attributes returned after authentication", 0, attributes.length);
+        Assert.assertEquals("Non-existing attributes returned after authentication", 0, attributes.size());
 
-        // Test successful authentication, with requested attributes.
-        attributes = null;
+    }
+
+
+    /**
+     * Test successful authentication with good attribute request.
+     */
+    public void testGoodAuthenticationWithGoodAttributes() {
+
+        HashMap attributes = null;
         try {
             attributes = backend.authenticate(goodCredentials, goodRequest);
         } catch (AuthenticationFailedException e) {
@@ -119,9 +139,11 @@ extends TestCase {
         } catch (BackendException e) {
             Assert.fail("Unexpected BackendException");
         }
+        HashMap goodAttributes = new HashMap();
+        goodAttributes.put(goodRequest[0], goodValues);
         Assert.assertNotNull("No attributes returned", attributes);
-        Assert.assertEquals("Unexpected number of attributes returned after authentication", goodAttributes.length, attributes.length);
-        String[] values = attributes[0].getValues();
+        Assert.assertEquals("Unexpected number of attributes returned after authentication", goodAttributes.size(), attributes.size());
+        String[] values = (String[]) attributes.get(goodRequest[0]);
         Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
         Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
 
