@@ -728,7 +728,7 @@ public class AuthorizationManagerTest extends TestCase {
         Properties props = new Properties();
         props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
         authMan.setConfig(props);
-        
+
         /* Invalid arguments */
         try {
             authMan.getServiceProperties(null);
@@ -743,7 +743,49 @@ public class AuthorizationManagerTest extends TestCase {
 
         assertNull("Properties should be null", authMan.getServiceProperties("DoesNotExist"));
         assertNotNull("Properties should not be null", authMan.getServiceProperties("test"));
+    }
 
+    public void testGetSecLevel() {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        Properties props = new Properties();
+        props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
+        authMan.setConfig(props);
+
+        /* Invalid arguments */
+        try {
+            authMan.getSecLevel(null, new String[]{});
+            fail("IllegalArgumentException should be raised, servicePrincipal is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            authMan.getSecLevel("", new String[]{});
+            fail("IllegalArgumentException should be raised, servicePrincipal is empty string");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            authMan.getSecLevel("foo", null);
+            fail("IllegalArgumentException should be raised, attributes is null");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* SecLevel 0 */
+        String[] requestedAttributes = new String[]{"attr2"};
+        assertEquals("SecLevel differs", 0, authMan.getSecLevel("test", requestedAttributes));
+
+        /* SecLevel 1 */
+        requestedAttributes = new String[]{"attr1"};
+        assertEquals("SecLevel differs", 1, authMan.getSecLevel("test", requestedAttributes));
+        requestedAttributes = new String[]{"attr1", "attr2"};
+        assertEquals("SecLevel differs", 1, authMan.getSecLevel("test", requestedAttributes));
+
+        /* SecLevel 2 */
+        requestedAttributes = new String[]{"attr3"};
+        assertEquals("SecLevel differs", 2, authMan.getSecLevel("test", requestedAttributes));
+        requestedAttributes = new String[]{"attr3", "attr1"};
+        assertEquals("SecLevel differs", 2, authMan.getSecLevel("test", requestedAttributes));
+        requestedAttributes = new String[]{"attr2", "attr1", "attr3"};
+        assertEquals("SecLevel differs", 2, authMan.getSecLevel("test", requestedAttributes));
     }
 
 }

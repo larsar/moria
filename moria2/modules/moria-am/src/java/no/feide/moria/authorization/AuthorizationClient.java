@@ -19,7 +19,6 @@ package no.feide.moria.authorization;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
 
 /**
  * Represents a web service. A web service has a name, id, url and attributes.
@@ -94,7 +93,8 @@ class AuthorizationClient {
      * @param operations  operations that the service can perform
      * @param attributes  attributes the service can access
      */
-    AuthorizationClient(String name, String displayName, String url, String language, String home, HashSet affiliation, HashSet operations, HashSet subsystems, HashMap attributes) {
+    AuthorizationClient(String name, String displayName, String url, String language, String home, HashSet affiliation,
+                        HashSet operations, HashSet subsystems, HashMap attributes) {
 
         if (name == null || name.equals("")) {
             String message = "Name must be a non empty string.";
@@ -426,5 +426,37 @@ class AuthorizationClient {
      */
     public HashMap getProperties() {
         return properties;
+    }
+
+    /**
+     * Return the highest secLevel for the requested attributes.
+     *
+     * @param requestedAttributes
+     * @return the highest of the attributes seclevel, 0 if no attributes are requested
+     * @throws IllegalArgumentException if requestedAttributes is null
+     * @throws IllegalStateException    if one (or more) of the requested attributes are not present
+     *                                  in the authorization client
+     */
+    int getSecLevel(String[] requestedAttributes) {
+        if (requestedAttributes == null) {
+            throw new IllegalArgumentException("requestedAttributes cannot be null");
+        }
+
+        if (requestedAttributes.length == 0) {
+            return 0;
+        }
+
+        int res = 0;
+        for (int i = 0; i < requestedAttributes.length; i++) {
+            AuthorizationAttribute authzAttribute = (AuthorizationAttribute) attributes.get(requestedAttributes[i]);
+            if (authzAttribute == null) {
+                throw new IllegalStateException("");
+            }
+            if (authzAttribute.getSecLevel() > res) {
+                res = authzAttribute.getSecLevel();
+            }
+        }
+
+        return res;
     }
 }

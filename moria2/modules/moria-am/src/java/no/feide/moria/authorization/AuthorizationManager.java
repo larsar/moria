@@ -397,4 +397,27 @@ public class AuthorizationManager {
 
     }
 
+    public int getSecLevel(String servicePrincipal, String[] requestedAttributes) {
+        /* Validate arguments */
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
+        if (requestedAttributes == null) {
+            throw new IllegalArgumentException("requestedAttributes cannot be null");
+        }
+
+        /* Return lowest seclevel if no attributes are requested */
+        if (requestedAttributes.length == 0) {
+            return 0;
+        }
+
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+        if (authzClient == null) {
+            // TODO: Should propably throw exception instead
+            return -1;
+        }
+
+        return authzClient.getSecLevel(requestedAttributes);
+    }
+
 }

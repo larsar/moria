@@ -20,14 +20,12 @@
 
 package no.feide.moria.authorization;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -73,7 +71,7 @@ public class AuthorizationClientTest extends TestCase {
     public void testNewAuthorizationClient() {
 
         /*
-         * Illegal values
+         * Illegal arguments
          */
 
         /* Name */
@@ -442,6 +440,49 @@ public class AuthorizationClientTest extends TestCase {
         /* Attributes */
         assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, emptyMap)));
+    }
+
+    /**
+     * Test the getSecLevel method.
+     *
+     * @see AuthorizationClient#getSecLevel(java.lang.String[])
+     */
+    public void testGetSecLevell() {
+        /* Invalid arguments */
+        AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", emptySet,
+                emptySet, emptySet, emptyMap);
+        try {
+            client.getSecLevel(null);
+            fail("IllegalArgumentException should be raised, null as requestedAttributes");
+        } catch (IllegalArgumentException success) {
+        }
+
+        HashMap attrs = new HashMap();
+        attrs.put("attr0", new AuthorizationAttribute("attr0", false, 0));
+        attrs.put("attr1", new AuthorizationAttribute("attr1", true, 1));
+        attrs.put("attr2", new AuthorizationAttribute("attr2", false, 2));
+
+        client = new AuthorizationClient("name", "display", "url", "lang", "home", emptySet,
+                emptySet, emptySet, attrs);
+
+        /* Empty set of requested attributes */
+        assertEquals("No requested attributes, secLevel should be lowest(0)", 0, client.getSecLevel(new String[]{}));
+
+        /* Illegal attributes */
+        try {
+            client.getSecLevel(new String[]{"doesNotExist"});
+            fail("IllegalStateException should be raised, non-existing attributes");
+        } catch (IllegalStateException success) {
+        }
+
+        /* Normal use */
+        assertEquals("secLevel differs", 0, client.getSecLevel(new String[]{"attr0"}));
+        assertEquals("secLevel differs", 1, client.getSecLevel(new String[]{"attr1"}));
+        assertEquals("secLevel differs", 1, client.getSecLevel(new String[]{"attr1", "attr0"}));
+        assertEquals("secLevel differs", 2, client.getSecLevel(new String[]{"attr2"}));
+        assertEquals("secLevel differs", 2, client.getSecLevel(new String[]{"attr2", "attr1"}));
+        assertEquals("secLevel differs", 2, client.getSecLevel(new String[]{"attr1", "attr2"}));
+        assertEquals("secLevel differs", 2, client.getSecLevel(new String[]{"attr1", "attr0", "attr2"}));
     }
 
 }
