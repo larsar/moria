@@ -30,10 +30,8 @@ public final class DirectoryUnavailableException extends MoriaControllerExceptio
 
     /**
      * Basic constructor.
-     *
-     * @param message Exception message.
      */
-    public DirectoryUnavailableException(final String message) {
-        super(message);
+    public DirectoryUnavailableException() {
+        super("Directory is unavailable.");
     }
 }

@@ -30,10 +30,8 @@ public final class AuthenticationException extends MoriaControllerException {
 
     /**
      * Basic constructor.
-     *
-     * @param message Exception message.
      */
-    public AuthenticationException(final String message) {
-        super(message);
+    public AuthenticationException() {
+        super("Wrong username/password.");
     }
 }

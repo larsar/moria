@@ -30,8 +30,6 @@ public class InoperableStateException extends MoriaControllerException {
 
     /**
      * Basic constructor.
-     *
-     * @param message Exception message.
      */
     public InoperableStateException(final String message) {
         super(message);
