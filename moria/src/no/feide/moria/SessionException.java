@@ -1,7 +1,5 @@
 package no.feide.moria;
 
-import java.util.logging.Logger;
-
 public class SessionException extends Exception{
     
      public SessionException(String message) {
