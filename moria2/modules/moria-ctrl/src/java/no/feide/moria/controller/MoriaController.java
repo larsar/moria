@@ -297,9 +297,6 @@ public class MoriaController {
      */
     synchronized public static void setConfig(final String module, final Properties properties) {
         //init();
-        if (!ready.booleanValue()) {
-            throw new IllegalStateException("Controller not initialized");
-        }
         if (module.equals(ConfigurationManager.MODULE_AM)) {
             if (authzManager != null) {
                 authzManager.setConfig(properties);
