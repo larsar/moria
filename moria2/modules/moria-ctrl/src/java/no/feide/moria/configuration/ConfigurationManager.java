@@ -158,8 +158,6 @@ public final class ConfigurationManager {
         if (cmPropsFile == null || cmPropsFile.equals(""))
             throw new BaseConfigException("System property '" + PROPS_PREFIX + MODULE_CM + "' must be a non-empty string");
         final String filePrefix = new File(cmPropsFile).getParent() + File.separator;
-
-        /* Read configuration manager's properties file */
         try {
             cmProps = readProperties(cmPropsFile);
         } catch (FileNotFoundException e) {
