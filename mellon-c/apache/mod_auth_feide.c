@@ -485,8 +485,7 @@ static void mf_set_cookie(request_rec *r, char *id)
 
 	name = apr_pstrcat(r->pool, "feide-", cfg->varname, NULL);
 
-	cookie = apr_psprintf(r->pool, "%s=%s; Version=1; Path=/; Max-Age=%d",
-	                      name, id, scfg->cache_age);
+	cookie = apr_psprintf(r->pool, "%s=%s; Version=1; Path=/", name, id);
 	apr_table_setn(r->headers_out, "Set-Cookie", cookie);
 	return;
 }
@@ -613,8 +612,6 @@ static int authenticate_feide_user(request_rec *r)
 		cache = apr_shm_baseaddr_get(scfg->cache);
 
 		if (key) {
-			char *cache_key;
-
 			cache_key = mf_cache_genkey(r->pool, key, cfg->domain,
 			                            r->connection->remote_ip);
 
@@ -659,13 +656,6 @@ static int authenticate_feide_user(request_rec *r)
 
 		/* then attempt to handle cookie, if still relevant */
 		if (cookie && return_code != OK) {
-			/* here we're supposed to look up the cookie in a local cache
-			 * but there's no cache implemented yet.  just log that we're
-			 * here and then continue as normal */
-			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "hash: cookie=%s, ip=%s.",
-			             cookie, r->connection->remote_ip);
-
 			if (mf_cache_find(cache, scfg->nelms, cookie) == -1) {
 				ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
 				             "%s no longer valid.", cookie);
@@ -682,36 +672,10 @@ static int authenticate_feide_user(request_rec *r)
 		 * the client as a cookie.  the hash is stored in the cache together
 		 * with the access time. */
 		if (!cookie && return_code == OK) {
-			mf_cache_entry_t *cache;
-			char *cache_key;
-
-			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "Entering cookie-setting and cache-setting.");
-
-			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "Making cache_key from \"%s\" and \"%s\".",
-			             key, cfg->domain, r->connection->remote_ip);
-
 			cache_key = mf_cache_genkey(r->pool, key, cfg->domain,
 			                            r->connection->remote_ip);
-
-			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "cache_key=%s", cache_key);
-
-			cache     = apr_shm_baseaddr_get(scfg->cache);
-
-			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "Cache fetched.");
-
 			mf_set_cookie(r, cache_key);
-
-			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "Cookie has been set.");
-
 			mf_cache_set(cache, scfg->nelms, cache_key);
-
-			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "Cache has been set/updated.");
 		}
 	} else {
 		/* we don't have a way to access an ID, redirect to authenticate */
