@@ -12,10 +12,9 @@ public interface DirectoryManagerIndex {
      * typically a username.
      * @param id
      *            The logical ID.
-     * @return A <code>List</code> object containing one or more backend
-     *         references as <code>String</code> objects, or <code>null</code>
-     *         if no such reference was found.
+     * @return One or more backend references , or <code>null</code> if no
+     *         such reference was found.
      */
-    public List lookup(String id);
+    public String[] lookup(String id);
 
 }
