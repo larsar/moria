@@ -28,6 +28,7 @@ import org.jdom.Element;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import no.feide.moria.log.MessageLogger;
 
 
 /**
@@ -35,6 +36,11 @@ import org.jdom.input.SAXBuilder;
  * @version $Revision$
  */
 public class AuthorizationManager {
+
+    /**
+     * For logging of error messages that cannot be sent to the calling layer
+     */
+    MessageLogger messageLogger = new MessageLogger(AuthorizationManager.class);
 
     /**
      * List of client authorization objects. Must be synchronized.
@@ -269,7 +275,7 @@ public class AuthorizationManager {
     /**
      * Validates a request for access to attributes for a given client/service.
      *
-     * @param servicePrincipal            the indentifier of the client
+     * @param servicePrincipal    the indentifier of the client
      * @param requestedAttributes the list of requested attributes
      * @return true if the service is allowed access, false if not or the client does not exist
      */
@@ -344,8 +350,7 @@ public class AuthorizationManager {
 
         String fileName = (String) properties.get("authorizationDatabase");
         if (fileName == null || fileName.equals("")) {
-            // TODO: Log
-            // MessageLogger.logWarning("The 'authorizationDatabase' property is not set (setConfig). Authorization database was NOT reloaded.");
+            messageLogger.logWarn("The 'authorizationDatabase' property is not set (setConfig). Authorization database was NOT reloaded.");
             return;
         }
 
@@ -355,20 +360,11 @@ public class AuthorizationManager {
             HashMap newClients = parseRootElem(doc.getRootElement());
             setAuthzClients(newClients);
         } catch (JDOMException e) {
-            // TODO: Log
-            System.out.println("Error during parsing of authorization database file. Still using old database.");
-            e.printStackTrace();
-            // MessageLogger.logWarning("Error during parsing of authorization database file. Still using old database.", e);
+            messageLogger.logWarn("Error during parsing of authorization database file. Still using old database.", e);
         } catch (IOException e) {
-            // TODO: Log
-            System.out.println("IOException during parsing of authorization database file. Still using old database.");
-            e.printStackTrace();
-            // MessageLogger.logWarning("IOException during parsing of authorization database file. Still using old database.", e);
+            messageLogger.logWarn("IOException during parsing of authorization database file. Still using old database.", e);
         } catch (IllegalConfigException e) {
-            // TODO: Log
-            System.out.println("Error during authorization database generation. Still using old database.");
-            e.printStackTrace();
-            // MessageLogger.logWarning("Error during authorization database generation. Still using old database.", e);
+            messageLogger.logWarn("Error during authorization database generation. Still using old database.", e);
         }
     }
 
