@@ -172,6 +172,8 @@ public class SessionStore {
     /**
      * Returns the session for a given session ID.
      * @param sessionID Current ID for the Moria session.
+     * @param lifetimeType Must be one of <code>login</code>,
+     * *                   <code>authenticated</code> and <code>sso</code>.
      * @throws SessionException If the session wasn't found, or if the session
      *                          has just timed out (but hasn't been garbage
      *                          collected yet).
