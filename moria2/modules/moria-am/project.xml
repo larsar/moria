@@ -9,8 +9,7 @@
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
   <package>no.feide.moria.authorization</package>
 
-  <shortDescription>This is the authorization manager for
-   Moria.</shortDescription>
+  <shortDescription>Moria authorization manager</shortDescription>
 
   <description/>
 
@@ -33,8 +32,8 @@
 	<resource>
 	  <directory>src/test/conf</directory>
           <includes>
-            <include>**/*.xml</include>
-            <include>**/*.properties</include>
+            <include>*.xml</include>
+            <include>*.properties</include>
           </includes>
 	</resource>
       </resources>
