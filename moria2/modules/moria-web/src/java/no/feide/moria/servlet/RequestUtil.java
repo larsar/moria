@@ -47,14 +47,13 @@ public final class RequestUtil {
 
     /**
      * Prefix for properties in config.
-     */
+     */   
     private static final String PATH_PREFIX = "no.feide.moria.web.";
-
+    
     /**
      * Property name for: Config.
      */
     public static final String PROP_CONFIG = PATH_PREFIX + "config";
-
     /**
      * Configuration property giving the name of the URL parameter containing
      * the Moria ticket ID. <em>This property is required.</em><br>
@@ -75,7 +74,7 @@ public final class RequestUtil {
      * <br>
      * Current value is <code>PATH_PREFIX + "login.default_language"</code>.
      */
-
+    
     public static final String PROP_LOGIN_DEFAULT_LANGUAGE = PATH_PREFIX + "login.default_language";
 
     /**
@@ -90,6 +89,14 @@ public final class RequestUtil {
      * Current value is <code>PATH_PREFIX + "login.url_prefix"</code>.
      */
     public static final String PROP_LOGIN_URL_PREFIX = PATH_PREFIX + "login.url_prefix";
+
+    /**
+     * Configuration property giving the URL to the information servlet.
+     * <em>This property is required.</em><br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "information.url_prefix"</code>.
+     */    
+    public static final String PROP_INFORMATION_URL_PREFIX = PATH_PREFIX + "information.url_prefix";
 
     /**
      * Configuration property sub-string giving the abbreviations and names for
@@ -195,17 +202,32 @@ public final class RequestUtil {
     /**
      * TODO Eva Rename, and configure
      */
-    public static final String PATH_FEIDEATTRIBS = "C:/moria2/modules/moria-web/src/test/conf/feideattribs.xml";
-
-    /**
+    public static final String PATH_FEIDEATTRIBS = "webapps/moria/WEB-INF/classes/feideattribs.xml";
+  
+     /**
      * Bundle for the information servlet.
      */
     public static final String BUNDLE_INFORMATIONSERVLET = "feideattribs";
+    
+    /**
+     * Bundle for the information page about the information servlet.
+     */
+    public static final String BUNDLE_INFOABOUT = "infoabout";
+    
+    /**
+     * Bundle for the faq page
+     */
+    public static final String BUNDLE_FAQ = "faq";
 
     /**
      * Legal name for an organization, used by Information Servlet
      */
     public static final String EDU_ORG_LEGAL_NAME = "eduOrgLegalName";
+    
+    /**
+     * Link to faq, shown on the login page
+     */
+    public static final String FAQ_LINK = PATH_PREFIX + "faqlink";
 
     /**
      * Name of property from authorization module giving the default language
