@@ -30,15 +30,15 @@ import java.rmi.RemoteException;
 public interface AuthenticationIF extends Remote {
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#
-     *      initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean)
+     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#initiateAuthentication(java.lang.String[],
+     *      java.lang.String, java.lang.String, boolean)
      */
     String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix,
             boolean forceInteractiveAuthentication) throws RemoteException;
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#
-     * directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String)
+     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
+     *      java.lang.String, java.lang.String)
      */
     Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
 
