@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
 public class MoriaController {
@@ -120,36 +120,6 @@ public class MoriaController {
 
     /**
      * @param loginTicket
-     * @return
-     */
-    public static boolean validateLoginTicket(final String loginTicket) {
-
-        if (!ready.booleanValue()) {
-            throw new IllegalStateException("Controller is not initialized.");
-        }
-
-        /* Valdiate parameter */
-        if (loginTicket == null || loginTicket.equals("")) {
-            throw new IllegalArgumentException("loginTicket cannot be null or an empty string.");
-        }
-
-        MoriaAuthnAttempt authnAttempt = null;
-        try {
-            authnAttempt = store.getAuthnAttempt(loginTicket, true);
-        } catch (InvalidTicketException e) {
-            // TODO: Log
-            return false;
-        }
-
-        if (authnAttempt != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @param loginTicket
      * @param ssoTicket
      * @return
      * @throws UnknownTicketException
@@ -157,8 +127,8 @@ public class MoriaController {
     public static String attemptSingleSignOn(final String loginTicket, final String ssoTicket) throws UnknownTicketException {
 
         // If the login ticket is invalid throw exception
-        if (!validateLoginTicket(loginTicket))
-            throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
+       // if (!validateLoginTicket(loginTicket))
+         //   throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
         // TODO: Implement
         return null;
     }
@@ -168,12 +138,11 @@ public class MoriaController {
      * @param ssoTicket
      * @param userId
      * @param password
-     * @param servicePrincipal
      * @return
      * @throws UnknownTicketException
      */
     public static boolean attemptLogin(final String loginTicket, final String ssoTicket, final String userId,
-                                       final String password, final String servicePrincipal) throws UnknownTicketException {
+                                       final String password) throws UnknownTicketException {
         // TODO: Implement
         return false;
     }
@@ -246,6 +215,9 @@ public class MoriaController {
     public static Map getUserAttributes(final String serviceTicket, final String servicePrincipal) throws AuthorizationException,
             IllegalInputException {
         // TODO: Implement
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         return null;
     }
 
@@ -261,6 +233,9 @@ public class MoriaController {
     public static Map directNonInteractiveAuthentication(final String[] attributes, final String userId, final String password,
                                                          final String servicePrincipal) throws AuthorizationException, IllegalInputException {
         // TODO: Implement
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         return null;
     }
 
@@ -275,6 +250,9 @@ public class MoriaController {
     public static Map proxyAuthentication(final String[] attributes, final String proxyTicket, final String servicePrincipal)
             throws AuthorizationException, IllegalInputException {
         // TODO: Implement
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         return null;
     }
 
@@ -289,6 +267,9 @@ public class MoriaController {
     public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal,
                                         final String servicePrincipal) throws AuthorizationException, IllegalInputException {
         // TODO: Implement
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         return null;
     }
 
@@ -302,6 +283,9 @@ public class MoriaController {
     public static boolean verifyUserExistence(final String username, final String servicePrincipal) throws AuthorizationException,
             IllegalInputException {
         // TOOD: Implement
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         return false;
     }
 
@@ -313,6 +297,9 @@ public class MoriaController {
      */
     synchronized public static void setConfig(final String module, final Properties properties) {
         //init();
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         if (module.equals(ConfigurationManager.MODULE_AM)) {
             if (authzManager != null) {
                 authzManager.setConfig(properties);
@@ -377,6 +364,9 @@ public class MoriaController {
      * @throws UnknownTicketException if the ticket does not point to a authentication attempt
      */
     public static HashMap getServiceProperties(String loginTicketId) throws UnknownTicketException {
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         /* Validate arguments */
         if (loginTicketId == null || loginTicketId.equals("")) {
             throw new IllegalArgumentException("loginTicketId must be a non-empty string, was: " + loginTicketId);
@@ -401,6 +391,9 @@ public class MoriaController {
      * @throws UnknownTicketException if the ticket does is invalid
      */
     public static int getSecLevel(String loginTicketId) throws UnknownTicketException {
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
         /* Validate argument */
         if (loginTicketId == null || loginTicketId.equals("")) {
             throw new IllegalArgumentException("loginTicketId must be a non-empty string, was: " + loginTicketId);

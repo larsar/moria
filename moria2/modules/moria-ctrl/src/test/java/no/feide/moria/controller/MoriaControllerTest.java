@@ -24,7 +24,6 @@ package no.feide.moria.controller;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import no.feide.moria.store.InvalidTicketException;
 
 import java.util.HashMap;
 
@@ -74,7 +73,8 @@ public class MoriaControllerTest extends TestCase {
      * @throws IllegalInputException
      * @see MoriaController#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean, java.lang.String)
      */
-    public void testInitiateMoriaAuthentication() throws AuthorizationException, IllegalInputException {
+    public void testInitiateMoriaAuthentication()
+            throws AuthorizationException, IllegalInputException, UnknownTicketException {
 
         controllerInitialization();
 
@@ -131,10 +131,10 @@ public class MoriaControllerTest extends TestCase {
         /* Legal use */
         String ticket;
         ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
-        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+        assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
 
         ticket = MoriaController.initiateAuthentication(new String[]{}, validPrefix, validPostfix, false, validPrincipal);
-        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+        // assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
     }
 
     public void testAttemptLogin() {
@@ -145,32 +145,32 @@ public class MoriaControllerTest extends TestCase {
         // TODO: Implement
     }
 
-    /**
-     * Test the validateLoginTicket method.
-     *
-     * @throws IllegalInputException
-     * @throws AuthorizationException
-     * @see MoriaController#validateLoginTicket(java.lang.String)
-     */
-    public void testValidateLoginTicket() throws IllegalInputException, AuthorizationException {
-        controllerInitialization();
-
-        try {
-            MoriaController.validateLoginTicket(null);
-            fail("IllegalInputException should be raised, ticket is null.");
-        } catch (IllegalArgumentException success) {
-        }
-        try {
-            MoriaController.validateLoginTicket("");
-            fail("IllegalInputException should be raised, ticket is empty string.");
-        } catch (IllegalArgumentException success) {
-        }
-
-        /* Normal use */
-        String ticket;
-        ticket = MoriaController.initiateAuthentication(new String[]{"attr1"}, "http://foo/", "/bar/", false, "test");
-        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
-    }
+//    /**
+//     * Test the validateLoginTicket method.
+//     *
+//     * @throws IllegalInputException
+//     * @throws AuthorizationException
+//     * @see MoriaController#validateLoginTicket(java.lang.String)
+//     */
+//    public void testValidateLoginTicket() throws IllegalInputException, AuthorizationException {
+//        controllerInitialization();
+//
+//        try {
+//            //MoriaController.validateLoginTicket(null);
+//            fail("IllegalInputException should be raised, ticket is null.");
+//        } catch (IllegalArgumentException success) {
+//        }
+//        try {
+//            //MoriaController.validateLoginTicket("");
+//            fail("IllegalInputException should be raised, ticket is empty string.");
+//        } catch (IllegalArgumentException success) {
+//        }
+//
+//        /* Normal use */
+//        String ticket;
+//        ticket = MoriaController.initiateAuthentication(new String[]{"attr1"}, "http://foo/", "/bar/", false, "test");
+//        //assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+//    }
 
     public void testGetUserAttributes() {
         // TODO: Implement
@@ -212,7 +212,7 @@ public class MoriaControllerTest extends TestCase {
      *
      * @throws IllegalInputException
      * @throws AuthorizationException
-     * @throws InvalidTicketException
+     * @throws UnknownTicketException
      * @see MoriaController#getServiceProperties(java.lang.String)
      */
 
@@ -231,7 +231,7 @@ public class MoriaControllerTest extends TestCase {
         }
 
         String ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
-        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+        //assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
         HashMap properties = MoriaController.getServiceProperties(ticket);
         assertEquals("Principal differs", validPrincipal, properties.get("name"));
     }
@@ -297,9 +297,11 @@ public class MoriaControllerTest extends TestCase {
         /* Controller not initialized */
         MoriaController.stop();
         try {
-            MoriaController.validateLoginTicket("foobar");
+            MoriaController.getServiceProperties("foobar");
             fail("IllegalStateException should be raised, controller not initialized.");
         } catch (IllegalStateException success) {
+        } catch (UnknownTicketException e) {
+            /* Should never get here */
         }
 
         MoriaController.init();
