@@ -157,7 +157,7 @@ public class MoriaController {
      */
     synchronized static void stop() {
         synchronized (isInitialized) {
-            if (isInitialized.booleanValue()) {
+            if (ready) {
                 authzManager = null;
                 amReady = false;
                 configManager.stop();
@@ -222,7 +222,7 @@ public class MoriaController {
             throws AuthorizationException, IllegalInputException, InoperableStateException {
 
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
 
         /* Validate parameters */
@@ -284,7 +284,7 @@ public class MoriaController {
             throws IllegalInputException, UnknownTicketException, InoperableStateException {
         // TODO: Implement
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
         return null;
     }
@@ -303,7 +303,7 @@ public class MoriaController {
             throws AuthorizationException, IllegalInputException, InoperableStateException {
         // TODO: Implement
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
         return null;
     }
@@ -320,7 +320,7 @@ public class MoriaController {
             throws AuthorizationException, IllegalInputException, InoperableStateException, UnknownTicketException {
         // TODO: Implement
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
         return null;
     }
@@ -338,7 +338,7 @@ public class MoriaController {
             throws AuthorizationException, IllegalInputException, InoperableStateException, UnknownTicketException {
         // TODO: Implement
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
         return null;
     }
@@ -354,7 +354,7 @@ public class MoriaController {
             throws AuthorizationException, IllegalInputException, InoperableStateException {
         // TOOD: Implement
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
         return false;
     }
@@ -455,7 +455,7 @@ public class MoriaController {
         }
 
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
         /* Validate arguments */
         if (loginTicketId == null || loginTicketId.equals("")) {
@@ -491,7 +491,7 @@ public class MoriaController {
     public static int getSecLevel(String loginTicketId)
             throws UnknownTicketException, InoperableStateException, AuthorizationException {
         if (!ready) {
-            throw new IllegalStateException("Controller not initialized");
+            throw new IllegalStateException("Controller is not ready");
         }
         /* Validate argument */
         if (loginTicketId == null || loginTicketId.equals("")) {
