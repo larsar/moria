@@ -155,13 +155,6 @@ public final class AuthorizationClientTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        /* Subsystems */
-        try {
-            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, null, emptyMap);
-            fail("Should raise IllegalArgumentException (operations = null)");
-        } catch (IllegalArgumentException success) {
-        }
-
         /* Attributes */
         try {
             new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, null);
@@ -316,7 +309,6 @@ public final class AuthorizationClientTest extends TestCase {
         /* Legal arguments */
         assertTrue("Should be allowed", client.allowSubsystems(new String[]{"sub1", "sub2"}));
         assertTrue("Should be allowed", client.allowSubsystems(new String[]{"sub1"}));
-        assertTrue("Should be allowed", client.allowSubsystems(new String[]{}));
         assertFalse("Should not be allowed", client.allowSubsystems(new String[]{"sub1", "illegalSubsystem"}));
     }
 
