@@ -192,4 +192,8 @@ public final class MoriaTicket implements Serializable {
 
         return true;
     }
+
+    public long getExpiryTime() {
+        return expiryTime;
+    }
 }
