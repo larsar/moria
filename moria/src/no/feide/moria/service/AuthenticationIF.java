@@ -22,8 +22,10 @@ import java.rmi.RemoteException;
 
 public interface AuthenticationIF extends Remote {
     
-    public String requestSession(String[] attributes, String prefix, String postfix, boolean denySSO) throws RemoteException;
-    public String authenticateUser(String id, String username, String password) throws RemoteException;
-    public Attribute[] getAttributes(String id) throws RemoteException;
-    public boolean userExists(String username) throws RemoteException;
+    public String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix, boolean forceInteractiveAuthentication) throws RemoteException;
+    public String directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
+    public Attribute[] getUserAttributes(String ticketId) throws RemoteException;
+    public boolean verifyUserExistence(String username) throws RemoteException;
+    public boolean verifyGroupExistence(String groupname) throws RemoteException;
+    public boolean verifyUserInGroup(String username, String groupname) throws RemoteException;
 }

@@ -68,11 +68,10 @@ implements AuthenticationIF, ServiceLifecycle {
      * Service endpoint destructor. Some basic housekeeping.
      */
     public void destroy() {
-	log.finer("destroy()");
 
         authTimer.cancel();
-	log = null;
-	ctx = null;
+        log = null;
+        ctx = null;
     }
 
 
@@ -92,7 +91,6 @@ implements AuthenticationIF, ServiceLifecycle {
      */
     public void init(Object context) 
     throws ServiceException {
-	log.finer("init(Object)");
 
 	ctx = (ServletEndpointContext)context;
 
@@ -136,12 +134,12 @@ implements AuthenticationIF, ServiceLifecycle {
      * Method to check if a given user name exists. Does not require an active
      * session.
      * @param username The user name.
-     * @return <true> if the user exists, otherwise <code>false</code>.
+     * @return <code>true</code> if the user exists, otherwise
+     *         <code>false</code>.
      * @throws RemoteException If a BackendException is caught.
      */
-    public boolean userExists(String username)
+    public boolean verifyUserExistence(String username)
     throws RemoteException {
-    	log.finer("userExists(String)");
     	
     	// TODO: Web service authorization.
     	
@@ -152,16 +150,48 @@ implements AuthenticationIF, ServiceLifecycle {
     		throw new RemoteException("BackendException caught and re-thrown as RemoteException", e);
     	}
     }
-
+    
+    
+    
+    /**
+     * Method to check if a given group exists. Does not require an active
+     * session.
+     * <em>Note:</em> Not implemented.
+     * @param groupname The group name.
+     * @return Will always return <code>false</code>.
+     */
+    public boolean verifyGroupExistence(String groupname) {
+    	
+    	// TODO: Implement.
+    	log.info("Not implemented");
+    	return false;
+    	
+    }
 
 
 
     /**
+     * Method to check if a given user belongs to a given group. Does not
+     * require an active session.
+     * <em>Note:</em> Not implemented.
+     * @param username The user name.
+     * @param groupname The group name.
+     * @return Will always return <code>false</code>.
+     */
+    public boolean verifyUserInGroup(String username, String groupname) {
+    	
+    	// TODO: Implement.
+    	log.info("Not implemented");
+    	return false;
+    	
+    }
+
+    
+    
+    /**
      * Request a new Moria session, with the option to turn off SSO even though
      * the web service authorization config would allow it.
-     * @param attributes The requested user attributes, to be returned from
-     *                   <code>verifySession()</code> once authentication is
-     *                   complete. <code>null</code> value allowed.
+     * @param attributes The requested user attributes.
      * @param prefix The prefix, used to build the <code>verifySession</code>
      *               return value. May be <code>null</code>.
      * @param postfix The postfix, used to build the
@@ -178,9 +208,8 @@ implements AuthenticationIF, ServiceLifecycle {
      *                         URL, or if a <code>ConfigurationException<code>
      *                         is caught.
      */
-    public String requestSession(String[] attributes, String prefix, String postfix, boolean denySso)
+    public String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix, boolean forceInteractiveAuthentication)
     throws RemoteException {
-        log.finer("requestSession(String[], String, String, boolean)");
         
         /* If no attributes are given, then create an empty attribute
          * array. */
@@ -199,7 +228,7 @@ implements AuthenticationIF, ServiceLifecycle {
 
         /* Check if prefix and postfix, together with a possible
          * session ID, is a valid URL. */
-        String simulatedURL = prefix+"MORIAID"+postfix;
+        String simulatedURL = returnURLPrefix+"MORIAID"+returnURLPostfix;
 
         if (!URLValidator.isLegal(simulatedURL)) {
             log.warning(log_prefix+"DENIED, Invalid URL");
@@ -212,7 +241,7 @@ implements AuthenticationIF, ServiceLifecycle {
         for (int i=0; i<attributes.length-1; i++)
             s = s + attributes[i] + ',';
         s = s + attributes[attributes.length-1];
-        log.info("Service name: "+serviceName+"; attributes: "+s+"; deny SSO "+denySso+"; URL "+simulatedURL);
+        log.info("Service name: "+serviceName+"; attributes: "+s+"; deny SSO "+forceInteractiveAuthentication+"; URL "+simulatedURL);
 
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
@@ -226,11 +255,11 @@ implements AuthenticationIF, ServiceLifecycle {
         }
 
         try {
-            Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);      
+            Session session = sessionStore.createSession(attributes, returnURLPrefix, returnURLPostfix, p, ws);      
             log.info(log_prefix+"ACCEPTED, SID="+session.getID());
 
             /* Turn of SSO if required by web service. */
-            if (denySso) 
+            if (forceInteractiveAuthentication) 
                 session.setDenySso();
 
             stats.incStatsCounter(serviceName, "createdSessions");
@@ -251,8 +280,7 @@ implements AuthenticationIF, ServiceLifecycle {
     /**
      * Authenticates the user directly, bypassing the normal web-based redirect
      * loop.
-     * @param id A valid session ID returned from use of
-     *           <code>requestSession</code>.
+     * @param attributes The requested user attributes.
      * @param username The user's username.
      * @param password The user's password.
      * @return The updated session ID, or <code>null</code> if the
@@ -261,13 +289,10 @@ implements AuthenticationIF, ServiceLifecycle {
      *                         caught, or if the web service is not allowed to
      *                         use direct authentication.
      */
-    public String authenticateUser(String id, String username, String password)
+    public String directNonInteractiveAuthentication(String[] attributes, String username, String password)
     throws RemoteException {
-    	log.finer("authenticateUser(String, String, String)");
-    	
+    	   	
     	// Basic parameter check.
-    	if (id == null)
-    		throw new RemoteException("Session ID cannot be NULL");
     	if (username == null)
     		throw new RemoteException("User name cannot be NULL");
     	if (password == null)
@@ -275,8 +300,9 @@ implements AuthenticationIF, ServiceLifecycle {
     	
     	try {
 
-    		// Look up session and check the client identity.
-    		Session session = sessionStore.getSessionLogin(id);
+    		// Create session and check the client identity.
+        	String ticketId = initiateAuthentication(attributes, null, null, false);
+    		Session session = sessionStore.getSessionLogin(ticketId);
     		validateClient(ctx.getUserPrincipal(), session);
 
     		// Is the client allowed to do direct authentication at all?
@@ -311,18 +337,17 @@ implements AuthenticationIF, ServiceLifecycle {
      *                         of the client service originally requesting
      *                         the session.
      */
-    public Attribute[] getAttributes(String id)
+    public Attribute[] getUserAttributes(String ticketId)
     throws RemoteException {
-        log.finer("getAttributes(String)");
 
         // Basic parameter check.
-        if (id == null) 
+        if (ticketId == null) 
             throw new RemoteException("Session ID cannot be NULL");
         
     	try {
 
             // Look up session and check the client identity.
-            Session session = sessionStore.getSessionAuthenticated(id);
+            Session session = sessionStore.getSessionAuthenticated(ticketId);
             validateClient(ctx.getUserPrincipal(), session);
             
             // Check if the current session is locked (awaits authentication).
@@ -365,7 +390,6 @@ implements AuthenticationIF, ServiceLifecycle {
      */
     private static void validateClient(Principal pCurrent, Session session)
     throws SessionException, RemoteException {
-	log.finer("assertPrincipals(Principal, String)");
 	
 		// Get current service name.
 		String serviceName = null;
