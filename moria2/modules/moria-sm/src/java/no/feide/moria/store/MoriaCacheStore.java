@@ -168,7 +168,7 @@ implements MoriaStore {
             } catch (FileNotFoundException fnnf) {
                 throw new MoriaStoreConfigurationException("Configuration file '" + cacheConfigProperty + "' not found", fnnf);
             } catch (URISyntaxException uris) {
-                throw new MoriaStoreConfigurationException("Illegal configuration property" + cacheConfigProperty);
+                throw new MoriaStoreConfigurationException("Illegal configuration property "+ CACHE_CONFIG_PROPERTY_NAME + " (" + cacheConfigProperty + ")", uris);
             }
 
             PropertyConfigurator configurator = new PropertyConfigurator();

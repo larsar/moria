@@ -8,6 +8,24 @@
    xmlns:u="jelly:util"
    default="project:install">
 
+  <!-- 
+       A number of filename fixes for Windows users.
+  -->
+  <preGoal name="build:start">
+    <tempfile property="windowsFixFile"
+              destDir="${maven.build.dir}/.."/>
+    <echo message="no.feide.moria.store.cachestoreconf=${no.feide.moria.store.cachestoreconf.raw}"
+          file="${windowsFixFile}"
+          level="verbose"/>
+    <replace file="${windowsFixFile}"
+						 replaceFilterFile="${maven.build.dir}/../windows.properties"/>
+    <property file="${windowsFixFile}"/>
+    <delete file="${windowsFixFile}"
+            deleteonexit="true"/>  
+    <echo message="${no.feide.moria.store.cachestoreconf.raw}"/>
+    <echo message="${no.feide.moria.store.cachestoreconf}"/>
+  </preGoal>
+
   <postGoal
      name="test:prepare-filesystem">
     <mkdir dir="${maven.build.dir}/test-logs"/>
