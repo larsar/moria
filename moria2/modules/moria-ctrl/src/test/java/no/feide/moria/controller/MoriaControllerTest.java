@@ -99,6 +99,22 @@ public class MoriaControllerTest extends TestCase {
     }
 
     /**
+     * Compares to Maps. The maps must have equal elements or the test will fail.
+     *
+     * @param expected
+     * @param actual
+     */
+    private void validateMaps(Map expected, Map actual) {
+        assertEquals("Expected and actual attributes length differs", expected.size(), actual.size());
+
+        Iterator it = expected.keySet().iterator();
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            assertEquals("Attribute mismatch", expected.get(key), actual.get(key));
+        }
+    }
+
+    /**
      * Thest the initiateMoriaAuthentication method.
      *
      * @throws AuthorizationException
@@ -283,13 +299,7 @@ public class MoriaControllerTest extends TestCase {
         Map actualAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
                                                             validPrincipal);
 
-        assertEquals("Expected and actual attributes length differs", expectedAttrs.size(), actualAttrs.size());
-
-        Iterator it = expectedAttrs.keySet().iterator();
-        while (it.hasNext()) {
-            String key = (String) it.next();
-            assertEquals("Attribute mismatch", expectedAttrs.get(key), actualAttrs.get(key));
-        }
+        validateMaps(expectedAttrs, actualAttrs);
     }
 
     public void testAttemptSingleSignOn() throws UnknownTicketException, InoperableStateException,
@@ -346,13 +356,7 @@ public class MoriaControllerTest extends TestCase {
         String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
         Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
 
-        assertEquals("Expected and actual attributes length differs", expectedAttrs.size(), actualAttrs.size());
-
-        Iterator it = expectedAttrs.keySet().iterator();
-        while (it.hasNext()) {
-            String key = (String) it.next();
-            assertEquals("Attribute mismatch", expectedAttrs.get(key), actualAttrs.get(key));
-        }
+        validateMaps(expectedAttrs, actualAttrs);
     }
 
     public void testGetUserAttributes() throws IllegalInputException, InoperableStateException, UnknownTicketException,
@@ -404,13 +408,7 @@ public class MoriaControllerTest extends TestCase {
         /* Content */
         Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
 
-        assertEquals("Expected and actual attributes length differs", expectedAttrs.size(), actualAttrs.size());
-
-        Iterator it = expectedAttrs.keySet().iterator();
-        while (it.hasNext()) {
-            String key = (String) it.next();
-            assertEquals("Attribute mismatch", expectedAttrs.get(key), actualAttrs.get(key));
-        }
+        validateMaps(expectedAttrs, actualAttrs);
 
         /* Removal of authentication attempt */
         try {
@@ -540,6 +538,86 @@ public class MoriaControllerTest extends TestCase {
     }
 
     // TODO: Implement directNonInteractiveAuthentication
+    public void testDirectNonInteractiveAuthentication() throws IllegalInputException, InoperableStateException,
+                                                                AuthorizationException, AuthenticationException {
+        controllerInitialization();
+
+        /* Invalid arguments */
+        try {
+            MoriaController.directNonInteractiveAuthentication(null, validUsername, validPassword, validPrincipal);
+            fail("IllegalInputException should be raised, attributes is null");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, null, validPassword, validPrincipal);
+            fail("IllegalInputException should be raised, username is null");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, "", validPassword, validPrincipal);
+            fail("IllegalInputException should be raised, username is an empty string");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername, null, validPrincipal);
+            fail("IllegalInputException should be raised, password is null");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername, "", validPrincipal);
+            fail("IllegalInputException should be raised, password is an empty string");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername, validPassword, null);
+            fail("IllegalInputException should be raised, servicePrincipal is null");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername, validPassword, "");
+            fail("IllegalInputException should be raised, servicePrincipal is an empty string");
+        } catch (IllegalInputException success) {
+        }
+
+        /* Illegal attributes */
+        try {
+            MoriaController.directNonInteractiveAuthentication(new String[]{"illegal"}, validUsername, validPassword,
+                                                               validPrincipal);
+            fail("AuhtorizationException should be raised, illegal attributes requested.");
+        } catch (AuthorizationException success) {
+        }
+
+        /* Illegal servicePrincipal */
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername, validPassword, "invalid");
+            fail("AuhtorizationException should be raised, invalid principal.");
+        } catch (AuthorizationException success) {
+        }
+
+        /* Wrong username/password */
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, "wrong", validPassword, validPrincipal);
+            fail("AuthenticationException should be raised, wrong username.");
+        } catch (AuthenticationException success) {
+        }
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername, "wrong", validPrincipal);
+            fail("AuthenticationException should be raised, wrong password.");
+        } catch (AuthenticationException success) {
+        }
+
+        /* Empty set of attributes */
+        Map actualAttrs = MoriaController.directNonInteractiveAuthentication(new String[]{}, validUsername,
+                                                                             validPassword, validPrincipal);
+        validateMaps(new HashMap(), actualAttrs);
+
+        /* Correct username/password */
+        actualAttrs = MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername, validPassword,
+                                                                         validPrincipal);
+        validateMaps(expectedAttrs, actualAttrs);
+
+    }
+
     // TODO: Implement proxyAuthentication
     // TODO: Implement getProxyTicket
     // TODO: Implement verifyUserExistence
