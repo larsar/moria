@@ -3,3 +3,4 @@ maven.log
 target
 .classpath
 .project
+build.properties
