@@ -128,6 +128,13 @@ public class AuthorizationData {
     }
 
 
+    /**
+     * Number of registered web services
+     */
+    public int numOfWebServices() {
+        return webServices.size();
+    }
+
 
     /** 
      * Creates a new web service register from an xml file. When the
