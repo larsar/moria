@@ -27,6 +27,7 @@
     <delete dir="build.mellon/WEB-INF/classes"/>
     <delete dir="build"/>
     <delete dir="dist"/>
+    <delete file="FeideAuthentication?WSDL"/>
     <delete file="FeideAuthentication.wsdl"/>
   </target>
 
@@ -92,6 +93,18 @@
           depends="moria:compile,moria:create-war,moria:process-war,moria:undeploy,moria:deploy"/>
 
 
+
+  <target name="mellon:get-wsdl"
+          description="Download Moria WSDL">
+    <delete file="FeideAuthentication?WSDL"/>
+    <delete file="FeideAuthentication.wsdl"/>
+    <exec executable="lynx">
+      <arg line="-auth=${jwsdp_manager_username}:${jwsdp_manager_password}"/>
+      <arg line="-cmd_script=lynx.script"/>
+      <arg line="${wsdl_url}"/>
+    </exec>
+    <move file="FeideAuthentication?WSDL" tofile="FeideAuthentication.wsdl"/>
+  </target>
 
   <target name="mellon:generate-stubs"
           description="Generate Mellon-side stubs from WSDL"
