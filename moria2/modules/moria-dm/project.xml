@@ -13,7 +13,7 @@
 
   <description>This is the directory manager for Moria, handling
     communication with external directories (LDAP) and indexing of
-    users.<description/>
+    users.</description>
 
   <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-dm</siteDirectory>
 
