@@ -22,6 +22,7 @@ package no.feide.moria.controller;
 
 import no.feide.moria.authorization.AuthorizationManager;
 import no.feide.moria.authorization.UnknownServicePrincipalException;
+import no.feide.moria.authorization.UnknownAttributeException;
 import no.feide.moria.configuration.ConfigurationManager;
 import no.feide.moria.configuration.ConfigurationManagerException;
 import no.feide.moria.store.InvalidTicketException;
@@ -180,7 +181,8 @@ public class MoriaController {
      * @return
      * @throws UnknownTicketException
      */
-    public static String attemptSingleSignOn(final String loginTicket, final String ssoTicket) throws UnknownTicketException {
+    public static String attemptSingleSignOn(final String loginTicket, final String ssoTicket)
+            throws UnknownTicketException, InoperableStateException, IllegalInputException {
 
         // If the login ticket is invalid throw exception
         // if (!validateLoginTicket(loginTicket))
@@ -198,7 +200,8 @@ public class MoriaController {
      * @throws UnknownTicketException
      */
     public static boolean attemptLogin(final String loginTicket, final String ssoTicket, final String userId,
-                                       final String password) throws UnknownTicketException {
+                                       final String password)
+            throws UnknownTicketException, InoperableStateException, IllegalInputException {
         // TODO: Implement
         return false;
     }
@@ -275,11 +278,10 @@ public class MoriaController {
      * @param serviceTicket
      * @param servicePrincipal
      * @return Map containing user attributes in strings or string arrays
-     * @throws AuthorizationException
      * @throws IllegalInputException
      */
-    public static Map getUserAttributes(final String serviceTicket, final String servicePrincipal) throws AuthorizationException,
-            IllegalInputException {
+    public static Map getUserAttributes(final String serviceTicket, final String servicePrincipal)
+            throws IllegalInputException, UnknownTicketException, InoperableStateException {
         // TODO: Implement
         if (!ready) {
             throw new IllegalStateException("Controller not initialized");
@@ -296,8 +298,9 @@ public class MoriaController {
      * @throws AuthorizationException
      * @throws IllegalInputException
      */
-    public static Map directNonInteractiveAuthentication(final String[] attributes, final String userId, final String password,
-                                                         final String servicePrincipal) throws AuthorizationException, IllegalInputException {
+    public static Map directNonInteractiveAuthentication(final String[] attributes, final String userId,
+                                                         final String password, final String servicePrincipal)
+            throws AuthorizationException, IllegalInputException, InoperableStateException {
         // TODO: Implement
         if (!ready) {
             throw new IllegalStateException("Controller not initialized");
@@ -314,7 +317,7 @@ public class MoriaController {
      * @throws IllegalInputException
      */
     public static Map proxyAuthentication(final String[] attributes, final String proxyTicket, final String servicePrincipal)
-            throws AuthorizationException, IllegalInputException {
+            throws AuthorizationException, IllegalInputException, InoperableStateException, UnknownTicketException {
         // TODO: Implement
         if (!ready) {
             throw new IllegalStateException("Controller not initialized");
@@ -331,7 +334,8 @@ public class MoriaController {
      * @throws IllegalInputException
      */
     public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal,
-                                        final String servicePrincipal) throws AuthorizationException, IllegalInputException {
+                                        final String servicePrincipal)
+            throws AuthorizationException, IllegalInputException, InoperableStateException, UnknownTicketException {
         // TODO: Implement
         if (!ready) {
             throw new IllegalStateException("Controller not initialized");
@@ -346,8 +350,8 @@ public class MoriaController {
      * @throws AuthorizationException
      * @throws IllegalInputException
      */
-    public static boolean verifyUserExistence(final String username, final String servicePrincipal) throws AuthorizationException,
-            IllegalInputException {
+    public static boolean verifyUserExistence(final String username, final String servicePrincipal)
+            throws AuthorizationException, IllegalInputException, InoperableStateException {
         // TOOD: Implement
         if (!ready) {
             throw new IllegalStateException("Controller not initialized");
@@ -443,7 +447,13 @@ public class MoriaController {
      * @return a HashMap with service properties
      * @throws UnknownTicketException if the ticket does not point to a authentication attempt
      */
-    public static HashMap getServiceProperties(String loginTicketId) throws UnknownTicketException, InoperableStateException {
+    public static HashMap getServiceProperties(String loginTicketId)
+            throws UnknownTicketException, InoperableStateException, IllegalInputException {
+
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalInputException("loginTicketId must be a non-empty string");
+        }
+
         if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
@@ -478,7 +488,8 @@ public class MoriaController {
      * @return int describing the security level for the requested attributes in the authentication attempt
      * @throws UnknownTicketException if the ticket does is invalid
      */
-    public static int getSecLevel(String loginTicketId) throws UnknownTicketException, InoperableStateException {
+    public static int getSecLevel(String loginTicketId)
+            throws UnknownTicketException, InoperableStateException, AuthorizationException {
         if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
@@ -503,6 +514,9 @@ public class MoriaController {
         } catch (UnknownServicePrincipalException e) {
             // TODO: Log loginticket points to a non-existing service (unlikely to happen)
             throw new UnknownTicketException("Ticket is no longer connected to a service.");
+        } catch (UnknownAttributeException e) {
+            // TODO: Log, should never happen since getSeclevel is used on login page, attrs allready authorized
+            throw new AuthorizationException("Attribute does not exist");
         }
     }
 }
