@@ -130,7 +130,7 @@ public class WebService {
         
         /* Profiles */
         for (Iterator profIt = profiles.keySet().iterator(); profIt.hasNext();) {
-            Profile profile = (Profile) profiles.get((String)profIt.next());
+            Profile profile = (Profile) profiles.get(profIt.next());
             HashMap profileAttrs = profile.getAttributes();
 
             alterAttributes(allAttributes, profileAttrs, true);
@@ -166,7 +166,7 @@ public class WebService {
                 if (add) {
                     Attribute addAttr = (Attribute) changes.get(attrName);
                     Attribute origAttr = (Attribute) allAttributes.get(attrName);
-                    Attribute existingAttr = (Attribute) attributes.get(attrName);
+                    //Attribute existingAttr = (Attribute) attributes.get(attrName);  Was not used.
                     /* If attribute's secLevel is higher than the
                      * previously defined, then set it to the new
                      * value. */
