@@ -12,6 +12,14 @@
   Moria</shortDescription>
 
   <dependencies>
+    <dependency>
+      <groupId>werken-xpath</groupId>
+      <artifactId>werken-xpath</artifactId>
+      <version>0.9.4</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
   </dependencies>
 
   <build>
