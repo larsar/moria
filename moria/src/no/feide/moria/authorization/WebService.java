@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 /**
  * Represents a web service. A web service has a name, id, url and
- * attributes. The atteributes are flattened (for optimization) from a
+ * attributes. The attributes are flattened (for optimization) from a
  * set of profiles, allowed and denied attributes.
  */
 public class WebService {
@@ -78,6 +78,10 @@ public class WebService {
     /** Flag if the web service allows local authentication. */
     private boolean allowLocalAuth = false;
     
+    /** Is direct authentication allowed by this web service? */
+    private boolean directAuthenticationAllowed = false;
+    
+    
     /**
      * Constructor
      * @param id Unique id for the web service. 
@@ -85,7 +89,6 @@ public class WebService {
      WebService(String id) {
         this.id = id;
     }
-
 
 
     /**
@@ -370,6 +373,29 @@ public class WebService {
 	 */
 	void setAffiliations(String[] affiliation) {
 		this.affiliations = affiliation;
+	}
+	
+	
+	/**
+	 * Is this web service allowed to do direct user authentication?
+	 * @return <code>true</code> if yes, otherwise <code>false</code>.
+	 */
+	public boolean allowDirectAuthentication() {
+		log.finer("allowDirectAuthentication()");
+	
+		return directAuthenticationAllowed;
+	}
+	
+	
+	/**
+	 * Specifies if this web service may use direct authentication or not.
+	 * Default is <code>false</code>.
+	 * @param allowed Is the web service allowed to use direct authentication?
+	 */
+	public void setDirectAuthenticationAllowed(boolean allowed) {
+		log.finer("setDirectAuthenticationAllowed(boolean)");
+		
+		directAuthenticationAllowed = allowed;
 	}
 
 }

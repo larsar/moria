@@ -31,8 +31,10 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import no.feide.moria.BackendException;
 import no.feide.moria.Configuration;
 import no.feide.moria.ConfigurationException;
+import no.feide.moria.Credentials;
 import no.feide.moria.Session;
 import no.feide.moria.SessionException;
 import no.feide.moria.SessionStore;
@@ -220,6 +222,46 @@ implements AuthenticationIF, ServiceLifecycle {
         }
         
     }
+    
+    
+    /**
+     * 
+     */
+    public boolean authenticateUser(String id, String username, String password)
+    throws RemoteException {
+    	log.finer("authenticateUser(String, String, String)");
+    	
+    	// Basic parameter check.
+    	if (id == null)
+    		throw new RemoteException("Session ID cannot be NULL");
+    	if (username == null)
+    		throw new RemoteException("User name cannot be NULL");
+    	if (password == null)
+    		throw new RemoteException("Password cannot be NULL");
+    	
+    	try {
+
+    		// Look up session and check the client identity.
+    		Session session = sessionStore.getSessionAuthenticated(id);
+    		validateClient(ctx.getUserPrincipal(), session);
+
+    		// Is the client allowed to do direct authentication at all?
+    		if (!session.getWebService().allowDirectAuthentication()) {
+    			log.warning("Web service '"+ctx.getUserPrincipal()+"' not allowed to use direct authentication");
+    			throw new RemoteException("Web service '"+ctx.getUserPrincipal()+"' not allowed to use direct authentication");
+    		}
+    		
+    		// Create credentials and do authentication.
+    		return session.authenticateUser(new Credentials(username, password));
+
+    	} catch (BackendException e) {
+    		log.severe("BackendException caught and re-thrown as RemoteException");
+    		throw new RemoteException("BackendException caught and re-thrown as RemoteException");
+    	} catch (SessionException e) {
+    		log.severe("SessionException caught and re-thrown as RemoteException");
+    		throw new RemoteException("SessionException caught and re-thrown as RemoteException");
+    	}
+	}
 
 
     /* Return the previously requested user attributes.
@@ -236,38 +278,17 @@ implements AuthenticationIF, ServiceLifecycle {
     throws RemoteException {
         log.finer("getAttributes(String)");
 
+        // Basic parameter check.
         if (id == null) 
-            throw new RemoteException("Session id cannot be null.");
+            throw new RemoteException("Session ID cannot be NULL");
         
     	try {
 
-            /* Look up session and check the client identity. */
+            // Look up session and check the client identity.
             Session session = sessionStore.getSessionAuthenticated(id);
+            validateClient(ctx.getUserPrincipal(), session);
 
-            String serviceName = null;
-            if (ctx.getUserPrincipal() != null)
-                serviceName = ctx.getUserPrincipal().getName();
-
-            if (serviceName == null) 
-                throw new RemoteException("Invalid service name.");
-                
-            String log_prefix = "Attributes requested by "+serviceName+": ";
-
-            /* Reauthorize the WebService */
-            if (!session.getWebService().getId().equals(serviceName)) {
-                log.warning(log_prefix+"DENIED, Unauthorized (Wrong web service)");
-                throw new RemoteException("Access denied");
-            }
-
-            if (session.isLocked()) {
-                log.warning(log_prefix+"DENIED, Session "+id+" is locked");
-                throw new RemoteException("No such session: "+id);
-            }
-
-            assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
-
-            /* Parse and return attributes. */
-            log.info(log_prefix+"ACCEPTED, SID="+session.getID());
+            // Parse and return attributes.
             HashMap result = session.getAttributes();
             Iterator keys = result.keySet().iterator();
             ArrayList attributes = new ArrayList(result.size());
@@ -290,27 +311,44 @@ implements AuthenticationIF, ServiceLifecycle {
 
     /**
      * Utility method, used to check if a given client service principal
-     * matches the principal stored in the session. <code>null</code> values
-     * are allowed.
+     * matches the principal stored in the session; also if the session in
+     * question is locked or not.
      * @param pCurrent The current client principal.
-     * @param pStored The principal stored in the session.
+     * @param session The current session.
      * @throws SessionException If there's a problem getting the session from
-     *                          the session sessionStore.
-     * @throws RemoteException If the client principals didn't match.
+     *                          the session store.
+     * @throws RemoteException If the client principals didn't match, or if the
+     *                         client is trying to use a locked session.
      */
-    private static void assertPrincipals(Principal pCurrent, Principal pStored)
+    private static void validateClient(Principal pCurrent, Session session)
     throws SessionException, RemoteException {
 	log.finer("assertPrincipals(Principal, String)");
-
-	if (pCurrent == null) {
-	    if (pStored == null)
-		return;
-	}
-	else if (pCurrent.toString().equals(pStored.toString()))
-	    return;
-
-        log.severe("Client service identity mismatch; "+pCurrent+" != "+pStored);
-	throw new RemoteException("Client service identity mismatch");
+	
+		// Get current service name.
+		String serviceName = null;
+		if (pCurrent != null)
+			serviceName = pCurrent.getName();
+		if (serviceName == null) {
+			log.severe("Empty service name");
+			throw new RemoteException("Empty service name");
+		}
+	
+		/* Check if the current web service is the one that originally created this
+		 * session. */
+		if (!session.getWebService().getId().equals(serviceName)) {
+			log.warning("Web service '"+serviceName+"' failed authorization");
+			throw new RemoteException("Web service '"+serviceName+"' failed authorization");
+		}
+	
+		// Check if the current session is locked.
+		if (session.isLocked()) {
+			log.warning("Web service '"+serviceName+"' tries to use a locked session ("+session.getID()+')');
+			throw new RemoteException("Web service '"+serviceName+"' tries to use a locked session ("+session.getID()+')');
+		}
+		
+		// Seems the web service is validated after all.
+	    log.info("Web service '"+serviceName+"' passed validation; session ID is "+session.getID());
+    
     }
-
+    
 }
