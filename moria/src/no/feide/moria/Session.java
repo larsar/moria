@@ -153,7 +153,7 @@ public class Session {
         log.fine("Authentication failed");
         failedLogins++;
         try {
-            Integer maxFailures = Integer.decode(Configuration.getProperty("no.feide.mellon.MaxFailedLogins", "3"));
+            Integer maxFailures = Integer.decode(Configuration.getProperty("no.feide.moria.MaxFailedLogins", "3"));
             if (failedLogins == maxFailures.intValue()) {
                 // Remove ourselves from the session store.
                 log.fine("Invalidating session: "+sessionID);
