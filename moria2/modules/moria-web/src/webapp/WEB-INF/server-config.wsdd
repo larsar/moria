@@ -76,17 +76,17 @@
 	       value="*"/>
 
     <typeMapping xmlns:ns="http://v2_0.webservices.moria.feide.no"
-		 qname="ns:ArrayOfAttribute"
-		 type="java:no.feide.moria.webservices.v2_0.Attribute[]"
-		 serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
-		 deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
-		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
-
-    <typeMapping xmlns:ns="http://v2_0.webservices.moria.feide.no"
 		 qname="ns:Attribute"
 		 type="java:no.feide.moria.webservices.v2_0.Attribute"
 		 serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
 		 deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+
+    <typeMapping xmlns:ns="http://v2_0.webservices.moria.feide.no"
+		 qname="ns:ArrayOfAttribute"
+		 type="java:no.feide.moria.webservices.v2_0.Attribute[]"
+		 serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+		 deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
 		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </service>
 
@@ -118,17 +118,17 @@
 	       value="*"/>
 
     <typeMapping xmlns:ns="http://v2_1.webservices.moria.feide.no"
-		 qname="ns:ArrayOfAttribute"
-		 type="java:no.feide.moria.webservices.v2_1.Attribute[]"
-		 serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
-		 deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
-		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
-
-    <typeMapping xmlns:ns="http://v2_1.webservices.moria.feide.no"
 		 qname="ns:Attribute"
 		 type="java:no.feide.moria.webservices.v2_1.Attribute"
 		 serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
 		 deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+
+    <typeMapping xmlns:ns="http://v2_1.webservices.moria.feide.no"
+		 qname="ns:ArrayOfAttribute"
+		 type="java:no.feide.moria.webservices.v2_1.Attribute[]"
+		 serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+		 deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
 		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
 
   </service>
