@@ -101,7 +101,10 @@ extends TestCase {
 
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
-            Assert.fail("Unexpected DirectoryManagerException");
+            Assert.fail("Unexpected AuthenticationFailedException");
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
@@ -139,6 +142,9 @@ extends TestCase {
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
             Assert.fail("Unexpected AuthenticationFailedException");
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
@@ -166,6 +172,9 @@ extends TestCase {
 
         } catch (AuthenticationFailedException e) {
             // Expected.
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
@@ -189,6 +198,9 @@ extends TestCase {
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
             Assert.fail("Unexpected AuthenticationFailedException");
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
