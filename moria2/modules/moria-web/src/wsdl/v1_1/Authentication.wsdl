@@ -53,7 +53,7 @@
   </message>
 
   <message name="initiateAuthenticationOut">
-    <part name="result" type="xsd:string"/>
+    <part name="loginTicket" type="xsd:string"/>
   </message>
 
   <message name="directNonInteractiveAuthenticationIn">
@@ -63,15 +63,33 @@
   </message>
 
   <message name="directNonInteractiveAuthenticationOut">
-    <part name="result" type="xsd:string"/>
+    <part name="userAttributes" type="tns:ArrayOfAttribute"/>
+  </message>
+
+  <message name="proxyAuthenticationIn">
+    <part name="attributes" type="tns:ArrayOfstring"/>
+    <part name="proxyTicket" type="xsd:string"/>
+  </message>
+
+  <message name="proxyAuthenticationOut">
+    <part name="userAttributes" type="tns:ArrayOfAttribute"/>
+  </message>
+
+  <message name="getProxyTicketIn">
+    <part name="ticketGrantingTicket" type="xsd:string"/>
+    <part name="servicePrincipal" type="xsd:string"/>
+  </message>
+
+  <message name="getProxyTicketOut">
+    <part name="proxyTicket" type="xsd:string"/>
   </message>
 
   <message name="getUserAttributesIn">
-    <part name="ticketId" type="xsd:string"/>
+    <part name="serviceTicket" type="xsd:string"/>
   </message>
 
   <message name="getUserAttributesOut">
-    <part name="result" type="tns:ArrayOfAttribute"/>
+    <part name="userAttributes" type="tns:ArrayOfAttribute"/>
   </message>
 
   <message name="getGroupAttributesIn">
@@ -79,7 +97,7 @@
   </message>
 
   <message name="getGroupAttributesOut">
-    <part name="result" type="tns:ArrayOfAttribute"/>
+    <part name="groupAttributes" type="tns:ArrayOfAttribute"/>
   </message>
 
   <message name="verifyUserExistenceIn">
@@ -120,7 +138,17 @@
       <output message="tns:directNonInteractiveAuthenticationOut"/>
     </operation>
 
-    <operation name="getUserAttributes" parameterOrder="ticketId">
+    <operation name="proxyAuthentication" parameterOrder="attributes proxyTicket">
+      <input message="tns:proxyAuthenticationIn"/>
+      <output message="tns:proxyAuthenticationOut"/>
+    </operation>
+
+    <operation name="getProxyTicket" parameterOrder="ticketGrantingTicket servicePrincipal">
+      <input message="tns:getProxyTicketIn"/>
+      <output message="tns:getProxyTicketOut"/>
+    </operation>
+
+    <operation name="getUserAttributes" parameterOrder="serviceTicket">
       <input message="tns:getUserAttributesIn"/>
       <output message="tns:getUserAttributesOut"/>
     </operation>
@@ -167,6 +195,34 @@
     </operation>
 
     <operation name="directNonInteractiveAuthentication">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/v1_1/Authentication"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/v1_1/Authentication"/>
+      </output>
+      <soap:operation soapAction=""/>
+    </operation>
+
+    <operation name="proxyAuthentication">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/v1_1/Authentication"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/v1_1/Authentication"/>
+      </output>
+      <soap:operation soapAction=""/>
+    </operation>
+
+    <operation name="getProxyTicket">
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
