@@ -10,8 +10,67 @@
 
   <goal
      name="project:install"
-     prereqs="war:install"
-     description="Build and install this project in the local repository"/>
+     description="Build and install this project in the local repository">
 
+    <attainGoal name="war:install"/>
+  </goal>
 
+  <!--
+  <preGoal
+     name="java:compile">
+    <path
+       id="project.axis.compile.src.set"
+       location="${project.axis.generated.src.dir}"/>
+    <m:addPath
+       id="maven.compile.src.set"
+       refid="project.axis.compile.src.set"/>
+    <attainGoal name="project:wsdl2java"/>
+
+  </preGoal>
+  -->
+
+  <goal
+     name="project:wsdl2java"
+     description="Generate Java Axis skeletons and stubs">
+
+    <mkdir dir="${project.axis.generated.src.dir}"/>
+
+    <taskdef
+       name="axis-wsdl2java"
+       classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask">
+      <classpath refid="maven.dependency.classpath"/>
+    </taskdef>
+
+    <!-- Iterate over WSDL files -->
+
+    <u:tokenize var="versionList" delim=",">${project.wsdl.versions}</u:tokenize>
+
+    <j:set var="wsdlName" value="Authentication.wsdl"/>
+
+    <j:forEach var="version" items="${versionList}">
+      <j:set var="inFile" value="${project.wsdl.baseuri}/${version}/${wsdlName}"/>
+      <j:set var="outDir" value="${maven.build.dir}/axis/wsdl/${version}"/>
+      <u:available uri="${inFile}">
+	<echo>Proccesing: ${inFile}</echo>
+
+	<mkdir dir="${outDir}"/>
+	<get src="${inFile}" dest="${outDir}/${wsdlName}"/>
+
+	<replace
+	   file="${outDir}/${wsdlName}"
+	   token="REPLACE_WITH_ACTUAL_URL"
+	   value="${project.deploy.url.prefix}/${version}/Authentication"/>
+
+	<!-- Generate skeletons for each wsdl -->
+
+	<axis-wsdl2java
+	   url="file://${outDir}/${wsdlName}"
+	   output="${project.axis.generated.src.dir}"
+	   serverside="${project.axis.serverside}"
+	   skeletondeploy="${project.axis.skeletondeploy}"
+	   testcase="${project.axis.testcase}"
+	   verbose="${project.axis.verbose}"/>
+      </u:available>
+    </j:forEach>
+  </goal>
 </project>
