@@ -70,23 +70,12 @@ public class LoginServlet extends VelocityServlet {
         Properties p = new Properties();
         String path = prefs.get("TemplateDir", null);
 
-        try {
-            SessionStore.getInstance();
-        }
-        
-        catch (SessionException e) {
-            log.severe("Unable to get SessionStore instance.");
-        }
-
-
         /* If path is null, log it. */ // Should also abort?
         if (path == null) {
             log.severe("Path to Velocity templates not set. (Preferences, Moria.xml)");
             path = "/";
         }
 
-        System.out.println("Path: "+path);
-        
         p.setProperty( Velocity.FILE_RESOURCE_LOADER_PATH,  path );
         // p.setProperty( "runtime.log", path + "velocity.log" );
         // Should set log directory.
@@ -220,12 +209,17 @@ public class LoginServlet extends VelocityServlet {
             context.put(value, bundle.getString(value));
         }        
 
-        // If no error then reset error messages
-        if (errorType == null) {
+        // Set or reset error messages
+        if (errorType != null) {
+            context.put("errorMessage", bundle.getString("error_"+errorType));
+            context.put("errorDescription", bundle.getString("error_"+errorType+"_desc"));
+        }
+     
+        else {
             context.remove("errorMessage");
             context.remove("errorDescription");
         }
-     
+
 
         // If no sessionID then remove loginURL
         if (sessionID != null) 

@@ -30,8 +30,10 @@ implements AuthenticationIF, ServiceLifecycle {
     private ServletEndpointContext ctx;
     
     /** Session store. */
-    private SessionStore sessionStore = SessionStore.getInstance();
+    private SessionStore sessionStore;
       
+
+
     
     /**
      * Service endpoint destructor. Some basic housekeeping.
@@ -172,9 +174,9 @@ implements AuthenticationIF, ServiceLifecycle {
 	    assertPrincipals(ctx.getUserPrincipal(), id);
             
             // Look up session.
-            Session session = sessionStore.getSession(sessionID);
+            Session session = sessionStore.getSession(id);
             if ( (session == null) || !session.isAuthenticated() ) {
-                log.warning("No such session: "+sessionID);
+                log.warning("No such session: "+id);
                 return null;
             }
 
@@ -182,6 +184,8 @@ implements AuthenticationIF, ServiceLifecycle {
             log.severe("SessionException caught, and re-thrown as RemoteException");
             throw new RemoteException("SessionException caught", e);
         }
+
+        return ""; // Should return something...
     }
 
 
@@ -206,7 +210,7 @@ implements AuthenticationIF, ServiceLifecycle {
 
 	    // Return attributes.
             Session session = sessionStore.getSession(id);
-            UserAttribute[] result = session.getAttributes(id);
+            UserAttribute[] result = session.getAttributes();
             sessionStore.deleteSession(session);
             return result;
 
@@ -285,7 +289,7 @@ implements AuthenticationIF, ServiceLifecycle {
     throws SessionException, RemoteException {
 	log.finer("assertPrincipals(Principal, String)");
 
-	Principal p = sessionStore.getSession(id).getClientPrincipal();
+	Principal p = SessionStore.getInstance().getSession(id).getClientPrincipal();
 	if (client == null) {
 	    if (p == null)
 		return;

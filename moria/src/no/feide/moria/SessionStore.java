@@ -27,8 +27,7 @@ public class SessionStore {
      * @throws SessionException If an error occurs creating the singleton
      *                               instance.
      */
-    public static SessionStore getInstance()
-    throws SessionException {
+    public static SessionStore getInstance() {
         log.finer("getInstance()");
         
         if (me == null)
@@ -141,9 +140,9 @@ public class SessionStore {
         
         // Remove old session.
         sessions.remove(oldID);
-        sessions.put(newID, session);
+        sessions.put(session.getID(), session);
         
-        log.fine("Session renamed to "+newID);
+        log.fine("Session renamed to "+session.getID());
     }
 
 }
