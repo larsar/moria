@@ -52,7 +52,7 @@ import no.feide.moria.store.NonExistentTicketException;
 
 /**
  * Intermediator for the sub modules of Moria. The controller is the only entry
- * point for accessing Moria. Basicly all work is done by the authorization
+ * point for accessing Moria. Basically, all work is done by the authorization
  * module, the distributed store, the directory manager and the logger. The
  * controller must be initiated from the servlets that are using it. This can be
  * done by calling the <code>initController</code> method.
@@ -140,7 +140,7 @@ public final class MoriaController {
     private static final String CAUGHT_STORE = "MoriaStoreException caught";
     
     /**
-     * Log message for AuthorizationException
+     * Log message for AuthorizationException.
      */
     private static final String CAUGHT_DENIED_USERORG = "AuthorizationException caught";
 
@@ -214,10 +214,10 @@ public final class MoriaController {
 
 
     /**
-     * Initiates the controller. The initialization inlcudes the initialization
+     * Initiates the controller. The initialization includes the initialization
      * of all sub modules.
      * @throws InoperableStateException
-     *             if Moria is not ready for use.
+     *             If Moria is not ready for use.
      */
     static synchronized void init() throws InoperableStateException {
 
@@ -257,7 +257,7 @@ public final class MoriaController {
 
 
     /**
-     * Shut down the controller. All ready status fields are set to false.
+     * Shuts down the controller. All ready status fields are set to false.
      */
     static synchronized void stop() {
 
@@ -282,22 +282,22 @@ public final class MoriaController {
 
 
     /**
-     * Get the total status of the controller. The method returns a HashMap with
-     * Boolean values. The following elements are in the map: <br>
-     * init: <code>true</code> if the <code>initController</code> method has
-     * been called, else <code>false</code><br>
-     * dm: <code>true</code> if the <code>DirectoryManager.setConfig</code>
-     * method has been called, else <code>false</code><br>
-     * sm: <code>true</code> if the <code>MoriaStore.setConfig</code> method
-     * has been called, else <code>false</code><br>
-     * am: <code>true</code> if the
+     * Gets the total status of the controller. The method returns a HashMap with
+     * Boolean values. The following elements are in the map: <ul>
+     * <li>init: <code>true</code> if the <code>initController</code> method has
+     * been called, else <code>false</code>.
+     * <li>dm: <code>true</code> if the <code>DirectoryManager.setConfig</code>
+     * method has been called, else <code>false</code>.
+     * <li>sm: <code>true</code> if the <code>MoriaStore.setConfig</code> method
+     * has been called, else <code>false</code>.
+     * <li>am: <code>true</code> if the
      * <code>AuthorizationManager.setConfig</code> method has been called,
-     * else <code>false</code><br>
-     * moria: <code>true</code> all the above are true (the controller is
-     * ready to use)
-     * @return a <code>HashMap</code> with all status fields for the
+     * else <code>false</code>.
+     * <li>moria: <code>true</code> all the above are true (the controller is
+     * ready to use).</ul>
+     * @return A <code>HashMap</code> with all status fields for the
      *         controller (<code>init</code>,<code>dm</code>,
-     *         <code>sm</code>,<code>am</code> and <code>moria</code>)
+     *         <code>sm</code>,<code>am</code> and <code>moria</code>).
      * @see MoriaController#initController(javax.servlet.ServletContext)
      * @see DirectoryManager#setConfig(java.util.Properties)
      * @see MoriaStore#setConfig(java.util.Properties)
@@ -317,24 +317,25 @@ public final class MoriaController {
 
 
     /**
-     * Attemt single sign on (non-interactive) with a SSO ticket together with
+     * Attempts single sign on (non-interactive) with an SSO ticket together with
      * the login ticket. If both tickets are valid and the requested attributes
      * are cached, a service ticket is returned and there is no need to perform
      * the regular interactive authentication.
      * @param loginTicketId
-     *            the reference to the authentication attempt
+     *            The reference to the authentication attempt.
      * @param ssoTicketId
-     *            the SSO ticket received from the users browser
-     * @return a service ticket
+     *            The SSO ticket received from the users browser.
+     * @return A service ticket.
      * @throws UnknownTicketException
-     *             if either the login ticket or the SSO ticket is invalid or
-     *             non-existing or that the SSO ticket does not point to a
-     *             cached user data object with enough attributes
+     *             If either the login ticket or the SSO ticket is invalid or
+     *             non-existing, the authetication attempt requires interactive
+     *             authentication, or the SSO ticket does not point to a
+     *             cached user data object with enough attributes.
      * @throws InoperableStateException
-     *             if the controller is not ready
+     *             If the controller is not ready.
      * @throws IllegalInputException
-     *             if the <code>loginTicketId</code> and/or
-     *             <code>ssoTicketId</code> is null or empty
+     *             If the <code>loginTicketId</code> and/or
+     *             <code>ssoTicketId</code> is null or empty.
      */
     public static String attemptSingleSignOn(final String loginTicketId, final String ssoTicketId)
     throws UnknownTicketException, InoperableStateException,
@@ -411,7 +412,7 @@ public final class MoriaController {
 
 
     /**
-     * Interactive login attempt using tickets and credentials. The
+     * Performs interactive login attempt using tickets and credentials. The
      * authentication is performed by the directory service, using the supplied
      * username and password. All retrieved user data is cached in the
      * authentication attempt, identified by the <code>loginTicketId</code>.
@@ -421,18 +422,18 @@ public final class MoriaController {
      * attempt, is created. A new SSO ticket is created, pointing to the cached
      * userdata object.
      * @param loginTicketId
-     *            the ticket identifying the authentication attempt
+     *            The ticket identifying the authentication attempt.
      * @param ssoTicketId
-     *            the ticket identifying the existing cached user data object
+     *            The ticket identifying the existing cached user data object.
      * @param userId
-     *            the user's userId
+     *            The user's userId.
      * @param password
-     *            the user's password
+     *            The user's password.
      * @param denySSO
-     *            the user's SSO choice 
-     * @return a HashMap with two tickets: login and SSO, indexed with
+     *            The user's SSO choice.
+     * @return A HashMap with two tickets: login and SSO, indexed with
      *         <code>MoriaController.SSO_TICKET</code> and
-     *         <code>MoiraController.LOGIN_TICKET</code>
+     *         <code>MoiraController.LOGIN_TICKET</code>.
      * @throws UnknownTicketException
      *             If the login ticket is invalid or does not exist.
      * @throws InoperableStateException
@@ -446,7 +447,7 @@ public final class MoriaController {
      *             If the authentication failed due to wrong credentials.
      * @throws AuthorizationException
      *             If the user's organization is not allowed to use this service
-     *      * @throws DirectoryUnavailableException
+     * @throws DirectoryUnavailableException
      *             If the directory of the user's home organization is
      *             unavailable.
      */
@@ -598,14 +599,14 @@ public final class MoriaController {
     /**
      * Initiates authentication through Moria. An authentication attempt is
      * created and the supplied argument is stored in it for later use. After a
-     * successful authentication the user is redirected back to a URL consisting
-     * of the URL prefix and postfix with the service ticket added in the
+     * successful authentication, the user is redirected back to a URL consisting
+     * of the URL prefix and postfix, with the service ticket added in the
      * middle.
      * @param attributes
      *            The requested attributes. Cannot be <code>null</code>.
      * @param returnURLPrefix
      *            Prefix of the redirect URL, used to direct the user back to
-     *            tbe web service. Cannot be <code>null</code> or an empty
+     *            the web service. Cannot be <code>null</code> or an empty
      *            string.
      * @param returnURLPostfix
      *            Postfix of the redirect URL, used to direct the user back to
@@ -676,18 +677,23 @@ public final class MoriaController {
 
 
     /**
-     * Performs a authorization validation of a service request. If no exception
-     * is thrown then the authorization was successful.
+     * Performs an authorization validation of a service request. If no exception
+     * is thrown, the authorization was successful.
      * @param servicePrincipal
-     *            the principal for the service performing the request
+     *            The principal for the service performing the request.
      * @param attributes
-     *            the requested attributes
+     *            The requested attributes.
      * @param operation
-     *            the requested operation
+     *            The requested operation.
      * @param userorg
-     * 			  the organization the user comes from, or null if unknown
+     * 		  The organization the user comes from, or null if unknown.
      * @throws AuthorizationException
-     *             if the authorization failed
+     *             If the authorization failed.
+     * @throws NullPointerException
+     *             If servicePrincipal is null.
+     * @throws IllegalArgumentException
+     *             If servicePrincipal is an empty string or the operation 
+     *             is wrong.
      */
     private static void authorizationCheck(final String servicePrincipal, final String[] attributes, final String operation, final String userorg)
     throws AuthorizationException {
@@ -743,13 +749,13 @@ public final class MoriaController {
 
 
     /**
-     * Retrieve user attributes from a authentication attempt. The method
+     * Retrieves user attributes from an authentication attempt. The method
      * returns the user attributes stored in the authentication attempt, which
      * is referenced to by the service ticket. <br>
      * <br>
      * Note that this method can only be used once for each non-SSO
-     * authentication attempt. Due to security reasons, Moria will not cache
-     * attribute values longer than absolutely neccessary.
+     * authentication attempt. For security reasons, Moria will not cache
+     * attribute values longer than absolutely necessary.
      * @param serviceTicketId
      *            The ticket associated with the authentication attempt. Cannot
      *            be <code>null</code> or an empty string.
@@ -759,6 +765,9 @@ public final class MoriaController {
      * @return A newly instantiated <code>Map</code> object containing the
      *         requested user attributes, if found. Entries have a
      *         <code>String</code> key and a <code>String[]</code> value.
+     * @throws AuthorizationException
+     *             If userorg isn't set for ticket, userorg is denied 
+     *             access to the service or service principal is unknown.
      * @throws IllegalInputException
      *             If <code>serviceTicketId</code> or
      *             <code>servicePrincipal</code> is <code>null</code> or an
@@ -843,31 +852,31 @@ public final class MoriaController {
 
 
     /**
-     * Performs a direct authetication without the use of tickets. The user is
-     * authenticated directly agains the backend and the attributes retrieved
+     * Performs a direct authentication without the use of tickets. The user is
+     * authenticated directly against the backend, and the attributes retrieved
      * are returned to the caller.
      * @param requestedAttributes
-     *            the requested attributes
+     *            The requested attributes.
      * @param userId
-     *            the user's username
+     *            The user's username.
      * @param password
-     *            the user's password
+     *            The user's password.
      * @param servicePrincipal
-     *            the principal of the calling service
-     * @return Map containing user attributes in strings or string arrays
+     *            The principal of the calling service.
+     * @return Map containing user attributes in strings or string arrays.
      * @throws AuthorizationException
-     *             if the service is not allowed to perform this operation
+     *             If the service is not allowed to perform this operation.
      * @throws IllegalInputException
-     *             if <code>requestedAttributes</code> is null, or
+     *             If <code>requestedAttributes</code> is null, or
      *             <code>userId</code> is null/empty, or <code>password</code>
      *             is null/empty, or <code>servicePrincipal</code> is
      *             null/empty.
      * @throws InoperableStateException
-     *             if Moria is not ready for use
+     *             If Moria is not ready for use.
      * @throws AuthenticationException
-     *             if the authendication failed due to bad credentials
+     *             If the authentication failed due to bad credentials.
      * @throws DirectoryUnavailableException
-     *             if directory of the user's home organization is unavailable
+     *             If directory of the user's home organization is unavailable.
      */
     public static Map directNonInteractiveAuthentication(final String[] requestedAttributes, final String userId, final String password, final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
@@ -910,27 +919,29 @@ public final class MoriaController {
 
     /**
      * Performs a ticket based proxy authentication. A proxy ticket and a set of
-     * requested attributes is used to retrieve user data. Only cached userdata
+     * requested attributes are used to retrieve user data. Only cached userdata
      * can be retrieved.
      * @param requestedAttributes
-     *            the requested attributes to retrieve
+     *            The requested attributes to retrieve.
      * @param proxyTicketId
-     *            the proxy ticket connected with the cached user data
+     *            The proxy ticket connected with the cached user data.
      * @param servicePrincipal
-     *            the principal of the requesting service
+     *            The principal of the requesting service.
      * @return Map containing user attributes with <code>String</code>
      *         (attribute name) as key and <code>String[]</code> (user
      *         attributes) as value.
      * @throws AuthorizationException
-     *             if the service is not allowed to perform this operation
+     *             If the service is not allowed to perform this operation.
      * @throws IllegalInputException
-     *             if <code>requestedAttributes</code> is null, or
+     *             If <code>requestedAttributes</code> is null, or
      *             <code>proxyTicketId</code> is null/empty, or
      *             <code>servicePrincipal</code> is null/empty.
      * @throws InoperableStateException
-     *             if the controller is not ready to use
+     *             If the controller is not ready to use.
+     * @throws InvalidTicketException
+     *             If userorg in not set in the proxy ticket.
      * @throws UnknownTicketException
-     *             if the proxy ticket does not exist
+     *             If the proxy ticket is invalid or does not exist.
      */
     public static Map proxyAuthentication(final String[] requestedAttributes, final String proxyTicketId, final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
@@ -985,29 +996,30 @@ public final class MoriaController {
 
 
     /**
-     * Generate a proxy ticket based on a TGT. A new proxy ticket is created,
+     * Generates a proxy ticket based on a TGT. A new proxy ticket is created,
      * referring to the same cached user data as the TGT does. The proxy ticket
-     * will be owned by the target service, not the one that request it's
+     * will be owned by the target service, not the one that requested its
      * creation.
      * @param ticketGrantingTicket
-     *            the TGT to generate a proxy ticket for.
+     *            The TGT to generate a proxy ticket for.
      * @param proxyServicePrincipal
-     *            the principal of the service that the proxy ticket is created
-     *            for
+     *            The principal of the service that the proxy ticket is created
+     *            for.
      * @param servicePrincipal
-     *            the principal of the service requesting the ticket generation
-     * @return a <code>String</code> containing the proxy ticket
+     *            The principal of the service requesting the ticket generation.
+     * @return A <code>String</code> containing the proxy ticket.
      * @throws AuthorizationException
-     *             if the requesting service is not allowed to perform the
-     *             operation
+     *             If the requesting service is not allowed to perform the
+     *             operation.
      * @throws IllegalInputException
-     *             if <code>ticketGrantingTicket</code>,
+     *             If <code>ticketGrantingTicket</code>,
      *             <code>proxyServicePrincipal</code> or
      *             <code>servicePrincipal</code> is null/empty.
      * @throws InoperableStateException
-     *             if Moria is not ready for use
+     *             If Moria is not ready for use.
      * @throws UnknownTicketException
-     *             if the <code>ticketGrantingTicket</code> does not exist
+     *             If the <code>ticketGrantingTicket</code> is invalid or does
+     *             not exist, or <code>userorg</code> is not set in ticket.
      */
     public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal, final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
@@ -1062,20 +1074,20 @@ public final class MoriaController {
     /**
      * Verifies the existence of a user.
      * @param userId
-     *            the username to verify
+     *            The username to verify.
      * @param servicePrincipal
-     *            the principal of the requesting service
-     * @return true if the user exists, else false
+     *            The principal of the requesting service.
+     * @return true if the user exists, else false.
      * @throws AuthorizationException
-     *             if the requesting service is not allowed to perform the
-     *             operation
+     *             If the requesting service is not allowed to perform the
+     *             operation.
      * @throws IllegalInputException
-     *             if <code>userId</code> or <code>servicePrincipal</code>
-     *             is null or empty
+     *             If <code>userId</code> or <code>servicePrincipal</code>
+     *             is null or empty.
      * @throws InoperableStateException
-     *             if the controller is not ready to use
+     *             If the controller is not ready to use.
      * @throws DirectoryUnavailableException
-     *             if the directory for the user is not available
+     *             If the directory for the user is not available.
      */
     public static boolean verifyUserExistence(final String userId, final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
@@ -1123,13 +1135,13 @@ public final class MoriaController {
 
 
     /**
-     * Set config for a module. A supplied configuration is transferred to the
-     * correct module. When all modules have received their config the
-     * controller's status become ready.
-     * @param properties
-     *            the configuration to transfer to the module
+     * Sets config for a module. A supplied configuration is transferred to the
+     * correct module. When all modules have received their config, the
+     * controller's status becomes ready.
      * @param module
-     *            name of the module to set config for
+     *            Name of the module to set config for.
+     * @param properties
+     *            The configuration to transfer to the module.
      * @see ConfigurationManager#MODULE_AM
      * @see ConfigurationManager#MODULE_DM
      * @see ConfigurationManager#MODULE_SM
@@ -1184,11 +1196,11 @@ public final class MoriaController {
 
 
     /**
-     * Start the controller. The controller expects to be started from a web
+     * Starts the controller. The controller expects to be started from a web
      * application. The supplied ServletContext will be used to transfer config
      * from the configuration manager to the servlets.
      * @param sc
-     *            the servletContext from the caller
+     *            The servletContext from the caller.
      * @throws InoperableStateException
      *             if Moria is not ready for use.
      */
@@ -1209,7 +1221,7 @@ public final class MoriaController {
 
 
     /**
-     * Stop the controller.
+     * Stops the controller.
      */
     public static void stopController() {
 
@@ -1224,11 +1236,12 @@ public final class MoriaController {
 
 
     /**
-     * Validate URL. Uses blacklist to indicate whether the URL should be
+     * Validates a URL. Uses blacklist to indicate whether the URL should be
      * accepted or not.
      * @param url
-     *            the URL to validate
-     * @return true if the URL is valid, else false
+     *            The URL to validate.
+     * @return true if the URL is valid, else false.
+     * @throws IllegalArgumentException if url is null or empty.
      */
     static boolean isLegalURL(final String url) {
 
@@ -1307,15 +1320,18 @@ public final class MoriaController {
 
 
     /**
-     * Get the seclevel for an authentication attempt.
+     * Gets the security level of an authentication attempt.
      * @param loginTicketId
-     *            the ticket associated with the authentication attempt
+     *            The ticket associated with the authentication attempt.
      * @return int describing the security level for the requested attributes in
-     *         the authentication attempt
+     *         The authentication attempt.
      * @throws UnknownTicketException
-     *             if the ticket does is invalid
+     *             If the ticket does not exist, is invalid, or is not 
+     *             associated with a service.
      * @throws InoperableStateException
-     *             if Moria is not usable
+     *             If Moria is not usable.
+     * @throws IllegalArgumentException
+     *             If loginTicketId is null or empty.
      */
     public static int getSecLevel(final String loginTicketId)
     throws UnknownTicketException, InoperableStateException {
@@ -1354,14 +1370,14 @@ public final class MoriaController {
 
 
     /**
-     * Invalidates a SSO ticket. After the invalidation the ticket cannot be
+     * Invalidates a SSO ticket. After the invalidation, the ticket cannot be
      * used any more.
      * @param ssoTicketId
-     *            the ticket to be invalidated
+     *            The ticket to be invalidated.
      * @throws IllegalInputException
-     *             if <code>ssoTicketId</code> is null or empty
+     *             If <code>ssoTicketId</code> is null or empty.
      * @throws InoperableStateException
-     *             if Moria is not ready to use
+     *             If Moria is not ready to use.
      */
     public static void invalidateSSOTicket(final String ssoTicketId)
     throws IllegalInputException, InoperableStateException {
@@ -1390,18 +1406,18 @@ public final class MoriaController {
 
 
     /**
-     * Create a redirect URL for redirecting user back to web service. The URL
-     * is created by concatinating the URL prefix with the service ticket and
+     * Creates a redirect URL for redirecting user back to web service. The URL
+     * is created by concatenating the URL prefix with the service ticket and
      * the URL postfix.
      * @param serviceTicketId
-     *            the service ticket to generate redirect URL for
-     * @return a <code>String</code> containing the URL
+     *            The service ticket to generate redirect URL for.
+     * @return A <code>String</code> containing the URL.
      * @throws InoperableStateException
-     *             if Moria is not ready for use
+     *             If Moria is not ready for use.
      * @throws IllegalInputException
-     *             if <code>serviceTicketId</code> is null or empty
+     *             If <code>serviceTicketId</code> is null or empty.
      * @throws UnknownTicketException
-     *             if the service ticket does not exist
+     *             If the service ticket is invalid or does not exist.
      */
     public static String getRedirectURL(final String serviceTicketId)
     throws InoperableStateException, IllegalInputException,
@@ -1433,15 +1449,15 @@ public final class MoriaController {
     }
     
     /**
-     * Get the userorg from the directoryManager.
+     * Gets the userorg from the directoryManager.
      * 
      * @param userId 
-     * 				the userId for a user
+     * 				The userId of a user.
      * @param password
-     * 				the password for a user
-     * @return a <code>String</code> containing the user's organization
+     * 				The password of a user.
+     * @return A <code>String</code> containing the user's organization.
      * @throws AuthenticationException
-     * 				if the user's organization is not found
+     * 				If the user's organization is not found.
      */
     private static String getUserOrg(String userId, String password) throws AuthenticationException {
         String org = directoryManager.getRealm(userId);

@@ -21,7 +21,7 @@
 package no.feide.moria.controller;
 
 /**
- * Used to signal that the client is not authorized to perform a spcific action.
+ * Used to signal that the client is not authorized to perform a specific action.
  *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$

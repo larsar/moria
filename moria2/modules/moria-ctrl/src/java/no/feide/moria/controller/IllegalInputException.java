@@ -22,7 +22,7 @@ package no.feide.moria.controller;
 
 /**
  * Used to signal that the controller has received illegal input. Instead of
- * throwing IllegalArgumentException the controller only uses checked exceptions.
+ * throwing IllegalArgumentException, the controller only uses checked exceptions.
  *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
