@@ -21,12 +21,16 @@
 package no.feide.moria.controller;
 
 import no.feide.moria.authorization.AuthorizationManager;
+import no.feide.moria.authorization.UnknownServicePrincipalException;
 import no.feide.moria.configuration.ConfigurationManager;
 import no.feide.moria.configuration.ConfigurationManagerException;
 import no.feide.moria.store.InvalidTicketException;
 import no.feide.moria.store.MoriaAuthnAttempt;
 import no.feide.moria.store.MoriaStore;
 import no.feide.moria.store.MoriaStoreFactory;
+import no.feide.moria.log.AccessLogger;
+import no.feide.moria.log.AccessStatusType;
+import no.feide.moria.log.MessageLogger;
 
 import javax.servlet.ServletContext;
 import java.util.HashMap;
@@ -65,9 +69,15 @@ public class MoriaController {
     private static ServletContext servletContext;
 
     /**
-     *
-     *
+     * Used for access logging.
      */
+    private static AccessLogger accessLogger;
+
+    /**
+     * Used for message/error logging.
+     */
+    private static MessageLogger messageLogger;
+
     synchronized static void init() {
         synchronized (ready) {
             // TODO: Implemented just to get the current code running
@@ -75,6 +85,9 @@ public class MoriaController {
                 return;
             }
             ready = new Boolean(true);
+
+            accessLogger = new AccessLogger();
+            messageLogger = new MessageLogger(MoriaController.class);
 
             // TODO: Ensure single instance of store
             store = MoriaStoreFactory.createMoriaStore();
@@ -127,8 +140,8 @@ public class MoriaController {
     public static String attemptSingleSignOn(final String loginTicket, final String ssoTicket) throws UnknownTicketException {
 
         // If the login ticket is invalid throw exception
-       // if (!validateLoginTicket(loginTicket))
-         //   throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
+        // if (!validateLoginTicket(loginTicket))
+        //   throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
         // TODO: Implement
         return null;
     }
@@ -181,12 +194,19 @@ public class MoriaController {
         }
 
         /* Authorization */
-        if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
-            // TODO: Access log
-            throw new AuthorizationException("Access to the requested attributes is denied.");
-        }
-        if (!authzManager.allowOperations(servicePrincipal, new String[]{"InteractiveAuth"})) {
-            throw new AuthorizationException("Access to the requested operations is denied.");
+        try {
+            if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
+                accessLogger.logService(AccessStatusType.ATTRIBUTES_ACCESS_DENIED, servicePrincipal, null, null);
+                messageLogger.logInfo("Service '" + servicePrincipal
+                        + "' tried to access '" + attributes + "', but have only access to '" + authzManager.getAttributes(servicePrincipal)); // TODO: Finish
+                throw new AuthorizationException("Access to the requested attributes is denied.");
+            }
+            if (!authzManager.allowOperations(servicePrincipal, new String[]{"InteractiveAuth"})) {
+                throw new AuthorizationException("Access to the requested operations is denied.");
+            }
+        } catch (UnknownServicePrincipalException e) {
+            // TODO: Log event (Message log)
+            throw new AuthorizationException("Authorization failed for: " + servicePrincipal);
         }
 
         /* URL validation */
@@ -369,16 +389,21 @@ public class MoriaController {
             throw new IllegalArgumentException("loginTicketId must be a non-empty string, was: " + loginTicketId);
         }
 
+        MoriaAuthnAttempt authnAttempt;
         try {
-            MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(loginTicketId, true);
-            return authzManager.getServiceProperties(authnAttempt.getServicePrincipal());
+            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
         } catch (InvalidTicketException e) {
             // TODO: Log? (should have been logged by sublayer)
             throw new UnknownTicketException("Ticket does not exist");
         }
 
-        // TODO: Finish implementation
+        try {
+            return authzManager.getServiceProperties(authnAttempt.getServicePrincipal());
+        } catch (UnknownServicePrincipalException e) {
+            // TODO: Log loginTicketId points to a non-existing service (unlikely to happen)
+            throw new UnknownTicketException("Ticket is no longer connected to a service.");
         }
+    }
 
     /**
      * Get the seclevel for an authentication attempt.
@@ -404,6 +429,11 @@ public class MoriaController {
             throw new UnknownTicketException("Ticket does not exist.");
         }
 
-        return authzManager.getSecLevel(authnAttempt.getServicePrincipal(), authnAttempt.getRequestedAttributes());
+        try {
+            return authzManager.getSecLevel(authnAttempt.getServicePrincipal(), authnAttempt.getRequestedAttributes());
+        } catch (UnknownServicePrincipalException e) {
+            // TODO: Log loginticket points to a non-existing service (unlikely to happen)
+            throw new UnknownTicketException("Ticket is no longer connected to a service.");
+        }
     }
 }
