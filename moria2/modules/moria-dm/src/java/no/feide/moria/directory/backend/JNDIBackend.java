@@ -349,7 +349,7 @@ implements DirectoryManagerBackend {
             oldAttrs = ldap.getAttributes(rdn, attributes);
 
         } catch (NamingException e) {
-            throw new BackendException("Unable to read attributes " + attributes + " from " + url, e);
+            throw new BackendException("Unable to read attributes '" + attributes + "' from '" + url + "'", e);
         }
 
         // Translate retrieved attributes from Attributes to HashMap.
@@ -359,7 +359,7 @@ implements DirectoryManagerBackend {
             // Did we get an attribute back at all?
             Attribute oldAttr = oldAttrs.get(attributes[i]);
             if (oldAttr == null)
-                log.logInfo("Requested attribute " + attributes[i] + " not found on " + url);
+                log.logInfo("Requested attribute '" + attributes[i] + "' not found on '" + url + "'");
             else {
 
                 // Map the attribute values to String[].
@@ -368,7 +368,7 @@ implements DirectoryManagerBackend {
                     try {
                         newValues.add(new String((String) oldAttr.get(j)));
                     } catch (NamingException e) {
-                        throw new BackendException("Unable to read attribute value of " + oldAttr.getID() + " from " + url, e);
+                        throw new BackendException("Unable to read attribute value of '" + oldAttr.getID() + "' from '" + url + "'", e);
                     }
                 newAttrs.put(attributes[i], (String[]) newValues.toArray(new String[] {}));
 
