@@ -537,9 +537,6 @@ public final class MoriaController {
             } catch (NonExistentTicketException e) {
                 // The ticket has probably already timed out.
                 messageLogger.logDebug("SSO ticket does not exist - may have timed out", ssoTicketId, e);
-            } catch (InvalidTicketException e) {
-                // Using a non-SSO ticket for SSO.
-                messageLogger.logWarn("Using a non-SSO ticket for SSO", ssoTicketId, e);
             } catch (MoriaStoreException e) {
                 // Unable to access the store.
                 messageLogger.logCritical(CAUGHT_STORE, ssoTicketId, e);
@@ -1393,9 +1390,6 @@ public final class MoriaController {
         } catch (NonExistentTicketException e) {
             /* We don't care, it's just removal of a ticket */
             messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET + ", OK since we tried to remove");
-        } catch (InvalidTicketException e) {
-            /* We don't care, it's just removal of a ticket */
-            messageLogger.logWarn(CAUGHT_INVALID_TICKET + ", strange...expected SSO ticket, ignoring", e);
         } catch (MoriaStoreException e) {
             messageLogger.logCritical(CAUGHT_STORE, e);
             throw new InoperableStateException(STORE_DOWN);
