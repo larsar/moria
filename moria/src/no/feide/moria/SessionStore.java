@@ -107,13 +107,16 @@ public class SessionStore {
         // Try 20 times to generate a unique session ID, then give up.
         String generated = null;
         int count = 0;
-        do {
-            if (count++ == 20) {
-                log.severe("Unable to create unique session ID");
-                throw new SessionException("Unable to create unique session ID");
-            }          
-            generated = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
-        } while (sessions.containsKey(generated));
+
+        synchronized (sessions) {
+            do {
+                if (count++ == 20) {
+                    log.severe("Unable to create unique session ID");
+                    throw new SessionException("Unable to create unique session ID");
+                }          
+                generated = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+            } while (sessions.containsKey(generated));
+        }
 
         return generated;
     }    
