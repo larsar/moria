@@ -255,7 +255,7 @@
   
   <target name="mellon:demo:compile"
           description="Mellon demo: Compile source"
-          depends="mellon:demo:prepare,mellon:jar,mellon:filter:jar">
+          depends="mellon:filter:jar,mellon:demo:prepare,mellon:jar,mellon:filter:jar">
     <javac srcdir="src"
            destdir="build.mellon.demo/WEB-INF/classes"
            includes="no/feide/mellon/servlet/*">
