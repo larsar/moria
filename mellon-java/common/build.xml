@@ -7,7 +7,7 @@
   <property file="build.properties"/>
 
   <!-- Targets to build the Mellon API. -->
-  <target name="prepare"
+  <target name="common:prepare"
           description="Mellon API: Prepare build directory">
  
     <mkdir dir="build/utils"/>
@@ -28,14 +28,14 @@
     
   </target>
 
-  <target name="build"
+  <target name="common:build"
    	      description="Build all"
-   	      depends="filter"/>
+   	      depends="common:filter"/>
   
 
-  <target name="servlet"
+  <target name="common:servlet"
           description="Mellon demo: Compile source"
-          depends="filter">
+          depends="common:filter">
     <javac srcdir="src"
            debug="true"
            destdir="build/demo/WEB-INF/classes"
@@ -59,9 +59,9 @@
       <jar destfile="dist/feide-mellon-demo.war" basedir="build/demo"/>
   </target>
 
- <target name="utils"
+ <target name="common:utils"
           description="Mellon utils: Compile source"
-          depends="prepare">
+          depends="common:prepare">
     <javac srcdir="src"
            debug="true"
            destdir="build/utils"
@@ -75,9 +75,9 @@
     </target>
 
 
- <target name="filter"
+ <target name="common:filter"
           description="Mellon demo: Compile source"
-          depends="prepare">
+          depends="common:prepare">
     <javac srcdir="src"
            debug="true"
            destdir="build/filter"
@@ -110,7 +110,7 @@
   </target>
 
 
-  <target name="clean"
+  <target name="common:clean"
           description="Mellon API: Clean up">
     <delete dir="build"/>
     <delete dir="dist"/>
