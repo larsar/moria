@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.naming.AuthenticationException;
-import javax.naming.CommunicationException;
 import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.NameNotFoundException;
@@ -39,6 +38,7 @@ import no.feide.moria.log.MessageLogger;
  * Represents a user in the backend. Used to authenticate users and retrieve the
  * associated attributes.
  */
+// TODO: Close all used LDAP connections.
 public class JNDIBackend
 implements DirectoryManagerBackend {
 
@@ -53,12 +53,6 @@ implements DirectoryManagerBackend {
 
     /** Default initial LDAP context environment. */
     private Hashtable defaultEnv;
-
-    /** The LDAP context. */
-    private InitialLdapContext ldap;
-
-    /** Used to store the user element's relative DN. */
-    private String rdn;
 
 
     /**
@@ -141,7 +135,21 @@ implements DirectoryManagerBackend {
         // TODO: Get eduPersonPrincipalName attribute name from
         // configuration.
         String pattern = "eduPersonPrincipalName=" + username;
-        return (ldapSearch(pattern) != null);
+
+        // Go through all references.
+        for (int i = 0; i < myReferences.length; i++) {
+            String[] references = myReferences[i].getReferences();
+            for (int j = 0; j < references.length; j++) {
+
+                // Search this reference.
+                if (ldapSearch(connect(references[j]), pattern) != null)
+                    return true;
+
+            }
+        }
+
+        // Still no match.
+        return false;
 
     }
 
@@ -156,9 +164,7 @@ implements DirectoryManagerBackend {
      *         <code>null</code> username/password), otherwise
      *         <code>true</code>.
      * @throws BackendException
-     *             If a NamingException is thrown, if the type of credentials is
-     *             not supported, or if a <code>ConfigurationException</code>
-     *             is caught.
+     *             If there is a problem accessing the backend.
      * @throws IllegalArgumentException
      *             If <code>userCredentials</code> is <code>null</code>.
      */
@@ -169,72 +175,81 @@ implements DirectoryManagerBackend {
         if (userCredentials == null)
             throw new IllegalArgumentException("Credentials cannot be NULL");
 
-        try {
+        // Go through all references.
+        for (int i = 0; i < myReferences.length; i++) {
+            String[] references = myReferences[i].getReferences();
+            for (int j = 0; j < references.length; j++) {
 
-            // TODO: Add support for more than one reference.
-            String currentReference = myReferences[0].getReferences()[0];
-            
-            // Connect to server using the default environment.
-            Hashtable env = new Hashtable(defaultEnv);
-            env.put(Context.PROVIDER_URL, currentReference);
-            try {
-                ldap = new InitialLdapContext(env, null);
-            } catch (CommunicationException e) {
-                throw new BackendException("Unable to connect to " + env.get(Context.PROVIDER_URL));
-            }
+                try {
 
-            // Skip search phase if the reference(s) are explicit.
-            if (myReferences[0].isExplicitlyIndexed()) {
+                    // Context for this reference.
+                    InitialLdapContext ldap = connect(references[j]);
 
-                // Add the explicit reference; no search phase, no RDN.
-                rdn = "";
-                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, currentReference.substring(currentReference.lastIndexOf('/')+1));
+                    // Skip search phase if the reference(s) are explicit.
+                    String rdn = "";
+                    if (myReferences[0].isExplicitlyIndexed()) {
 
-            } else {
+                        // Add the explicit reference; no search phase, no RDN.
+                        ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, references[j].substring(references[j].lastIndexOf('/') + 1));
 
-                // Anonymous search using the implicit reference.
-                // TODO: Get eduPersonPrincipalName attribute name from
-                // configuration.
-                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
-                ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-                String pattern = "eduPersonPrincipalName=" + userCredentials.getUsername();
-                rdn = ldapSearch(pattern);
-                if (rdn == null) {
+                    } else {
 
-                    // No user element found. Try to guess the DN anyway.
-                    log.logWarn("No subtree match for " + pattern + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL));
-                    rdn = userCredentials.getUsername();
-                    // TODO: Get uid attribute name from configuration.
-                    rdn = "uid=" + rdn.substring(0, rdn.indexOf('@'));
-                    log.logWarn("Guessing on RDN " + rdn);
+                        // Anonymous search using the implicit reference.
+                        // TODO: Get eduPersonPrincipalName attribute name from
+                        // configuration.
+                        ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
+                        ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
+                        String pattern = "eduPersonPrincipalName=" + userCredentials.getUsername();
+                        rdn = ldapSearch(ldap, pattern);
+                        if (rdn == null) {
 
+                            // No user element found. Try to guess the RDN.
+                            log.logWarn("No subtree match for " + pattern + " on " + references[j]);
+                            rdn = userCredentials.getUsername();
+                            // TODO: Get uid attribute name from configuration.
+                            rdn = "uid=" + rdn.substring(0, rdn.indexOf('@'));
+                            log.logWarn("Guessing on RDN " + rdn);
+
+                        }
+                        ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
+                    }
+
+                    // Authenticate and get attributes.
+                    ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
+                    ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
+                    try {
+                        ldap.reconnect(null);
+                        return getAttributes(ldap, rdn, attributeRequest); // Success.
+                    } catch (AuthenticationException e) {
+
+                        // Authentication failed, but we may have other
+                        // references.
+                        continue;
+
+                    }
+
+                } catch (ConfigurationException e) {
+                    throw new BackendException("Backend configuration problem", e);
+                } catch (NamingException e) {
+                    throw new BackendException("Unable to access the backend", e);
                 }
-                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
-            }
 
-            // Authenticate.
-            ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
-            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
-            try {
-                ldap.reconnect(null);
-                return getAttributes(attributeRequest); // Success.
-            } catch (AuthenticationException e) {
-                throw new AuthenticationFailedException("Failed to authenticate as " + rdn + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL));
             }
-
-        } catch (ConfigurationException e) {
-            // TODO: Better exception handling.
-            throw new BackendException("ConfigurationException caught", e);
-        } catch (NamingException e) {
-            // TODO: Better exception handling.
-            throw new BackendException("NamingException caught", e);
         }
+
+        // No user was found.
+        throw new AuthenticationFailedException("Failed to authenticate user " + userCredentials.getUsername());
 
     }
 
 
     /**
      * Retrieves a list of attributes from an element.
+     * @param ldap
+     *            A prepared LDAP context. Cannot be <code>null</code>.
+     * @param rdn
+     *            The relative DN (to the DN in the LDAP context
+     *            <code>ldap</code>). Cannot be <code>null</code>.
      * @param attributes
      *            The requested attribute's names.
      * @return The requested attributes (<code>String</code> names and
@@ -247,12 +262,20 @@ implements DirectoryManagerBackend {
      * @throws BackendException
      *             If unable to read the attributes from the backend using
      *             <code>InitialDirContext.getAttributes(String, String[])</code>.
+     * @throws NullPointerException
+     *             If <code>ldap</code> or <code>rdn</code> is
+     *             <code>null</code>.
      * @see javax.naming.directory.InitialDirContext#getAttributes(java.lang.String,
      *      java.lang.String[])
      */
-    private HashMap getAttributes(String[] attributes) throws BackendException {
+    private HashMap getAttributes(InitialLdapContext ldap, String rdn, String[] attributes)
+    throws BackendException {
 
-        // Sanity check.
+        // Sanity checks.
+        if (ldap == null)
+            throw new NullPointerException("LDAP context cannot be NULL");
+        if (rdn == null)
+            throw new NullPointerException("RDN cannot be NULL");
         if ((attributes == null) || (attributes.length == 0))
             return new HashMap();
 
@@ -293,19 +316,19 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Close the LDAP connection of this backend. Will log a warning message if
-     * unable to close the connection.
+     * Does nothing, but needed to fulfill the
+     * <code>DirectoryManagerBackend</code> interface.
+     * @see DirectoryManagerBackend#close()
      */
     public void close() {
 
-        try {
-            ldap.close();
-        } catch (NamingException e) {
+        // Does nothing.
 
-            // Not being able to close the connection is a non-critical error.
-            log.logWarn("Unable to close backend connection");
-
-        }
+        /*
+         * try { ldap.close(); } catch (NamingException e) { // Not being able
+         * to close the connection is a non-critical error. log.logWarn("Unable
+         * to close backend connection"); }
+         */
 
     }
 
@@ -324,7 +347,8 @@ implements DirectoryManagerBackend {
      *             If there was a problem accessing the backend. Typical causes
      *             include timeouts.
      */
-    private String ldapSearch(final String pattern) throws BackendException {
+    private String ldapSearch(InitialLdapContext ldap, final String pattern)
+    throws BackendException {
 
         // Check pattern for illegal content.
         String[] illegals = {"*", "\2a"};
@@ -332,58 +356,41 @@ implements DirectoryManagerBackend {
             if (pattern.indexOf(illegals[i]) > -1)
                 return null;
 
-        // Go through all references until a match is found.
-        for (int i = 0; i < myReferences.length; i++) {
-            String[] references = myReferences[i].getReferences();
-            for (int j = 0; j < references.length; j++) {
+        // Start counting the (milli)seconds.
+        long searchStart = System.currentTimeMillis();
+        NamingEnumeration results;
+        try {
 
-                // Connect to this reference.
-                InitialLdapContext ldap = connect(references[j]);
+            // Perform the search.
+            results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000 * myTimeout, new String[] {}, false, false));
+            if (!results.hasMore())
+                return null;
 
-                // Start counting the (milli)seconds.
-                long searchStart = System.currentTimeMillis();
-                NamingEnumeration results;
-                try {
+        } catch (TimeLimitExceededException e) {
 
-                    // Perform the search.
-                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000 * myTimeout, new String[] {}, false, false));
-                    if (!results.hasMore()) {
-                        log.logWarn("No match for " + pattern + " on " + references[j]);
-                        continue; // Skip to next reference.
-                    }
+            // The search timed out.
+            throw new BackendException("Search timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
 
-                } catch (TimeLimitExceededException e) {
+        } catch (NameNotFoundException e) {
 
-                    // The search timed out.
-                    throw new BackendException("Search timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
+            // Element not found. Possibly non-existing reference.
+            return null;
 
-                } catch (NameNotFoundException e) {
+        } catch (NamingException e) {
 
-                    // Element not found. Possibly non-existing reference.
-                    log.logWarn("No match for " + pattern + " on " + references[j]);
-                    continue; // Skip to next reference.
+            // All other exceptions.
+            throw new BackendException("Unable to complete search for " + pattern, e);
 
-                } catch (NamingException e) {
-
-                    // All other exceptions.
-                    throw new BackendException("Unable to complete search for " + pattern, e);
-
-                }
-
-                // We just found an element.
-                SearchResult entry = null;
-                try {
-                    entry = (SearchResult) results.next();
-                } catch (NamingException e) {
-                    throw new BackendException("Unable to read search results", e);
-                }
-                return entry.getName(); // Relative DN (to the reference).
-
-            }
         }
 
-        // Gone through all references and still no match.
-        return null;
+        // We just found an element.
+        SearchResult entry = null;
+        try {
+            entry = (SearchResult) results.next();
+        } catch (NamingException e) {
+            throw new BackendException("Unable to read search results", e);
+        }
+        return entry.getName(); // Relative DN (to the reference).
 
     }
 
