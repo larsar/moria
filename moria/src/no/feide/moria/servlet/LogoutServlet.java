@@ -23,7 +23,7 @@ import no.feide.moria.Session;
 import no.feide.moria.NoSuchSessionException;
 import no.feide.moria.SessionException;
 import no.feide.moria.stats.StatsStore;
-import no.feide.moria.Utils;
+import no.feide.moria.utils.URLValidator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -83,8 +83,8 @@ public class LogoutServlet extends MoriaServlet {
         try {
             SessionStore sessionStore = SessionStore.getInstance();
             Session session = sessionStore.getSessionSSO(existingSessionID);
-            stats.incStatsCounter(session.getWebService().getId(), "logout");
-            stats.decStatsCounter(session.getWebService().getId(), "activeSessions");
+            stats.increaseCounter("sessionsSSOLogout");
+
             sessionStore.deleteSession(session);
             log.info("SSO Logout, SID="+existingSessionID);
         }
@@ -98,7 +98,7 @@ public class LogoutServlet extends MoriaServlet {
         }
 
         /* Redirect if a URL is given as parameter to the request */
-        if (redirectUrl != null && !redirectUrl.equals("") && Utils.isLegalURL(redirectUrl)) {
+        if (redirectUrl != null && !redirectUrl.equals("") && URLValidator.isLegal(redirectUrl)) {
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
             response.setHeader("Location", redirectUrl);
             log.info("Logout-redirect to: "+redirectUrl);
