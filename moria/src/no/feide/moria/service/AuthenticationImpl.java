@@ -223,10 +223,17 @@ implements AuthenticationIF, ServiceLifecycle {
 	    /* Look up session and check the client identity. */
             Session session = sessionStore.getSession(id);
 
+
             String serviceName = null;
             if (ctx.getUserPrincipal() != null)
                 serviceName = ctx.getUserPrincipal().getName();
             
+            if (!session.getWebService().getId().equals(serviceName)) {
+                log.severe("WebService ("+serviceName+") tried to get unauthorized access to auth session.");
+                throw new RemoteException("Access denied");
+            }
+
+
             if (session.isLocked()) {
                 log.warning("Service ("+serviceName+") tried to access locked session: "+session.getID());
                 throw new RemoteException("No such session.");
