@@ -7,9 +7,10 @@ import junit.framework.*;
  */
 public class DummyIndexTest
 extends TestCase {
-    
+
     /** Internal representation of the index. */
     private DummyIndex index;
+
 
     /**
      * Returns the full test suite.
@@ -18,9 +19,10 @@ extends TestCase {
     public static Test suite() {
 
         return new TestSuite(DummyIndexTest.class);
-        
+
     }
-    
+
+
     /**
      * Prepare.
      */
@@ -40,19 +42,19 @@ extends TestCase {
 
     }
 
-    
+
     /**
      * Test dummy index lookups.
      */
     public void testLookup() {
 
         // Look up some non-existing entries.
-        String[] nonExisting = {null, "", "@", "test@feide.nø", "TEST@FEIDE.NO", "Test@feide.no"};
-        for (int i=0; i<nonExisting.length; i++)
+        String[] nonExisting = {null, "", "@", "user@another.realm", "anotheruser@some.realm"};
+        for (int i = 0; i < nonExisting.length; i++)
             Assert.assertEquals("Reference should not exist", null, index.lookup(nonExisting[i]));
-        
+
         // Look up the existing entry.
-        Assert.assertEquals("Reference should exist", "ldap://ldap.feide.no:636/ou=people,dc=feide,dc=no", index.lookup("test@feide.no"));
+        Assert.assertEquals("Reference does not exist", "ldap://my.ldap.server:636/dc=search,dc=base", index.lookup("user@some.realm"));
 
     }
 

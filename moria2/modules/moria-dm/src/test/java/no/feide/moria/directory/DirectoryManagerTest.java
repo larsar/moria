@@ -27,15 +27,15 @@ extends TestCase {
 
     /** Internal representation of the configuration properties. */
     private Properties config;
-    
+
     /** The user credentials used. */
     private static Credentials goodCredentials;
-    
+
     /** The attribute request used. */
-    private static final String[] goodRequest = {"eduPersonAffiliation"};
-    
+    private static final String[] goodRequest = {"someAttribute"};
+
     /** The expected attribute values. */
-    private static final String[] goodValues = {"Affiliate"}; 
+    private static final String[] goodValues = {"someValue"};
 
 
     /**
@@ -56,8 +56,9 @@ extends TestCase {
         config = new Properties();
         config.setProperty("directoryConfiguration", "src/test/conf/DirectoryManagerConfiguration.xml");
         try {
-            goodCredentials = new Credentials("test@feide.no", "test");
+            goodCredentials = new Credentials("user@some.realm", "password");
         } catch (IllegalCredentialsException e) {
+            e.printStackTrace();
             Assert.fail("Unexpected IllegalCredentialsException");
         }
 
@@ -80,35 +81,32 @@ extends TestCase {
      */
     public void testSetConfig() {
 
-        try {
-            DirectoryManager.setConfig(config);
-        } catch (DirectoryManagerConfigurationException e) {
-            Assert.fail("Unexpected DirectoryManagerConfigurationException");
-        }
+        DirectoryManager.setConfig(config);
 
     }
-    
-    
+
+
     /**
      * Test the <code>authenticate(Credentials, String[])</code> method.
      */
     public void testAuthenticate() {
-        
+
         // Authenticate.
         UserAttribute[] attributes = null;
         try {
             attributes = DirectoryManager.authenticate(goodCredentials, goodRequest);
         } catch (DirectoryManagerException e) {
+            e.printStackTrace();
             Assert.fail("Unexpected DirectoryManagerException");
         }
-        
+
         // Verify attributes.
         Assert.assertNotNull("No attributes returned", attributes);
-    	Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.length);
-    	String[] values = attributes[0].getValues();
-    	Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
-    	Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
-        
+        Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.length);
+        String[] values = attributes[0].getValues();
+        Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
+        Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
+
     }
 
 }

@@ -16,7 +16,7 @@ extends TestCase {
     private DummyBackend backend;
 
     /** A good attribute request. */
-    private static final String[] goodRequest = {"eduPersonAffiliation"};
+    private static final String[] goodRequest = {"someAttribute"};
 
     /** An array of empty attribute requests. */
     private static final String[][] noRequests = {null, {""}};
@@ -25,7 +25,7 @@ extends TestCase {
     private static final String[] badRequest = {"someNonExistingAttribute"};
 
     /** The expected resulting value from the good attribute request. */
-    private static final String[] goodValues = {"Affiliate"};
+    private static final String[] goodValues = {"someValue"};
 
 
     /**
@@ -71,12 +71,12 @@ extends TestCase {
         try {
 
             // Prepare.
-            Credentials goodCredentials = new Credentials("test@feide.no", "test");
-            Credentials[] badCredentials = {new Credentials("test@feide.nO", "test"), new Credentials("test@feide.no", "Test"), null};
+            Credentials goodCredentials = new Credentials("user@some.realm", "password");
+            Credentials[] badCredentials = {new Credentials("user@another.realm", "password"), new Credentials("test@feide.no", "Test"), null};
 
             UserAttribute goodAttribute = null;
             try {
-                goodAttribute = new UserAttribute("eduPersonAffiliation", goodValues);
+                goodAttribute = new UserAttribute("someAttribute", goodValues);
             } catch (IllegalAttributeException e) {
                 Assert.fail("Unexpected IllegalAttributeException");
             }
