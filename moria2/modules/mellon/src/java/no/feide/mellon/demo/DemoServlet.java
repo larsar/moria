@@ -93,7 +93,7 @@ extends HttpServlet {
 
     private static String PROP_CONFIG_FILENAME = "c:\\resin-3.0.7\\conf\\demo\\demo.properties";
     
-    private static String PATH_PREFIX = "no.feide.moria.DemoServlet.";
+    private static String PATH_PREFIX = "no.feide.mellon.DemoServlet.";
 
     /**
      * Property name for web module configuration. <br>
@@ -174,14 +174,13 @@ extends HttpServlet {
 
     /** Required parameters. */
     private static final String[] REQUIRED_PARAMETERS = {
-        "MASTER_ATTRIBUTE_REQUEST",
-        "SLAVE_ATTRIBUTE_REQUEST",
-        "SERVICE_ENDPOINT",
-        "MASTER_CLIENT_USERNAME",
-        "MASTER_CLIENT_PASSWORD",
-        "SLAVE_CLIENT_USERNAME",
-        "SLAVE_CLIENT_PASSWORD",
-        "ATTRIBUTE_QNAME"
+        PROP_DEMO_MASTER_ATTRIBUTE_REQUEST,
+        PROP_DEMO_SLAVE_ATTRIBUTE_REQUEST,
+        PROP_DEMO_SERVICE_ENDPOINT,
+        PROP_DEMO_SLAVE_USERNAME,
+        PROP_DEMO_SLAVE_PASSWORD,
+        PROP_DEMO_LOGOUT_URL,
+        PROP_DEMO_ATTRIBUTE_NAMESPACE_URI
     };
 
     /**
@@ -541,9 +540,10 @@ extends HttpServlet {
 
         // Are we missing some required properties?
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-            String requiredParameter = REQUIRED_PARAMETERS[i];
-            if ((requiredParameter == null) || (requiredParameter.equals("")))
-                throw new IllegalStateException("Required parameter '" + requiredParameter + "' is not set");
+            String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
+            if ((parvalue == null) || (parvalue.equals(""))) {
+                    throw new IllegalStateException("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
+            }
         }
         return config;
 
