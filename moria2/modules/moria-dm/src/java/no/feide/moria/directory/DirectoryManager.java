@@ -203,7 +203,7 @@ public class DirectoryManager {
 
             // Found a reference. Now open it.
             // TODO: Use secondary references as fallback if the first fails.
-            backend.open((String) reference.getReferences()[0]);
+            backend.open(reference);
 
         } else {
 
