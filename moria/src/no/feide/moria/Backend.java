@@ -178,7 +178,7 @@ public class Backend {
      *                          <code>ConfigurationException</code> is
      *                          caught.
      */
-    public boolean authenticate(Credentials c)
+    public boolean authenticateUser(Credentials c)
     throws BackendException {
         log.finer("authenticate(Credentials c)");
         
@@ -409,7 +409,7 @@ public class Backend {
      * @return The requested user attributes.
      * @throws BackendException If a NamingException occurs.
      */
-    public HashMap lookup(String[] attributes)
+    public HashMap getAttributes(String[] attributes)
     throws BackendException {
         log.finer("lookup(String[])");
         
