@@ -35,10 +35,21 @@ public class AuthorizationData {
     /** Singleton instance pointer */
     private static AuthorizationData authData = null;
 
+    
+    /** Counstructor. Use getInstance() to get an instance of this
+     * singleton object. 
+     */
+    private AuthorizationData() {
+        super();
+        log.finer("AuthorizationData()");
+    }
+
+
     /**
      * Get singleton instance.
      */
     public static AuthorizationData getInstance() {
+        log.finer("getInstance()");
         if (authData == null) 
             authData = new AuthorizationData();
         return authData;
