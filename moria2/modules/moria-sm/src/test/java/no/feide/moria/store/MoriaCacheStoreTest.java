@@ -137,14 +137,14 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Non-existing ticket */
         MoriaTicket ticket = store.getTicket("doesNotExist");
-        Assert.assertNull("Ticket should not be generated", ticket);
+        assertNull("Ticket should not be generated", ticket);
 
         /* Login ticket */
         String loginTicketId = store.createAuthnAttempt(attributes, prefix, postfix, principal, forceAuthn);
         MoriaTicket loginTicket = store.getTicket(loginTicketId);
-        Assert.assertNotNull("Ticket should not be null", loginTicket);
-        Assert.assertEquals("Ticket ID differs", loginTicketId, loginTicket.getTicketId());
-        Assert.assertEquals("Ticket type differs", MoriaTicket.LOGIN_TICKET, loginTicket.getTicketType());
+        assertNotNull("Ticket should not be null", loginTicket);
+        assertEquals("Ticket ID differs", loginTicketId, loginTicket.getTicketId());
+        assertEquals("Ticket type differs", MoriaTicket.LOGIN_TICKET, loginTicket.getTicketType());
 
         // TODO: test for all kinds of tickets
     }
@@ -163,7 +163,7 @@ public class MoriaCacheStoreTest extends TestCase {
         }
 
         /* Wrong ticket */
-        Assert.assertNull("Invalid ticket, authnAttempt should be null", store.getAuthnAttempt("doesNotExist", false));
+        assertNull("Invalid ticket, authnAttempt should be null", store.getAuthnAttempt("doesNotExist", false));
 
         String ticketId;
 
@@ -173,19 +173,19 @@ public class MoriaCacheStoreTest extends TestCase {
         /* Normal use */
         ticketId = store.createAuthnAttempt(attributes, prefix, postfix, principal, forceAuthn);
         MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(ticketId, true);
-        Assert.assertNotNull("authnAttempt should not be null", authnAttempt);
+        assertNotNull("authnAttempt should not be null", authnAttempt);
         String[] actualAttributes = authnAttempt.getRequestedAttributes();
 
-        Assert.assertTrue("attributes differs", compareStringArrays(attributes, actualAttributes));
-        Assert.assertEquals("prefix should be equal", prefix, authnAttempt.getReturnURLPrefix());
-        Assert.assertEquals("postfix should be equal", postfix, authnAttempt.getReturnURLPostfix());
-        Assert.assertEquals("forceAuthn should be equal", forceAuthn, authnAttempt.isForceInterativeAuthentication());
+        assertTrue("attributes differs", compareStringArrays(attributes, actualAttributes));
+        assertEquals("prefix should be equal", prefix, authnAttempt.getReturnURLPrefix());
+        assertEquals("postfix should be equal", postfix, authnAttempt.getReturnURLPostfix());
+        assertEquals("forceAuthn should be equal", forceAuthn, authnAttempt.isForceInterativeAuthentication());
 
         /* Keep, no keep */
         authnAttempt = store.getAuthnAttempt(ticketId, false);
-        Assert.assertNotNull("authnAttempt should not be null (cached)", authnAttempt);
+        assertNotNull("authnAttempt should not be null (cached)", authnAttempt);
         authnAttempt = store.getAuthnAttempt(ticketId, true);
-        Assert.assertNull("authnAttempt should be null (removed from cache)", authnAttempt);
+        assertNull("authnAttempt should be null (removed from cache)", authnAttempt);
     }
 
 
@@ -440,7 +440,7 @@ public class MoriaCacheStoreTest extends TestCase {
         store.setTransientAttributes(loginTicketId, transAttributes);
         MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(loginTicketId, false);
 
-        Assert.assertEquals("Transient attributes differs", transAttributes, authnAttempt.getTransientAttributes());
+        assertEquals("Transient attributes differs", transAttributes, authnAttempt.getTransientAttributes());
    }
 
    /**

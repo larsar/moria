@@ -60,9 +60,9 @@ public class RequestUtilTest extends TestCase {
         Cookie[] cookies = new Cookie[]{new Cookie("foo", "bar"), new Cookie(name, value)};
 
 
-        Assert.assertEquals("Should be equal input, normal use", value, RequestUtil.getCookieValue(name, cookies));
-        Assert.assertEquals("Should be equal '', empty cookie", null, RequestUtil.getCookieValue(name, new Cookie[]{}));
-        Assert.assertEquals("Should be equal '', wrong cookie", null, RequestUtil.getCookieValue("dontExist", cookies));
+        assertEquals("Should be equal input, normal use", value, RequestUtil.getCookieValue(name, cookies));
+        assertEquals("Should be equal '', empty cookie", null, RequestUtil.getCookieValue(name, new Cookie[]{}));
+        assertEquals("Should be equal '', wrong cookie", null, RequestUtil.getCookieValue("dontExist", cookies));
     }
 
     /**
@@ -228,8 +228,8 @@ public class RequestUtilTest extends TestCase {
     private void checkBundle(String language, ResourceBundle bundle) {
         String bundleLang = bundle.getLocale().getLanguage();
         String bundleContentLang = (String) bundle.getObject("lang");
-        Assert.assertEquals("Expected language differs from bundle content", language, bundleContentLang);
-        Assert.assertEquals("Expected language differs from bundle language", language, bundleLang);
+        assertEquals("Expected language differs from bundle content", language, bundleContentLang);
+        assertEquals("Expected language differs from bundle language", language, bundleLang);
     };
 
     /**
@@ -333,7 +333,7 @@ public class RequestUtilTest extends TestCase {
 
         /* Correct syntax */
         actual = RequestUtil.parseConfig(props, "org", "en");
-        Assert.assertTrue("TreeMaps doesn't match. Might be mismatch between config file and test code.", expected.equals(actual));
+        assertTrue("TreeMaps doesn't match. Might be mismatch between config file and test code.", expected.equals(actual));
 
         /* Wrong syntax "," */
         props.load(this.getClass().getResourceAsStream("/web-test-invalid.properties"));
@@ -407,26 +407,26 @@ public class RequestUtilTest extends TestCase {
         /* Token in the middle */
         data = "Foo CLIENT_LINK bar";
         expected = "Foo " + link + " bar";
-        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+        assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
 
         /* Token first */
         data = "CLIENT_LINK foobar";
         expected = link + " foobar";
-        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+        assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
 
         /* Token last */
         data = "Foobar CLIENT_LINK";
         expected = "Foobar " + link;
-        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+        assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
 
         /* Multiple tokens */
         data = "Foo CLIENT_LINK bar CLIENT_LINK foobar";
         expected = "Foo " + link + " bar " + link + " foobar";
-        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+        assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
 
         /* No tokens */
         data = "Foo bar";
         expected = data;
-        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+        assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
     }
 }

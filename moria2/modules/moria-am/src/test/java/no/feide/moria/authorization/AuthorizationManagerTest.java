@@ -218,7 +218,7 @@ public class AuthorizationManagerTest extends TestCase {
         }
 
         /* Test equality of generated object */
-        Assert.assertTrue("Expects an equal AuthenticationAttribute object", new AuthorizationAttribute("foo", false, 2).equals(authMan.parseAttributeElem(createAttrElem("foo", "false", "2"))));
+        assertTrue("Expects an equal AuthenticationAttribute object", new AuthorizationAttribute("foo", false, 2).equals(authMan.parseAttributeElem(createAttrElem("foo", "false", "2"))));
     }
 
     /**
@@ -244,17 +244,17 @@ public class AuthorizationManagerTest extends TestCase {
 
         /* Normal use */
         HashMap parsedAttributes = authMan.parseAttributesElem(attributesElem);
-        Assert.assertEquals("Output and input should be of equal size", attributes.size(), parsedAttributes.size());
+        assertEquals("Output and input should be of equal size", attributes.size(), parsedAttributes.size());
 
         Iterator it = attributes.keySet().iterator();
         while (it.hasNext()) {
             String attrName = (String) it.next();
-            Assert.assertTrue("Generated attribute should be eqal to master", attributes.get(attrName).equals(parsedAttributes.get(attrName)));
+            assertTrue("Generated attribute should be eqal to master", attributes.get(attrName).equals(parsedAttributes.get(attrName)));
         }
 
         /* Attributes element without children */
         attributesElem = new Element("Attributes");
-        Assert.assertTrue("No attribute elements should result in empty map", authMan.parseAttributesElem(attributesElem).size() == 0);
+        assertTrue("No attribute elements should result in empty map", authMan.parseAttributesElem(attributesElem).size() == 0);
 
         /* Null as parameter */
         try {
@@ -324,7 +324,7 @@ public class AuthorizationManagerTest extends TestCase {
 
             /* Proper use */
             operationElem.setAttribute("name", "foobar");
-            Assert.assertEquals("Input name attribute should be equal to returned value", "foobar", authMan.parseChildElem(operationElem));
+            assertEquals("Input name attribute should be equal to returned value", "foobar", authMan.parseChildElem(operationElem));
         }
     }
 
@@ -351,16 +351,16 @@ public class AuthorizationManagerTest extends TestCase {
 
             /* Normal use */
             HashSet parsedOperations = authMan.parseListElem(operationsElem);
-            Assert.assertEquals("Output and input should be of equal size", operations.size(), parsedOperations.size());
+            assertEquals("Output and input should be of equal size", operations.size(), parsedOperations.size());
 
             Iterator it = operations.iterator();
             while (it.hasNext()) {
-                Assert.assertTrue("Content of output is not equal to master", parsedOperations.contains((String) it.next()));
+                assertTrue("Content of output is not equal to master", parsedOperations.contains((String) it.next()));
             }
 
             /* Attributes element without children */
             operationsElem = new Element(elementType[i]);
-            Assert.assertTrue("No operation elements should result in empty map", authMan.parseListElem(operationsElem).size() == 0);
+            assertTrue("No operation elements should result in empty map", authMan.parseListElem(operationsElem).size() == 0);
 
             /* Null as parameter */
             try {
@@ -415,30 +415,30 @@ public class AuthorizationManagerTest extends TestCase {
         AuthorizationClient client = authMan.parseClientElem(clientElem);
 
         /* Check operations */
-        Assert.assertTrue("Operation should  be allowed", client.allowOperations(new String[]{"localAuth", "directAuth"}));
-        Assert.assertFalse("Operation should  not be allowed", client.allowOperations(new String[]{"localAuth", "wrongOperation"}));
+        assertTrue("Operation should  be allowed", client.allowOperations(new String[]{"localAuth", "directAuth"}));
+        assertFalse("Operation should  not be allowed", client.allowOperations(new String[]{"localAuth", "wrongOperation"}));
 
         /* Check subsystems */
-        Assert.assertTrue("Subsystem should  be allowed", client.allowSubsystems(new String[]{"sub1", "sub2"}));
-        Assert.assertFalse("Subsystem should  not be allowed", client.allowSubsystems(new String[]{"sub1", "wrongSubsystem"}));
+        assertTrue("Subsystem should  be allowed", client.allowSubsystems(new String[]{"sub1", "sub2"}));
+        assertFalse("Subsystem should  not be allowed", client.allowSubsystems(new String[]{"sub1", "wrongSubsystem"}));
 
         /* Check affiliation */
-        Assert.assertTrue("Should have affiliation", client.hasAffiliation("uio.no"));
-        Assert.assertTrue("Should have affiliation", client.hasAffiliation("uninett.no"));
-        Assert.assertFalse("Should not have affiliation", client.hasAffiliation("wrong.no"));
+        assertTrue("Should have affiliation", client.hasAffiliation("uio.no"));
+        assertTrue("Should have affiliation", client.hasAffiliation("uninett.no"));
+        assertFalse("Should not have affiliation", client.hasAffiliation("wrong.no"));
 
         /* Check attributes */
-        Assert.assertTrue("Should have access to", client.allowAccessTo(new String[]{"attr1", "attr2", "attr3"}));
-        Assert.assertFalse("Should not have access to", client.allowAccessTo(new String[]{"attr3", "attr4"}));
-        Assert.assertTrue("Should be allowed with SSO", client.allowSSOForAttributes(new String[]{"attr1", "attr2"}));
-        Assert.assertFalse("Should not be allowed with SSO", client.allowSSOForAttributes(new String[]{"attr1", "attr2", "attr3"}));
+        assertTrue("Should have access to", client.allowAccessTo(new String[]{"attr1", "attr2", "attr3"}));
+        assertFalse("Should not have access to", client.allowAccessTo(new String[]{"attr3", "attr4"}));
+        assertTrue("Should be allowed with SSO", client.allowSSOForAttributes(new String[]{"attr1", "attr2"}));
+        assertFalse("Should not be allowed with SSO", client.allowSSOForAttributes(new String[]{"attr1", "attr2", "attr3"}));
 
         /* Check fields of generated object */
-        Assert.assertEquals("Name differs", "client1", client.getName());
-        Assert.assertEquals("DisplayName differs", "Foobar", client.getDisplayName());
-        Assert.assertEquals("URL differs", "http://www.feide.no/", client.getURL());
-        Assert.assertEquals("Language differs", "no", client.getLanguage());
-        Assert.assertEquals("Home differs", "uio.no", client.getHome());
+        assertEquals("Name differs", "client1", client.getName());
+        assertEquals("DisplayName differs", "Foobar", client.getDisplayName());
+        assertEquals("URL differs", "http://www.feide.no/", client.getURL());
+        assertEquals("Language differs", "no", client.getLanguage());
+        assertEquals("Home differs", "uio.no", client.getHome());
 
         /* Display name is required */
         clientElem.removeChild("URL");
@@ -509,10 +509,10 @@ public class AuthorizationManagerTest extends TestCase {
         master.put("client2", authMan.parseClientElem(client2));
 
         config.addContent(client1);
-        Assert.assertFalse("Should fail, lacks one element", master.equals(authMan.parseRootElem(config)));
+        assertFalse("Should fail, lacks one element", master.equals(authMan.parseRootElem(config)));
         config.addContent(client2);
 
-        Assert.assertTrue("Should be equal", master.equals(authMan.parseRootElem(config)));
+        assertTrue("Should be equal", master.equals(authMan.parseRootElem(config)));
 
     }
 
@@ -598,17 +598,17 @@ public class AuthorizationManagerTest extends TestCase {
 
 
         /* Nonexisting client */
-        Assert.assertFalse("Should not be allowed to access", authMan.allowAccessTo("doesNotExist", new String[]{}));
+        assertFalse("Should not be allowed to access", authMan.allowAccessTo("doesNotExist", new String[]{}));
 
         /* No attributes requested */
-        Assert.assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{}));
+        assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{}));
 
         /* Allowed attributes */
-        Assert.assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2"}));
-        Assert.assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2", "attr3"}));
+        assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2"}));
+        assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2", "attr3"}));
 
         /* Illegal attributes */
-        Assert.assertFalse("Should not be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "illegal"}));
+        assertFalse("Should not be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "illegal"}));
 
 
     }
@@ -653,19 +653,19 @@ public class AuthorizationManagerTest extends TestCase {
 
 
         /* Nonexisting client */
-        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("doesNotExist", new String[]{}));
+        assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("doesNotExist", new String[]{}));
 
         /* No attributes requested */
-        Assert.assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{}));
+        assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{}));
 
         /* Allowed attributes */
-        Assert.assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1"}));
-        Assert.assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr3"}));
+        assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1"}));
+        assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr3"}));
 
         /* Illegal attributes */
-        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "illegal"}));
-        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr2"}));
-        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr2"}));
+        assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "illegal"}));
+        assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr2"}));
+        assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr2"}));
     }
 
     /**
@@ -708,17 +708,17 @@ public class AuthorizationManagerTest extends TestCase {
 
 
         /* Nonexisting client */
-        Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("doesNotExist", new String[]{}));
+        assertFalse("Should not be allowed access to operations", authMan.allowOperations("doesNotExist", new String[]{}));
 
         /* No operations requested */
-        Assert.assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{}));
+        assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{}));
 
         /* Allowed operations */
-        Assert.assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth"}));
-        Assert.assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "directAuth"}));
+        assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth"}));
+        assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "directAuth"}));
 
         /* Illegal attributes */
-        Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "illegal"}));
-        Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"illegal"}));
+        assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "illegal"}));
+        assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"illegal"}));
     }
 }

@@ -88,7 +88,7 @@ public class ConfigurationManagerTest extends TestCase {
 
         System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
         confMan = new ConfigurationManager();
-        Assert.assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
+        assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
     }
 
     /**
@@ -99,8 +99,8 @@ public class ConfigurationManagerTest extends TestCase {
     public void testStop() throws ConfigurationManagerException {
         System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
         ConfigurationManager confMan = new ConfigurationManager();
-        Assert.assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
+        assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
         confMan.stop();
-        Assert.assertEquals("Number of file listeners doesn't match.", 0, confMan.numFileListeners());
+        assertEquals("Number of file listeners doesn't match.", 0, confMan.numFileListeners());
     }
 }

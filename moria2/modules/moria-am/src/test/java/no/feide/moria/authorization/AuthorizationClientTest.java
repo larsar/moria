@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Properties;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -184,15 +185,25 @@ public class AuthorizationClientTest extends TestCase {
         /* Verify a valid object */
         AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", affil, oper, subsys, attrs);
 
-        Assert.assertEquals("Name differs", "name", client.getName());
-        Assert.assertEquals("Display name differs", "display", client.getDisplayName());
-        Assert.assertEquals("URL differs", "url", client.getURL());
-        Assert.assertEquals("Language differs", "lang", client.getLanguage());
-        Assert.assertEquals("Home differs", "home", client.getHome());
-        Assert.assertEquals("Affiliation differs", affil, client.getAffiliation());
-        Assert.assertEquals("Operations differs", oper, client.getOperations());
-        Assert.assertEquals("Subsystems differs", subsys, client.getSubsystems());
-        Assert.assertEquals("Attributes differs", attrs, client.getAttributes());
+        assertEquals("Name differs", "name", client.getName());
+        assertEquals("Display name differs", "display", client.getDisplayName());
+        assertEquals("URL differs", "url", client.getURL());
+        assertEquals("Language differs", "lang", client.getLanguage());
+        assertEquals("Home differs", "home", client.getHome());
+        assertEquals("Affiliation differs", affil, client.getAffiliation());
+        assertEquals("Operations differs", oper, client.getOperations());
+        assertEquals("Subsystems differs", subsys, client.getSubsystems());
+        assertEquals("Attributes differs", attrs, client.getAttributes());
+
+        Properties properties = client.getProperties();
+        assertNotNull("Properties should not be null", properties);
+        assertEquals("Number of elements is incorrect", 5, properties.size());
+        assertEquals("Display name differs", "display", properties.get("displayName"));
+        assertEquals("URL differs", "url", properties.get("url"));
+        assertEquals("Language differs", "lang", properties.get("language"));
+        assertEquals("Home differs", "home", properties.get("home"));
+        assertEquals("Name differs", "name", properties.get("name"));
+
 
     }
 
@@ -210,7 +221,7 @@ public class AuthorizationClientTest extends TestCase {
         }
 
         /* No registered attributes */
-        Assert.assertFalse("Non existing attributes", client.allowSSOForAttributes(new String[]{"foo", "bar"}));
+        assertFalse("Non existing attributes", client.allowSSOForAttributes(new String[]{"foo", "bar"}));
 
         HashMap attributes = new HashMap();
         attributes.put("attr1", new AuthorizationAttribute("attr1", false, 2));
@@ -220,10 +231,10 @@ public class AuthorizationClientTest extends TestCase {
         client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, attributes);
 
         /* SSO for attributes */
-        Assert.assertFalse("SSO should not be allowed", client.allowSSOForAttributes(new String[]{"attr1"}));
-        Assert.assertFalse("SSO should not be allowed", client.allowSSOForAttributes(new String[]{"attr1", "attr2"}));
-        Assert.assertFalse("SSO should not be allowed", client.allowSSOForAttributes(new String[]{"doesNotExist", "attr2"}));
-        Assert.assertTrue("SSO should be allowed", client.allowSSOForAttributes(new String[]{"attr2", "attr3"}));
+        assertFalse("SSO should not be allowed", client.allowSSOForAttributes(new String[]{"attr1"}));
+        assertFalse("SSO should not be allowed", client.allowSSOForAttributes(new String[]{"attr1", "attr2"}));
+        assertFalse("SSO should not be allowed", client.allowSSOForAttributes(new String[]{"doesNotExist", "attr2"}));
+        assertTrue("SSO should be allowed", client.allowSSOForAttributes(new String[]{"attr2", "attr3"}));
     }
 
     /**
@@ -233,7 +244,7 @@ public class AuthorizationClientTest extends TestCase {
         AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
 
         /* No registered attributes */
-        Assert.assertFalse("Non existing attributes", client.allowAccessTo(new String[]{"foo", "bar"}));
+        assertFalse("Non existing attributes", client.allowAccessTo(new String[]{"foo", "bar"}));
 
         HashMap attributes = new HashMap();
         attributes.put("attr1", new AuthorizationAttribute("attr1", false, 2));
@@ -249,10 +260,10 @@ public class AuthorizationClientTest extends TestCase {
         }
 
         /* Access to attributes */
-        Assert.assertTrue("Should get access (no attributes)", client.allowAccessTo(new String[]{}));
-        Assert.assertTrue("Should get access", client.allowAccessTo(new String[]{"attr1"}));
-        Assert.assertTrue("Should get access", client.allowAccessTo(new String[]{"attr1", "attr2"}));
-        Assert.assertFalse("Should not get access", client.allowAccessTo(new String[]{"attr2", "attr3"}));
+        assertTrue("Should get access (no attributes)", client.allowAccessTo(new String[]{}));
+        assertTrue("Should get access", client.allowAccessTo(new String[]{"attr1"}));
+        assertTrue("Should get access", client.allowAccessTo(new String[]{"attr1", "attr2"}));
+        assertFalse("Should not get access", client.allowAccessTo(new String[]{"attr2", "attr3"}));
     }
 
     public void testAllowOperations() {
@@ -271,9 +282,9 @@ public class AuthorizationClientTest extends TestCase {
 
 
         /* Legal arguments */
-        Assert.assertTrue("Should be allowed", client.allowOperations(new String[]{"localAuth", "directAuth"}));
-        Assert.assertTrue("Should be allowed", client.allowOperations(new String[]{}));
-        Assert.assertFalse("Should not be allowed", client.allowOperations(new String[]{"directAuth", "illegalOper"}));
+        assertTrue("Should be allowed", client.allowOperations(new String[]{"localAuth", "directAuth"}));
+        assertTrue("Should be allowed", client.allowOperations(new String[]{}));
+        assertFalse("Should not be allowed", client.allowOperations(new String[]{"directAuth", "illegalOper"}));
     }
 
     public void testAllowSubsystems() {
@@ -292,10 +303,10 @@ public class AuthorizationClientTest extends TestCase {
 
 
         /* Legal arguments */
-        Assert.assertTrue("Should be allowed", client.allowSubsystems(new String[]{"sub1", "sub2"}));
-        Assert.assertTrue("Should be allowed", client.allowSubsystems(new String[]{"sub1"}));
-        Assert.assertTrue("Should be allowed", client.allowSubsystems(new String[]{}));
-        Assert.assertFalse("Should not be allowed", client.allowSubsystems(new String[]{"sub1", "illegalSubsystem"}));
+        assertTrue("Should be allowed", client.allowSubsystems(new String[]{"sub1", "sub2"}));
+        assertTrue("Should be allowed", client.allowSubsystems(new String[]{"sub1"}));
+        assertTrue("Should be allowed", client.allowSubsystems(new String[]{}));
+        assertFalse("Should not be allowed", client.allowSubsystems(new String[]{"sub1", "illegalSubsystem"}));
     }
 
     public void testHasAffiliation() {
@@ -319,8 +330,8 @@ public class AuthorizationClientTest extends TestCase {
         }
 
         /* Legal arguments */
-        Assert.assertTrue("Should be affiliated with", client.hasAffiliation("uio.no"));
-        Assert.assertFalse("Should not be affiliated with", client.hasAffiliation("wrong.no"));
+        assertTrue("Should be affiliated with", client.hasAffiliation("uio.no"));
+        assertFalse("Should not be affiliated with", client.hasAffiliation("wrong.no"));
     }
 
     public void testHashCode() {
@@ -338,43 +349,43 @@ public class AuthorizationClientTest extends TestCase {
         AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
 
         /* Identical */
-        Assert.assertEquals("Should be identical", master.hashCode(),
+        assertEquals("Should be identical", master.hashCode(),
                 new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs).hashCode());
 
         /* Name */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("bar", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs).hashCode());
 
         /* Display name */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "bar", "foo", "foo", "foo", affil, oper, subsys, attrs).hashCode());
 
         /* URL */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "foo", "bar", "foo", "foo", affil, oper, subsys, attrs).hashCode());
 
         /* Language */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "bar", "foo", affil, oper, subsys, attrs).hashCode());
 
         /* Home */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "bar", affil, oper, subsys, attrs).hashCode());
 
         /* Affiliation */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, oper, subsys, attrs).hashCode());
 
         /* Operations */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, emptySet, subsys, attrs).hashCode());
 
         /* Subsystems */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, emptySet, attrs).hashCode());
 
         /* Attributes */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, emptyMap).hashCode());
     }
 
@@ -393,43 +404,43 @@ public class AuthorizationClientTest extends TestCase {
         AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
 
         /* Identical */
-        Assert.assertTrue("Should be identical",
+        assertTrue("Should be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs)));
 
         /* Name */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("bar", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs)));
 
         /* Display name */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "bar", "foo", "foo", "foo", affil, oper, subsys, attrs)));
 
         /* URL */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "bar", "foo", "foo", affil, oper, subsys, attrs)));
 
         /* Language */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "bar", "foo", affil, oper, subsys, attrs)));
 
         /* Home */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "bar", affil, oper, subsys, attrs)));
 
         /* Affiliation */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, oper, subsys, attrs)));
 
         /* Operations */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, emptySet, subsys, attrs)));
 
         /* Subsystems */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, emptySet, attrs)));
 
         /* Attributes */
-        Assert.assertFalse("Should not be identical",
+        assertFalse("Should not be identical",
                 master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, emptyMap)));
     }
 
