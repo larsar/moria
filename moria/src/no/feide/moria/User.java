@@ -356,7 +356,13 @@ public class User {
                 throw new BackendException(e);
             }
             
-        } catch (ConfigurationException e) {
+        } 
+        catch (TimeLimitExceededException e) {
+                    log.severe("SATAN! TimelimitExceededException - re-thrown as BackendException");
+                    throw new BackendException(e);
+                }
+                
+        catch (ConfigurationException e) {
             log.severe("ConfigurationException caught and re-thrown as BackendException");
             throw new BackendException(e);
         } catch (NamingException e) {
