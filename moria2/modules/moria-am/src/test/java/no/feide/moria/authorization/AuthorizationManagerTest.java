@@ -30,7 +30,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.jdom.Element;
-import org.jdom.Document;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -45,6 +44,58 @@ public class AuthorizationManagerTest extends TestCase {
 	 */
 	public static Test suite() {
 		return new TestSuite(AuthorizationManagerTest.class);
+	}
+
+	/**
+	 * Creates a client Element with valid children and attributes.
+	 * 
+	 * @return The new Element
+	 */
+	private Element createValidClientElem(String name) {
+		Element clientElem = new Element("Client");
+		Element child;
+
+		/* Create legal element */
+		clientElem.setAttribute("name", name);
+
+		child = new Element("DisplayName");
+		child.setText("Foobar");
+		clientElem.addContent(child);
+
+		child = new Element("URL");
+		child.setText("http://www.feide.no/");
+		clientElem.addContent(child);
+
+		child = new Element("Language");
+		child.setText("no");
+		clientElem.addContent(child);
+
+		child = new Element("Home");
+		child.setText("uio.no");
+		clientElem.addContent(child);
+
+		/* Operations */
+		Element operationsElem = new Element("Operations");
+		operationsElem.addContent(createChildElem("Operation", "localAuth"));
+		operationsElem.addContent(createChildElem("Operation", "directAuth"));
+		clientElem.addContent(operationsElem);
+
+		/* Affiliation */
+		Element affiliationElem = new Element("Affiliation");
+		affiliationElem.addContent(createChildElem("Organization", "uio.no"));
+		affiliationElem.addContent(createChildElem("Organization", "uninett.no"));
+		clientElem.addContent(affiliationElem);
+
+		/* Attributes */
+		Element attributesElem = new Element("Attributes");
+		attributesElem.addContent(createAttrElem("attr1", "true", "1"));
+		attributesElem.addContent(createAttrElem("attr2", "true", "0"));
+		attributesElem.addContent(createAttrElem("attr3", "false", "2"));
+
+		String[] queryList = new String[] { "foo", "bar", "foobar" };
+		clientElem.addContent(attributesElem);
+
+		return clientElem;
 	}
 
 	/**
@@ -74,8 +125,8 @@ public class AuthorizationManagerTest extends TestCase {
 	 * @param name
 	 * @return Element of type 'operation' with a name attribute.
 	 */
-	private Element createOperationElem(String name) {
-		Element element = new Element("Operation");
+	private Element createChildElem(String type, String name) {
+		Element element = new Element(type);
 		if (name != null)
 			element.setAttribute("name", name);
 		return element;
@@ -109,7 +160,7 @@ public class AuthorizationManagerTest extends TestCase {
 		try {
 			/* Null as seclevel */
 			authMan.parseAttributeElem(createAttrElem("foo", "false", null));
-			fail("SecLevel not set, should raise IllegalConfigException");
+			fail("Invalid secLevel, should raise IllegalConfigException");
 		} catch (IllegalConfigException success) {
 		}
 
@@ -123,8 +174,8 @@ public class AuthorizationManagerTest extends TestCase {
 		/* Test equality of generated object */
 		Assert.assertTrue(
 			"Expects an equal AuthenticationAttribute object",
-			new AuthorizationAttribute("foo", false, "HIGH").equals(
-				authMan.parseAttributeElem(createAttrElem("foo", "false", "HIGH"))));
+			new AuthorizationAttribute("foo", false, 2).equals(
+				authMan.parseAttributeElem(createAttrElem("foo", "false", "2"))));
 	}
 
 	/**
@@ -138,14 +189,14 @@ public class AuthorizationManagerTest extends TestCase {
 		AuthorizationManager authMan = new AuthorizationManager();
 
 		Element attributesElem = new Element("Attributes");
-		attributesElem.addContent(createAttrElem("foo", "false", "MEDIUM"));
-		attributesElem.addContent(createAttrElem("bar", "true", "LOW"));
-		attributesElem.addContent(createAttrElem("foobar", "false", "HIGH"));
+		attributesElem.addContent(createAttrElem("foo", "false", "1"));
+		attributesElem.addContent(createAttrElem("bar", "true", "0"));
+		attributesElem.addContent(createAttrElem("foobar", "false", "2"));
 
 		HashMap attributes = new HashMap();
-		attributes.put("foo", new AuthorizationAttribute("foo", false, "MEDIUM"));
-		attributes.put("bar", new AuthorizationAttribute("bar", true, "LOW"));
-		attributes.put("foobar", new AuthorizationAttribute("foobar", false, "HIGH"));
+		attributes.put("foo", new AuthorizationAttribute("foo", false, 1));
+		attributes.put("bar", new AuthorizationAttribute("bar", true, 0));
+		attributes.put("foobar", new AuthorizationAttribute("foobar", false, 2));
 
 		/* Normal use */
 		HashMap parsedAttributes = authMan.parseAttributesElem(attributesElem);
@@ -160,7 +211,7 @@ public class AuthorizationManagerTest extends TestCase {
 			Assert.assertTrue(
 				"Generated attribute should be eqal to master",
 				attributes.get(attrName).equals(parsedAttributes.get(attrName)));
-			}
+		}
 
 		/* Attributes element without children */
 		attributesElem = new Element("Attributes");
@@ -193,106 +244,237 @@ public class AuthorizationManagerTest extends TestCase {
 	}
 
 	/**
-	 * Test parsing of a single 'operation' element.
+	 * Test parsing of a single child element. The child element is either an
+	 * 'Operation' or 'Organization', which are treated the same way.
 	 */
-	public void testParseOperationElem() throws IllegalConfigException {
+	public void testParseChildElem() throws IllegalConfigException {
 		AuthorizationManager authMan = new AuthorizationManager();
+		String childType[] = new String[] { "Organization", "Operation" };
 
-		/* Null element */
-		try {
-			authMan.parseOperationElem(null);
-			fail("IllegalConfigException should be raised, null element");
-		} catch (IllegalArgumentException success) {
+		for (int i = 0; i < childType.length; i++) {
+
+			/* Null element */
+			try {
+				authMan.parseChildElem(null);
+				fail("IllegalConfigException should be raised, null element");
+			} catch (IllegalArgumentException success) {
+			}
+
+			/* Wrong type of element */
+			try {
+				authMan.parseChildElem(new Element("WrongType"));
+				fail("IllegalConfigException should be raised, wrong type of element");
+			} catch (IllegalConfigException success) {
+			}
+
+			/* No name attribute */
+			try {
+				authMan.parseChildElem(new Element(childType[i]));
+			} catch (IllegalConfigException success) {
+			}
+
+			Element operationElem = new Element(childType[i]);
+
+			/* Name attribute is an empty string */
+			try {
+				operationElem.setAttribute("name", "");
+				authMan.parseChildElem(new Element(childType[i]));
+			} catch (IllegalConfigException success) {
+			}
+
+			/* Proper use */
+			operationElem.setAttribute("name", "foobar");
+			Assert.assertEquals(
+				"Input name attribute should be equal to returned value",
+				"foobar",
+				authMan.parseChildElem(operationElem));
 		}
-
-		/* Wrong type of element */
-		try {
-			authMan.parseOperationElem(new Element("WrongType"));
-			fail("IllegalConfigException should be raised, wrong type of element");
-		} catch (IllegalConfigException success) {
-		}
-
-		/* No name attribute */
-		try {
-			authMan.parseOperationElem(new Element("Operation"));
-		} catch (IllegalConfigException success) {
-		}
-
-		Element operationElem = new Element("Operation");
-
-		/* Name attribute is an empty string */
-		try {
-			operationElem.setAttribute("name", "");
-			authMan.parseOperationElem(new Element("Operation"));
-		} catch (IllegalConfigException success) {
-		}
-
-		/* Proper use */
-		operationElem.setAttribute("name", "foobar");
-		Assert.assertEquals(
-			"Input name attribute should be equal to returned value",
-			"foobar",
-			authMan.parseOperationElem(operationElem));
 	}
 
 	/**
 	 * Test parsing of operations element.
 	 */
-	public void testParseOperationsElem() throws IllegalArgumentException, IllegalConfigException {
+	public void testParseListElem() throws IllegalArgumentException, IllegalConfigException {
 		AuthorizationManager authMan = new AuthorizationManager();
+		String elementType[] = new String[] { "Operations", "Affiliation" };
+		String childType[] = new String[] { "Operation", "Organization" };
 
-		Element operationsElem = new Element("Operations");
-		operationsElem.addContent(createOperationElem("localAuth"));
-		operationsElem.addContent(createOperationElem("directAuth"));
+		for (int i = 0; i < elementType.length; i++) {
+			Element operationsElem = new Element(elementType[i]);
+			operationsElem.addContent(createChildElem(childType[i], "foo"));
+			operationsElem.addContent(createChildElem(childType[i], "bar"));
 
-		Element elemt2 = new Element("Operation");
+			HashSet operations = new HashSet();
+			operations.add("foo");
+			operations.add("bar");
 
-		HashSet operations = new HashSet();
-		operations.add("localAuth");
-		operations.add("directAuth");
+			/* Normal use */
+			HashSet parsedOperations = authMan.parseListElem(operationsElem);
+			Assert.assertEquals(
+				"Output and input should be of equal size",
+				operations.size(),
+				parsedOperations.size());
 
-		/* Normal use */
-		HashSet parsedOperations = authMan.parseOperationsElem(operationsElem);
-		Assert.assertEquals(
-			"Output and input should be of equal size",
-			operations.size(),
-			parsedOperations.size());
+			Iterator it = operations.iterator();
+			while (it.hasNext()) {
+				Assert.assertTrue(
+					"Content of output is not equal to master",
+					parsedOperations.contains((String) it.next()));
+			}
 
-		Iterator it = operations.iterator();
-		while (it.hasNext()) {
+			/* Attributes element without children */
+			operationsElem = new Element(elementType[i]);
 			Assert.assertTrue(
-				"Content of output is not equal to master",
-				parsedOperations.contains((String) it.next()));
+				"No operation elements should result in empty map",
+				authMan.parseListElem(operationsElem).size() == 0);
+
+			/* Null as parameter */
+			try {
+				authMan.parseListElem(null);
+				fail("IllegalArgumentException should be raised, null parameter");
+			} catch (IllegalArgumentException success) {
+			}
+
+			/* Wrong type of element */
+			try {
+				authMan.parseListElem(new Element("WrongType"));
+				fail("IllegalConfigException should be raised, wrong element type");
+			} catch (IllegalConfigException success) {
+			}
+
+			operationsElem = new Element(elementType[i]);
+			operationsElem.addContent(createChildElem(childType[i], "foobar"));
+			operationsElem.addContent(new Element("WrongChildType"));
+			try {
+				authMan.parseListElem(operationsElem);
+				fail("IllegalConfigException should be raised, wrong child element type");
+			} catch (IllegalConfigException success) {
+			}
 		}
+	}
 
-		/* Attributes element without children */
-		operationsElem = new Element("Operations");
-		Assert.assertTrue(
-			"No operation elements should result in empty map",
-			authMan.parseOperationsElem(operationsElem).size() == 0);
+	public void testParseClientElem() throws IllegalConfigException {
+		AuthorizationManager authMan = new AuthorizationManager();
+		Element clientElem = createValidClientElem("client1");
 
-		/* Null as parameter */
+		/* Null parameter */
 		try {
-			authMan.parseOperationsElem(null);
-			fail("IllegalArgumentException should be raised, null parameter");
+			authMan.parseClientElem(null);
+			fail("IllegalArgumentException should be raised, null as parameter");
 		} catch (IllegalArgumentException success) {
 		}
 
-		/* Wrong type of element (not "Operations") */
+		/* Name attribute is required */
 		try {
-			authMan.parseOperationsElem(new Element("WrongType"));
-			fail("IllegalConfigException should be raised, wrong element type");
+			authMan.parseClientElem(new Element("Client"));
+			fail("IllegalConfigException should be raised, name element not set");
 		} catch (IllegalConfigException success) {
 		}
 
-		operationsElem = new Element("Operations");
-		operationsElem.addContent(createOperationElem("localAuth"));
-		operationsElem.addContent(new Element("WrongChildType"));
+		/* Parse valid object */
+		AuthorizationClient client = authMan.parseClientElem(clientElem);
+
+		/* Check operations */
+		Assert.assertTrue(
+			"Operation should  be allowed",
+			client.allowOperations(new String[] { "localAuth", "directAuth" }));
+		Assert.assertFalse(
+			"Operation should  not be allowed",
+			client.allowOperations(new String[] { "localAuth", "wrongOperation" }));
+
+		/* Check affiliation */
+		Assert.assertTrue("Should have affiliation", client.hasAffiliation("uio.no"));
+		Assert.assertTrue("Should have affiliation", client.hasAffiliation("uninett.no"));
+		Assert.assertFalse("Should not have affiliation", client.hasAffiliation("wrong.no"));
+
+		/* Check attributes */
+		Assert.assertTrue(
+			"Should have access to",
+			client.allowAccessTo(new String[] { "attr1", "attr2", "attr3" }));
+		Assert.assertFalse(
+			"Should not have access to",
+			client.allowAccessTo(new String[] { "attr3", "attr4" }));
+		Assert.assertTrue(
+			"Should be allowed with SSO",
+			client.allowSSOForAttributes(new String[] { "attr1", "attr2" }));
+		Assert.assertFalse(
+			"Should not be allowed with SSO",
+			client.allowSSOForAttributes(new String[] { "attr1", "attr2", "attr3" }));
+
+		/* Check fields of generated object */
+		Assert.assertEquals("Name differs", "client1", client.getName());
+		Assert.assertEquals("DisplayName differs", "Foobar", client.getDisplayName());
+		Assert.assertEquals("URL differs", "http://www.feide.no/", client.getURL());
+		Assert.assertEquals("Language differs", "no", client.getLanguage());
+		Assert.assertEquals("Home differs", "uio.no", client.getHome());
+
+		/* Display name is required */
+		clientElem.removeChild("URL");
 		try {
-			authMan.parseOperationsElem(operationsElem);
-			fail("IllegalConfigException should be raised, wrong child element type");
+			authMan.parseClientElem(clientElem);
+			fail("IllegalConfigException should be raised, name element not set");
 		} catch (IllegalConfigException success) {
 		}
+
+		/* URL is required */
+		clientElem.removeChild("URL");
+		try {
+			authMan.parseClientElem(clientElem);
+			fail("IllegalConfigException should be raised, URL element not set");
+		} catch (IllegalConfigException success) {
+		}
+
+		/* Language is required */
+		clientElem.removeChild("URL");
+		try {
+			authMan.parseClientElem(clientElem);
+			fail("IllegalConfigException should be raised, language element not set");
+		} catch (IllegalConfigException success) {
+		}
+
+		/* HomeOrganization is required */
+		clientElem.removeChild("URL");
+		try {
+			authMan.parseClientElem(clientElem);
+			fail("IllegalConfigException should be raised, home organization element not set");
+		} catch (IllegalConfigException success) {
+		}
+
+		Element child = new Element("HomeOrganization");
+		child.setText("uio.no");
+		clientElem.addContent(child);
+	}
+
+	public void testParseRootElem() throws IllegalConfigException {
+		AuthorizationManager authMan = new AuthorizationManager();
+		Element config = new Element("ClientAuthorizationConfig");
+
+		/* Null value */
+		try {
+			authMan.parseRootElem(null);
+			fail("IllegalArgumentException should be raised, null value");
+		} catch (IllegalArgumentException success) {
+		}
+
+		/* Wrong root */
+		try {
+			authMan.parseRootElem(new Element("WrongType"));
+		} catch (IllegalConfigException success) {
+		}
+
+		Element client1, client2;
+		client1 = createValidClientElem("client1");
+		client2 = createValidClientElem("client2");
+
+		HashMap master = new HashMap();
+		master.put("client1", authMan.parseClientElem(client1));
+		master.put("client2", authMan.parseClientElem(client2));
+
+		config.addContent(client1);
+		Assert.assertFalse("Should fail, lacks one element", master.equals(authMan.parseRootElem(config)));
+		config.addContent(client2);
+		
+		Assert.assertTrue("Should be equal", master.equals(authMan.parseRootElem(config)));
 
 	}
 }

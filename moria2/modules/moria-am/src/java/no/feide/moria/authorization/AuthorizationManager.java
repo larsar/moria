@@ -23,6 +23,7 @@ package no.feide.moria.authorization;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import org.jdom.Element;
 
 /**
@@ -30,6 +31,12 @@ import org.jdom.Element;
  * @version $Revision$
  */
 public class AuthorizationManager {
+
+	// TODO: Method for reading configuration file
+	// TODO: Method for building configuration database
+	// TODO: Method for automatically renewing database when configuration file
+	// changes
+	// TODO: Create a set of Client objects from a root element of the config
 
 	/**
 	 * Parses a XML element and creates a AuthorizationAttribute object in
@@ -59,7 +66,10 @@ public class AuthorizationManager {
 			secLevel = element.getAttribute("secLevel").getValue();
 
 		try {
-			return new AuthorizationAttribute(name, new Boolean(allowSSOStr).booleanValue(), secLevel);
+			return new AuthorizationAttribute(
+				name,
+				new Boolean(allowSSOStr).booleanValue(),
+				new Integer(secLevel).intValue());
 		} catch (IllegalArgumentException e) {
 			throw new IllegalConfigException("Illegal attributes: " + e.getMessage());
 		}
@@ -96,33 +106,33 @@ public class AuthorizationManager {
 
 		return attributes;
 	}
-	
+
 	/**
-	 * Parses an 'operation' element and returns the name attribute. 
+	 * Parses 'operation' and 'organization' elements and returns the name
+	 * attribute.
 	 * 
 	 * @param element The operation element
 	 * @return String containing the name attribute of the element.
-	 * @throws IllegalArgumentException 
-	 * @trhows IllegalConfigException 
+	 * @throws IllegalArgumentException @trhows IllegalConfigException
 	 */
-	String parseOperationElem(Element element) throws IllegalArgumentException, IllegalConfigException{
-		
-		if (element == null) 
+	String parseChildElem(Element element) throws IllegalArgumentException, IllegalConfigException {
+
+		if (element == null)
 			throw new IllegalArgumentException("Element cannot be null");
-		
-		if (!element.getName().equalsIgnoreCase("Operation"))
-			throw new IllegalConfigException("Element must be of type 'Operation'");
-	
-		
+
+		if (!element.getName().equalsIgnoreCase("Operation")
+			&& !element.getName().equalsIgnoreCase("Organization"))
+			throw new IllegalConfigException("Element must be of type 'Operation' or 'Organization'");
+
 		if (element.getAttribute("name") == null)
 			throw new IllegalConfigException("Element's name attribute must be set.");
-		
+
 		if (element.getAttributeValue("name").equalsIgnoreCase(""))
 			throw new IllegalConfigException("Element's name attribute cannot be an empty string.");
-		
+
 		return element.getAttributeValue("name");
 	}
-	
+
 	/**
 	 * Parse the content of an Attributes element. The element can contain 0 or
 	 * more Attribute elements which will be transformed into
@@ -135,23 +145,90 @@ public class AuthorizationManager {
 	 * @throws IllegalConfigException
 	 * @throws IllegalArgumentException
 	 */
-	HashSet parseOperationsElem(Element element) throws IllegalConfigException, IllegalArgumentException {
+	HashSet parseListElem(Element element) throws IllegalConfigException {
 		HashSet operations = new HashSet();
 
 		/* Validate element */
 		if (element == null)
 			throw new IllegalArgumentException("Element cannot be null.");
 
-		if (!element.getName().equalsIgnoreCase("operations"))
-			throw new IllegalConfigException("Element isn't of type 'Operations'");
+		if (!element.getName().equalsIgnoreCase("Operations")
+			&& !element.getName().equalsIgnoreCase("Affiliation"))
+			throw new IllegalConfigException("Element isn't of type 'Operations' or 'Affiliation'");
 
 		/* Create AuthorizationAttribute of all child elements */
 		Iterator it = (element.getChildren()).iterator();
 		while (it.hasNext()) {
-			String operation = parseOperationElem((Element) it.next());
+			String operation = parseChildElem((Element) it.next());
 			operations.add(operation);
 		}
 
 		return operations;
-	}	
+	}
+
+	/**
+	 * Creates a AuthorizationClient object based on the supplied XML element.
+	 * 
+	 * @param element The XML element representing the client service
+	 * @return The object representing the client service
+	 * @throws IllegalConfigException
+	 */
+	AuthorizationClient parseClientElem(Element element) throws IllegalConfigException {
+		String name, displayName, url, language, home;
+		HashSet oper, affil;
+		HashMap attrs;
+
+		if (element == null)
+			throw new IllegalArgumentException("Element cannot be null");
+
+		name = element.getAttributeValue("name");
+		if (name == null || name.equals(""))
+			throw new IllegalConfigException("Name attribute must be a non empty string.");
+
+		displayName = getChildContent(element, "DisplayName");
+		url = getChildContent(element, "URL");
+		language = getChildContent(element, "Language");
+		home = getChildContent(element, "Home");
+
+		attrs = parseAttributesElem(element.getChild("Attributes"));
+		oper = parseListElem(element.getChild("Operations"));
+		affil = parseListElem(element.getChild("Affiliation"));
+
+		return new AuthorizationClient(name, displayName, url, language, home, affil, oper, attrs);
+	}
+
+	HashMap parseRootElem(Element element) throws IllegalConfigException {
+		HashMap clients = new HashMap();
+		
+		if (element == null) 
+			throw new IllegalArgumentException("Element cannot be null");
+		
+		if (!element.getName().equalsIgnoreCase("ClientAuthorizationConfig"))
+			throw new IllegalConfigException("Wrong type of element: "+element.getName());
+		
+		List children = element.getChildren("Client");
+		Iterator it = children.iterator();
+		while (it.hasNext()) {
+			AuthorizationClient client = parseClientElem((Element) it.next());
+			clients.put(client.getName(), client);
+		}
+		
+		return clients;
+	}
+
+	/**
+	 * Retrieves the content of a XML element.
+	 * 
+	 * @param element Parent element
+	 * @param childName Name of the child node
+	 * @return The content of the child element
+	 * @throws IllegalConfigException
+	 */
+	private String getChildContent(Element element, String childName) throws IllegalConfigException {
+		String value = element.getChildText(childName);
+		if (value == null)
+			throw new IllegalConfigException(childName + " cannot be null");
+		else
+			return value;
+	}
 }

@@ -21,8 +21,6 @@
 package no.feide.moria.authorization;
 
 import java.util.logging.Logger;
-import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * This class represents a LDAP attribute and is used for authorization of a
@@ -56,7 +54,6 @@ public class AuthorizationAttribute {
 		super();
 	}
 
-	// TODO: Implement hashCode()
 
 	/**
 	 * Constructor. Name of attribute must be a non-empty string. Security
@@ -87,6 +84,8 @@ public class AuthorizationAttribute {
 	 *         object.
 	 */
 	public boolean equals(Object object) {
+		if (object == this)
+			return true;
 		if (object instanceof AuthorizationAttribute) {
 			AuthorizationAttribute attr = (AuthorizationAttribute) object;
 			if (attr.getName().equals(name)
