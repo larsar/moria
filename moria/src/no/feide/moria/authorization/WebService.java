@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 public class WebService {
 
     /** Used for logging. */
-    private static Logger log = Logger.getLogger(Profile.class.toString());
+    private static Logger log = Logger.getLogger(WebService.class.toString());
     
     /** A unique id */
     private String id;
@@ -67,9 +67,12 @@ public class WebService {
      * @param requestedAttributes Names of all requested attributes.
      */
     public boolean allowAccessToAttributes(String requestedAttributes[]) {
+        log.finer("allowAccessToAttributes(String[])");
+        
         boolean allow = true;
         for (int i = 0; i < requestedAttributes.length; i++) {
             if (!attributes.containsKey(requestedAttributes[i])) {
+                log.warning("Allows access to attributes "+attributes.toString()+" only, not {"+requestedAttributes[i]+'}');
                 allow = false;
                 break;
             }
