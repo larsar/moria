@@ -1050,7 +1050,7 @@ throw new IllegalArgumentException("servicePrincipal must be a non-empty string 
 
         // Return the node.
         return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE),
-                (String) node.get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE), 
+                (String) node.get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE),
                 (MoriaStoreData) node.get(DATA_ATTRIBUTE), (String) node.get(USERORG_ATTRIBUTE));
 
     }
