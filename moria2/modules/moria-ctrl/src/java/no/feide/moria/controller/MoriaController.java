@@ -472,7 +472,7 @@ public final class MoriaController {
         String userorg = null;
         try {
             String servicePrincipal = store.getTicketServicePrincipal(loginTicketId, MoriaTicketType.LOGIN_TICKET);
-            userorg = getUserOrg(userId, password);
+            userorg = getUserOrg(userId);
             // remember userorg for this ticket
             store.setTicketUserorg(loginTicketId, MoriaTicketType.LOGIN_TICKET, userorg);
             /* check userorg */
@@ -906,7 +906,7 @@ public final class MoriaController {
         }
 
         //TODO doc and test later when the getUserOrg method is fixed
-        String org = getUserOrg(userId, password);
+        String org = getUserOrg(userId);
 
         /* Authorize service */
         authorizationCheck(servicePrincipal, requestedAttributes, DIRECT_AUTH_OPER, org);
@@ -1472,18 +1472,24 @@ public final class MoriaController {
     }
 
     /**
-     * Gets the userorg from the directoryManager.
-     *
-     * @param userId
-     *                          The userId of a user.
-     * @param password
-     *                          The password of a user.
+     * Resolves a user's home organization through the Directory Manager.
+     * @param username
+     *                          The full username of a user. Must be a non-empty
+     * 							string.
      * @return A <code>String</code> containing the user's organization.
      * @throws AuthenticationException
      *                          If the user's organization is not found.
+     * @throws IllegalArgumentException
+     * 							If <code>username</code> is <code>null</code> or
+     *  						an empty string.
      */
-    private static String getUserOrg(final String userId, final String password) throws AuthenticationException {
-        String org = directoryManager.getRealm(userId);
+    public static String getUserOrg(final String username) throws AuthenticationException {
+        
+        // Sanity check.
+        if ((username == null) || (username.length() == 0))
+            throw new IllegalArgumentException("User name must be a non-empty string");
+        
+        String org = directoryManager.getRealm(username);
         if (org == null) {
             throw new AuthenticationException();
         }
