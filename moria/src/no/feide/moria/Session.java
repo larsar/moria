@@ -162,7 +162,7 @@ public class Session {
                 
         // Authenticate user through backend.
         backend = Backend.getInstance();
-        if (backend.authenticateUser(c)) {
+        if (backend.authenticateUser(this, c)) {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
             log.fine("Session authenticated");
