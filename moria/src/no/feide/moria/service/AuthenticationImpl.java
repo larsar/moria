@@ -37,7 +37,7 @@ implements AuthenticationIF, ServiceLifecycle {
     private ServletEndpointContext ctx;
     
     /** Session store. */
-    private SessionStore sessionStore = SessionStore.getInstance();
+    private SessionStore sessionStore;
       
     /** Timer for updating the web service authorization module. */
     private Timer authTimer = new Timer();
@@ -63,7 +63,10 @@ implements AuthenticationIF, ServiceLifecycle {
      * @param context The servlet context, used to find the user (client service)
      *                identity in later methods.
      * @throws ServiceException If a FileNotFoundException or IOException id
-     *                          caught when reading the properties file.
+     *                          caught when reading the properties file. Also
+     *                          thrown if the system property
+     *                          <code>no.feide.moria.AuthorizationTimerDelay</code>
+     *                          is not set.
      */
     public void init(Object context) 
     throws ServiceException {
@@ -71,27 +74,40 @@ implements AuthenticationIF, ServiceLifecycle {
 
 	ctx = (ServletEndpointContext)context;
 
-        // Read properties.
         try {
+            
+            // Read properties.
             if (System.getProperty("no.feide.moria.config.file") == null) {
-                log.fine("no.feide.moria.config.file not set; default is \"/moria.properties\"");
+                log.config("no.feide.moria.config.file not set; default is \"/moria.properties\"");
                 System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
             }
             else {
-                log.fine("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
+                log.config("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
                 System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
             }
+            
+            // Set local pointer to session store.
+            sessionStore = SessionStore.getInstance();
+            
         } catch (FileNotFoundException e) {
             log.severe("FileNotFoundException caught and re-thrown as ServiceException");
             throw new ServiceException("FileNotFoundException caught", e);
         } catch (IOException e) {
             log.severe("IOException caught and re-thrown as ServiceException");
             throw new ServiceException("IOException caught", e);
+        } catch (SessionException e) {
+            log.severe("SessionException caught and re-thrown as ServiceException");
+            throw new ServiceException("SessionException caught", e);
         }
 
-        /* Initialize authorization data timer */
-        int authDelay = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerDelay")).intValue()*1000; // Seconds to milliseconds
-        log.info("Starting authorization update service with delay= "+authDelay+"ms");
+        // Initialize authorization data timer, with sanity check.
+        String s = System.getProperty("no.feide.moria.AuthorizationTimerDelay");
+        if (s == null) {
+            log.severe("Missed require system attribute: no.feide.moria.AuthorizationTimerDelay");
+            throw new ServiceException("Missed require system attribute: no.feide.moria.AuthorizationTimerDelay");
+        }
+        int authDelay = new Integer(s).intValue()*1000; // Seconds to milliseconds
+        log.config("Starting authorization update service with delay= "+authDelay+"ms");
         authTimer.scheduleAtFixedRate(new AuthorizationTask(), new Date(), authDelay);
 
         /* Sleep a short while. If not the authorization data will not
@@ -137,12 +153,11 @@ implements AuthenticationIF, ServiceLifecycle {
         String simulatedURL = prefix+"MORIAID"+postfix;
         try {
             new URL(simulatedURL);
-        }
-
-        catch (MalformedURLException e) {
-            log.severe("Unvalid URL: "+simulatedURL);
+        } catch (MalformedURLException e) {
+            log.severe("Malformed URL: "+simulatedURL);
             throw new RemoteException("Malformed URL: "+simulatedURL);
         }
+
 
         // Look up service authorization data.
         Principal p = ctx.getUserPrincipal();
@@ -154,12 +169,10 @@ implements AuthenticationIF, ServiceLifecycle {
         
         if (ws == null) {
             log.warning("Unauthorized service access: "+serviceName);
-            throw new RemoteException("Web Service not authorized for use with Moria.");
-        }
-        
-        else if (!ws.allowAccessToAttributes(attributes)) {
-            log.warning("Access to attributes denied: "+serviceName+" "+attributes);
-            throw new RemoteException("Access to attributes prohibited.");
+            throw new RemoteException("Web Service not authorized for use with Moria");
+        } else if (!ws.allowAccessToAttributes(attributes)) {
+            log.warning("Attribute request from service "+serviceName+" refused");
+            throw new RemoteException("Access to one or more attributes prohibited");
         }
 
         try {
