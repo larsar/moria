@@ -60,7 +60,7 @@ public class DemoServlet extends HttpServlet {
 
         /* Create a table with the contents of the userData hash. */
         else {
-            out.println("<B>The following data is now stored in the HttpSession:</B></BR></BR>");
+            out.println("<B>The user has been authenticated and the following attributes are now stored in the HttpSession:</B></BR></BR>");
             
             out.println("<TABLE border=1>");
             out.println("<TR><TH>Key</TH><TH>Value</TH></TR>");
