@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Mellon Demo</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body>
+        <section name="Mellon Demo">
+            <p>
+            The Mellon Demo configuration contains properties used to set up
+            an <em>optional</em> demonstration service against a Moria
+            installation. This may be useful to check your Moria configuration,
+            or to demonstrate the Moria functionality with a fictional, but
+            working, client service.
+            </p>
+            <subsection name="Base Configuration">
+	            <p>
+	            The Mellon Demo is dependent on an inital property which has to be
+	            specified as system properties in the VM (or classloader, if your
+	            application server supports this functionality):
+	            </p>
+	            <ul>
+	                <li>
+	                <pre>no.feide.mellon.demo.config</pre>
+	                Should point to the Mellon Demo's configuration property file.
+	                Example:
+	                <pre>no.feide.mellon.demo.config=/full/path/demo.properties</pre>
+	                </li>
+	            </ul>
+	            <p>
+	            This example starts <a href="http://www.caucho.com/">Resin</a> with
+	            the required property:
+	            </p>
+	            <source>
+$ cd $RESIN_HOME/bin
+$ httpd \
+> -Dno.feide.mellon.demo.config=/config/demo.properties</source>
+			<p>
+			Also note the similar
+			<a href="config_base_configuration.html#Base_Configuration">Base Configuration</a>
+			documentation.
+			</p>
+            </subsection>
+            <subsection name="Configuration File">
+                <p>
+                The configuration properties required in the Mellon Demo
+                configuration file are as follows:
+                </p>
+                <ul>
+                    <li>
+                    <code>no.feide.mellon.demo.attributeNamespaceURI</code>
+                    <p>
+                    Used to construct the QName for mapping "remote"
+                    <code>Attribute</code> type to a local type. Although the
+                    demo servlet is not "remote" as such, it accesses Moria
+                    through SOAP just as any other Moria client application,
+                    thus requiring this mapping.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.mellon.demo.serviceEndpoint</code>
+                    <p>
+                    The service endpoint. The example file below assumes Moria
+                    is deployed locally, and will use version 2.0 of the SOAP
+                    interface.
+                    </p> 
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.master.attributeRequest</code>
+                    <p>
+                    A comma-separated list of attributes requested by the master
+                    (in the
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
+                    referred to as a "service") demo service. The example file
+                    below will cause the demo servlet to request the attributes
+                    <i>someAttribute</i> as well as the virtual (meaning it
+                    doesn't exist physically in the actual user element)
+                    attribute <i>tgt</i>, which is the ticket granting ticket.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.master.username</code>
+                    <p>
+                    The username used by the demo servlet to access Moria as a
+                    master (in the
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
+                    referred to as a "service") client service. The application
+                    server's user database must be configured accordingly.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.master.password</code>
+                    <p>
+                    The password used by the demo servlet to access Moria as a
+                    master (in the
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
+                    referred to as a "service") client service. The application
+                    server's user database must be configured accordingly.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.slave.attributeRequest</code>
+                    <p>
+                    A comma-separated list of attributes requested by the slave
+                    (in the
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
+                    referred to as a subservice) demo service. The example file
+                    below will cause the demo servlet to request the attribute
+                    <i>anotherAttribute</i>.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.slave.username</code>
+                    <p>
+                    The username used by the demo servlet to access Moria as a
+                    slave (in the
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
+                    referred to as a "subservice") client service. The
+                    application server's user database must be configured
+                    accordingly.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.slave.password</code>
+                    <p>
+                    The password used by the demo servlet to access Moria as a
+                    slave (in the
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
+                    referred to as a "subservice") client service. The
+                    application server's user database must be configured
+                    accordingly.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.mellon.demo.logout.url</code>
+                    <p>
+                    The name of the parameter used to contain the redirect URL
+                    when logging out. Explicitly included for example purposes,
+                    although it could possibly be derived from
+                    <code>no.feide.mellon.demo.serviceEndpoint</code>.
+                    </p>
+                    </li>
+                </ul>
+            <p>     
+            Example Mellon Demo configuration file, using a locally deployed
+            Moria. Note that this example requires a suitably configured
+            Moria Authorization Manager (see the
+            <a href="config_authorization_manager.html">Authorization Manager</a>
+            documentation).
+            </p>
+            <source>
+#
+# Configuration properties relevant for the demo service (DemoServlet):
+#
+
+# Used to construct the QName for mapping remote Attribute type to local type.
+no.feide.mellon.demo.attributeNamespaceURI=https://login.feide.no/moria/v2_1/Authentication
+
+# The service endpoint.
+no.feide.mellon.demo.serviceEndpoint=http://localhost:8080/moria/v2_1/Authentication
+
+# A comma-separated list of attributes requested by the main service.
+no.feide.mellon.demo.master.attributeRequest=eduPersonOrgDN,tgt
+
+# The username used by DemoServlet to access Moria as a main service.
+no.feide.mellon.demo.master.username=demo_service
+
+# The password used by DemoServlet to access Moria as a main service.
+no.feide.mellon.demo.master.password=demo_service
+
+# A comma-separated list of attributes requested by the subservice.
+no.feide.mellon.demo.slave.attributeRequest=eduPersonAffiliation
+
+# The username used to access Moria as a subservice.
+no.feide.mellon.demo.slave.username=demo_subsystem
+
+# The password used to access Moria as a subservice.
+no.feide.mellon.demo.slave.password=demo_subsystem</source>
+			</subsection>
+        </section>
+    </body>
+</document>

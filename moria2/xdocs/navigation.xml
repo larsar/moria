@@ -43,6 +43,7 @@ $Id$
 		    	<item name="Authorization Manager" href="config_authorization_manager.html"/>
 		    	<item name="Web Module" href="config_web_module.html"/>
 		    	<item name="Logging" href="config_logging.html"/>
+		    	<item name="Mellon Demo" href="config_mellon.html"/>
 		    </item>
 	    	
 	    	<item name="Building" href="building.html"/>
@@ -54,6 +55,7 @@ $Id$
 				<item name="Log API" href="/moria-log/index.html"/>
 				<item name="Store manager" href="/moria-sm/index.html"/>
 				<item name="Web application" href="/moria-web/index.html"/>
+				<item name="Mellon Demo" href="/mellon/index.html"/>
 		    </item>
 	    </menu>
 	    

@@ -66,7 +66,7 @@ $Id$
                 specifies which organization the client service belongs to. The
                 short-form organization names should be consistent with
                 short-form organization names appearing elsewhere in other
-                configuration files, such as the <a href="#Web Module">Web
+                configuration files, such as the <a href="config_web_module.html#Web Module">Web
                 Module</a> configuration file.
                 <i>Not currently used.</i>
                 <!--
@@ -82,14 +82,14 @@ $Id$
                 system-wide Moria default language will be used instead. Note
                 that this two-character language code must match one of the
                 two-character language codes defined in the
-                <a href="#Web Module">Web Module</a> configuration file.
+                <a href="config_web_module.html#Web Module">Web Module</a> configuration file.
                 </li>
                 <li>
                 An <i>Affiliation</i> child element containing one or more
                 <i>Organization</i> child elements, which again contain a text
                 child element. The text child element should match the
                 short-form organization names defined in the
-                <a href="#Web Module">Web Module</a> configuration file. Users
+                <a href="config_web_module.html#Web Module">Web Module</a> configuration file. Users
                 belonging to one of these affiliated organizations may be
                 authenticated against a secondary (or tertiary, and so on)
                 authentication server (or location within the same
@@ -107,7 +107,7 @@ $Id$
                 <i>Organization</i> child elements, which again contain a text
                 child element. The text child element should match the
                 short-form organization names defined in the
-                <a href="#Web Module">Web Module</a> configuration file. Users
+                <a href="config_web_module.html#Web Module">Web Module</a> configuration file. Users
                 belonging to one of these allowed organizations may access this
                 client service; others cannot.
                 </li>

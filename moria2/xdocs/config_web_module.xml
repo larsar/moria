@@ -30,8 +30,8 @@ $Id$
             and cookie information) used by the various servlets that represents
             Moria. The most important servlets are the login and logout
             servlets, the Axis servlet (which handles the SOAP interface of
-            Moria) and a few utility type servlets, such as the demo servlet and
-            the information servlet.
+            Moria) and a few utility type servlets, such as the information
+            servlet.
             </p>
             <p>
             It is important that there exist a language bundle for the default
@@ -51,13 +51,6 @@ $Id$
                     </p>
                     </li>
                     <li>
-                    <code>no.feide.moria.web.logout.url_param</code>
-                    <p>
-                    The name of the parameter used to contain the redirect URL
-                    when logging out.
-                    </p>
-                    </li>
-                    <li>
                     <code>no.feide.moria.web.lang_common</code>
                     <p>
                     A comma-separated list of abbreviations and HTML display
@@ -65,7 +58,7 @@ $Id$
                     consists of a two-character language code (consistency is
                     required throughout the various configuration files, such as
                     the
-                    <a href="#Authorization Manager">Authorization Manager</a>
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
                     file), a colon, and the HTML display name. The example file
                     below configures Norwegian (bokmål) and English.
                     </p>
@@ -79,7 +72,7 @@ $Id$
                     consist of a unique organization name (consistency is
                     required throughout the various configuration files, such as
                     the
-                    <a href="#Authorization Manager">Authorization Manager</a>
+                    <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
                     file), a colon, and the HTML display name. The example file
                     below configures Norwegian (bokmål) and English for one
                     imaginary organization.
@@ -152,101 +145,6 @@ $Id$
                     <code>no.feide.moria.web.faqlink</code>
                     <p>
                     The URL to the FAQ document.
-                    </p>
-                    </li>
-                </ul>
-            </subsection>
-            <subsection name="Demo Servlet Properties">
-                <p>
-                The following properties are exclusively used by the demo
-                servlet, but are required nonetheless:
-                </p>
-                <ul>
-                    <li>
-                    <code>no.feide.moria.web.demo.attributeNamespaceURI</code>
-                    <p>
-                    Used to construct the QName for mapping "remote"
-                    <code>Attribute</code> type to a local type. Although the
-                    demo servlet is not "remote" as such, it accesses Moria
-                    through SOAP just as any other Moria client application,
-                    thus requiring this mapping.
-                    <!--
-                    TODO: Remove reference to login.feide.no and update DemoServlet.
-                    -->
-                    </p>
-                    </li>
-                    <li>
-                    <code>no.feide.moria.web.demo.serviceEndpoint</code>
-                    <p>
-                    The service endpoint. The example file below assumes Moria
-                    is deployed locally, and will use version 2.0 of the SOAP
-                    interface.
-                    </p> 
-                    </li>
-                    <li>
-                    <code>no.feide.moria.web.demo.master.attributeRequest</code>
-                    <p>
-                    A comma-separated list of attributes requested by the master
-                    (in the
-                    <a href="#Authorization Manager">Authorization Manager</a>
-                    referred to as a "service") demo service. The example file
-                    below will cause the demo servlet to request the attributes
-                    <i>someAttribute</i> as well as the virtual (meaning it
-                    doesn't exist physically in the actual user element)
-                    attribute <i>tgt</i>, which is the ticket granting ticket.
-                    </p>
-                    </li>
-                    <li>
-                    <code>no.feide.moria.web.demo.master.username</code>
-                    <p>
-                    The username used by the demo servlet to access Moria as a
-                    master (in the
-                    <a href="#Authorization Manager">Authorization Manager</a>
-                    referred to as a "service") client service. The application
-                    server's user database must be configured accordingly.
-                    </p>
-                    </li>
-                    <li>
-                    <code>no.feide.moria.web.demo.master.password</code>
-                    <p>
-                    The password used by the demo servlet to access Moria as a
-                    master (in the
-                    <a href="#Authorization Manager">Authorization Manager</a>
-                    referred to as a "service") client service. The application
-                    server's user database must be configured accordingly.
-                    </p>
-                    </li>
-                    <li>
-                    <code>no.feide.moria.web.demo.slave.attributeRequest</code>
-                    <p>
-                    A comma-separated list of attributes requested by the slave
-                    (in the
-                    <a href="#Authorization Manager">Authorization Manager</a>
-                    referred to as a subservice) demo service. The example file
-                    below will cause the demo servlet to request the attribute
-                    <i>anotherAttribute</i>.
-                    </p>
-                    </li>
-                    <li>
-                    <code>no.feide.moria.web.demo.slave.username</code>
-                    <p>
-                    The username used by the demo servlet to access Moria as a
-                    slave (in the
-                    <a href="#Authorization Manager">Authorization Manager</a>
-                    referred to as a "subservice") client service. The
-                    application server's user database must be configured
-                    accordingly.
-                    </p>
-                    </li>
-                    <li>
-                    <code>no.feide.moria.web.demo.slave.password</code>
-                    <p>
-                    The password used by the demo servlet to access Moria as a
-                    slave (in the
-                    <a href="#Authorization Manager">Authorization Manager</a>
-                    referred to as a "subservice") client service. The
-                    application server's user database must be configured
-                    accordingly.
                     </p>
                     </li>
                 </ul>
@@ -330,11 +228,10 @@ $Id$
 			</source>
 			</li>
 		</ul>
-        </subsection>
-            <p>     
-            Example Web Module configuration file:
-            </p>
-            <source>
+        <p>     
+        Example Web Module configuration file:
+        </p>
+        <source>
 #
 # Configuration properties for Moria itself:
 #
@@ -388,37 +285,6 @@ no.feide.moria.web.cookie.org.ttl=1
 no.feide.moria.web.faqlink=http://localhost:8080/moria/faq
 
 
-
-
-#
-# Configuration properties relevant for the demo service (DemoServlet):
-#
-
-# Used to construct the QName for mapping remote Attribute type to local type.
-no.feide.moria.web.demo.attributeNamespaceURI=https://login.feide.no/moria/v2_0/Authentication
-
-# The service endpoint.
-no.feide.moria.web.demo.serviceEndpoint=http://localhost:8080/moria/v2_0/Authentication
-
-# A comma-separated list of attributes requested by the main service.
-no.feide.moria.web.demo.master.attributeRequest=someAttribute,tgt
-
-# The username used by DemoServlet to access Moria as a main service.
-no.feide.moria.web.demo.master.username=demo_service
-
-# The password used by DemoServlet to access Moria as a main service.
-no.feide.moria.web.demo.master.password=demo_service
-
-# A comma-separated list of attributes requested by the subservice.
-no.feide.moria.web.demo.slave.attributeRequest=anotherAttribute
-
-# The username used to access Moria as a subservice.
-no.feide.moria.web.demo.slave.username=demo_subsystem
-
-# The password used to access Moria as a subservice.
-no.feide.moria.web.demo.slave.password=demo_subsystem
-
-
 #
 # Configuration properties relevant for the information service (InformationServlet):
 #
@@ -435,7 +301,8 @@ no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
 
 # Configuration proprety for the status.xml file.
 no.feide.moria.web.backendstatus.status_xml=/some/path/status.xml
-            </source>
+		        </source>
+		    </subsection>
         </section>
     </body>
 </document>

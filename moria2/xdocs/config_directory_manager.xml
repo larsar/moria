@@ -31,9 +31,10 @@ $Id$
             <code>no.feide.moria.directory.index.SerializableIndex</code>
             written to file (using the tool
             <code>no.feide.moria.directory.index.tools.SerializableIndexCreator</code>,
-            which is described in detail in the Directory Manager
-            <a href="moria-dm/index.html">documentation</a>) which is in turn
-            referenced from the Directory Manager configuration XML file.
+            described in detail in the 
+            <a href="moria-dm/index.html">Directory Manager</a> module
+            description, which is in turn referenced from the Directory Manager
+            configuration XML file.
             </p>
             <p>
             Two implementations of the Directory Manager backend exists; a JNDI

@@ -92,13 +92,15 @@ $Id$
             <p>
             Example Store Manager configuration file:
             </p>
-            <source>
+	        <subsection name="Example File">
+	            <source>
 # The configuration for JBossCache:
 no.feide.moria.store.cachestoreconf=/full/path/to/jboss-cache.xml
 
 # The percentage defining the actual (or real) ticket time to live:
 no.feide.moria.store.real_ttl_percentage=80
-            </source>
+	            </source>
+	        </subsection>
         </section>
     </body>
 </document>
