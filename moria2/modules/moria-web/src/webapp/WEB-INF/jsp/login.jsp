@@ -1,4 +1,7 @@
-<%@ page import="no.feide.moria.servlet.RequestUtil,
+<%@ page
+			contentType="text/html; charset=ISO-8859-1"
+			pageEncoding="ISO-8859-1"
+			import="no.feide.moria.servlet.RequestUtil,
                  java.util.ResourceBundle,
                  java.util.TreeMap,
                  java.util.Iterator" %>
