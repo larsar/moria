@@ -1,3 +1,5 @@
+package no.feide.moria.authorization;
+
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -16,7 +18,7 @@ import java.util.logging.Logger;
 public class AuthorizationData {
 
     /** Used for logging. */
-    private static Logger log = Logger.getLogger(WSAuthorization.class.toString());
+    private static Logger log = Logger.getLogger(AuthorizationData.class.toString());
 
     private Map webServices = Collections.synchronizedMap(new HashMap());
    
