@@ -228,7 +228,7 @@ public final class AuthorizationManager {
         final String home;
         final HashSet oper;
         final HashSet affil;
-        final HashSet subsys;
+        HashSet subsys = null;
         final HashMap attrs;
 
         if (element == null) { throw new IllegalArgumentException("Element cannot be null"); }
@@ -243,7 +243,12 @@ public final class AuthorizationManager {
 
         attrs = parseAttributesElem(element.getChild("Attributes"));
         oper = parseListElem(element.getChild("Operations"));
-        subsys = parseListElem(element.getChild("Subsystems"));
+        
+        // Parse subsystems element, if it exists.
+        Element child = element.getChild("SubSystems");
+        if (child != null)
+            subsys = parseListElem(child);
+        
         affil = parseListElem(element.getChild("Affiliation"));
 
         return new AuthorizationClient(name, displayName, url, language, home, affil, oper, subsys, attrs);

@@ -109,7 +109,8 @@ final class AuthorizationClient {
      * @param attributes
      *            attributes the service can access
      * @param subsystems
-     *            subsystems the service can create proxy ticket for
+     *            Subsystems the service can create proxy tickets for. May be
+     *            <code>null</code>.
      */
     AuthorizationClient(final String name, final String displayName, final String url, final String language, final String home, final HashSet affiliation, final HashSet operations, final HashSet subsystems, final HashMap attributes) {
 
@@ -126,8 +127,6 @@ final class AuthorizationClient {
         if (affiliation == null) { throw new IllegalArgumentException("Affiliation cannot be null."); }
 
         if (operations == null) { throw new IllegalArgumentException("Operations cannot be null."); }
-
-        if (subsystems == null) { throw new IllegalArgumentException("Subsystems cannot be null."); }
 
         if (attributes == null) { throw new IllegalArgumentException("Attribtues cannot be null."); }
 
