@@ -18,9 +18,4 @@
     prereqs="jar:deploy"
     description="Build and deploy jar in remote repository"/>
 
-  <goal
-    name="project:clean"
-    prereqs="clean"
-    description="Clean this project"/>
-
 </project>
