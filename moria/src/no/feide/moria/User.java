@@ -282,7 +282,7 @@ public class User {
                 long searchStart = System.currentTimeMillis();
                 try {
                     log.info("Starting search");
-                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, false));               
+                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15000")), new String[] {}, false, false));
                     log.info("Search completed");
                     if (!results.hasMore()) {
                         log.info("No results");
