@@ -305,7 +305,11 @@ public class InformationServlet extends HttpServlet {
             if (userData == null) {
               try {
                 userData = MoriaController.getUserAttributes(loginTicketId, PRINCIPAL);
-              } 
+              }
+              catch (AuthorizationException e) {
+                  throw new ServletException("getUserAttributes: " + e.getMessage());
+                  
+              }
               catch (IllegalInputException e) {
                   log.logCritical("IllegalInputException in doGet()");
               }
@@ -322,7 +326,6 @@ public class InformationServlet extends HttpServlet {
               }
             }
             if (userData == null) {
-                // TODO: print error message instead of empty table?
                 userData = new HashMap();
             }
             // need userorg as an attribute in the JSP to be able to print
@@ -386,7 +389,7 @@ public class InformationServlet extends HttpServlet {
             log.logInfo("URL postfix: " + urlPostfix);
             log.logInfo("Principal: " + principal);
             moriaID = MoriaController.initiateAuthentication(attributes.split(","), 
-                        urlPrefix, urlPostfix, false, principal);
+                                                             urlPrefix, urlPostfix, false, principal);
             log.logInfo("Moria ID is now " + moriaID);
 
         } catch (IllegalInputException e) {
@@ -406,12 +409,16 @@ public class InformationServlet extends HttpServlet {
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
             log.logCritical("Configuration: " + config.toString());
-            String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
+            String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + 
+                 "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID 
+                //  + "?" + "servicePrincipal" + principal
+                 ;
             log.logCritical("Redirect URL: " + redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             response.setHeader("Location", redirectURL);
         } else {
             log.logCritical("error!");
+            // TODO: is this correct?
             RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/information.jsp");
             rd.include(request, response);
         }
