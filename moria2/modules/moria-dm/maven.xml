@@ -16,6 +16,23 @@
   </postGoal>
 
   <goal
+     name="project:generate-index"
+     prereqs="java:compile"
+     description="Creates a serialized object file from an xml index">
+
+    <java
+       classname="no.feide.moria.directory.index.tools.SerializableIndexCreator"
+       fork="true">
+      <classpath>
+	<path refid="maven.dependency.classpath"/>
+	<pathelement path="${maven.build.dest}"/>
+      </classpath>
+      <arg value="${project.index.input_file}"/>
+      <arg value="${project.index.output_file}"/>
+    </java>
+  </goal>
+
+  <goal
      name="project:install"
      prereqs="jar:install"
      description="Build and install jar in local repository"/>
