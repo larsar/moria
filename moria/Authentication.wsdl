@@ -81,7 +81,7 @@
   </message>
 
   <message name="userExistsOut">
-    <part name="result" type="xsd:string"/>
+    <part name="result" type="xsd:boolean"/>
   </message>
 
   <portType name="AuthenticationIF">
