@@ -104,10 +104,12 @@ public class LoginServlet extends VelocityServlet {
     /** Default language */
     private static String defaultLang;
 
+    /** Available languages */
+    private HashMap availableLanguages;
+
     /** Timer for the session time out service. */
     Timer sessionTimer = new Timer(true);
 
-    
 
     /**
      * Some basic initialization.
@@ -124,12 +126,17 @@ public class LoginServlet extends VelocityServlet {
             defaultLang = Configuration.getProperty("no.feide.moria.defaultLanguage");
 
             /* Initialize session timeout timer */
+            // TODO: Hmmm. Should this be done here? (LP, 13.05.2003)
             int sessionDelaySec = new Integer(Configuration.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
             log.config("Starting time out service. Repeat every "+sessionDelaySec+" seconds.");
             sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelaySec*1000);
         
             /* Set local pointer to session store. */
             sessionStore = SessionStore.getInstance();
+
+            /* Get available languages */
+            availableLanguages = Configuration.getLanguages();
+
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as ServletException");
             throw new ServletException("SessionException caught", e);
@@ -262,8 +269,20 @@ public class LoginServlet extends VelocityServlet {
             sessionID = session.getID();
         }
 
-       if (acceptLanguage == null || acceptLanguage.equals("")) 
-            acceptLanguage = "no";
+        context.put("availableLanguages", availableLanguages);
+
+        /* Select language. Prefer: URL parameter, Cookie, Browser setting */
+        String overrideLang = request.getParameter("lang");
+        if (overrideLang == null) 
+            overrideLang = getCookieValue("lang", request);
+
+        if (overrideLang != "") {
+            setCookieValue("lang", overrideLang, response);
+            acceptLanguage = overrideLang;
+        }
+
+        else if (acceptLanguage == null || acceptLanguage.equals("")) 
+            acceptLanguage = defaultLang;
 
         StringTokenizer tokenizer = new StringTokenizer(acceptLanguage, ",");
         Locale locale = null;
@@ -294,7 +313,7 @@ public class LoginServlet extends VelocityServlet {
             }
             
             selectedLanguage = lang;
-                            
+
             locale = new Locale(lang);
             bundle = ResourceBundle.getBundle(bundleName, locale);
 
@@ -308,7 +327,7 @@ public class LoginServlet extends VelocityServlet {
 
         }
 
-
+        context.put("selectedLanguage", selectedLanguage);
 
         /* Should never happen, but just in case. */
         if (bundle == null)
@@ -343,15 +362,7 @@ public class LoginServlet extends VelocityServlet {
         realm = request.getParameter("realm");
             
         if (realm == null) {
-            realm = "";
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (int i = 0; i < cookies.length; i++) {
-                    if (cookies[i].getName().equals("realm")) {
-                        realm = cookies[i].getValue();
-                    }
-                }
-            }
+            realm = getCookieValue("realm", request);
         }
 
         
@@ -427,7 +438,6 @@ public class LoginServlet extends VelocityServlet {
 
 
     
-
 
     /**
      *  Generates a template for the loginPage. The request should
@@ -617,12 +627,7 @@ public class LoginServlet extends VelocityServlet {
         httpSession.setAttribute("moriaID", session.getID());
 
         /* Remember realm (cookie). */
-        Cookie cookie = new Cookie("realm", realm);
-        int validDays = new Integer(Configuration.getProperty("no.feide.moria.servlet.realmCookieValidDays")).intValue();
-        cookie.setMaxAge(validDays*24*60*60); // Days to seconds
-        cookie.setComment("Home organization");
-        cookie.setVersion(1);
-        response.addCookie(cookie);
+        setCookieValue("realm", realm, response);
 
         redirectToWebService(response, session);
     
@@ -643,4 +648,43 @@ public class LoginServlet extends VelocityServlet {
     }
 
 
+
+    /**
+     * Return a requested cookie value
+     * @param cookieName Name of the cookie
+     * @param request The Http request
+     * @return Requested value, empty string if not found
+     */
+    private String getCookieValue(String cookieName, HttpServletRequest request) {
+        String value = "";
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                if (cookies[i].getName().equals(cookieName)) {
+                    value = cookies[i].getValue();
+                }
+            }
+        }
+
+        return value;
+    }
+
+    
+    
+    /**
+     * Add a cookie to the response.
+     * @param cookieName Name of the cookie
+     * @param cookieValue Value to be set
+     * @param response The http response
+     */
+    private void setCookieValue(String cookieName, String cookieValue, HttpServletResponse response) throws ConfigurationException{
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+        int validDays = new Integer(Configuration.getProperty("no.feide.moria.servlet.cookieValidDays")).intValue();
+        cookie.setMaxAge(validDays*24*60*60); // Days to seconds
+        cookie.setVersion(1);
+        response.addCookie(cookie);
+    }
+
 }
+
