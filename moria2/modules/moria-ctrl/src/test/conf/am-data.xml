@@ -12,8 +12,8 @@
       <Organization name ="uio.no"/>
     </Affiliation>
     <Attributes>
-      <Attribute name="attr1" sso="true" secLevel="1"/>
-      <Attribute name="attr2" sso="true" secLevel="0"/>
+      <Attribute name="attr1" sso="true" secLevel="0"/>
+      <Attribute name="attr2" sso="true" secLevel="1"/>
       <Attribute name="attr3" sso="false" secLevel="2"/>
     </Attributes>
     <Operations>

@@ -768,13 +768,13 @@ public class AuthorizationManagerTest extends TestCase {
         }
 
         /* SecLevel 0 */
-        String[] requestedAttributes = new String[]{"attr2"};
+        String[] requestedAttributes = new String[]{"attr1"};
         assertEquals("SecLevel differs", 0, authMan.getSecLevel("test", requestedAttributes));
 
         /* SecLevel 1 */
-        requestedAttributes = new String[]{"attr1"};
+        requestedAttributes = new String[]{"attr2"};
         assertEquals("SecLevel differs", 1, authMan.getSecLevel("test", requestedAttributes));
-        requestedAttributes = new String[]{"attr1", "attr2"};
+        requestedAttributes = new String[]{"attr2", "attr1"};
         assertEquals("SecLevel differs", 1, authMan.getSecLevel("test", requestedAttributes));
 
         /* SecLevel 2 */

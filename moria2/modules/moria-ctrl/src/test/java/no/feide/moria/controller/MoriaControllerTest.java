@@ -262,15 +262,15 @@ public class MoriaControllerTest extends TestCase {
         }
 
         /* Seclevel 0 */
-        String[] attributes = new String[]{"attr2"};
+        String[] attributes = new String[]{"attr1"};
         String ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
         assertEquals(0, MoriaController.getSecLevel(ticket));
 
         /* Seclevel 1 */
-        attributes = new String[]{"attr1"};
+        attributes = new String[]{"attr2"};
         ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
         assertEquals(1, MoriaController.getSecLevel(ticket));
-        attributes = new String[]{"attr1", "attr2"};
+        attributes = new String[]{"attr2", "attr1"};
         ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
         assertEquals(1, MoriaController.getSecLevel(ticket));
 
