@@ -106,66 +106,39 @@ class AuthorizationClient {
                         final HashSet subsystems, final HashMap attributes) {
 
         if (name == null || name.equals("")) {
-            String message = "Name must be a non empty string.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("Name must be a non empty string.");
         }
 
         if (displayName == null || displayName.equals("")) {
-            String message = "displayName must be a non empty string.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+             throw new IllegalArgumentException("displayName must be a non empty string.");
         }
 
         if (url == null || url.equals("")) {
-            String message = "URL must be a non empty string.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("URL must be a non empty string.");
         }
 
         if (language == null || language.equals("")) {
-            String message = "Language must be a non empty string.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+           throw new IllegalArgumentException("Language must be a non empty string.");
         }
 
         if (home == null || home.equals("")) {
-            String message = "Home must be a non empty string.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("Home must be a non empty string.");
         }
 
         if (affiliation == null) {
-            String message = "Affiliation cannot be null.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("Affiliation cannot be null.");
         }
 
         if (operations == null) {
-            String message = "Operations cannot be null.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("Operations cannot be null.");
         }
 
         if (subsystems == null) {
-            String message = "Subsystems cannot be null.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("Subsystems cannot be null.");
         }
 
         if (attributes == null) {
-            String message = "Attribtues cannot be null.";
-            // TODO Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("Attribtues cannot be null.");
         }
 
         this.name = name;
@@ -197,7 +170,6 @@ class AuthorizationClient {
         boolean allow = true;
 
         if (requestedAttributes == null) {
-            // TODO: Log
             throw new IllegalArgumentException("RequestedAttributes cannot be null");
         }
 
@@ -207,7 +179,7 @@ class AuthorizationClient {
 
         for (int i = 0; i < requestedAttributes.length; i++) {
             if (!attributes.containsKey(requestedAttributes[i])) {
-                // TODO: Access log
+                // TODO: Access log, move to controller
                 // log.warning("Service '" + name + "' can access attributes" + attributes.keySet() + " only, not [" + requestedAttributes[i] + ']');
                 allow = false;
                 break;
@@ -267,7 +239,6 @@ class AuthorizationClient {
     final boolean allowOperations(final String[] requestedOperations) {
 
         if (requestedOperations == null) {
-            // TODO: Log
             throw new IllegalArgumentException("RequestedOperations cannot be null");
         }
 
@@ -277,7 +248,7 @@ class AuthorizationClient {
 
         for (int i = 0; i < requestedOperations.length; i++) {
             if (!operations.contains(requestedOperations[i])) {
-                // TODO: Access log
+                // TODO: Access log, move to controller
                 // log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
                 return false;
             }
@@ -296,7 +267,6 @@ class AuthorizationClient {
     final boolean allowSubsystems(final String[] requestedSubsystems) {
 
         if (requestedSubsystems == null) {
-            // TODO: Log
             throw new IllegalArgumentException("RequestedSubsystems cannot be null");
         }
 
@@ -306,7 +276,7 @@ class AuthorizationClient {
 
         for (int i = 0; i < requestedSubsystems.length; i++) {
             if (!subsystems.contains(requestedSubsystems[i])) {
-                // TODO: Access log
+                // TODO: Access log, move to Controller
                 // log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
                 return false;
             }
