@@ -17,8 +17,6 @@
 
 package no.feide.moria.servlet;
 
-// FUCKFACE: test
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
