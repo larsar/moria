@@ -126,7 +126,7 @@ public final class AccessLogger implements Serializable {
         /* Add default value "-" if variabel is null */
         buffer.append(status != null ? "\"" + status + "\" " : "\"-\" ");
         buffer.append(servicePrincipal != null ? "\"" + servicePrincipal + "\" " : "\"-\" ");
-        buffer.append(userId != null ? "\"" + userId + "\"" : "\"-\"");
+        buffer.append(userId != null ? "\"" + userId + "\" " : "\"-\" ");
         buffer.append(incomingTicketId != null ? "\"" + incomingTicketId + "\" " : "\"-\" ");
         buffer.append(outgoingTicketId != null ? "\"" + outgoingTicketId + "\" " : "\"-\" ");
 
