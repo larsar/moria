@@ -84,4 +84,18 @@
     <attainGoal name="site:deploy"/>
   </goal>
 
+  <goal
+     name="project:eclipse"
+     description="Generate new eclipse files for all modules">
+
+    <m:reactor
+       basedir="${basedir}"
+       postProcessing="false"
+       includes="**/${pattern}/**/project.xml"
+       excludes="project.xml"
+       goals="eclipse"
+       banner="Running..."
+       ignoreFailures="false"/>
+  </goal>
+
 </project>
