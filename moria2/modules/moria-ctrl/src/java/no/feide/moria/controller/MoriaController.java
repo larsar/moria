@@ -706,50 +706,80 @@ public final class MoriaController {
      * authentication attempt. Due to security reasons, Moria will not cache
      * attribute values longer than absolutely neccessary.
      * @param serviceTicketId
-     *            the ticket associated with the authentication attempt
+     *            The ticket associated with the authentication attempt. Cannot
+     *            be <code>null</code> or an empty string.
      * @param servicePrincipal
-     *            the principal of the calling service
-     * @return Map containing user attributes. All entries has a
-     *         <code>String</code> as key and a <code>String[]</code> as
-     *         value.
+     *            The principal of the calling service. Cannot be
+     *            <code>null</code> or an empty string.
+     * @return A newly instantiated <code>Map</code> object containing the
+     *         requested user attributes, if found. Entries have a
+     *         <code>String</code> key and a <code>String[]</code> value.
      * @throws IllegalInputException
-     *             if any of <code>serviceTicketId</code> and
-     *             <code>servicePrincipal</code> is null or an empty string
+     *             If <code>serviceTicketId</code> or
+     *             <code>servicePrincipal</code> is <code>null</code> or an
+     *             empty string.
      * @throws UnknownTicketException
-     *             if the service ticket does not exist
+     *             If the service ticket does not exist in the store, or is
+     *             invalid.
      * @throws InoperableStateException
-     *             if Moria is not ready for use
+     *             If Moria is not ready for use.
      */
     public static Map getUserAttributes(final String serviceTicketId, final String servicePrincipal)
     throws IllegalInputException, UnknownTicketException,
     InoperableStateException {
 
-        /* Check controller state */
-        if (!ready) { throw new InoperableStateException(NOT_READY); }
+        // Sanity checks.
+        if (!ready)
+            throw new InoperableStateException(NOT_READY);
+        if (serviceTicketId == null || serviceTicketId.equals(""))
+            throw new IllegalInputException("Service ticket ID must be a non-empty string.");
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalInputException("Service principal must be a non-empty string.");
 
-        /* Validate arguments */
-        if (serviceTicketId == null || serviceTicketId.equals("")) { throw new IllegalInputException("serviceTicketId must be a non-empty string."); }
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalInputException("servicePrincipal must be a non-empty string."); }
-
-        /* Return the attributes */
-        final Map attributes;
+        // Look up and return the requested attributes.
+        HashMap filteredAttributes = new HashMap();
         try {
-            attributes = store.getAuthnAttempt(serviceTicketId, false, servicePrincipal).getTransientAttributes();
+
+            // Get the originally requested attributes and all cached values.
+            MoriaAuthnAttempt authenticationAttempt = store.getAuthnAttempt(serviceTicketId, false, servicePrincipal);
+            String[] requestedAttributes = authenticationAttempt.getRequestedAttributes();
+            for (int i = 0; i < requestedAttributes.length; i++)
+                messageLogger.logInfo("Requested attribute: " + requestedAttributes[i]);
+            final Map cachedAttributes = authenticationAttempt.getTransientAttributes();
+            messageLogger.logInfo("Returned attributes: " + cachedAttributes.toString());
+
+            // Filter cached attributes; only those requested are to be
+            // returned.
+            for (int i = 0; i < requestedAttributes.length; i++)
+                if (cachedAttributes.containsKey(requestedAttributes[i]))
+                    filteredAttributes.put(requestedAttributes[i], cachedAttributes.get(requestedAttributes[i]));
+            messageLogger.logInfo("Filtered attributes: " + filteredAttributes.toString());
+
         } catch (NonExistentTicketException e) {
+
+            // Ticket did not exist in the store.
             accessLogger.logService(AccessStatusType.NONEXISTENT_SERVICE_TICKET, servicePrincipal, serviceTicketId, null);
             messageLogger.logWarn(CAUGHT_NONEXISTENT_TICKET + ", service (" + servicePrincipal + ") tried to fetch attributes to late", serviceTicketId, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
+
         } catch (InvalidTicketException e) {
+
+            // The ticket was found, but was invalid.
             accessLogger.logService(AccessStatusType.INVALID_SERVICE_TICKET, servicePrincipal, serviceTicketId, null);
             messageLogger.logWarn(CAUGHT_INVALID_TICKET + ", service (" + servicePrincipal + ") tried to fetch attributes to late", serviceTicketId, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
+
         } catch (MoriaStoreException e) {
+
+            // Unable to access the store.
             messageLogger.logCritical(CAUGHT_STORE, serviceTicketId, e);
             throw new InoperableStateException(STORE_DOWN);
+
         }
 
+        // Return the filtered attributes only.
         accessLogger.logService(AccessStatusType.SUCCESSFUL_GET_ATTRIBUTES, servicePrincipal, serviceTicketId, null);
-        return attributes;
+        return filteredAttributes;
     }
 
 
