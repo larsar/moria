@@ -44,6 +44,9 @@ public class MoriaCacheStoreTest extends TestCase {
 
     /** TTL percentage property. */
     final String realTTLPercentagePropertyName = "no.feide.moria.store.real_ttl_percentage";
+    
+    /** Dummy organization identificator. */ 
+    private final String dummyOrg = "dummyOrg";
 
     /** The instance of the store. */
     MoriaCacheStore store;
@@ -335,7 +338,7 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Invalid parameters */
         try {
-            store.cacheUserData(null);
+            store.cacheUserData(null, "");
             fail("IllegalArgumentException should be raised, null value");
         } catch (IllegalArgumentException success) {
         }
@@ -343,7 +346,7 @@ public class MoriaCacheStoreTest extends TestCase {
         cachedAttrs.put("a", "b");
         cachedAttrs.put("c", "d");
 
-        MoriaTicket ticket = store.getFromStore(MoriaTicketType.SSO_TICKET, store.cacheUserData(cachedAttrs));
+        MoriaTicket ticket = store.getFromStore(MoriaTicketType.SSO_TICKET, store.cacheUserData(cachedAttrs, dummyOrg));
         assertNotNull("SSO ticket should not be null", ticket);
         assertEquals("SSO ticket has wrong type", MoriaTicketType.SSO_TICKET, ticket.getTicketType());
     }
@@ -409,7 +412,7 @@ public class MoriaCacheStoreTest extends TestCase {
         cachedAttrs.put("a", "b");
         cachedAttrs.put("c", "d");
 
-        String ssoTicketId = store.cacheUserData(cachedAttrs);
+        String ssoTicketId = store.cacheUserData(cachedAttrs, dummyOrg);
         CachedUserData userData = store.getUserData(ssoTicketId, null);
 
         assertNotNull("User data should not be null", userData);
@@ -418,7 +421,7 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Test with invalid (non-existent) ticket */
 
-        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), userData).getTicketId();
+        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), userData, dummyOrg).getTicketId();
         try {
             userData = store.getUserData(ssoTicketId, null);
             fail("NonExistentTicketException should be raised, ticket is invalid.");
@@ -460,7 +463,7 @@ public class MoriaCacheStoreTest extends TestCase {
         cachedAttrs.put("c", "d");
 
         /* Normal use */
-        String ssoTicketId = store.cacheUserData(cachedAttrs);
+        String ssoTicketId = store.cacheUserData(cachedAttrs, dummyOrg);
         String tgTicketId = store.createTicketGrantingTicket(ssoTicketId, principal);
         MoriaTicket tgTicket = store.getFromStore(MoriaTicketType.TICKET_GRANTING_TICKET, tgTicketId);
 
@@ -470,7 +473,7 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Non-existing ticket */
         tgTicketId = null;
-        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), null).getTicketId();
+        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), null, dummyOrg).getTicketId();
         try {
             tgTicketId = store.createTicketGrantingTicket(ssoTicketId, principal);
             fail("NonExistentTicketException should have been thrown");
@@ -520,7 +523,7 @@ public class MoriaCacheStoreTest extends TestCase {
         cachedAttrs.put("a", "b");
         cachedAttrs.put("c", "d");
 
-        String ssoTicketId = store.cacheUserData(cachedAttrs);
+        String ssoTicketId = store.cacheUserData(cachedAttrs, dummyOrg);
         String tgTicketId = store.createTicketGrantingTicket(ssoTicketId, principal);
         String proxyTicketId = store.createProxyTicket(tgTicketId, principal, targetPrincipal);
 
@@ -577,7 +580,7 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Wrong ticket type */
         try {
-            store.setTransientAttributes(store.cacheUserData(cachedAttrs), transAttributes);
+            store.setTransientAttributes(store.cacheUserData(cachedAttrs, dummyOrg), transAttributes);
             fail("NonExistentTicketException should be raised, ticketId is null");
         } catch (NonExistentTicketException success) {
         }

@@ -34,6 +34,9 @@ import junit.framework.TestSuite;
  * @version $Revision$
  */
 public class MoriaTicketTest extends TestCase {
+    
+    /** Dummy organization identificator. */ 
+    private final String dummyOrg = "dummyOrg";
 
     String id1;
 
@@ -113,60 +116,60 @@ public class MoriaTicketTest extends TestCase {
         final Long expiryTime = new Long(now + 10000);
         /* Test for illegal id. */
         try {
-            MoriaTicket ticket = new MoriaTicket(null, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(null, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket("", MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket("", MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         /* Test for illegal ticket. */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, null, principal1, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, null, principal1, expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         /* Test for illegal principal. */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, null, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, null, expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, "", expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, "", expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         /* SSO must have null principal. */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, principal1, expiryTime, cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, principal1, expiryTime, cachedUserData, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         /* Test for illegal time to live. */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, null, cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, null, cachedUserData, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.PROXY_TICKET, principal1, new Long(-1), cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.PROXY_TICKET, principal1, new Long(-1), cachedUserData, dummyOrg);
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         /* Test for expiry. */
         {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(new Date().getTime() + 1000), authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(new Date().getTime() + 1000), authnAttempt, dummyOrg);
             Thread.sleep(1001);
             assertTrue("Ticket should have expired", ticket.hasExpired());
         }
@@ -174,51 +177,51 @@ public class MoriaTicketTest extends TestCase {
         /* Test data object type check. */
 
         {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, null);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, null, dummyOrg);
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, cachedUserData, dummyOrg);
             fail("An IllegalArgumentException should have been thrown. Login ticket can't have cachedUserData.");
         } catch (IllegalArgumentException success) {
         }
         {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt, dummyOrg);
         }
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SERVICE_TICKET, principal1, expiryTime, cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SERVICE_TICKET, principal1, expiryTime, cachedUserData, dummyOrg);
             fail("An IllegalArgumentException should have been thrown. Service ticket can't have cachedUserData.");
         } catch (IllegalArgumentException success) {
         }
         {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SERVICE_TICKET, principal1, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SERVICE_TICKET, principal1, expiryTime, authnAttempt, dummyOrg);
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, null, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, null, expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown. SSO ticket can't have authnAttempt");
         } catch (IllegalArgumentException success) {
         }
         {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, null, expiryTime, cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, null, expiryTime, cachedUserData, dummyOrg);
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown. TG ticket can't have authnAttempt");
         } catch (IllegalArgumentException success) {
         }
         {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, expiryTime, cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, expiryTime, cachedUserData, dummyOrg);
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.PROXY_TICKET, principal1, expiryTime, authnAttempt);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.PROXY_TICKET, principal1, expiryTime, authnAttempt, dummyOrg);
             fail("An IllegalArgumentException should have been thrown. PROXY ticket can't have authnAttempt");
         } catch (IllegalArgumentException success) {
         }
         {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.PROXY_TICKET, principal1, expiryTime, cachedUserData);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.PROXY_TICKET, principal1, expiryTime, cachedUserData, dummyOrg);
         }
     }
 
@@ -238,13 +241,13 @@ public class MoriaTicketTest extends TestCase {
 
         final Long expiryTime = new Long(new Date().getTime() + 5000);
         assertFalse("Tickets supposed to have different id and not be equal",
-                new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt).equals(
-                        new MoriaTicket(id2, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt)));
+                new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt, dummyOrg).equals(
+                        new MoriaTicket(id2, MoriaTicketType.LOGIN_TICKET, principal1, expiryTime, authnAttempt, dummyOrg)));
 
         /* Same id, different type and principal. Should result in equality. */
         assertEquals("Tickets have same id and should be considered equal", 
-                new MoriaTicket(id2, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, expiryTime, cachedUserData),
-                new MoriaTicket(id2, MoriaTicketType.SSO_TICKET, null, expiryTime, null));
+                new MoriaTicket(id2, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, expiryTime, cachedUserData, dummyOrg),
+                new MoriaTicket(id2, MoriaTicketType.SSO_TICKET, null, expiryTime, null, dummyOrg));
 
     }
 
@@ -257,7 +260,7 @@ public class MoriaTicketTest extends TestCase {
     public void testGetters()
             throws IllegalArgumentException, InvalidTicketException {
         MoriaTicket ticket = new MoriaTicket(id2, MoriaTicketType.LOGIN_TICKET, principal2, new Long(new Date().getTime() + 5000),
-                                             authnAttempt);
+                                             authnAttempt, dummyOrg);
 
         String errorMsg = "The value given at object construction does not match the returned value";
         assertEquals(errorMsg, id2, ticket.getTicketId());
