@@ -72,7 +72,7 @@ implements Serializable, DirectoryManagerIndex {
      *         <code>null</code> if no such reference was found.
      * @see DirectoryManagerIndex#lookup(String)
      */
-    public String[] lookup(final String id) {
+    public IndexedReference lookup(final String id) {
 
         // Sanity check.
         if (id == null)
@@ -81,13 +81,13 @@ implements Serializable, DirectoryManagerIndex {
         // Do we have an explicit match? That is, an exception from the
         // association rule?
         if (exceptions.containsKey(id))
-            return new String[] {(String) exceptions.get(id)};
+            return new IndexedReference(id, new String[] {(String)exceptions.get(id)}, true);
 
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
         if (i < 0)
             return null;
-        return (String[]) associations.get(id.substring(i));
+        return new IndexedReference(id, (String[])associations.get(id.substring(i)), false);
 
     }
 
