@@ -49,7 +49,7 @@ public class Moria {
         log.finer("Moria()");
                 
         // Create service proxy and set credentials.
-        stub = (Stub)(new FeideAuthentication_Impl().getAuthenticationIFPort());
+        stub = (Stub)(new Authentication_Impl().getAuthenticationIFPort());
 	    String s = System.getProperty("no.feide.mellon.serviceUsername");
 	    log.config("no.feide.mellon.serviceUsername="+s);
         stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, s);
