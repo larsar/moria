@@ -13,6 +13,10 @@
 package no.feide.moria.directory;
 
 import java.util.Properties;
+
+import no.feide.moria.directory.backend.AuthenticationFailedException;
+import no.feide.moria.directory.backend.BackendException;
+
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -27,6 +31,9 @@ extends TestCase {
 
     /** The user credentials used. */
     private static Credentials goodCredentials = new Credentials("user@some.realm", "password");
+    
+    /** Non-existing user credentials. */
+    private static Credentials badCredentials = new Credentials("foo", "bar");
 
     /** The attribute request used. */
     private static final String[] goodRequest = {"someAttribute"};
@@ -69,28 +76,107 @@ extends TestCase {
 
 
     /**
-     * Test the <code>authenticate(Credentials, String[])</code> method.
+     * Successful authentication without attribute request.
      */
-    public void testAuthentication() {
+    public void testGoodAuthenticationWithoutAttributes() {
 
-        // Authenticate.
+        // Set configuration properties.
         Properties config = new Properties();
         config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
-        UserAttribute[] attributes = null;
+
         try {
+            
+            // Test successful authentication.
             dm.setConfig(config);
-            attributes = dm.authenticate(goodCredentials, goodRequest);
+            UserAttribute[] attributes = dm.authenticate(goodCredentials, new String[] {});
+            
+            // Verify attributes.
+            Assert.assertEquals("Attributes were returned", attributes.length, 0);
+         
+            
         } catch (DirectoryManagerException e) {
             e.printStackTrace();
             Assert.fail("Unexpected DirectoryManagerException");
         }
 
-        // Verify attributes.
-        Assert.assertNotNull("No attributes returned", attributes);
-        Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.length);
-        String[] values = attributes[0].getValues();
-        Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
-        Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
+    }
+    
+    
+    /**
+     * Successful authentication with attribute request.
+     */
+    public void testGoodAuthenticationWithAttributes() {
+
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
+
+        try {
+            
+            // Test successful authentication.
+            dm.setConfig(config);
+            UserAttribute[] attributes = dm.authenticate(goodCredentials, goodRequest);
+            
+            // Verify attributes.
+            Assert.assertNotNull("No attributes returned", attributes);
+            Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.length);
+            String[] values = attributes[0].getValues();
+            Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
+            Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
+            
+        } catch (DirectoryManagerException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected DirectoryManagerException");
+        }
+
+    }
+    
+    
+    /**
+     * Failed authentication without any attribute request.
+     */
+    public void testBadAuthenticationWithoutAttributes() {
+
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
+
+        try {
+            
+            // Test unsuccessful authentication.
+            dm.setConfig(config);
+            UserAttribute[] attributes = dm.authenticate(badCredentials, new String[] {});
+            Assert.assertNull("Attributes were returned", attributes);
+            Assert.fail("Bad authentication succeeded");
+            
+        } catch (AuthenticationFailedException e) {
+            // Expected.
+        } catch (DirectoryManagerException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected DirectoryManagerException");
+        }
+
+    }
+    
+    
+    /**
+     * Authentication attempt without configuration set.
+     */
+    public void testNoConfiguration() {
+
+        try {
+            
+            // Test authentication without configuration.
+            UserAttribute[] attributes = dm.authenticate(goodCredentials, goodRequest);
+            Assert.assertNull("Attributes were returned", attributes);
+            Assert.fail("Authentication without configuration succeeded");
+
+        } catch (DirectoryManagerConfigurationException e) {
+            // Expected.
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
+        }
 
     }
 
