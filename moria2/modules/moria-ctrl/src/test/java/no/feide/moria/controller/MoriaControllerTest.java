@@ -26,6 +26,10 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+
+import no.feide.moria.directory.backend.AuthenticationFailedException;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -141,10 +145,122 @@ public class MoriaControllerTest extends TestCase {
         assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
     }
 
-    public void testAttemptLogin() throws UnknownTicketException, InoperableStateException, IllegalInputException {
-        // TODO: Implement
-        MoriaController.init();
-        MoriaController.attemptLogin(null, null, null, null);
+    public void testAttemptLogin() throws UnknownTicketException, InoperableStateException,
+            IllegalInputException, AuthenticationException, AuthorizationException, DirectoryUnavailableException {
+        String validSSOTicketId = "1234";
+        String validLoginTicketId = "4321";
+        String validUsername = "user@some.realm";
+        String validPassword = "password";
+
+        /* Check controller initialization */
+        controllerInitialization();
+
+        /* Illegal arguments */
+        try {
+            MoriaController.attemptLogin(null, validSSOTicketId, validUsername, validPassword);
+            fail("IllegalInputException should be raised, loginTicketId is null");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.attemptLogin("", validSSOTicketId, validUsername, validPassword);
+            fail("IllegalInputException should be raised, loginTicketId is an empty string");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, null, validPassword);
+            fail("IllegalInputException should be raised, username is null");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, "", validPassword);
+            fail("IllegalInputException should be raised, username is an empty string");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, validUsername, null);
+            fail("IllegalInputException should be raised, username is null");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, validUsername, "");
+            fail("IllegalInputException should be raised, username is an empty string");
+        } catch (IllegalInputException success) {
+        }
+
+        /* SSO ticket can be empty */
+        MoriaController.attemptLogin(validLoginTicketId, null, validUsername, validPassword);
+        MoriaController.attemptLogin(validLoginTicketId, "", validUsername, validPassword);
+
+        /* Non-existing login ticket */
+        try {
+            MoriaController.attemptLogin("doesNotExist", validSSOTicketId, validUsername, validPassword);
+            fail("UnknownTicketException should be raised, non-existing ticket");
+        } catch (UnknownTicketException success) {
+        }
+
+        /* Non-existing SSO ticket (allowed) */
+        String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword);
+
+        /* Removal of existing SSO ticket */
+        // TODO: Dependent on attemptSingleSignOn
+//        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+//        HashMap tickets = MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword);
+//        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+//        MoriaController.attemptLogin(tickets.get(MoriaController.SERVICE_TICKET), tickets.get(MoriaController.SSO_TICKET),
+//                validUsername, validPassword);
+//        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+//        try {
+//            MoriaController.attemptSingleSignOn(loginTicketId, tickets.get(MoriaController.SSO_TICKET));
+//            fail("AuthenticationException should be raised, SSO ticket should be removed from the store");
+//        } catch (AuthenticationException success) {
+//        }
+
+        /* Use of same login ticket twice, authentication failure = OK */
+        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        MoriaController.attemptLogin(loginTicketId, null, validUsername, "wrongPassword");
+        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+
+        /* Use of same login ticket twice when authentication was OK first time = ERROR */
+        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        try {
+            MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        } catch (Exception e) {
+        }
+
+        /* Wrong username */
+        try {
+        MoriaController.attemptLogin(validLoginTicketId, "doesNotExist", validUsername, validPassword);
+            fail("AuthenticationFailedException should be raised, wrong username");
+        } catch (AuthenticationException success) {
+        }
+
+        /* Wrong password */
+        try {
+        MoriaController.attemptLogin(validLoginTicketId, "doesNotExist", validUsername, validPassword);
+            fail("AuthenticationFailedException should be raised, wrong username");
+        } catch (AuthenticationException success) {
+        }
+
+        /* Normal use */
+        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        Map actualAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET), validPrincipal);
+        // TODO: Validate attributes agains predefined set
+        // TODO: Test that the getAttributes can be run with the returned ticket
+
+        HashMap expectedAttrs = new HashMap();
+        expectedAttrs.put("attr1", "value1");
+        expectedAttrs.put("attr2", "value2");
+
+        assertEquals("Expected and actual attributes length differs", expectedAttrs.size(), actualAttrs.size());
+
+        Iterator it = expectedAttrs.keySet().iterator();
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            assertEquals("Attribute mismatch", expectedAttrs.get(key), actualAttrs.get(key));
+        }
     }
 
     public void testAttemptSingleSignOn() {

@@ -1,22 +1,22 @@
 /*
- * Copyright (c) 2004 UNINETT FAS
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * $Id$
- */
+* Copyright (c) 2004 UNINETT FAS
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the Free
+* Software Foundation; either version 2 of the License, or (at your option)
+* any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place - Suite 330, Boston, MA 02111-1307, USA.
+*
+* $Id$
+*/
 
 package no.feide.moria.controller;
 
@@ -36,6 +36,7 @@ import no.feide.moria.log.MessageLogger;
 import no.feide.moria.directory.DirectoryManager;
 import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.backend.BackendException;
+import no.feide.moria.directory.backend.AuthenticationFailedException;
 
 import javax.servlet.ServletContext;
 import java.util.HashMap;
@@ -47,6 +48,22 @@ import java.util.Properties;
  * @version $Revision$
  */
 public class MoriaController {
+
+    /**
+     * Ticket type constant, indicating a SSO ticket, for use when returning a HashMap of two tickets.
+     *
+     * @see MoriaController#attemptLogin(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * @see MoriaController#attemptSingleSignOn(java.lang.String, java.lang.String)
+     */
+    public static String SSO_TICKET = "sso";
+
+    /**
+     * Ticket type constant, indicating a login ticket, for use when returning a HashMap with multiple tickets.
+     *
+     * @see MoriaController#attemptLogin(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * @see MoriaController#attemptSingleSignOn(java.lang.String, java.lang.String)
+     */
+    public static String SERVICE_TICKET = "service";
 
     /**
      * The single instance of the data store.
@@ -182,29 +199,99 @@ public class MoriaController {
         // if (!validateLoginTicket(loginTicket))
         //   throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
         // TODO: Implement
+        // TODO: Must return two tickets SSO + service
         return null;
     }
 
     /**
-     * @param loginTicket
-     * @param ssoTicket
+     * @param loginTicketId
+     * @param ssoTicketId
      * @param userId
      * @param password
-     * @return
+     * @return a HashMap with two tickets: login and SSO
      * @throws UnknownTicketException
      * @throws InoperableStateException
      * @throws IllegalInputException
      */
-    public static boolean attemptLogin(final String loginTicket, final String ssoTicket, final String userId,
+    public static Map attemptLogin(final String loginTicketId, final String ssoTicketId, final String userId,
                                        final String password)
-            throws UnknownTicketException, InoperableStateException, IllegalInputException {
-        // TODO: Implement
-        try {
-            directoryManager.authenticate(new Credentials("foo", "bar"), new String[]{"attr1"});
-        } catch (BackendException e) {
-            //TODO: Implement
+            throws UnknownTicketException, InoperableStateException, IllegalInputException, AuthenticationException,
+                   DirectoryUnavailableException {
+
+        /* Check controller status */
+        if (!ready) {
+            throw new InoperableStateException("Controller is not ready");
         }
-        return false;
+
+        /* Validate arguments */
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalInputException("loginTicketId must be a non-empty string.");
+        }
+        if (ssoTicketId == null || ssoTicketId.equals("")) {
+            throw new IllegalInputException("ssoTicketId must be a non-empty string.");
+        }
+        if (userId == null || userId.equals("")) {
+            throw new IllegalInputException("userId must be a non-empty string.");
+        }
+        if (password == null || password.equals("")) {
+            throw new IllegalInputException("password must be a non-empty string.");
+        }
+
+        /* Find authentication attempt */
+        MoriaAuthnAttempt authnAttempt;
+        try {
+            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
+        } catch (InvalidTicketException e) {
+            // TODO: Access log
+            throw new UnknownTicketException("Ticket does not exist");
+        } catch (MoriaStoreException e) {
+            // TODO: Message log?
+            throw new InoperableStateException("Store is out of order");
+        }
+
+        /* Authenticate */
+        HashMap attributes;
+        try {
+            attributes =
+            directoryManager.authenticate(new Credentials(userId, password), authnAttempt.getRequestedAttributes());
+        } catch (AuthenticationFailedException e) {
+            // TODO: Access log
+            throw new AuthenticationException("Wrong username/password");
+        } catch (BackendException e) {
+            // TODO: Access log
+            throw new DirectoryUnavailableException("Directory unavailable. Authentication failed.");
+        }
+
+        /* Remove existing SSO ticket */
+        try {
+            store.removeSSOTicket(ssoTicketId);
+        } catch (InvalidTicketException e) {
+            /* The ticket has probably already timed out. */
+        } catch (MoriaStoreException e) {
+            // TODO: Message log
+            throw new InoperableStateException("Store is unavailable");
+        }
+
+        /* Cache attributes and get tickets */
+        String serviceTicketId;
+        String newSSOTicketId;
+        try {
+            serviceTicketId = store.createServiceTicket(loginTicketId);
+            store.setTransientAttributes(loginTicketId, attributes);
+            newSSOTicketId = store.cacheUserData(attributes);
+        } catch (InvalidTicketException e) {
+            // TODO: Message log, should not happen due to validation above
+            throw new UnknownTicketException("Ticket does not exist");
+        } catch (MoriaStoreException e) {
+            throw new InoperableStateException("Store is unavailable");
+        }
+
+        /* Return tickets */
+        HashMap tickets = new HashMap();
+        tickets.put(SERVICE_TICKET, serviceTicketId);
+        tickets.put(SSO_TICKET, newSSOTicketId);
+
+        return tickets;
     }
 
     /* For Web Service */
@@ -219,11 +306,13 @@ public class MoriaController {
      * @throws IllegalInputException
      */
     public static String initiateAuthentication(final String[] attributes, final String returnURLPrefix,
-                                                final String returnURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
+                                                final String returnURLPostfix,
+                                                final boolean forceInteractiveAuthentication,
+                                                final String servicePrincipal)
             throws AuthorizationException, IllegalInputException, InoperableStateException {
 
         if (!ready) {
-            throw new IllegalStateException("Controller is not ready");
+            throw new InoperableStateException("Controller is not ready");
         }
 
         /* Validate parameters */
@@ -245,7 +334,8 @@ public class MoriaController {
             if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
                 accessLogger.logService(AccessStatusType.ATTRIBUTES_ACCESS_DENIED, servicePrincipal, null, null);
                 messageLogger.logInfo("Service '" + servicePrincipal
-                        + "' tried to access '" + attributes + "', but have only access to '" + authzManager.getAttributes(servicePrincipal)); // TODO: Finish
+                                      + "' tried to access '" + attributes + "', but have only access to '"
+                                      + authzManager.getAttributes(servicePrincipal)); // TODO: Finish
                 throw new AuthorizationException("Access to the requested attributes is denied.");
             }
             if (!authzManager.allowOperations(servicePrincipal, new String[]{"InteractiveAuth"})) {
@@ -269,7 +359,8 @@ public class MoriaController {
 
         /* Create authentication attempt */
         try {
-            return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, forceInteractiveAuthentication, servicePrincipal);
+            return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix,
+                                            forceInteractiveAuthentication, servicePrincipal);
         } catch (MoriaStoreException e) {
             throw new InoperableStateException("Moria is unavailable, store is down");
         }
@@ -285,7 +376,7 @@ public class MoriaController {
             throws IllegalInputException, UnknownTicketException, InoperableStateException {
         // TODO: Implement
         if (!ready) {
-            throw new IllegalStateException("Controller is not ready");
+            throw new InoperableStateException("Controller is not ready");
         }
         return null;
     }
@@ -317,7 +408,8 @@ public class MoriaController {
      * @throws AuthorizationException
      * @throws IllegalInputException
      */
-    public static Map proxyAuthentication(final String[] attributes, final String proxyTicket, final String servicePrincipal)
+    public static Map proxyAuthentication(final String[] attributes, final String proxyTicket,
+                                          final String servicePrincipal)
             throws AuthorizationException, IllegalInputException, InoperableStateException, UnknownTicketException {
         // TODO: Implement
         if (!ready) {
@@ -355,7 +447,7 @@ public class MoriaController {
             throws AuthorizationException, IllegalInputException, InoperableStateException {
         // TOOD: Implement
         if (!ready) {
-            throw new IllegalStateException("Controller is not ready");
+            throw new InoperableStateException("Controller is not ready");
         }
         return false;
     }
@@ -400,16 +492,15 @@ public class MoriaController {
     }
 
     /**
-     * Start the controller. The controller is supposed to be started from a servlet. The supplied
-     * ServletContext can be used to transfer config from the configuration manager to the servlets.
+     * Start the controller. The controller is supposed to be started from a servlet. The supplied ServletContext can be
+     * used to transfer config from the configuration manager to the servlets.
      *
      * @param sc the servletContext from the caller
      */
     public static void initController(ServletContext sc) {
 
         /* Abort if called multiple times */
-        synchronized (isInitialized)
-        {
+        synchronized (isInitialized) {
             if (isInitialized.booleanValue()) {
                 return;
             }
@@ -464,7 +555,7 @@ public class MoriaController {
         }
 
         if (!ready) {
-            throw new IllegalStateException("Controller is not ready");
+            throw new InoperableStateException("Controller is not ready");
         }
         /* Validate arguments */
         if (loginTicketId == null || loginTicketId.equals("")) {
@@ -500,7 +591,7 @@ public class MoriaController {
     public static int getSecLevel(String loginTicketId)
             throws UnknownTicketException, InoperableStateException, AuthorizationException {
         if (!ready) {
-            throw new IllegalStateException("Controller is not ready");
+            throw new InoperableStateException("Controller is not ready");
         }
         /* Validate argument */
         if (loginTicketId == null || loginTicketId.equals("")) {
@@ -530,13 +621,12 @@ public class MoriaController {
     }
 
     /**
-     * Get the total status of the controller. The method returns a HashMap with Boolean values.
-     * The following elements are in the map:
-     * init: <code>true</code> if the <code>initController</code> method has been called, else <code>false</code>
-     * dm: <code>true</code> if the <code>DirectoryManager.setConfig</conde> method has been called, else <code>false</code>
-     * sm: <code>true</code> if the <code>MoriaStore.setConfig</conde> method has been called, else <code>false</code>
-     * am: <code>true</code> if the <code>AuthorizationManager.setConfig</conde> method has been called, else <code>false</code>
-     * moria: <code>true</code> all the above are true (the controller is ready to use)
+     * Get the total status of the controller. The method returns a HashMap with Boolean values. The following elements
+     * are in the map: init: <code>true</code> if the <code>initController</code> method has been called, else
+     * <code>false</code> dm: <code>true</code> if the <code>DirectoryManager.setConfig</conde> method has been called,
+     * else <code>false</code> sm: <code>true</code> if the <code>MoriaStore.setConfig</conde> method has been called,
+     * else <code>false</code> am: <code>true</code> if the <code>AuthorizationManager.setConfig</conde> method has been
+     * called, else <code>false</code> moria: <code>true</code> all the above are true (the controller is ready to use)
      *
      * @return
      * @see MoriaController#initController(javax.servlet.ServletContext)
