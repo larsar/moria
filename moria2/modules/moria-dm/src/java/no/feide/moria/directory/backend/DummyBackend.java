@@ -3,7 +3,6 @@ package no.feide.moria.directory.backend;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
