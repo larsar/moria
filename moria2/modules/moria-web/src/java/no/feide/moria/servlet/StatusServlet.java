@@ -136,8 +136,11 @@ extends HttpServlet {
     throws IOException, ServletException {
         getBackendStatusData();
         
+        response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.println("<html><head><title>Moria Status Service</title></head><body>");
+        String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01" + "Transitional//EN\">\n";
+        
+        out.println(docType + "<html><head><title>Moria Status Service</title></head><body>");
         
         //Check status
         Map statusMap = MoriaController.getStatus();
