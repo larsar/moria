@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2004 UNINETT FAS
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- * version.
- * 
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- * 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * $Id$
  */
 
@@ -22,13 +22,13 @@ package no.feide.moria.servlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import no.feide.moria.log.MessageLogger;
 
 import org.apache.axis.AxisEngine;
 import org.apache.axis.AxisFault;
@@ -40,46 +40,66 @@ import org.apache.axis.transport.http.AxisHttpSession;
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.axis.transport.http.ServletEndpointContextImpl;
-
 import org.apache.xml.serialize.XMLSerializer;
-
 import org.w3c.dom.Document;
 
 /**
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public class SimpleAxisServlet extends AxisServlet {
+public final class SimpleAxisServlet extends AxisServlet {
 
     /**
      * Identifies the directory containing the jsp-files. Assigned a value in
-     * init()
+     * init().
      */
-    private String JSP_LOCATION;
+    private String jspLocation;
+
+    /** Logger for this class. */
+    private MessageLogger messageLogger = new MessageLogger(SimpleAxisServlet.class);
 
     /**
-     * Default constructor
+     * Default constructor.
      */
     public SimpleAxisServlet() {
         super();
     }
 
+    /**
+     * Initializes the servlet. Called by the container.
+     */
     public void init() {
         super.init();
-        /* Read value from context-param set in web.xml */
-        JSP_LOCATION = getServletContext().getInitParameter("jsp.location");
+        /* Read value from context-param set in web.xml. */
+        jspLocation = getServletContext().getInitParameter("jsp.location");
+
+        /* */
+        if (jspLocation == null) {
+            throw new IllegalStateException("jsp.location init parameter must be set.");
+        }
     }
 
     /**
      * Handle HTTP GET request. As SOAP uses POST this basically returns a
      * empty page.
-     * 
+     *
      * @param request
-     *            The incoming HTTP request object
+     *          the incoming HTTP request object
      * @param response
-     *            The outgoing HTTP reponse object
+     *          the outgoing HTTP reponse object
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) {
+
+        /* Avoid null-pointer exceptions. */
+        if (request == null) {
+            messageLogger.logCritical("Response object cannot be null", new NullPointerException("request is null"));
+            return;
+        }
+
+        if (response == null) {
+            messageLogger.logCritical("Response object cannot be null", new NullPointerException("response is null"));
+            return;
+        }
 
         /* The access point to the web services */
         AxisEngine axisEngine = null;
@@ -109,7 +129,10 @@ public class SimpleAxisServlet extends AxisServlet {
         /* Context used by the axis engine to handle the request */
         MessageContext messageContext = createMessageContext(axisEngine, request, response);
 
-        /* Identify service */
+        /* Set the username given in the request. */
+        messageContext.setUsername(request.getUserPrincipal().getName());
+
+        /* Identify service. */
         String serviceName = request.getServletPath();
 
         try {
@@ -155,7 +178,8 @@ public class SimpleAxisServlet extends AxisServlet {
 
             /* The generated XML is put into the context */
             Object object = messageContext.getProperty("WSDL");
-            if (object instanceof Document) wsdl = (Document) object;
+            if (object instanceof Document)
+                wsdl = (Document) object;
 
             /* Throw exception and return if the WSDL data was not generated */
             if (wsdl == null) {
@@ -183,7 +207,7 @@ public class SimpleAxisServlet extends AxisServlet {
 
         } else {
             /* Get JSP for handling HTML output */
-            RequestDispatcher requestDispatcher = request.getRequestDispatcher(JSP_LOCATION + "/axis.jsp");
+            RequestDispatcher requestDispatcher = request.getRequestDispatcher(jspLocation + "/axis.jsp");
 
             /* Set the service name as attribute for the JSP */
             request.setAttribute("serviceName", serviceName);
@@ -192,7 +216,7 @@ public class SimpleAxisServlet extends AxisServlet {
             try {
                 requestDispatcher.forward(request, response);
             } catch (Exception e) {
-                handleException("Unable to dispatch request to " + JSP_LOCATION + "/axis.jsp", e, request, response);
+                //handleException("Unable to dispatch request to " + jspLocation + "/axis.jsp", e, request, response);
                 return;
             }
         }
@@ -201,27 +225,38 @@ public class SimpleAxisServlet extends AxisServlet {
     /**
      * Handle HTTP POST request. This method does the real work, handling the
      * SOAP requests.
-     * 
+     *
      * @param request
-     *            The incomming HTTP request object
+     *            the incomming HTTP request object
      * @param response
-     *            The outgoing HTTP response object
+     *            the outgoing HTTP response object
      */
-    public void doPost(HttpServletRequest request, HttpServletResponse response) {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
 
-        /* Supposed to boost performace */
+        /* Avoid null-pointer exceptions. */
+        if (request == null) {
+            messageLogger.logCritical("Response object cannot be null", new NullPointerException("request is null"));
+            return;
+        }
+
+        if (response == null) {
+            messageLogger.logCritical("Response object cannot be null", new NullPointerException("response is null"));
+            return;
+        }
+
+        /* Supposed to boost performace. */
         response.setBufferSize(8192);
 
-        /* The access point to the AXIS subsystem */
+        /* The access point to the AXIS subsystem. */
         AxisEngine axisEngine = null;
 
-        /* The objecte representing the incoming SOAP message */
+        /* The objecte representing the incoming SOAP message. */
         Message requestMessage = null;
 
-        /* The object representing the requested web service */
+        /* The object representing the requested web service. */
         SOAPService service = null;
 
-        /* Retrive instance of AXIS engine */
+        /* Retrive instance of AXIS engine. */
         try {
             axisEngine = getEngine();
         } catch (AxisFault fault) {
@@ -231,16 +266,19 @@ public class SimpleAxisServlet extends AxisServlet {
 
         /*
          * Create message context used by the AXIS subsystem to handle the
-         * request
+         * request.
          */
         MessageContext messageContext = createMessageContext(axisEngine, request, response);
 
-        /* Identify service */
+        /* Set the username given in the request. */
+        messageContext.setUsername(request.getUserPrincipal().getName());
+
+        /* Identify service. */
         String serviceName = request.getServletPath();
 
         /*
          * Retrive SOAP service object. Throw NullPointerException and return
-         * if SOAP service is null
+         * if SOAP service is null.
          */
         try {
             service = axisEngine.getService(serviceName);
@@ -254,7 +292,7 @@ public class SimpleAxisServlet extends AxisServlet {
             return;
         }
 
-        /* Add the SOAP service to message context */
+        /* Add the SOAP service to message context. */
         try {
             messageContext.setService(service);
         } catch (AxisFault af) {
@@ -264,7 +302,7 @@ public class SimpleAxisServlet extends AxisServlet {
 
         /*
          * Create request message. Log and return if we can't get input stream
-         * from request
+         * from request.
          */
         try {
             requestMessage = new Message(request.getInputStream(), false, request.getHeader("Content-Type"), request
@@ -274,28 +312,29 @@ public class SimpleAxisServlet extends AxisServlet {
             return;
         }
 
-        /* Add the request message to the message context */
+        /* Add the request message to the message context. */
         messageContext.setRequestMessage(requestMessage);
 
-        /* Get the SOAP action header from the HTTP request */
+        /* Get the SOAP action header from the HTTP request. */
         String soapAction = request.getHeader("SOAPAction");
 
         /*
          * If the SoapAction header is undefined we set the variable equal to
-         * the request uri
+         * the request uri.
          */
-        if (soapAction == null) soapAction = request.getRequestURI();
+        if (soapAction == null)
+            soapAction = request.getRequestURI();
 
-        /* Add the SOAP action to the message context */
+        /* Add the SOAP action to the message context. */
         messageContext.setUseSOAPAction(true);
         messageContext.setSOAPActionURI(soapAction);
 
-        /* Create session wrapper for the HTTP session */
+        /* Create session wrapper for the HTTP session. */
         messageContext.setSession(new AxisHttpSession(request));
 
         /*
          * Invoke the engine and thereby process the request, log and return if
-         * it fails
+         * it fails.
          */
         try {
             axisEngine.invoke(messageContext);
@@ -304,10 +343,10 @@ public class SimpleAxisServlet extends AxisServlet {
             return;
         }
 
-        /* Read response message from engine */
+        /* Read response message from engine. */
         Message responseMessage = messageContext.getResponseMessage();
 
-        /* Log and return if no response */
+        /* Log and return if no response. */
         if (responseMessage == null) {
             handleException("No response from engine", new NullPointerException("responseMessage is null"), request, response);
             return;
@@ -315,7 +354,7 @@ public class SimpleAxisServlet extends AxisServlet {
 
         /*
          * If we're unable to retrive the content type, set it to a default
-         * value
+         * value.
          */
         try {
             response.setContentType(responseMessage.getContentType(messageContext.getSOAPConstants()));
@@ -336,16 +375,17 @@ public class SimpleAxisServlet extends AxisServlet {
 
     /**
      * Create a new MessageContext, initialized with some standard values.
-     * 
+     *
      * @param axisEngine
-     *            the AxisEngine that will be used to handle SOAP operations
+     *          the AxisEngine that will be used to handle SOAP operations
      * @param request
-     *            the incoming request
+     *          the incoming request
      * @param response
-     *            the outgoing response
+     *          the outgoing response
      * @return a initiated MessageContext
      */
-    private MessageContext createMessageContext(AxisEngine axisEngine, HttpServletRequest request, HttpServletResponse response) {
+    private MessageContext createMessageContext(final AxisEngine axisEngine, final HttpServletRequest request,
+            final HttpServletResponse response) {
         /* Create new message context */
         MessageContext messageContext = new MessageContext(axisEngine);
 
@@ -362,18 +402,19 @@ public class SimpleAxisServlet extends AxisServlet {
         messageContext.setProperty(HTTPConstants.MC_HTTP_SERVLETLOCATION, getWebInfPath());
         messageContext.setProperty(HTTPConstants.HEADER_AUTHORIZATION, request.getHeader(HTTPConstants.HEADER_AUTHORIZATION));
 
-        /* Set up a javax.xml.rpc.server.ServletEndpointContext */
+        /* Set up a javax.xml.rpc.server.ServletEndpointContext. */
         ServletEndpointContextImpl endpointContext = new ServletEndpointContextImpl();
         messageContext.setProperty(Constants.MC_SERVLET_ENDPOINT_CONTEXT, endpointContext);
 
-        /* Save the real path */
+        /* Save the real path. */
         String realPath = getServletContext().getRealPath(request.getServletPath());
-        if (realPath != null) messageContext.setProperty(Constants.MC_REALPATH, realPath);
+        if (realPath != null)
+            messageContext.setProperty(Constants.MC_REALPATH, realPath);
 
-        /* Set config path */
+        /* Set config path. */
         messageContext.setProperty(Constants.MC_CONFIGPATH, getWebInfPath());
 
-        /* */
+        /* Axis voodoo. */
         messageContext.setProperty(MessageContext.TRANS_URL, request.getRequestURL().toString());
 
         return messageContext;
@@ -381,81 +422,50 @@ public class SimpleAxisServlet extends AxisServlet {
 
     /**
      * Log exception with message and print user friendly error message to
-     * client
-     * 
+     * client.
+     *
      * @param message
      *            message to be logged with the exception
      * @param exception
      *            the exception to be handled
+     * @param request
+     *            request object for this invocation
      * @param response
      *            response object for this invocation
      */
-    private void handleException(String message, Exception exception, HttpServletRequest request, HttpServletResponse response) {
+    private void handleException(final String message, final Exception exception, final HttpServletRequest request,
+            final HttpServletResponse response) {
         // TODO: Implement. Remove throwing of ServletException, print sane
         // message and log exception.
 
         /* We're not able to recover from this */
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        String logMessage = generateLogMessage(message, exception);
-
-        // TODO: Replace with log
-        System.out.print(logMessage);
+        messageLogger.logWarn(message, exception);
 
         /* Get JSP for handling HTML output */
         RequestDispatcher requestDispatcher;
 
         /* Set up the error response specially for SOAP requests */
         if (request.getMethod().equals("POST") && request.getHeader("SOAPAction") != null) {
-            requestDispatcher = request.getRequestDispatcher(JSP_LOCATION + "/axis-soap-error.jsp");
+            requestDispatcher = request.getRequestDispatcher(jspLocation + "/axis-soap-error.jsp");
             response.setContentType("application/soap+xml; charset=utf-8");
             response.setCharacterEncoding("UTF-8");
         } else {
-            requestDispatcher = request.getRequestDispatcher(JSP_LOCATION + "/axis-error.jsp");
+            requestDispatcher = request.getRequestDispatcher(jspLocation + "/axis-error.jsp");
 
             /* Set the attributs for the response and the JSP */
-            response.setContentType("text/html; charset=utf-8");
+            response.setContentType("text/html; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
-            request.setAttribute("logMessage", logMessage);
+            request.setAttribute("logMessage", message);
         }
 
         /* Log and return if dispatch fails */
         try {
             requestDispatcher.forward(request, response);
         } catch (Exception e) {
-            // TODO: Log
+            messageLogger.logCritical("Unable to process axis-soap-error.jsp", e);
             return;
         }
-    }
-
-    /**
-     * Generate the final string to give to the underlying log api.
-     * 
-     * @param message
-     *            the message to log
-     * @param exception
-     *            exception to get stacktrace from. May be null.
-     * @return the final log string
-     */
-    private static String generateLogMessage(final String message, final Exception exception) {
-
-        final StringBuffer buffer = new StringBuffer();
-        final String lineSeparator = System.getProperty("line.separator");
-
-        buffer.append(message != null ? "\"" + message + "\"" : "\"-\"");
-        buffer.append(lineSeparator);
-
-        /* Capture stacktrace from exception */
-        if (exception != null) {
-            final OutputStream outputStream = new ByteArrayOutputStream();
-            final PrintStream printStream = new PrintStream(outputStream);
-
-            exception.printStackTrace(printStream);
-            printStream.flush();
-
-            buffer.append(outputStream.toString() + lineSeparator);
-        }
-
-        return buffer.toString();
     }
 }
