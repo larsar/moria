@@ -85,9 +85,9 @@ implements Serializable, DirectoryManagerIndex {
 
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
-        if (i < 0)
-            return null;
-        return new IndexedReference((String[])associations.get(id.substring(i)), false);
+        if ((i < 0) || (!associations.containsKey(id.substring(i+1))))
+        	return null;
+        return new IndexedReference((String[])associations.get(id.substring(i+1)), false);
 
     }
 
