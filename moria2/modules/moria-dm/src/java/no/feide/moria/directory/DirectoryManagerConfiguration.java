@@ -138,6 +138,17 @@ public class DirectoryManagerConfiguration {
         return indexFilename;
         
     }
+    
+    
+    /**
+     * Get the index update frequency.
+     * @return The index update frequency, in milliseconds.
+     */
+    public long getIndexUpdateFrequency() {
+        
+        return indexUpdateFrequency;
+        
+    }    
 
 
     /**
