@@ -44,7 +44,6 @@
     </copy>  
     <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
     <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
-    <copy file="mellon/config/web.xml"      todir="build.mellon/WEB-INF"/>
     <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
     <copy todir="build.moria/WEB-INF/lib">
       <fileset dir="moria/lib/">
@@ -194,21 +193,11 @@
 
 
 
-  <!-- Mellon JAX-RPC (not Mellon API) test code -->
+  <!-- Mellon API test code -->
   <target name="test:prepare"
           description="Test: Prepare build directory">
     <mkdir dir="build.test"/>
     <mkdir dir="dist"/>
-  </target>
-
-  <target name="test:generate-stubs"
-          description="Test: Generate JAX-RPC client stubs"
-          depends="test:prepare">
-    <exec executable="${jaxrpc_home}/bin/wscompile.sh">
-      <arg line="-gen:client"/>
-      <arg line="-d build.test"/>
-      <arg line="mellon/config/jaxrpc.xml"/>
-    </exec>
   </target>
 
   <target name="test:compile"
@@ -230,14 +219,15 @@
           description="Test: Create JAR file"
           depends="test:prepare">
     <delete file="dist/AuthenticationServiceClient.jar"/>
+    <copy file="${mellon_config}" tofile="build.test/Mellon.xml"/>
     <jar destfile="dist/AuthenticationServiceClient.jar"
          basedir="build.test"
-         includes="no/feide/mellon/test/* no/feide/moria/service/*"/>
+         includes="Mellon.xml no/feide/mellon/test/*"/>
   </target>
 
   <target name="test:build"
           description="Test: All steps necessary to build the test"
-          depends="test:generate-stubs,test:compile,test:jar"/>
+          depends="test:compile,test:jar"/>
 
   <target name="test:run"
           description="Test: Run the test code">
@@ -249,7 +239,7 @@
         <fileset dir="mellon/lib/" includes="*.jar"/>
         <fileset dir="test/lib/" includes="*.jar"/>
       </classpath>
-      <arg value="${mellon_config}"/>
+      <arg value="/home/cato/Mellon.xml"/>
     </java>
   </target> 
 
