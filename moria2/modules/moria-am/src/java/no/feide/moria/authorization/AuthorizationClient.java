@@ -514,12 +514,12 @@ final class AuthorizationClient {
     /**
      * Returns the highest secLevel of the requested attributes.
      * @param requestedAttributes
-     *            the requested attributes
-     * @return the highest of the attributes seclevel, 0 if no attributes are
-     *         requested
+     *            The requested attributes.
+     * @return The highest of the attributes seclevel, 0 if no attributes are
+     *         requested.
      * @throws UnknownAttributeException
      *             if one (or more) of the requested attributes are not present
-     *             in the authorization client
+     *             in the authorization client.
      * @throws IllegalArgumentException
      *             If <code>requestedAttributes</code> is <code>null</code>.
      */
