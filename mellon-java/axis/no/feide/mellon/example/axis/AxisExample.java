@@ -84,11 +84,6 @@ public class AxisExample {
 			
 			/* Print some test data */
 			userData.debugPrintUserData();
-			System.out.println("Is student? "+userData.attributeContainsValue("eduPersonAffiliation", "student"));
-			System.out.println("Is foobar? "+userData.attributeContainsValue("eduPersonAffiliation", "foobar"));
-			System.out.println("Single value: "+userData.getSingleValueAttribute("eduPersonOrgDN"));
-			System.out.println("Single value false:"+userData.getSingleValueAttribute("foobar"));
-			System.out.println("Multi value: "+userData.getMultiValueAttribute("eduPersonAffiliation"));
 		}
 	}
 
