@@ -330,10 +330,15 @@ public class User {
             }
             
             // We just found an element.
-            SearchResult entry = (SearchResult)results.next();
-            String rdn = entry.getName();
-            log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to element "+rdn);
-            return rdn;
+            try {
+                SearchResult entry = (SearchResult)results.next();
+                String rdn = entry.getName();
+                log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to element "+rdn);
+                return rdn;
+            } catch (TimeLimitExceededException e) {
+                log.severe("TimeLimitExceededException caught (when reading search results) and re-thrown as BackendException");
+                throw new BackendException(e);
+            }
             
         } catch (NamingException e) {
             e.printStackTrace();
