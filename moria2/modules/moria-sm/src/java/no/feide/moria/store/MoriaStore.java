@@ -28,98 +28,119 @@ import java.util.HashMap;
  */
 public interface MoriaStore {
 
-    /* TODO: Identify acctual exceptions thrown */
     /**
      * Creates an authentication attempt based on a service request.
      *
      * @param requestAttributes
-     *            the user attributes the requesting service asks for
+     *          the user attributes the requesting service asks for
      * @param responseURLPrefix
-     *            the forward part of the url the client is to be redirected to
+     *          the forward part of the url the client is to be redirected to
      * @param responseURLPostfix
-     *            the end part of the url the client is to be redirected to
-     * @param servicePrincipal
-     *            the name of the service doing the request
+     *          the end part of the url the client is to be redirected to
      * @param forceInteractiveAuthentication
-     *            if the user should be forced to login interactivly. I.e.
-     *            disable support for single sign-on
+     *          if the user should be forced to login interactivly. I.e. disable
+     *          support for single sign-on
+     * @param servicePrincipal
+     *          the id of the service doing the request
      * @return a login ticket identifying the authentication attempt
-     *
-     * @throws IllegalArgumentException
-     *             thrown if any of the arguments are null
      */
-    public String createAuthnAttempt(String[] requestAttributes, String responseURLPrefix, String responseURLPostfix,
-            String servicePrincipal, boolean forceInteractiveAuthentication) throws IllegalArgumentException;
+    public String createAuthnAttempt(final String[] requestAttributes, final String responseURLPrefix,
+            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal);
 
     /**
-     * Gets the authentication attempt assosiated with the ticket given as
-     * argument. Should return null if no Authentication attempt is found.
+     * Gets the authentication attempt assosiated with the ticket given as argument. Should return
+     * null if no Authentication attempt is found.
      *
-     * @param loginTicketId the ticket from the incoming client request
-     * @param keep if true the authnAttempt and ticket will be kept in the store after this operation
+     * @param loginTicketId
+     *          the ticket from the incoming client request
+     * @param keep
+     *          if true the authnAttempt and ticket will be kept in the store after this operation
      * @return the MoriaAuthnAttempt assosiated with the ticket
-     * @throws InvalidTicketException if the incoming ticket is not a login ticket
+     * @throws InvalidTicketException
+     *          if the incoming ticket is not a login ticket
      */
-    public MoriaAuthnAttempt getAuthnAttempt(String loginTicketId, boolean keep) throws InvalidTicketException;
+    public MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException;
 
     /**
-     * Creates a new CachedUserData object in the underlying store and
-     * assosiates it with a SSO ticket which is returned.
+     * Creates a new CachedUserData object in the underlying store and assosiates it with a SSO
+     * ticket which is returned.
      *
      * @param attributes
-     *            the attribute map to be cached
+     *          the attribute map to be cached
      * @return the SSO ticket that identifies the cached user data
      */
-    public String cacheUserData(HashMap attributes);
+    public String cacheUserData(final HashMap attributes);
 
     /**
-     * Return the userdata assosiated with the incoming ticket, which must be
-     * either a proxy or sso ticket
+     * Return the userdata assosiated with the incoming ticket, which must be either a
+     * sso, ticket granting or proxy ticket.
      *
-     * @param ticketId a ticket to identify a userdata object
+     * @param ticketId
+     *          a ticket to identify a userdata object (SSO, TG or PROXY)
      * @return a clone of the object containing the userdata
-     * @throws InvalidTicketException thrown if the incoming ticket is not of the correct type or
-     *         has an invalid principal
+     * @throws InvalidTicketException
+     *          thrown if the incoming ticket is not of the correct type or
+     *          has an invalid principal
      */
-    public CachedUserData getUserData(String ticketId) throws InvalidTicketException;
+    public CachedUserData getUserData(final String ticketId) throws InvalidTicketException;
 
     /**
-     * Creates a service ticket that the service will use when requesting user
-     * attributes after a successfull authentication.
+     * Creates a service ticket that the service will use when requesting user attributes after a
+     * successfull authentication.
      *
-     * @param loginTicketId the login ticket assosiated with an authentication attempt
+     * @param loginTicketId
+     *          a login ticket assosiated with an authentication attempt
+     * @param targetServicePrincipal
+     *          the id of the service that will use this ticket
      * @return a service ticket assosiated with the authentication attempt object
+     * @throws InvalidTicketException
+     *          thrown if the argument ticket is not a login-ticket
      */
-    public String createServiceTicket(String loginTicketId, String servicePrincipal) throws InvalidTicketException;
+    public String createServiceTicket(final String loginTicketId, final String targetServicePrincipal)
+            throws InvalidTicketException;
 
     /**
      * Create a new ticket granting ticket, using a sso ticket.
      *
-     * @param ssoTicketId a sso ticket that's already assosiated with a cached userdata object
-     * @param servicePrincipal the id of the service that will use the TGT
-     * @return a ticket-granting ticket that the requesting service may use for later proxy authentication
-     * @throws InvalidTicketException thrown if the argument ticket is not a SSO-ticket or has an invalid principal
+     * @param ssoTicketId
+     *          a sso ticket that's already assosiated with a cached userdata object
+     * @param targetServicePrincipal
+     *          the id of the service that will use the TGT
+     * @return a ticket-granting ticket that the requesting service may use for later proxy
+     *          authentication
+     * @throws InvalidTicketException
+     *          thrown if the argument ticket is not a SSO-ticket or has an invalid principal
      */
-    public String createTicketGrantingTicket(String ssoTicketId, String servicePrincipal) throws InvalidTicketException;
+    public String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal)
+            throws InvalidTicketException;
 
     /**
-     * Create a new proxy ticket from a TGT and assosiate the new ticket with
-     * the same user data as the TGT.
+     * Create a new proxy ticket from a TGT and assosiate the new ticket with the same user data as
+     * the TGT.
      *
-     * @param tgTicketId a TGT issued earlier to a service
-     * @param servicePrincipal the id of the service that will use the proxy ticket
+     * @param tgTicketId
+     *          a TGT issued earlier to a service
+     * @param servicePrincipal
+     *          the id of the service doing the request
+     * @param targetServicePrincipal
+     *          the id of the service that will use the proxy ticket
      * @return proxy ticket that may be used by the requesting service
-     * @throws InvalidTicketException thrown if the incoming ticket is not a TGT or has an invalid principal
+     * @throws InvalidTicketException
+     *          thrown if the incoming ticket is not a TGT or has an invalid principal
      */
-    public String createProxyTicket(String tgTicketId, String servicePrincipal) throws InvalidTicketException;
+    public String createProxyTicket(final String tgTicketId, final String servicePrincipal, final String targetServicePrincipal)
+            throws InvalidTicketException;
 
     /**
-     * Provide transient attributes to be added to and stored with
-     * authentication attempt.
+     * Provide transient attributes to be added to and stored with authentication attempt.
      *
-     * @param loginTicketId the ticket that identifies the AuthnAttempt that the attributes will be assosiated with
-     * @param transientAttributes the attributes to store with the AuthAttempt
-     * @throws InvalidTicketException thrown if ticket is found invalid
+     * @param loginTicketId
+     *          the ticket that identifies the AuthnAttempt that the attributes will be
+     *          assosiated with
+     * @param transientAttributes
+     *          the attributes to store with the AuthAttempt
+     * @throws InvalidTicketException
+     *          thrown if ticket is found invalid
      */
-    public void setTransientAttributes(String loginTicketId, HashMap transientAttributes) throws InvalidTicketException;
+    public void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes) throws InvalidTicketException;
 }
