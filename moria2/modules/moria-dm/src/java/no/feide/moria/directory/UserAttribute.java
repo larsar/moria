@@ -27,10 +27,13 @@ public class UserAttribute {
     public UserAttribute(String name, String[] values)
     throws IllegalAttributeException {
 
+        // Sanity check.
         if ((name == null) || (name.length() == 0)) {
         // TODO: Add logging.
         throw new IllegalAttributeException("Attribute name cannot be NULL"); }
-
+        
+        // Set values.
+        myName = name;
         myValues = new Vector();
         if (values != null)
             for (int i = 0; i < values.length; i++)
