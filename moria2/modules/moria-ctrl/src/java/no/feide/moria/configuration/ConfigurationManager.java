@@ -413,9 +413,9 @@ public final class ConfigurationManager {
          */
         public void run() {
 
-            final long lastModified = monitoredFile.lastModified();
-            if (lastModified != this.lastModified) {
-                this.lastModified = lastModified;
+            final long modified = monitoredFile.lastModified();
+            if (modified != this.lastModified) {
+                this.lastModified = modified;
                 fileChangeEvent(this.module, this.monitoredFile);
 
             }
