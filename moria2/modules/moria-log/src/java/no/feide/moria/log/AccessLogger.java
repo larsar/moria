@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 UNINETT FAS A/S
+ * Copyright (c) 2004 UNINETT FAS
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -21,66 +21,135 @@
 
 package no.feide.moria.log;
 
+import java.io.Serializable;
+
+import org.apache.log4j.Logger;
+
 /**
+ * Logs system events in a strict format that may later
+ * be used for usage statistics generation.
+ *
+ * Logging is done at log4j level WARN.  If the loglevel of
+ * log4j is set above this, no log-entries will be written.
+ *
+ * The format of the log-lines is the following:
+ * <pre>
+ * [2004-04-30 17:10:19,046] "BAD USER CREDENTIALS" "no.feide.test" "demo@feide.no, 10.3.12.75" "235892791" "350215527"
+ *
+ * [Timestamp] "STATUS" "service principal" "userid, user ip-address" "incoming ticket" "outgoing ticket"
+ * </pre>
+ *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public final class AccessLogger extends Logger {
+public final class AccessLogger implements Serializable {
 
     /**
-     * Default private construtor
+     * The name of this logger.
+     * Same for all classes, so we can be redirect output to a common file.
      */
-    private AccessLogger() {
+    private static final Class ACCESS_LOGGER_CLASS = AccessLogger.class;
 
+    /**
+     * Log to this logger.
+     * Transient so the class can be serialized.
+     */
+    private transient Logger logger = null;
+
+    /**
+     * Default constructor.
+     */
+    public AccessLogger() {
+        this.logger = Logger.getLogger(ACCESS_LOGGER_CLASS);
     }
-
-    /*
-     * Status types used by this logger
-     */
-
-    /** Used when user gives wrong username or password */
-    public static final int STATUS_BAD_USER_CREDENTIALS = 0x01;
-
-    /** Used when service gives wrong username or password */
-    public static final int STATUS_BAD_SERVICE_CREDENTIALS = 0x02;
 
     /**
      * Used for logging user-inititated access (user interaction through the
      * web interface).
-     * 
+     *
      * @param status
-     *            indicates the type of event. Use STATUS_* constants defined
-     *            in this class
-     * @param serviceId
+     *            indicates the type of event
+     * @param servicePrincipal
      *            the id of the service that is responsible for this operation
      * @param userId
      *            the id of the user, may be null if unknow at time of event
      * @param userIpAddr
-     *            the address the request originated from
+     *            the address the request originated from, may be null if
+     *            unknow at time of event
      * @param incomingTicketId
      *            the id of the ticket given with the request
      * @param outgoingTicketId
      *            the id of the potentially returned ticket, may be null
      */
-    public static void logUser(final int status, final String serviceId,
-            final String userId, final String userIpAddr,
+    public void logUser(final AccessStatusType status, final String servicePrincipal, final String userId, final String userIpAddr,
             final String incomingTicketId, final String outgoingTicketId) {
+
+        /* Generate the log message and log it. */
+        getLogger().warn(generateLogMessage(status, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId));
     }
 
     /**
-     * Used for logging service-inititated access
-     * 
+     * Used for logging service-inititated access.
+     *
      * @param status
-     *            indicates the type of event. Use STATUS_* constants defined
-     *            in this class
-     * @param serviceId
+     *            indicates the type of event
+     * @param servicePrincipal
      *            the id of the service that is peforming the operation
      * @param incomingTicketId
      *            the id of the ticket given with the request
      * @param outgoingTicketId
      *            the id of the potentially returned ticket, may be null
      */
-    public static void logService(final int status, final String serviceId,
-            final String incomingTicketId, final String outgoingTicketId) {
+    public void logService(final AccessStatusType status, final String servicePrincipal, final String incomingTicketId,
+            final String outgoingTicketId) {
+
+        /* Generate the log message and log it. */
+        getLogger().warn(generateLogMessage(status, servicePrincipal, null, null, incomingTicketId, outgoingTicketId));
+    }
+
+    /**
+     * Generates log messages in the correct format.
+     *
+     * @param status
+     *            indicates the type of event
+     * @param servicePrincipal
+     *            the id of the service that is peforming the operation
+     * @param userId
+     *            the id of the user
+     * @param userIpAddr
+     *            the address the request originated from
+     * @param incomingTicketId
+     *            the id of the ticket given with the request
+     * @param outgoingTicketId
+     *            the id of the potentially returned ticket, may be null
+     * @return the string to be logged
+     */
+    private String generateLogMessage(final AccessStatusType status, final String servicePrincipal, final String userId,
+            final String userIpAddr, final String incomingTicketId, final String outgoingTicketId) {
+
+        StringBuffer buffer = new StringBuffer();
+
+        /* Add default value "-" if variabel is null */
+        buffer.append(status != null ? "\"" + status + "\" " : "\"-\" ");
+        buffer.append(servicePrincipal != null ? "\"" + servicePrincipal + "\" " : "\"-\" ");
+        buffer.append(userId != null ? "\"" + userId + ", " : "\"-, ");
+        buffer.append(userIpAddr != null ? userIpAddr + "\" " : "-\" ");
+        buffer.append(incomingTicketId != null ? "\"" + incomingTicketId + "\" " : "\"-\" ");
+        buffer.append(outgoingTicketId != null ? "\"" + outgoingTicketId + "\"" : "\"-\"");
+
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the logger, instanciates it if not already so.
+     * Private so that nobody overrides the formatting that is done by
+     * generateLogMessage.
+     *
+     * @return the logger instance of this class
+     */
+    private Logger getLogger() {
+        if (logger == null) logger = Logger.getLogger(ACCESS_LOGGER_CLASS);
+
+        return logger;
     }
 }
