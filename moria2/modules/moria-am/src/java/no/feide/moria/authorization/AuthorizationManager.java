@@ -21,8 +21,14 @@
 package no.feide.moria.authorization;
 
 import java.util.*;
+import java.io.File;
+import java.io.IOException;
 
 import org.jdom.Element;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -30,10 +36,8 @@ import org.jdom.Element;
  */
 public class AuthorizationManager {
 
-    // TODO: Method for building configuration database
-    // TODO: Method for automatically renewing database when configuration file
-    // changes
-    // TODO: Create a set of Client objects from a root element of the config
+    /** List of client authorization objects. Must be synchronized. */
+    private Map authzClients = Collections.synchronizedMap(new HashMap());;
 
     /**
      * Parses a XML element and creates a AuthorizationAttribute object in
@@ -189,7 +193,8 @@ public class AuthorizationManager {
         return new AuthorizationClient(name, displayName, url, language, home, affil, oper, attrs);
     }
 
-    /** Parses a configuration root element with client elements.
+    /**
+     * Parses a configuration root element with client elements.
      *
      * @param element the root element
      * @return a HashMap containing AuthorizationClient objects
@@ -230,11 +235,44 @@ public class AuthorizationManager {
             return value;
     }
 
-    /** Set the configuration data for this manager
+    /**
+     * Set the configuration data for this manager
      *
      * @param properties the properties containing the authorization database
      */
-    public void setConfig(Properties properties) {
+    synchronized public void setConfig(Properties properties) {
+        if (properties == null) {
+            throw new IllegalArgumentException("Properties cannot be null");
+        }
 
+        String fileName = (String) properties.get("authorizationDatabase");
+        if (fileName == null || fileName.equals("")) {
+            // TODO: Log
+            // MessageLogger.logWarning("The 'authorizationDatabase' property is not set (setConfig). Authorization database was NOT reloaded.");
+            return;
+        }
+
+        SAXBuilder builder = new SAXBuilder();
+        try {
+            Document doc = builder.build(new File(fileName));
+            HashMap newClients = parseRootElem(doc.getRootElement());
+            synchronized(authzClients) {
+                authzClients = Collections.synchronizedMap(newClients);
+            }
+
+        } catch (JDOMException e) {
+            System.out.println("JDOMException");
+            // TODO: Log
+            // MessageLogger.logWarning("Error during parsing of authorization database file. Still using old database.", e);
+        } catch (IOException e) {
+            System.out.println("IOException");
+            // TODO: Log
+            // MessageLogger.logWarning("IOException during parsing of authorization database file. Still using old database.", e);
+        } catch (IllegalConfigException e) {
+            System.out.println("IllegalConfigException");
+            e.printStackTrace();
+            // TODO: Log
+            // MessageLogger.logWarning("Error during authorization database generation. Still using old database.", e);
+        }
     }
 }
