@@ -34,10 +34,12 @@ public interface MoriaStore {
      *
      * @param properties
      *          object containing the necessary attributes for store configuration
+     * @throws MoriaStoreConfigurationException
+     *          if the store cannot be started with the give configuration
      * @throws IllegalArgumentException
      *          if properties is null
      */
-    void setConfig(Properties properties);
+    void setConfig(Properties properties) throws MoriaStoreConfigurationException;
 
     /**
      * Creates an authentication attempt based on a service request.

@@ -26,31 +26,24 @@ package no.feide.moria.store;
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public class MoriaStoreConfigurationException extends RuntimeException {
+public class MoriaStoreConfigurationException extends MoriaStoreException {
 
     /**
-     * @see java.lang.RuntimeException#RuntimeException()
-     */
-    public MoriaStoreConfigurationException() {
-        super();
-    }
-
-    /**
-     * @see java.lang.RuntimeException#RuntimeException(java.lang.String)
+     * @see no.feide.moria.store.MoriaStoreException#MoriaStoreException(java.lang.String)
      */
     public MoriaStoreConfigurationException(final String message) {
         super(message);
     }
 
     /**
-     * @see java.lang.RuntimeException#RuntimeException(java.lang.Throwable)
+     * @see no.feide.moria.store.MoriaStoreException#MoriaStoreException(java.lang.Throwable)
      */
     public MoriaStoreConfigurationException(final Throwable cause) {
         super(cause);
     }
 
     /**
-     * @see java.lang.RuntimeException#RuntimeException(java.lang.String, java.lang.Throwable)
+     * @see no.feide.moria.store.MoriaStoreException#MoriaStoreException(java.lang.String, java.lang.Throwable)
      */
     public MoriaStoreConfigurationException(final String message, final Throwable cause) {
         super(message, cause);
