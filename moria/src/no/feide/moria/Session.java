@@ -140,11 +140,11 @@ public class Session {
         timestamp = new Date().getTime();
                 
         // Authenticate user.
-        user = User.authenticate(c);
-        if (user != null) {
+        user = User.getInstance();
+        if (user.authenticate(c)) {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
-            log.fine("Good authN.");
+            log.fine("Session authenticated");
             locked = false;
             return true;
         }

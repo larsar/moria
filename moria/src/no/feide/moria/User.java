@@ -32,53 +32,59 @@ public class User {
     private InitialLdapContext ldap;
     
     /** Used to store the user element's relative DN. */
-    private String rdn;  
-       
-    /**
-     * Constructor. Used internally in
-     * <code>authenticate(String, String)</code> to return an authenticated
-     * User object from which attributes can be retrieved.
-     */
-    protected User(InitialLdapContext ldap, String rdn) {
-        this.ldap = ldap;
-        this.rdn = rdn;
-    }
+    private String rdn;
+    
+    /** Used to show whether the system-wide JNDI init has been done. */
+    private static boolean initialized = false;
+    
+    /** The local keystore. */
+    //private static String keyStore;
+    
+    /** The local keystore password. */
+    //private static String keyStorePassword;
+    
+    /** The local truststore. */
+    //private static String trustStore;
+    
+    /** The local truststore password. */
+    //private static String trustStorePassword;
+    
+    /** The name of the attribute used for username matching. */
+    private static String usernameAttribute;
+    
+    /** The URL to the (initial, if referrals) LDAP backend. */
+    private static String ldapURL; 
     
     /**
-     * Initializes the connection to the backend, and authenticates the user
-     * using the supplied credentials.
-     * @param c User's credentials. Only username/password type
-     *          credentials are currently supported.
-     * @return <code>null</code> if authentication was unsuccessful (bad
-     *         or <code>null</code> username/password), otherwise an
-     *         <code>User</code> element.
-     * @throws BackendException If a NamingException is thrown, or if any of
-     *                          the following properties cannot be found:
+     * Factory method.
+     * @return A new instance of <code>User</code>.
+     * @throws BackendException If a new instance couldn't be created.
+     */
+    public static User getInstance() 
+    throws BackendException {
+        log.finer("getInstance()");
+        
+        if (!initialized)
+            init();
+        return new User();
+    }
+    
+    
+    /**
+     * Used to do one-time global JNDI initialization, the very first time
+     * <code>authenticate(Credentials)</code> is called.
+     * @throws BackendException If any of the following properties cannot be 
+     *                          found:
      *                          <ul>
      *                           <li>no.feide.moria.Backend.LDAP.Host
      *                           <li>no.feide.moria.Backend.LDAP.Port
      *                           <li>no.feide.moria.Backend.LDAP.Base
      *                           <li>no.feide.moria.Backend.LDAP.UIDAttribute
-     *                          </ul>
-     *                          Also thrown if the type of credentials is not
-     *                          supported.
+     *                          </ul>*
      */
-    public static User authenticate(Credentials c)
+    private static void init()
     throws BackendException {
-        log.finer("authenticate(Credentials c)");
-        
-        // Validate credentials.
-        if (c.getType() != Credentials.PASSWORD) {
-            log.severe("Unsupported credentials");
-            throw new BackendException("Unsupported credentials");
-        }
-        String username = (String)c.getIdentifier();
-        String password = (String)c.getCredentials();
-        
-        // Sanity check.
-        if ( (username == null) || (password == null) ||
-             (username.length() == 0) || (password.length() == 0) )
-            return null;
+        log.finer("init()");
         
         // Get and verify some properties.
         String keyStore = System.getProperty("no.feide.moria.backend.ldap.keystore");
@@ -97,16 +103,53 @@ public class User {
         String trustStorePassword = System.getProperty("no.feide.moria.backend.ldap.trustStorePassword");
         if (trustStorePassword != null)
                 System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
-        String usernameAttribute = System.getProperty("no.feide.moria.backend.ldap.usernameAttribute");
+        usernameAttribute = System.getProperty("no.feide.moria.backend.ldap.usernameAttribute");
         if (usernameAttribute == null)
             throw new BackendException("Required property no.feide.moria.backend.ldap.usernameAttribute not set");
         log.config("User name attribute is "+usernameAttribute);
-	String ldapURL = System.getProperty("no.feide.moria.backend.ldap.url");
+	ldapURL = System.getProperty("no.feide.moria.backend.ldap.url");
 	if (ldapURL == null)
 	    throw new BackendException("Required property no.feide.moria.backend.ldap.url not set");
         log.config("LDAP URL is "+ldapURL);
-               
+        
+        // Wrap up.
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+        initialized = true;
+    }
+    
+    
+    /**
+     * Initializes the connection to the backend, and authenticates the user
+     * using the supplied credentials.
+     * @param c User's credentials. Only username/password type
+     *          credentials are currently supported.
+     * @return <code>false</code> if authentication was unsuccessful (bad
+     *         or <code>null</code> username/password), otherwise
+     *         <code>true</code>.
+     * @throws BackendException If a NamingException is thrown, or if the type
+     *                          of credentials is not supported.
+     */
+    public boolean authenticate(Credentials c)
+    throws BackendException {
+        log.finer("authenticate(Credentials c)");
+        
+        // Validate credentials.
+        if (c.getType() != Credentials.PASSWORD) {
+            log.severe("Unsupported credentials");
+            throw new BackendException("Unsupported credentials");
+        }
+        String username = (String)c.getIdentifier();
+        String password = (String)c.getCredentials();
+        if ( (username == null) || (password == null) ||
+             (username.length() == 0) || (password.length() == 0) ) {
+            log.fine("Illegal username/password ("+username+'/'+password+')');
+            return false;
+        }
+
+        // Do one-time JNDI initialization.
+        if (!initialized)
+            init();        
+        
         try {
             
             // Prepare LDAP context and look up user element.
@@ -114,15 +157,15 @@ public class User {
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
             env.put(Context.PROVIDER_URL, ldapURL);
             env.put(Context.REFERRAL, "throw");  // To catch referrals.
-            InitialLdapContext ldap = new InitialLdapContext(env, null);
+            ldap = new InitialLdapContext(env, null);
 	    log.config("Connected to "+env.get(Context.PROVIDER_URL));
             ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-            String rdn = ldapSearch(ldap, usernameAttribute+'='+username);
+            rdn = ldapSearch(usernameAttribute+'='+username);
             if (rdn == null) {
                 // No user element found.
                 log.fine("No subtree match for "+usernameAttribute+'='+username+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                return null;
+                return false;
             }
             log.fine("Found element at "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
 
@@ -133,10 +176,10 @@ public class User {
             try {
                 ldap.reconnect(null);
                 log.fine("Authenticated as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                return new User(ldap, rdn);  // Success.
+                return true;  // Success.
             } catch (AuthenticationException e) {
                 log.fine("Failed to authenticate as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                return null;  // Failure.
+                return false;  // Failure.
             }
             
         } catch (NamingException e) {
@@ -149,13 +192,12 @@ public class User {
     /**
      * Do a subtree search for an element given a pattern. Only the first
      * element found is considered. Any referrals are followed recursively.
-     * @param ldap The LDAP context.
      * @param pattern The search pattern.
      * @return The element's relative DN, or <code>null</code> if none was
      *         found.
      * @throws BackendException If a NamingException occurs.
      */
-    private static String ldapSearch(InitialLdapContext ldap, String pattern)
+    private String ldapSearch(String pattern)
     throws BackendException {
         log.finer("ldapSearch(String)");
         
@@ -183,7 +225,7 @@ public class User {
                 log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to referral "+refEnv.get(Context.PROVIDER_URL));
                 ldap.close();
                 ldap = new InitialLdapContext(refEnv, null);
-                return ldapSearch(ldap, pattern);
+                return ldapSearch(pattern);
                 
             }
             
