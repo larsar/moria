@@ -232,7 +232,7 @@ public class LoginServlet extends HttpServlet {
         // TODO: Include instead of forward
         /* Process jsp */
         RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/login.jsp");
-        rd.include(request, response);
+        rd.forward(request, response);
     }
 
     /**
