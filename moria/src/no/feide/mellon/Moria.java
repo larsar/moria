@@ -1,3 +1,20 @@
+/**
+ * Copyright (C) 2003 FEIDE
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
 package no.feide.mellon;
 
 import java.io.FileNotFoundException;
@@ -130,31 +147,6 @@ public class Moria {
 
 	return (String)stub._getProperty(Stub.ENDPOINT_ADDRESS_PROPERTY);
     }
-    
-    
-    /**
-     * A nasty hack to get a session authenticated. Will disappear without
-     * notice.
-     * @param id Session ID of unauthenticated session.
-     * @param username
-     * @param password
-     * @return The URL combined of prefix, session ID and postfix. Session ID is
-     *         that of an authenticated session.
-     * @deprecated
-     */
-    public String authenticateUser(String id, String username, String password)
-    throws MoriaException {
-        log.finer("requestUserAuthentication(String, String, String)");
-        
-        AuthenticationIF service = (AuthenticationIF)stub;
-        try {
-            return service.requestUserAuthentication(id, username, password);
-        } catch (RemoteException e) {
-            log.severe("RemoteException caught and re-thrown as MoriaException");
-            throw new MoriaException("RemoteException caught", e);
-        }
-    }
-    
 
     
 }

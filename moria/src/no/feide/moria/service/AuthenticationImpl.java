@@ -1,3 +1,20 @@
+/**
+ * Copyright (C) 2003 FEIDE
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
 package no.feide.moria.service;
 
 import java.io.FileNotFoundException;
@@ -250,56 +267,6 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new RemoteException("SessionException caught", e);
         }
     }
-    
-    
-    /**
-     * Authenticate a user.
-     * @param id A valid (first-round) session ID.
-     * @param username The username.
-     * @param password The password.
-     * @return An URL constructed from the combination of prefix, session ID and
-     *         postfix, where pre- and postfix were given as parameters to
-     *         <code>requestSession</code>.
-     * @throws RemoteException If an invalid session ID is used, or if a
-     *                         <code>SessionException</code>, a
-     *                         <code>BackendException</code> or a
-     *                         <code>ConfigurationException</code> is caught.
-     *                         Also thrown if the current client's identity
-     *                         (as found in the context) is different from the
-     *                         identity of the client service originally
-     *                         requesting the session.
-     * @deprecated
-     */
-    // TODO:
-    // For single-use, add attribute request and remove ID. Combines everything in AuthNServiceClient.
-    // Only included to support the example code!
-     public String requestUserAuthentication(String id, String username, String password)
-     throws RemoteException {
-         log.finer("requestUserAuthentication(String, String, String)");
-
-         try {
-             
-             /* Look up session and check the client identity. */
-             Session session = sessionStore.getSession(id);
- 	     assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
-
-             /* Authenticate through session. */
-             if (session.authenticateUser(new Credentials(username, password)))
-                 return session.getRedirectURL();
-             else
-                 return null;
-
-         } catch (SessionException e) {
-             log.severe("SessionException caught and re-thrown as RemoteException");
-             throw new RemoteException("SessionException caught", e);
-         } catch (BackendException e) {
-             log.severe("BackendException caught and re-thrown as RemoteException");
-             throw new RemoteException("BackendException caught", e);
-         } catch (ConfigurationException e) {
-             log.severe("ConfigurationException caught and re-thrown as RemoteException");
-             throw new RemoteException("ConfigurationException caught", e);
-         }
-     }
 
 
     /**
