@@ -1,5 +1,7 @@
 <%@ page import="no.feide.moria.servlet.RequestUtil,
-                 java.util.ResourceBundle" %>
+                 java.util.ResourceBundle,
+                 java.util.TreeMap,
+                 java.util.Iterator" %>
 <%ResourceBundle bundle = (ResourceBundle) request.getAttribute("bundle");%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -108,13 +110,16 @@ $availableLanguages.get($lang)
 		<td><%=bundle.getString("form_org")%><br>
 		<select name="realm">
 		<option value="null"><%=bundle.getString("form_selectOrg")%></option>
-		#foreach ($orgName in $sortedOrgNames)
-		 #if (!$orgShorts.get($orgName).equals($selectedRealm))
-		    <option value="$orgShorts.get($orgName)">$orgName</option>
-		 #else
-		    <option selected="true" value="$orgShorts.get($orgName)">$orgName</option>   #end
-		#end
-		  </select>
+        <%
+        TreeMap orgNames = (TreeMap) request.getAttribute("organizationNames");
+        Iterator it = orgNames.keySet().iterator();
+        while(it.hasNext()) {
+            String longName = (String) it.next();
+            String shortName  = (String) orgNames.get(longName);
+        %>
+	    <option <%if (request.getAttribute("selectedRealm").equals(shortName)) {%>selected=="true" <%}%>value="<%=shortName%>"><%=longName%></option>
+        <%}%>
+		</select>
 		</td>
 		</tr>
 
