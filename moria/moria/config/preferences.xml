@@ -10,15 +10,15 @@
         <node name="moria">
           <map>
             <entry key="Backend.LDAP.Base" value="dc=no"/>
-            <entry key="Backend.LDAP.Host" value="kattem.uninett.no"/>
+            <entry key="Backend.LDAP.Host" value="ldap.uninett.no"/>
             <entry key="Backend.LDAP.Port" value="1389"/>
             <entry key="Backend.LDAP.UIDAttribute" value="uid"/>
-            <entry key="LoginURL" value="http://klungset.uninett.no:8080/feide-moria/Login"/>
+            <entry key="LoginURL" value="http://moria.uninett.no/feide-moria/Login"/>
             <entry key="MaxFailedLogins" value="3"/>
           </map>
           <node name="servlet">
             <map>
-	      <entry key="TemplateDir" value="/usr/local/jwsdp/work/Standard Engine/localhost/feide-moria/WEB-INF/classes/templates"/>
+              <entry key="TemplateDir" value="/usr/local/tomcat/webapps/feide-moria/WEB-INF/classes/templates"/>
             </map>
           </node>
         </node>
