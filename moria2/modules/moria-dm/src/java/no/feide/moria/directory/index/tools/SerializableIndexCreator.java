@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 import no.feide.moria.directory.index.SerializableIndex;
-import no.feide.moria.directory.index.WriteableSerializableIndex;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -23,7 +22,7 @@ import org.jdom.input.SAXBuilder;
 public class SerializableIndexCreator {
 
     /** Internal representation of the index. */
-    private static WriteableSerializableIndex generatedIndex = new WriteableSerializableIndex();
+    private static SerializableIndex generatedIndex = new SerializableIndex();
 
 
     /**
@@ -80,8 +79,7 @@ public class SerializableIndexCreator {
         }
 
         // Dump the index to console.
-        System.out.println("\tAssociations: " + generatedIndex.getAssociations().toString().replaceAll("], ", "\n\t               "));
-        System.out.println("\tExceptions: " + generatedIndex.getExceptions().toString().replaceAll(", ", "\n\t             "));
+        System.out.println(generatedIndex.toString());
 
         // Write the index to file.
         System.out.println("Writing to file " + args[1]);
@@ -95,8 +93,7 @@ public class SerializableIndexCreator {
         in.close();
 
         // Dump written index to console.
-        System.out.println("\tAssociations: " + writtenIndex.getAssociations().toString().replaceAll("], ", "\n\t               "));
-        System.out.println("\tExceptions: " + writtenIndex.getExceptions().toString().replaceAll(", ", "\n\t             "));
+        System.out.println(writtenIndex.toString());
 
         // Verify index contents.
         if (generatedIndex.equals(writtenIndex))
