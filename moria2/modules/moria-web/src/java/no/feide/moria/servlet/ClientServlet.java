@@ -25,6 +25,7 @@ import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaControllerException;
+import no.feide.moria.log.MessageLogger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -41,35 +42,49 @@ import java.util.Properties;
 public class ClientServlet
 extends HttpServlet {
 
+    /** Used for logging. */
+    private final MessageLogger log = new MessageLogger(ClientServlet.class);
+
+
     /**
      * Handles the GET requests.
      * @param request
-     *            The HTTP request object.
+     *            The HTTP request object. If it contains a request parameter
+     *            <i>moriaID </i> then the request's attribute <i>attributes
+     *            </i> will be filled with the attributes contained in the
+     *            session given by <i>moriaID </i>.
      * @param response
      *            The HTTP response object.
      * @throws java.io.IOException
      *             If an input or output error is detected when the servlet
      *             handles the GET request.
      * @throws javax.servlet.ServletException
-     *             if the request for the GET could not be handled.
+     *             If the request for the GET could not be handled.
+     * @see javax.servlet.http.HttpServlet.doGet(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse)
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
 
-        // Do not have ticket
-        // - Contact dsssfsd
+        // Do we have a ticket?
         String loginTicketId = request.getParameter("moriaID");
         if (loginTicketId != null) {
             try {
 
+                // No ticket. Add the requested user attributes to the request's
+                // "attributes" attribute, using "test" as our service's
+                // principal.
+                log.logCritical("Login ticket ID is " + loginTicketId);
+                log.logCritical("User attributes are " + MoriaController.getUserAttributes(loginTicketId, "test").toString());
                 request.setAttribute("attributes", MoriaController.getUserAttributes(loginTicketId, "test"));
+
             } catch (MoriaControllerException e) {
                 request.setAttribute("error", e);
             }
         }
-        // Have ticket
-        // - show
 
+        // Forward the GET request.
+        log.logCritical("Forwarding to request dispatcher for 'Client.JSP'");
         RequestDispatcher rd = getServletContext().getNamedDispatcher("Client.JSP");
         rd.forward(request, response);
 
@@ -86,36 +101,49 @@ extends HttpServlet {
      *             If an input or output error is detected when the servlet
      *             handles the GET request.
      * @throws javax.servlet.ServletException
-     *             if the request for the GET could not be handled.
+     *             If the request for the GET could not be handled.
      */
     public final void doPost(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
 
         String jspLocation = getServletContext().getInitParameter("jsp.location");
+        log.logCritical("jsp.location is '" + jspLocation + "'");
         String moriaID = null;
         boolean error = false;
 
         try {
+
             MoriaController.initController(getServletContext());
+            log.logCritical("Requested attributes: " + request.getParameter("attributes"));
+            log.logCritical("URL prefix: " + request.getParameter("urlPrefix"));
+            log.logCritical("URL postfix: " + request.getParameter("urlPostfix"));
+            log.logCritical("Principal: " + request.getParameter("principal"));
             moriaID = MoriaController.initiateAuthentication(request.getParameter("attributes").split(","), request.getParameter("urlPrefix"), request.getParameter("urlPostfix"), false, request.getParameter("principal"));
+            log.logCritical("Moria ID is now " + moriaID);
+
         } catch (IllegalInputException e) {
             error = true;
+            log.logCritical("IllegalInputException");
             request.setAttribute("error", e);
-
         } catch (AuthorizationException e) {
             error = true;
+            log.logCritical("AuthorizationException");
             request.setAttribute("error", e);
         } catch (InoperableStateException e) {
             error = true;
+            log.logCritical("InoperableStateException");
             request.setAttribute("error", e);
         }
 
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
+            log.logCritical("Configuration: " + config.toString());
             String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
+            log.logCritical("Redirect URL: " + redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             response.setHeader("Location", redirectURL);
         } else {
+            log.logCritical("error!");
             RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/client.jsp");
             rd.include(request, response);
         }
