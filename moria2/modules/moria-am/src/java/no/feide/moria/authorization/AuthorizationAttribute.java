@@ -70,9 +70,10 @@ public class AuthorizationAttribute {
      * level can be set to "LOW", "MEDIUM" or " "HIGH", it defaults to "HIGH".
      *
      * @param name     Name of attribute
+     * @param secLevel The attributes security level
      * @param allowSSO Allow use of SSO with this attribute
      */
-    AuthorizationAttribute(String name, boolean allowSSO, int secLevel) throws IllegalArgumentException {
+    AuthorizationAttribute(final String name, final boolean allowSSO, final int secLevel) {
 
         if (name == null || name.equals("")) {
             throw new IllegalArgumentException("Name must be a non-empty string.");
@@ -93,9 +94,10 @@ public class AuthorizationAttribute {
      * @return false if any of the attributes are different from the supplied
      *         object.
      */
-    public boolean equals(Object object) {
-        if (object == this)
+    public final boolean equals(final Object object) {
+        if (object == this) {
             return true;
+        }
         if (object instanceof AuthorizationAttribute) {
             AuthorizationAttribute attr = (AuthorizationAttribute) object;
             if (attr.getName().equals(name) && attr.getAllowSSO() == getAllowSSO() && attr.getSecLevel() == secLevel)
