@@ -182,7 +182,9 @@ implements AuthenticationIF, ServiceLifecycle {
 	    assertPrincipals(ctx.getUserPrincipal(), id);
 
 	    // Return attributes.
-            return SessionStore.getInstance().getAttributes(id);
+            UserAttribute[] result = SessionStore.getInstance().getAttributes(id);
+            SessionStore.getInstance().deleteSession(id);
+            return result;
 
         } catch (SessionException e) {
             log.severe("SessionException caught, and re-thrown as RemoteException");
