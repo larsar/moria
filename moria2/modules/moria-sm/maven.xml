@@ -17,5 +17,5 @@
     name="project:clean"
     prereqs="clean"
     description="Clean this project"/>
-  </goal>
+
 </project>
