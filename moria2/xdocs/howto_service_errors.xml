@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Error Handling</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Error Handling">
+			<p>
+			This section will outline how errors are distributed from Moria to
+			the client service through the SOAP interface. For more information
+			please refer to the <a href="http://ws.apache.org/axis/index.html">Axis</a>
+			documentation regarding server-side exception handling.
+			</p>
+			<p>
+			The information below is currently only valid for the v2.1 of the
+			SOAP interface (and upwards). The v2.0 interface will use the more
+			generic <code>RemoteException</code>s, where the actual
+			<i>faultcode</i> (see below) will always be <i>Server</i> and the
+			<i>faultstring</i> will include the Java exception cause.
+			</p>
+			<subsection name="SOAP Faults">
+				<p>
+				The SOAP Fault message from Moria will be on the form shown
+				below:
+				<source>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"&gt;
+	&lt;SOAP-ENV:Body&gt;
+		&lt;SOAP-ENV:Fault&gt;
+			&lt;faultcode&gt;Client&lt;/faultcode&gt;
+			&lt;faultstring&gt;AUTHORIZATION FAILED&lt;/faultstring&gt;
+		&lt;/SOAP-ENV:Fault&gt;
+	&lt;/SOAP-ENV:Body&gt;
+&lt;/SOAP-ENV:Envelope&gt;</source>
+				In this example, the <i>faultcode</i> element shows that this
+				was caused by the client (that is, the Moria-enabled client
+				service using a SOAP operation). The <i>faultstring</i>, using a
+				set of pre-defined error strings, shows that in this case, the
+				client service was not authorized to perform the requested
+				SOAP operation.
+				</p>
+                <p>
+                These are the possible values and combinations for the
+                <i>faultcode</i> and <i>faultstring</i> elements, with
+                descriptions:
+				<table>
+                    <tr>
+                        <th>faultcode</th>
+                        <th>faultstring</th>
+                        <th>Server-side Java Class</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><i>Client</i></td>
+                        <td><i>AUTHENTICATION FAILED</i></td>
+                        <td><code>no.feide.moria.servlet.soap.AuthenticationFailedException</code></td>
+                        <td>The user's credentials did not pass authentication.</td>
+                    </tr>
+                    <tr>
+                        <td><i>Server</i></td>
+                        <td><i>AUTHENTICATION UNAVAILABLE</i></td>
+                        <td><code>no.feide.moria.servlet.soap.AuthenticationUnavailableException</code></td>
+                        <td>Moria was unable to reach the third-party
+                        (LDAP) server responsible for user authentication.</td>
+                    </tr>
+                    <tr>
+                        <td><i>Client</i></td>
+                        <td><i>AUTHORIZATION FAILED</i></td>
+                        <td><code>no.feide.moria.servlet.soap.AuthorizationFailedException</code></td>
+                        <td>An operation was attempted, or parameters were used,
+                        that the client service was not authorized for.</td>
+                    </tr>
+                    <tr>
+                        <td><i>Client</i></td>
+                        <td><i>ILLEGAL INPUT</i></td>
+                        <td><code>no.feide.moria.servlet.soap.IllegalInputException</code></td>
+                        <td>An operation was attempted, or parameters were used,
+                        that the client service was not authorized for.</td>
+                    </tr>
+                    <tr>
+                        <td><i>Server</i></td>
+                        <td><i>MORIA INTERNAL</i></td>
+                        <td><code>no.feide.moria.servlet.soap.InternalException</code></td>
+                        <td>An unexpected internal error occured in Moria.</td>
+                    </tr>
+                    <tr>
+                        <td><i>Client</i></td>
+                        <td><i>UNKNOWN TICKET</i></td>
+                        <td><code>no.feide.moria.servlet.soap.UnknownTicketException</code></td>
+                        <td>The ticket used by the client service in a SOAP
+                        operation was unknown to Moria.</td>
+                    </tr>
+                </table>
+                </p>
+                <p>
+                For more information on these exception classes please refer to
+                the
+                <a href="moria-web/apidocs/no/feide/moria/servlet/soap/package-summary.html">JavaDoc</a>.
+                </p>
+			</subsection>
+		</section>
+	</body>
+</document>

@@ -33,7 +33,9 @@ $Id$
 
 	    <menu name="Overview">
 	        <item name="Introduction" href="index.html"/>
-			<item name="Service Integration" href="howto_service_overview.html"/>
+			<item name="Service Integration" href="howto_service_overview.html">
+			    <item name="Error Handling" href="howto_service_errors.html"/>
+			</item>
 	    	<item name="Design" href="design.html"/>
 	    	<item name="Configuration" href="config_introduction.html">
 		    	<item name="Base Configuration" href="config_base_configuration.html"/>
