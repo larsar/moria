@@ -41,7 +41,7 @@
     <exec executable="sed" output="build.moria/WEB-INF/Authentication.wsdl">
       <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' Authentication.wsdl"/>
     </exec>
-    <copy todir="build.moria/WEB-INF/classes/templates">
+    <copy todir="build.moria/WEB-INF/classes/templates">      
       <fileset dir="moria/templates">
         <include name="**/*.vtl"/>
       </fileset>
@@ -115,41 +115,9 @@
     </jar>
   </target>
 
-<<<<<<< build.xml
-=======
-  <target name="moria:wsdeploy"
-          description="Moria: Process WAR"
-          depends="moria:war">
-    <delete file="dist/tmp-feide-moria.war"/>
-    <exec executable="${jaxrpc_home}/bin/wsdeploy.sh">
-      <arg line="-o"/>
-      <arg line="dist/feide-moria.war"/>
-      <arg line="dist/feide-moria-ws.war"/>
-      <arg line="-verbose"/>
-    </exec>
-  </target>
-
-  <target name="moria:wsdl"
-          description="Moria: Export WSDL from WAR"
-          depends="moria:wsdeploy">
-    <mkdir dir="dist/tmp"/>
-    <exec executable="jar" dir="dist/tmp">
-      <arg line="-xf ../feide-moria.war WEB-INF/FeideAuthentication.wsdl"/>
-    </exec>
-    <exec executable="sed" output="FeideAuthentication.wsdl">
-      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/FeideAuthentication.wsdl"/>
-    </exec>
-    <delete dir="dist/tmp"/>
-  </target>
-
->>>>>>> 1.39
   <target name="moria:build"
           description="Moria: Build deployable WAR"
-<<<<<<< build.xml
           depends="moria:war">
-=======
-          depends="moria:wsdl">
->>>>>>> 1.39
     <delete file="dist/feide-moria-authorization.jar"/>
     <jar jarfile="dist/feide-moria-authorization.jar">
       <fileset dir="build.moria/WEB-INF/classes">
