@@ -9,8 +9,7 @@
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
   <package>no.feide.moria.log</package>
 
-  <shortDescription>The log component of Moria, handling all logging
-  in the system.</shortDescription>
+  <shortDescription>The log component of Moria</shortDescription>
 
   <description/>
 
