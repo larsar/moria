@@ -1,10 +1,12 @@
 <project name="W3LS (Mellon/Moria)"
-         default="all:redeploy"
+         default="all:build"
          basedir=".">
 
+  <!-- User's properties override project defaults. -->
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
 
+  <!-- Tomcat deploy/undeploy custom tasks. -->
   <taskdef name="deploy"
            classname="org.apache.catalina.ant.DeployTask"
            classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
@@ -13,18 +15,16 @@
            classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
 
 
-
   <!-- Common Mellon/Moria targets. -->
   <target name="all:clean"
           description="All: Clean up everything"
-          depends="mellon:clean,moria:clean,test:clean">
+          depends="mellon:clean,moria:clean,test:clean,mellon:demo:clean">
     <delete dir="dist"/>
   </target>
 
   <target name="all:build"
-          description="All: Build everything, no deployment"
-          depends="moria:build,mellon:build,test:build"/>
-
+          description="All: Build Moria and Mellon API, no deployment"
+          depends="moria:build,mellon:build"/>
 
 
   <!-- Targets to build/deploy Moria. -->
@@ -142,8 +142,8 @@
   </target>
 
   <target name="moria:redeploy"
-          description="Moria: Build and redeploy"
-          depends="moria:build,moria:undeploy,moria:deploy"/>
+          description="Moria: Redeploy"
+          depends="moria:undeploy,moria:deploy"/>
 
   <target name="moria:clean"
           description="Moria: Clean up">
@@ -192,7 +192,29 @@
 	   </classpath>
     </javac>
   </target>
+  
+  <target name="mellon:jar"
+          description="Mellon API: Create JAR file"
+	  depends="mellon:compile">
+    <delete file="dist/feide-mellon-api.jar"/>
+    <jar destfile="dist/feide-mellon-api.jar" basedir="build.mellon"/>
 
+  </target>
+
+  <target name="mellon:build"
+          description="Mellon API: All steps necessary to build the JAR"
+          depends="mellon:jar"/>
+
+  <target name="mellon:clean"
+          description="Mellon API: Clean up">
+    <delete dir="build.mellon"/>
+    <delete dir="build.mellon.filter"/>
+    <delete file="dist/feide-mellon-filter.jar"/>
+    <delete file="dist/feide-mellon-api.jar"/>
+  </target>
+    
+
+  <!-- Targets to build the Mellon servlet filter. -->
   <target name="mellon:filter:compile"
           description="Mellon filter: Compile source"
           depends="mellon:jar">
@@ -214,9 +236,26 @@
     <jar destfile="dist/feide-mellon-filter.jar" basedir="build.mellon.filter"/>
   </target>
 
+  
+  <!-- Targets to build a Mellon servlet demo. -->
+  <target name="mellon:demo:prepare"
+          description="Mellon demo: Prepare build directory">
+    <mkdir dir="build.mellon.demo"/>
+    <mkdir dir="dist"/>
+    <delete file="build.mellon.demo/WEB-INF/web.xml"/>
+    <delete file="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
+    <delete file="dist/feide-mellon-demo.war"/>
+    <copy file="mellon/config/web.xml" toFile="build.mellon.demo/WEB-INF/web.xml"/>
+    <echo message="Using config: ${mellon_config}"/>
+    <copy file="${mellon_config}" toFile="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
+    <copy todir="build.mellon.demo/WEB-INF/lib">
+      <fileset dir="dist" includes="**/feide-mellon*.jar"/>
+    </copy>      
+  </target>
+  
   <target name="mellon:demo:compile"
           description="Mellon demo: Compile source"
-          depends="mellon:jar,mellon:filter:jar">
+          depends="mellon:demo:prepare,mellon:jar,mellon:filter:jar">
     <javac srcdir="src"
            destdir="build.mellon.demo/WEB-INF/classes"
            includes="no/feide/mellon/servlet/*">
@@ -230,45 +269,38 @@
   <target name="mellon:demo:war"
           description="Mellon demo: Create WAR file"
 	  depends="mellon:demo:compile">
-    <delete file="build.mellon.demo/WEB-INF/web.xml"/>
-    <delete file="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
-    <delete file="dist/feide-mellon-demo.war"/>
-    <copy file="mellon/config/web.xml" toFile="build.mellon.demo/WEB-INF/web.xml"/>
-    <echo message="Using config: ${mellon_config}"/>
-    <copy file="${mellon_config}" toFile="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
-    <copy todir="build.mellon.demo/WEB-INF/lib">
-      <fileset dir="dist">
-	<include name="**/feide-mellon*.jar"/>
-      </fileset>
-    </copy>  
-
     <jar destfile="dist/feide-mellon-demo.war" basedir="build.mellon.demo"/>
   </target>
-
-
-  <target name="mellon:jar"
-          description="Mellon API: Create JAR file"
-	  depends="mellon:compile">
-    <delete file="dist/feide-mellon-api.jar"/>
-    <jar destfile="dist/feide-mellon-api.jar" basedir="build.mellon"/>
-
+  
+  <target name="mellon:demo:build"
+          description="Mellon demo: All steps necessary to build the WAR"
+          depends="mellon:demo:war"/>
+  
+  <target name="mellon:demo:deploy"
+          description="Mellon demo: Deploy to Tomcat">
+    <deploy url="${jwsdp_manager_url}"
+            username="${jwsdp_manager_username}"
+            password="${jwsdp_manager_password}"
+            path="/feide-mellon-demo"
+            war="file:dist/feide-mellon-demo.war"/>
   </target>
 
+  <target name="mellon:demo:undeploy"
+          description="Mellon demo: Undeploy from Tomcat">
+     <undeploy url="${jwsdp_manager_url}"
+              username="${jwsdp_manager_username}"
+              password="${jwsdp_manager_password}"
+              path="/feide-mellon-demo"/>
+  </target>
 
+  <target name="mellon:demo:redeploy"
+          description="Mellon demo: Redeploy"
+          depends="mellon:demo:undeploy,mellon:demo:deploy"/>
 
-  <target name="mellon:build"
-          description="Mellon API: All steps necessary to build the JAR"
-          depends="mellon:jar"/>
-
-  <target name="mellon:clean"
-          description="Mellon API: Clean up">
-    <delete dir="build.mellon"/>
-    <delete dir="build.mellon.filter"/>
+  <target name="mellon:demo:clean"
+          description="Mellon demo: Clean up">
     <delete dir="build.mellon.demo"/>
-    <delete file="dist/feide-mellon-filter.jar"/>
-    <delete file="dist/feide-mellon-api.jar"/>
   </target>
-
 
 
   <!-- Mellon API test code -->
