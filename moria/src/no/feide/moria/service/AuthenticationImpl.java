@@ -8,6 +8,8 @@ import java.security.Principal;
 import java.rmi.RemoteException;
 import java.net.MalformedURLException;
 
+import java.util.Date;
+import java.util.Timer;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -22,6 +24,7 @@ import no.feide.moria.BackendException;
 import no.feide.moria.Credentials;
 import no.feide.moria.authorization.WebService;
 import no.feide.moria.authorization.AuthorizationData;
+import no.feide.moria.authorization.AuthorizationTask;
 
 
 public class AuthenticationImpl
@@ -36,7 +39,8 @@ implements AuthenticationIF, ServiceLifecycle {
     /** Session store. */
     private SessionStore sessionStore = SessionStore.getInstance();
       
-
+    /** Timer for updating the web service authorization module. */
+    private Timer authTimer = new Timer();
 
     
     /**
@@ -45,6 +49,7 @@ implements AuthenticationIF, ServiceLifecycle {
     public void destroy() {
 	log.finer("destroy()");
 
+        authTimer.cancel();
 	log = null;
 	ctx = null;
     }
@@ -84,6 +89,25 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new ServiceException("IOException caught", e);
         }
 
+        System.out.println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+
+        /* Initialize authorization data timer */
+        int authDelay = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerDelay")).intValue()*1000; // Seconds to milliseconds
+        log.info("Starting authorization update service with delay= "+authDelay+"ms");
+        authTimer.scheduleAtFixedRate(new AuthorizationTask(), new Date(), authDelay);
+
+        /* Sleep a short while. If not the authorization data will not
+           be updated in time to authorize the first authentication request. */
+        try { 
+            Thread.sleep(3000); 
+        } 
+        catch (InterruptedException e) { 
+            /* We didn't get any sleep. Don't care. If this is the
+             * case, the first web service authorization request will
+             * end in an exception. After that everythin will be all
+             * right.
+             */
+        }
     }
 
 

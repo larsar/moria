@@ -28,7 +28,6 @@ import no.feide.moria.Session;
 import no.feide.moria.User;
 import no.feide.moria.BackendException;
 import no.feide.moria.SessionStoreTask;
-import no.feide.moria.authorization.AuthorizationTask;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -61,18 +60,12 @@ public class LoginServlet extends VelocityServlet {
     SessionStore sessionStore = SessionStore.getInstance();
     
     Timer sessionTimer = new Timer();
-    Timer authTimer = new Timer();
 
     public void init() {
         /* Initialize session timeout timer */
         int sessionDelay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
         log.info("Starting time out service with delay= "+sessionDelay+"ms");
         sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelay);
-
-        /* Initialize authorization data timer */
-        int authDelay = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerDelay")).intValue()*1000; // Seconds to milliseconds
-        log.info("Starting authorization update service with delay= "+authDelay+"ms");
-        authTimer.scheduleAtFixedRate(new AuthorizationTask(), new Date(), authDelay);
     }
 
 
@@ -81,8 +74,6 @@ public class LoginServlet extends VelocityServlet {
      */
     public void destroy() {
         log.finer("destroy()");
-
-        authTimer.cancel();
         sessionTimer.cancel();
     }
    
