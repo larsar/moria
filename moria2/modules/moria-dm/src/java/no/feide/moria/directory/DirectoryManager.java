@@ -47,19 +47,18 @@ public class DirectoryManager {
      *            The configuration. Must include the property
      *            <code>directoryConfiguration</code> that points to a file
      *            containing the Directory Manager configuration.
-     * @throws DirectoryManagerConfigurationException
-     *             If the configuration could not be updated, and the Directory
-     *             Manager does not have a previous configuration to fall back
-     *             on.
      */
-    public static void setConfig(Properties config)
-    throws DirectoryManagerConfigurationException {
+    public static void setConfig(Properties config) {
 
         // Update current configuration.
         try {
+            
             DirectoryManagerConfiguration newConfiguration = new DirectoryManagerConfiguration(config);
             currentConfiguration = newConfiguration;
-        } catch (DirectoryManagerConfigurationException e) {
+            
+        } catch (Exception e) {
+            
+            // Something happened while updating the configuration; can we recover?
             if (currentConfiguration == null) {
 
                 // Critical error; we don't have a working configuration.
@@ -72,7 +71,7 @@ public class DirectoryManager {
                 log.logWarn("Unable to update configuration", e);
 
             }
-
+            
         }
 
         // Preparations.
@@ -83,8 +82,10 @@ public class DirectoryManager {
         // TODO: Initialize index update.
         // TODO: Gracefully handle switch between index classes.
         try {
+            
             constructor = currentConfiguration.getIndexClass().getConstructor(noParameters);
             index = (DirectoryManagerIndex) constructor.newInstance(noParameters);
+            
         } catch (NoSuchMethodException e) {
             log.logCritical("Cannot find index constructor", e);
             throw new DirectoryManagerConfigurationException("Cannot find index constructor", e);
@@ -97,8 +98,10 @@ public class DirectoryManager {
         // TODO: Initialize backend configuration update.
         // TODO: Gracefully handle switch between backend factories.
         try {
+            
             constructor = currentConfiguration.getBackendFactoryClass().getConstructor(noParameters);
             backendFactory = (DirectoryManagerBackendFactory) constructor.newInstance(noParameters);
+            
         } catch (NoSuchMethodException e) {
             log.logCritical("Cannot find backend factory constructor", e);
             throw new DirectoryManagerConfigurationException("Cannot find backend factory constructor", e);

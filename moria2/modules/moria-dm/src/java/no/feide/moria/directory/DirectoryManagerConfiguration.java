@@ -43,7 +43,7 @@ public class DirectoryManagerConfiguration {
         // Sanity check.
         if (config == null) {
             log.logCritical("Configuration properties cannot be NULL");
-            throw new DirectoryManagerConfigurationException("Configuration properties cannot be NULL");
+            throw new IllegalArgumentException("Configuration properties cannot be NULL");
         }
 
         // Preparing to read configuration from file.
@@ -115,7 +115,7 @@ public class DirectoryManagerConfiguration {
         // Sanity check.
         if (rootElement == null) {
             log.logCritical("Missing root element in configuration file");
-            throw new DirectoryManagerConfigurationException("Missing root element in configuration file");
+            throw new IllegalArgumentException("Missing root element in configuration file");
         }
 
         // Get the index element, with sanity checks.
@@ -165,7 +165,7 @@ public class DirectoryManagerConfiguration {
         // Sanity check.
         if (rootElement == null) {
             log.logCritical("Missing root element in configuration file");
-            throw new DirectoryManagerConfigurationException("Missing root element in configuration file");
+            throw new IllegalArgumentException("Missing root element in configuration file");
         }
 
         // Get the backend element, with sanity checks.

@@ -5,7 +5,7 @@ package no.feide.moria.directory;
  *         manager's configuration.
  */
 public class DirectoryManagerConfigurationException
-extends DirectoryManagerException {
+extends RuntimeException {
 
     /**
      * Constructor.
