@@ -28,33 +28,38 @@ implements DirectoryManagerBackend {
     /**
      * Set the configuration used by this instance.
      * @param config
-     *            A <code>Backend</code> configuration element. Expects the
-     *            element to contain one or more <code>User</code> elements,
-     *            each with one or more <code>Attribute</code> elements, which
-     *            again have <code>Value</code> elements with exactly one
-     *            value child. Allows for easy configuration of test cases,
-     *            without having to rely on an external backend source. See the
-     *            supplied dummy configuration for a workable example. Note that
-     *            attribute and user names are case-insensitive, while attribute
-     *            values are stored as specified in the configuration.
+     *            A <code>Backend</code> configuration element. Must contain a
+     *            <code>Dummy</code> element (if more than one only the first
+     *            is considered), which is expected to contain one or more
+     *            <code>User</code> elements, each with one or more
+     *            <code>Attribute</code> elements, which again have
+     *            <code>Value</code> elements with exactly one value child.
+     *            Allows for easy configuration of test cases, without having to
+     *            rely on an external backend source. See the supplied dummy
+     *            configuration for a workable example. Note that attribute and
+     *            user names are case-insensitive, while attribute values are
+     *            stored as specified in the configuration.
      */
     protected void setConfig(final Element config) {
 
+        // Get Dummy element.
+        final Element dummy = config.getChild("Dummy");
+
         // Parse any user elements.
         userMap = new HashMap();
-        final Iterator users = config.getChildren("DummyUser").iterator();
+        final Iterator users = dummy.getChildren("User").iterator();
         while (users.hasNext()) {
 
             // Parse any attribute elements.
             HashMap attributeMap = new HashMap();
             final Element user = (Element) users.next();
-            final Iterator attributes = user.getChildren("DummyAttribute").iterator();
+            final Iterator attributes = user.getChildren("Attribute").iterator();
             while (attributes.hasNext()) {
 
                 // Parse any value elements.
                 ArrayList valueList = new ArrayList();
                 final Element attribute = (Element) attributes.next();
-                final Iterator values = attribute.getChildren("DummyValue").iterator();
+                final Iterator values = attribute.getChildren("Value").iterator();
                 while (values.hasNext()) {
 
                     // Parse the attribute values.
@@ -72,8 +77,6 @@ implements DirectoryManagerBackend {
             userMap.put(user.getAttribute("name").getValue().toLowerCase(), attributeMap);
 
         }
-        
-        
 
     }
 
@@ -125,19 +128,19 @@ implements DirectoryManagerBackend {
             // Successful authentication; user found.
             HashMap requestedAttributes = new HashMap();
             if ((attributeRequest != null) && (attributeRequest.length > 0)) {
-                
+
                 // Some attributes were requested.
-	            HashMap allAttributes = (HashMap) userMap.get(username);
-	            for (int i = 0; i < attributeRequest.length; i++)
-	                if (allAttributes.containsKey(attributeRequest[i].toLowerCase())) {
-	
-	                    // Requested attribute found.
-	                    List requestedValues = (List) allAttributes.get(attributeRequest[i].toLowerCase());
-	                    requestedAttributes.put(attributeRequest[i], requestedValues.toArray(new String[] {}));
-	
-	                }
-            }    
-	                
+                HashMap allAttributes = (HashMap) userMap.get(username);
+                for (int i = 0; i < attributeRequest.length; i++)
+                    if (allAttributes.containsKey(attributeRequest[i].toLowerCase())) {
+
+                        // Requested attribute found.
+                        List requestedValues = (List) allAttributes.get(attributeRequest[i].toLowerCase());
+                        requestedAttributes.put(attributeRequest[i], requestedValues.toArray(new String[] {}));
+
+                    }
+            }
+
             // Return found attributes.
             return requestedAttributes;
 
