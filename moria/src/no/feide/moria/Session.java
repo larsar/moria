@@ -22,8 +22,10 @@ import java.util.*;
 import java.util.logging.Logger;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
+
 import no.feide.moria.authorization.WebService;
 import no.feide.moria.authorization.AuthorizationData;
+import no.feide.moria.stats.StatsStore;
 
 public class Session {
     
@@ -275,11 +277,9 @@ public class Session {
                 noCachedAttributes = user.lookup(noneSsoAttributes);
             }
 
-
-            locked = true;
-            user.close();
-
-            return genAttrResult(cachedAttributes, noCachedAttributes, request);
+            HashMap result = genAttrResult(cachedAttributes, noCachedAttributes, request);
+            prepareForSSO();
+            return result;
 
         } catch (BackendException e) {
             log.severe("BackendException caught and re-thrown as SessionException");
@@ -311,6 +311,29 @@ public class Session {
         return result;
     }
 
+
+    /**
+     * Reset all variables/pointers that are not used with SSO.
+     */ 
+    private void prepareForSSO() throws BackendException {
+        StatsStore stats = StatsStore.getInstance();
+
+        stats.decStatsCounter(webService.getId(), "activeSessions");
+        stats.increaseCounter("sessionsSSOActive");
+
+        locked = true;
+        user.close();
+        webService = null;
+        urlPrefix = null;
+        urlPostfix = null;
+        request = null;
+        noneSsoAttributes = null;
+        failedLogins = 0;
+        client = null;
+        attributesSecLevel = null;
+        authenticationInitiated = false;
+        allowSso = false;
+    }
 
     
     /**
