@@ -71,7 +71,7 @@ public class WebService {
         boolean allow = true;
         for (int i = 0; i < requestedAttributes.length; i++) {
             if (!attributes.containsKey(requestedAttributes[i])) {
-                log.warning("Allows access to attributes "+attributes.toString()+" only, not {"+requestedAttributes[i]+'}');
+                log.warning("Service "+id+" can access attributes "+attributes.toString()+" only, not {"+requestedAttributes[i]+'}');
                 allow = false;
                 break;
             }
