@@ -42,8 +42,8 @@ import no.feide.mellon.Moria;
  * This is a simple demonstration servlet, primarily intended as a code example
  * of how to access the Moria SOAP interface. <br>
  * <br>
- * This implementation uses the Mellon2 API.
- * <br><br>
+ * This implementation uses the Mellon2 API. <br>
+ * <br>
  * The servlet works as follows: <br>
  * <ol>
  * <li>If the HTTP request does not contain a service ticket (found by checking
@@ -68,34 +68,37 @@ import no.feide.mellon.Moria;
  * <li>The Moria service instance used is given by
  * <code>SERVICE_ENDPOINT</code>.
  * </ul>
- * @see no.feide.mellon.Moria#initiateAuthentication(String[], String, String, boolean)
+ * @see no.feide.mellon.Moria#initiateAuthentication(String[], String, String,
+ *      boolean)
  * @see no.feide.mellon.Moria#getUserAttributes(String)
  */
 public class DemoServlet
 extends HttpServlet {
-    
+
     /**
      * The system property giving the configuration file name for the Demo
-     * servlet.<br><br>
+     * servlet. <br>
+     * <br>
      * Current value is <code>"no.feide.mellon.demo.config"</code>.
      */
     private static final String CONFIG_FILENAME = "no.feide.mellon.demo.config";
-    
+
     /**
      * Used to build the QName for mapping remote Attribute type to local type.
      * <br>
      * <br>
-     * Current value is <code>"no.feide.mellon.demo.attributeNamespaceURI"</code>.
+     * Current value is
+     * <code>"no.feide.mellon.demo.attributeNamespaceURI"</code>.
      */
     private static final String CONFIG_ATTRIBUTE_NAMESPACE_URI = "no.feide.mellon.demo.attributeNamespaceURI";
-    
+
     /**
      * The service endpoint. <br>
      * <br>
      * Current value is <code>"no.feide.mellon.demo.serviceEndpoint"</code>.
      */
     private static final String CONFIG_SERVICE_ENDPOINT = "no.feide.mellon.demo.serviceEndpoint";
-  
+
     /**
      * A comma-separated list of attributes requested by the main service. <br>
      * <br>
@@ -121,7 +124,8 @@ extends HttpServlet {
     /**
      * A comma-separated list of attributes requested by the subservice. <br>
      * <br>
-     * Current value is <code>"no.feide.mellon.demo.slave.attributeRequest"</code>.
+     * Current value is
+     * <code>"no.feide.mellon.demo.slave.attributeRequest"</code>.
      */
     private static final String CONFIG_SLAVE_ATTRIBUTE_REQUEST = "no.feide.mellon.demo.slave.attributeRequest";
 
@@ -147,17 +151,26 @@ extends HttpServlet {
      */
     private static final String CONFIG_LOGOUT_URL = "no.feide.mellon.demo.logout.url";
 
+    /**
+     * The truststore filename used when accepting Moria's certificate. If not
+     * set, no custom truststore will be used. <br>
+     * <br>
+     * Current value is <code>"no.feide.mellon.demo.trustStore"</code>.
+     */
+    private static final String CONFIG_TRUSTSTORE = "no.feide.mellon.demo.trustStore";
+
+    /**
+     * The truststore password used in conjunction with
+     * <code>CONFIG_TRUSTSTORE</code>.<br>
+     * <br>
+     * Current value is <code>"no.feide.mellon.demo.trustStorePassword"</code>.
+     */
+    private static final String CONFIG_TRUSTSTORE_PASSWORD = "no.feide.mellon.demo.trustStorePassword";
 
     /**
      * Required parameters.
      */
-    private static final String[] REQUIRED_PARAMETERS = {
-        CONFIG_SERVICE_ENDPOINT,
-        CONFIG_SLAVE_USERNAME,
-        CONFIG_SLAVE_PASSWORD,
-        CONFIG_LOGOUT_URL,
-        CONFIG_ATTRIBUTE_NAMESPACE_URI
-    };
+    private static final String[] REQUIRED_PARAMETERS = {CONFIG_SERVICE_ENDPOINT, CONFIG_SLAVE_USERNAME, CONFIG_SLAVE_PASSWORD, CONFIG_LOGOUT_URL, CONFIG_ATTRIBUTE_NAMESPACE_URI};
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -171,9 +184,9 @@ extends HttpServlet {
      * Handles the GET requests.
      * @param request
      *            The HTTP request object. If it contains a request parameter
-     *            <i>moriaID</i>, the request's attribute <i>attributes
-     *            </i> will be filled with the attributes contained in the
-     *            session given by <i>moriaID </i>.
+     *            <i>moriaID </i>, the request's attribute <i>attributes </i>
+     *            will be filled with the attributes contained in the session
+     *            given by <i>moriaID </i>.
      * @param response
      *            The HTTP response object.
      * @throws java.io.IOException
@@ -189,7 +202,7 @@ extends HttpServlet {
 
         // Be sure to dump all exceptions.
         try {
-            
+
             // Get configuration.
             final Properties config = getConfig();
 
@@ -201,19 +214,14 @@ extends HttpServlet {
             }
 
             // Prepare API.
-            Moria service = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT),
-                                      config.getProperty(CONFIG_MASTER_USERNAME),
-                                      config.getProperty(CONFIG_MASTER_PASSWORD),
-                                      config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI));
+            Moria service = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_MASTER_USERNAME), config.getProperty(CONFIG_MASTER_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
 
             // Do we have a ticket?
             final String ticket = request.getParameter(PARAM_TICKET);
             if (ticket == null) {
 
                 // No ticket; redirect for authentication.
-                String redirectURL = service.initiateAuthentication(
-                        convert(config.getProperty(CONFIG_MASTER_ATTRIBUTE_REQUEST)),
-                        request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
+                String redirectURL = service.initiateAuthentication(convert(config.getProperty(CONFIG_MASTER_ATTRIBUTE_REQUEST)), request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
                 System.err.println(redirectURL);
                 response.sendRedirect(redirectURL);
 
@@ -272,10 +280,7 @@ extends HttpServlet {
 
                     // We now have a proxy ticket; now let's fake our own
                     // subsystem. Retrieve and display some attributes.
-                    Moria subservice = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT),
-                    							 config.getProperty(CONFIG_SLAVE_USERNAME),
-                    							 config.getProperty(CONFIG_SLAVE_PASSWORD),
-                    							 config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI));                    
+                    Moria subservice = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_SLAVE_USERNAME), config.getProperty(CONFIG_SLAVE_PASSWORD), config.getProperty(CONFIG_ATTRIBUTE_NAMESPACE_URI), config.getProperty(CONFIG_TRUSTSTORE), config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
                     attributes = subservice.proxyAuthentication(convert(config.getProperty(CONFIG_SLAVE_ATTRIBUTE_REQUEST)), proxyTicket);
                     out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
                     for (int i = 0; i < attributes.length; i++) {
@@ -315,20 +320,17 @@ extends HttpServlet {
     /**
      * Read configuration from the file given by <code>CONFIG_FILENAME</code>
      * and check that all required properties are given.
-     * @throws IllegalStateException If the required property
-     *                               <code>CONFIG_FILENAME</code> is not set,
-     *                               or if the file given by this property could
-     *                               not be read.
+     * @throws IllegalStateException
+     *             If the required property <code>CONFIG_FILENAME</code> is
+     *             not set, or if the file given by this property could not be
+     *             read.
      * @see #REQUIRED_PARAMETERS
      */
-    private Properties getConfig()
-    throws IllegalStateException {
+    private Properties getConfig() throws IllegalStateException {
 
         // Read properties from file.
         final String configFile = System.getProperty(CONFIG_FILENAME);
-        if (configFile == null) {
-            throw new IllegalStateException("Required property no.feide.mellon.demo not set");
-        }
+        if (configFile == null) { throw new IllegalStateException("Required property no.feide.mellon.demo not set"); }
         Properties config = new Properties();
         try {
             config.load(new FileInputStream(new File(configFile)));
@@ -339,9 +341,7 @@ extends HttpServlet {
         // Are we missing some required properties?
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
             String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
-            if ((parvalue == null) || (parvalue.equals(""))) {
-                    throw new IllegalStateException("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
-            }
+            if ((parvalue == null) || (parvalue.equals(""))) { throw new IllegalStateException("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set"); }
         }
         return config;
 
