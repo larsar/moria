@@ -238,9 +238,13 @@ public class LoginServlet extends VelocityServlet {
             bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
 
 
+        String wsName = null;
+        String wsURL  = null;
+
         if (session != null) {
-            String wsName = session.getWebService().getName();
-            String wsURL  = session.getWebService().getUrl();
+            wsName = session.getWebService().getName();
+            wsURL  = session.getWebService().getUrl();
+        }
 
             /* Set template-variables from properties */
             for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
@@ -248,7 +252,7 @@ public class LoginServlet extends VelocityServlet {
                 String value = bundle.getString(key);
                 int index;
             
-                if ((index = value.indexOf("WS_NAME")) != -1) {
+                if ((index = value.indexOf("WS_NAME")) != -1 && wsName != null) {
                     // TODO: Read name+url from web service data.
                     value = value.substring(0, index)+"<A href=\""+wsURL+"\">"+wsName+"</A>"+value.substring(index+7, value.length());
                 }
@@ -256,7 +260,6 @@ public class LoginServlet extends VelocityServlet {
 
                 context.put(key, value);
             }        
-        }
 
 
         /* Set or reset error messages */
