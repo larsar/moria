@@ -1,0 +1,146 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article>
+<artheader>
+  <title>The auth_feide module for Apache 2.0</title>
+  <author>
+    <firstname>Øyvind</firstname>
+    <surname>Grønnesby</surname>
+  </author>
+</artheader>
+<section><title>Introduction</title>
+  <para>
+    mod_auth_feide is an authentication module for Apache built on top of the
+    libfeide library (distributed with this document).  It works in a simple
+    fashion, redirecting users to a webpage at login.feide.no where the users
+    can authenticate themselves with username and password before being
+    redirected back to the resource they requested before authentication.
+  </para>
+  <para>
+    This document contains instruction on how to install the software and
+    how to configure it with Apache.
+  </para>
+</section>
+<section><title>Installation</title>
+  <section><title>Requirements</title>
+    <itemizedlist>
+      <listitem><para>Apache 2.0 with DSO support</para></listitem>
+      <listitem><para>A C compiler</para></listitem>
+      <listitem><para>make</para></listitem>
+      <listitem><para>Perl</para></listitem>
+      <listitem><para>An OS that supports anonymous shared memory</para></listitem>
+    </itemizedlist>
+  </section>
+  <section><title>Summary</title>
+    <orderedlist>
+      <listitem><para><userinput>cd src</userinput></para></listitem>
+      <listitem><para><userinput>make libfeide.a</userinput></para></listitem>
+      <listitem><para><userinput>cd ../apache</userinput></para></listitem>
+      <listitem>
+        <para>
+	  Edit Makefile to suit your system.  You should only need to change
+	  the variable that say where APXS is.
+	</para>
+      </listitem>
+      <listitem><para><userinput>make</userinput></para></listitem>
+      <listitem><para><userinput>$PATH_TO_APACHE/bin/apxs -i -a -n auth_feide mod_auth_feide.la</userinput></para></listitem>
+    </orderedlist>
+  </section>
+</section>
+<section><title>Configuration</title>
+  <section><title>FeideVariable</title>
+    <para>
+      FEIDE works by redirecting users to the authentication service, and
+      getting redirected back.  auth_feide knows that the user has been
+      authenticated when a GET variable is added to the URL that the
+      user requests.  The webserver can decide the name of this variable,
+      nad it is set with FeideVariable.
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideVariable id</userinput></para>
+    </section>
+  </section>
+  <section><title>FeideUrl</title>
+    <para>
+      The URL to the authentication service.
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideUrl https://login.feide.no/moria/Authentication</userinput></para>
+    </section>
+  </section>
+  <section><title>FeideServerUser</title>
+    <para>
+      The authentication service uses HTTP Basic Authentication to protect
+      access to it from different clients (client like auth_feide).  This
+      sets the authentication username.
+    </para>
+    <para>
+      You will probably have been given a value to put here by the
+      authentication service administrators.
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideServerUser uio</userinput></para>
+    </section>
+  </section>
+  <section><title>FeideServerPassword</title>
+    <para>
+      The HTTP Basic Authentication password to go with FeideServerUser.
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideServerPassword turnips</userinput></para>
+    </section>
+  </section>
+  <section><title>FeideDomain</title>
+    <para>
+      To seperate between different resources that need authentication
+      you set different FeideDomains for the resources.
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideDomain internweb</userinput></para>
+    </section>
+  </section>
+
+  <section><title>FeideRequire</title>
+    <para>
+      This controls access for "authenticated" users.  When they are being
+      redirected from the authentication service to the resource they
+      requested, auth_feide will query the authentication service for
+      attributes that contain information about the user.  Then they will
+      be matched against the different FeideRequire statements.
+      FeideRequire takes multiple arguments, where the first argument is
+      alwats the name of the attribute followed by a list of values.  There
+      is an implicit OR between the different vlaues in the list.  If you
+      want to have an AND between the different values, you would have to
+      put them on seperate lines (yes, multiple FeideRequire statements are
+      allowed).
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideRequire eduPersonAffiliation student</userinput></para>
+    </section>
+  </section>
+
+  <section><title>FeideCacheSize</title>
+    <para>
+      The auth_feide module will cache authentications locally so that
+      the user won't have to be redirected to the authentication service
+      for each request.  FeideCacheSize says how many authentications the
+      server will cache.  Note that unlike the above configuration directives
+      this is for the whole server.
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideCacheSize 500</userinput></para>
+    </section>
+  </section>
+  <section><title>FeideCacheAge</title>
+    <para>
+      How long the cached authentications be valid.
+      This is also a global configuration directive.  The value is given
+      in seconds.
+    </para>
+    <section><title>Example</title>
+      <para><userinput>FeideCacheAge 300</userinput></para>
+    </section>
+  </section>
+</section>
+</article>
