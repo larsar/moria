@@ -289,7 +289,7 @@ implements MoriaStore {
         // Get ticket from store.
         MoriaTicket ticket = getFromStore(potentialTicketTypes, ticketId);
         if (ticket == null) {
-            log.logInfo("Ticket '" + ticketId + "' does not exist in the store");
+            log.logInfo("Ticket does not exist in the store", ticketId);
             throw new NonExistentTicketException(ticketId);
         }
 
@@ -309,7 +309,7 @@ implements MoriaStore {
 
         /* Delete the ticket if so indicated. */
         if (!keep) {
-            log.logInfo("Removing ticket '" + ticketId + "' from store");
+            log.logInfo("Removing ticket from store", ticketId);
             removeFromStore(ticket);
         }
 
@@ -754,7 +754,7 @@ implements MoriaStore {
 
         // Sanity check.
         if (node == null) {
-            log.logInfo(ticketType.toString() + " '" + ticketId + "' exists, but cannot be found");
+            log.logInfo(ticketType.toString() + " exists, but cannot be found", ticketId);
             return null;
         }
 
