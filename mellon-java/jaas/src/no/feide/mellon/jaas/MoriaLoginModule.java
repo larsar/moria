@@ -31,9 +31,8 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import javax.xml.rpc.ServiceException;
 
-import no.feide.login.moria.Authentication.AuthenticationIFBindingStub;
-import no.feide.login.moria.Authentication.AuthenticationLocator;
-import no.feide.mellon.jaxrpc.MoriaUserData;
+import no.feide.mellon.MoriaConnector;
+import no.feide.mellon.MoriaUserData;
 
 
 /**
@@ -43,6 +42,11 @@ import no.feide.mellon.jaxrpc.MoriaUserData;
  * be retrieved from the request and supplied to this module. Three callbacks 
  * are required: username and password for the Moria service, and finally
  * the Moria ID that identifies an authenticated Moria user.
+ * 
+ * To run this test you have to supply the name of a moria connector. Use the
+ * following parameter when starting the Java VM:
+ * -Dno.feide.mellon.connector=no.feide.mellon.jaxrpc.MoriaJAXRPCConnector
+ * -Dno.feide.mellon.connector=no.feide.mellon.axis.MoriaAxisConnector
  * 
  * @author Lars Preben S. Arnesen
  */
@@ -94,8 +98,7 @@ public class MoriaLoginModule implements LoginModule {
 			String moriaUser = ((NameCallback)callbacks[0]).getName();
 			String moriaPassword = new String(((PasswordCallback)callbacks[1]).getPassword());
 			name = ((NameCallback)callbacks[2]).getName();
-			
-			MoriaUserData mud = new MoriaUserData(getStub(moriaUser, moriaPassword).getAttributes(name));
+			MoriaUserData mud = new MoriaUserData(getConnector(moriaUser, moriaPassword).getAttributes(name));
 			mud.debugPrintUserData();
 			principalName = (String) mud.getSingleValueAttribute("eduPersonPrincipalName");			
 		} 	
@@ -109,6 +112,9 @@ public class MoriaLoginModule implements LoginModule {
 			throw new LoginException(ioe.toString());
 		} catch(UnsupportedCallbackException ce) {
 			throw new LoginException("Error: "+ce.getCallback().toString());
+		}
+		catch (Exception e) {
+			throw new LoginException(e.toString());
 		}
 		
 		
@@ -175,15 +181,16 @@ public class MoriaLoginModule implements LoginModule {
 	 * @return stub The stub for the Moria web service.
 	 * @throws ServiceException
 	 */
-	private static AuthenticationIFBindingStub getStub(String moriaUsername, String moriaPassword) throws ServiceException {
-		AuthenticationIFBindingStub stub;
-		AuthenticationLocator authnLocator = new AuthenticationLocator();
-		stub = (AuthenticationIFBindingStub) authnLocator.getAuthenticationIFPort();
+	private  MoriaConnector getConnector(String moriaUsername, String moriaPassword) throws Exception {
+		MoriaConnector moria = null;
 		
-		stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, moriaUsername);
-		stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, moriaPassword);
-		
-		return stub;
+		String connectorClass = System.getProperty("no.feide.mellon.connector");
+		if (connectorClass == null) 
+			throw new Exception("No connector specified.");
+				
+		moria = (MoriaConnector)Class.forName(connectorClass).newInstance();		
+		moria.connect("demo", "demo");
+		return moria;
 	}	
 	
 }
