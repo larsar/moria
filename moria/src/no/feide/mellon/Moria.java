@@ -20,8 +20,9 @@ package no.feide.mellon;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.logging.Logger;
 import java.util.HashMap;
+import java.util.Vector;
+import java.util.logging.Logger;
 import javax.xml.rpc.Stub;
 import no.feide.moria.service.*;
 
@@ -130,7 +131,7 @@ public class Moria {
                     newVals.add(oldVals[j]);
                 newAttrs.put(oldAttrs[i].getName(), newVals);
             }
-            return map;
+            return newAttrs;
             
         } catch (RemoteException e) {
             log.severe("RemoteException caught and re-thrown as MoriaException");
