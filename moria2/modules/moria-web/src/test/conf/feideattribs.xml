@@ -3,17 +3,17 @@
 <attributefile>
 
 <attribute> 
-  <key>federationFeideSchemaVersion</key>
-  <resourcebundle>rb_federationFeideSchemaVersion</resourcebundle>  
+  <key>uid</key>
+  <resourcebundle>rb_uid</resourcebundle>
   <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#federationFeideSchemaVersion</link>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#uid</link>
 </attribute>
 
 <attribute> 
-  <key>mail</key>
-  <resourcebundle>rb_mail</resourcebundle>
+  <key>cn</key>
+  <resourcebundle>rb_cn</resourcebundle>
   <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#mail</link>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#cn</link>
 </attribute>
 
 <attribute> 
@@ -31,10 +31,10 @@
 </attribute>
 
 <attribute> 
-  <key>eduOrgLegalName</key>
-  <resourcebundle>rb_eduOrgLegalName</resourcebundle>
+  <key>mail</key>
+  <resourcebundle>rb_mail</resourcebundle>
   <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgLegalName</link>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#mail</link>
 </attribute>
 
 <attribute> 
@@ -42,6 +42,41 @@
   <resourcebundle>rb_norEduPersonNIN</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonNIN</link>
+</attribute>
+
+<attribute> 
+  <key>o</key>
+  <resourcebundle>rb_o</resourcebundle>
+  <relevance>Mandatory</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#o</link>
+</attribute>
+
+<attribute> 
+  <key>eduOrgLegalName</key>
+  <resourcebundle>rb_eduOrgLegalName</resourcebundle>
+  <relevance>Mandatory</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgLegalName</link>
+</attribute>
+
+<attribute> 
+  <key>eduPersonAffiliation</key>
+  <resourcebundle>rb_eduPersonAffiliation</resourcebundle>
+  <relevance>Mandatory</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonAffiliation</link>
+</attribute>
+
+<attribute> 
+  <key>ou</key>
+  <resourcebundle>rb_ou</resourcebundle>
+  <relevance>Mandatory</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#ou</link>
+</attribute>
+
+<attribute> 
+  <key>norEduOrgUniqueIdentifier</key>
+  <resourcebundle>rb_norEduOrgUniqueIdentifier</resourcebundle>
+  <relevance>Mandatory</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUniqueIdentifier</link>
 </attribute>
 
 <attribute> 
@@ -59,45 +94,10 @@
 </attribute>
 
 <attribute> 
-  <key>cn</key>
-  <resourcebundle>rb_cn</resourcebundle>
+  <key>federationFeideSchemaVersion</key>
+  <resourcebundle>rb_federationFeideSchemaVersion</resourcebundle>  
   <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#cn</link>
-</attribute>
-
-<attribute> 
-  <key>uid</key>
-  <resourcebundle>rb_uid</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#uid</link>
-</attribute>
-
-<attribute> 
-  <key>o</key>
-  <resourcebundle>rb_o</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#o</link>
-</attribute>
-
-<attribute> 
-  <key>ou</key>
-  <resourcebundle>rb_ou</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#ou</link>
-</attribute>
-
-<attribute> 
-  <key>eduPersonAffiliation</key>
-  <resourcebundle>rb_eduPersonAffiliation</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonAffiliation</link>
-</attribute>
-
-<attribute> 
-  <key>norEduOrgUniqueIdentifier</key>
-  <resourcebundle>rb_norEduOrgUniqueIdentifier</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUniqueIdentifier</link>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#federationFeideSchemaVersion</link>
 </attribute>
 
 <attribute> 
