@@ -2,6 +2,11 @@
 
 <!-- $Id$ -->
 
+<!DOCTYPE project [
+	  <!ENTITY % locator-entities SYSTEM "file:locator.ent">
+	  %locator-entities;
+	  ]>
+
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Data Store</name>
@@ -15,128 +20,20 @@
 
   <dependencies>
 
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-      <version>1.3.2</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>javagroups</groupId>
-      <artifactId>jgroups-all</artifactId>
-      <version>2.2.1</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-aop</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-cache</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-common</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-jmx</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-system</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.8</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.6.2</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xmlParserAPIs</artifactId>
-      <version>2.2.1</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
+    &dep-concurrent;
+    &dep-trove;
+    &dep-javagroups;
+    &dep-jboss-aop;
+    &dep-jboss-cache;
+    &dep-jboss-common;
+    &dep-jboss-j2ee;
+    &dep-jboss-jmx;
+    &dep-jboss-system;
+    &dep-xerces-xercesImpl;
+    &dep-xerces-xmlParserAPIs;
+    &dep-log4j;
+    &dep-moria-log;
+    &dep-commons-logging;
 
   </dependencies>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>src/conf</directory>
-        <includes>
-          <include>*.xml</include>
-          <include>*.properties</include>
-        </includes>
-      </resource>
-    </resources>
-
-    <unitTest>
-      <resources>
-	<resource>
-          <directory>src/test/conf</directory>
-          <includes>
-            <include>*.xml</include>
-            <include>*.properties</include>
-          </includes>
-	</resource>
-      </resources>
-    </unitTest>
-  </build>
 </project>
