@@ -4,13 +4,17 @@
 
 <project>
   <extend>${basedir}/../../project.xml</extend>
-  <name>Moria NextGen Log API</name>
+  <name>Moria Log API</name>
   <id>moria-log</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
   <package>no.feide.moria.log</package>
 
   <shortDescription>The log component of Moria, handling all logging
   in the system.</shortDescription>
+
+  <description/>
+
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-log</siteDirectory>
 
   <dependencies>
   </dependencies>
