@@ -72,6 +72,11 @@ final class AuthorizationClient {
      * The organizations that the service belongs to.
      */
     private final HashSet affiliation;
+    
+    /**
+     * The organizations that can use the service.
+     */
+    private final HashSet orgsAllowed;
 
     /**
      * The operations the client can perform.
@@ -119,6 +124,8 @@ final class AuthorizationClient {
      * @param affiliation
      *            The organizations affiliated to the service. Cannot be
      *            <code>null</code>.
+     * @param orgsAllowed
+     *            The organizations that are allowed to use the service. Cannot be null.
      * @param operations
      *            Operations that the service can perform. Cannot be
      *            <code>null</code>.
@@ -127,33 +134,34 @@ final class AuthorizationClient {
      * @param subsystems
      *            Subsystems the service can create proxy tickets for. May be
      *            <code>null</code>.
-     * @throws IllegalArgumentException
+     * 
+     *      * @throws IllegalArgumentException
      *             If any of <code>name</code>,<code>displayName</code>,
      *             <code>url</code>,<code>language</code>,
      *             <code>home</code>,<code>affiliation</code>,
+     * 			   <code>allowedOrg</code>, 
      *             <code>operations</code>, or <code>attributes</code> are
      *             <code>null</code> or an empty string (where applicable).
      */
-    AuthorizationClient(final String name, final String displayName, final String url, final String language, final String home, final HashSet affiliation, final HashSet operations, final HashSet subsystems, final HashMap attributes)
-    throws IllegalArgumentException {
+      AuthorizationClient(final String name, final String displayName, final String url, final String language, final String home, final HashSet affiliation, final HashSet orgsAllowed, final HashSet operations, final HashSet subsystems, final HashMap attributes) {
 
-        // Sanity checks.
-        if (name == null || name.equals(""))
-            throw new IllegalArgumentException("Name must be a non-empty string.");
-        if (displayName == null || displayName.equals(""))
-            throw new IllegalArgumentException("Display name must be a non-empty string.");
-        if (url == null || url.equals(""))
-            throw new IllegalArgumentException("URL must be a non-empty string.");
-        if (language == null || language.equals(""))
-            throw new IllegalArgumentException("Language must be a non-empty string.");
-        if (home == null || home.equals(""))
-            throw new IllegalArgumentException("Home must be a non-empty string.");
-        if (affiliation == null)
-            throw new IllegalArgumentException("Affiliation cannot be null");
-        if (operations == null)
-            throw new IllegalArgumentException("Operations cannot be null");
-        if (attributes == null)
-            throw new IllegalArgumentException("Attributes cannot be null");
+        if (name == null || name.equals("")) { throw new IllegalArgumentException("Name must be a non empty string."); }
+
+        if (displayName == null || displayName.equals("")) { throw new IllegalArgumentException("displayName must be a non empty string."); }
+
+        if (url == null || url.equals("")) { throw new IllegalArgumentException("URL must be a non empty string."); }
+
+        if (language == null || language.equals("")) { throw new IllegalArgumentException("Language must be a non empty string."); }
+
+        if (home == null || home.equals("")) { throw new IllegalArgumentException("Home must be a non empty string."); }
+
+        if (affiliation == null) { throw new IllegalArgumentException("Affiliation cannot be null."); }
+        
+        if (orgsAllowed == null) { throw new IllegalArgumentException("OrgsAllowed cannot be null."); }
+
+        if (operations == null) { throw new IllegalArgumentException("Operations cannot be null."); }
+
+        if (attributes == null) { throw new IllegalArgumentException("Attribtues cannot be null."); }
 
         // Assign.
         this.name = name;
@@ -162,6 +170,7 @@ final class AuthorizationClient {
         this.language = language;
         this.home = home;
         this.affiliation = affiliation;
+        this.orgsAllowed = orgsAllowed;
         this.operations = operations;
         this.subsystems = subsystems;
         this.attributes = attributes;
@@ -262,6 +271,28 @@ final class AuthorizationClient {
 
         return true;
     }
+    
+    /**
+     * Returns true for the organizations that are allowed to use this service
+     * 
+     * @param organization
+     * 				The organization requesting authorization
+     * @return True if the organization can use this service				
+     */
+    boolean allowUserorg(final String organization){
+        
+        //Sanity check.
+        if (organization == null) {
+            log.logInfo("organization = " + organization);
+            throw new IllegalArgumentException("Organization cannot be null");
+        }
+        //If no allowed organizations are defined, then all denied
+        if (orgsAllowed == null) {
+            log.logInfo("orgsAllowed = " + orgsAllowed);
+            return false;
+        }
+        return orgsAllowed.contains(organization);
+    }
 
 
     /**
@@ -309,7 +340,7 @@ final class AuthorizationClient {
         if (object == this) { return true; }
         if (object instanceof AuthorizationClient) {
             final AuthorizationClient client = (AuthorizationClient) object;
-            if (client.getName().equals(name) && client.getDisplayName().equals(displayName) && client.getURL().equals(url) && client.getLanguage().equals(language) && client.getHome().equals(home) && client.getAffiliation().equals(affiliation) && client.getOperations().equals(operations) && client.getSubsystems().equals(subsystems) && client.getAttributes().equals(attributes)) { return true; }
+            if (client.getName().equals(name) && client.getDisplayName().equals(displayName) && client.getURL().equals(url) && client.getLanguage().equals(language) && client.getHome().equals(home) && client.getAffiliation().equals(affiliation) && client.getOrgsAllowed().equals(orgsAllowed) && client.getOperations().equals(operations) && client.getSubsystems().equals(subsystems) && client.getAttributes().equals(attributes)) { return true; }
         }
         return false;
     }
@@ -409,6 +440,15 @@ final class AuthorizationClient {
     HashSet getAffiliation() {
 
         return new HashSet(affiliation);
+    }
+    
+    /**
+     * Returns the organizations that are allowed to use the client
+     * @return the organizations.
+     */
+    HashSet getOrgsAllowed() {
+
+        return new HashSet(orgsAllowed);
     }
 
 

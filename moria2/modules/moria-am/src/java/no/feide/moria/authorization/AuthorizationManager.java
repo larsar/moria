@@ -196,7 +196,7 @@ public final class AuthorizationManager {
         /* Validate element */
         if (element == null) { throw new IllegalArgumentException("Element cannot be null."); }
 
-        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") && !element.getName().equalsIgnoreCase("Affiliation")) { throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems' or 'Affiliation'"); }
+        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") && !element.getName().equalsIgnoreCase("Affiliation")&& !element.getName().equalsIgnoreCase("OrgsAllowed")) { throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems', 'Affiliation' or 'OrgsAllowed'"); }
 
         /* Create AuthorizationAttribute of all child elements */
         final Iterator it = (element.getChildren()).iterator();
@@ -235,6 +235,7 @@ public final class AuthorizationManager {
         final String home;
         final HashSet oper;
         final HashSet affil;
+        final HashSet orgsAllowed;
         HashSet subsys = null;
         final HashMap attrs;
 
@@ -251,6 +252,7 @@ public final class AuthorizationManager {
         attrs = parseAttributesElem(element.getChild("Attributes"));
         oper = parseListElem(element.getChild("Operations"));
         affil = parseListElem(element.getChild("Affiliation"));
+        orgsAllowed = parseListElem(element.getChild("OrgsAllowed"));
 
         // Parse subsystems element, if it exists.
         Element child = element.getChild("Subsystems");
@@ -258,9 +260,8 @@ public final class AuthorizationManager {
             subsys = parseListElem(child);
         else
             System.err.println("Subsystems is NULL!!!");
-
-        // Create and return client.
-        return new AuthorizationClient(name, displayName, url, language, home, affil, oper, subsys, attrs);
+        
+        return new AuthorizationClient(name, displayName, url, language, home, affil, orgsAllowed, oper, subsys, attrs);
     }
 
 
@@ -396,6 +397,28 @@ public final class AuthorizationManager {
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
 
         return authzClient.allowOperations(requestedOperations);
+    }
+    
+    /**
+     * Checks if the organization is allowed to use the service
+     * 
+     * @param servicePrincipal
+     *            the indentifier of the client
+     * @param userorg
+     *            the user's organization
+     * @return true if the organization is allowed to use the service, false if the client does 
+     * 		      not exists, or if the organization is not allowed to use the service.
+     * @throws UnknownServicePrincipalException
+     *             if the servicePrincipal does not exist
+     */
+    public boolean allowUserorg(final String servicePrincipal, final String userorg)
+    throws UnknownServicePrincipalException {
+
+        final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+
+        if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
+
+        return authzClient.allowUserorg(userorg);
     }
 
 
@@ -546,6 +569,29 @@ public final class AuthorizationManager {
 
         return new HashSet(authzClient.getAttributes().keySet());
     }
+    
+    /**
+     * Returns the organizations that can use this service.
+     * @param servicePrincipal
+     *            the principal of the requested service
+     * @return A string array with the names of the allowed organizations for
+     *         the service.
+     * @throws UnknownServicePrincipalException
+     *             if the servicePrincipal does not exist
+     * @see AuthorizationClient#getOrgsNotAllowed()
+     */
+    public HashSet getOrgsAllowed(final String servicePrincipal)
+    throws UnknownServicePrincipalException {
+
+        /* Validate argument */
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+
+        final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+        if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
+
+        return authzClient.getOrgsAllowed();
+    }
+
 
 
     /**
