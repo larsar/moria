@@ -21,22 +21,22 @@
 package no.feide.moria.controller;
 
 import no.feide.moria.authorization.AuthorizationManager;
-import no.feide.moria.authorization.UnknownServicePrincipalException;
 import no.feide.moria.authorization.UnknownAttributeException;
+import no.feide.moria.authorization.UnknownServicePrincipalException;
 import no.feide.moria.configuration.ConfigurationManager;
 import no.feide.moria.configuration.ConfigurationManagerException;
-import no.feide.moria.store.InvalidTicketException;
-import no.feide.moria.store.MoriaAuthnAttempt;
-import no.feide.moria.store.MoriaStore;
-import no.feide.moria.store.MoriaStoreFactory;
-import no.feide.moria.store.MoriaStoreException;
+import no.feide.moria.directory.Credentials;
+import no.feide.moria.directory.DirectoryManager;
+import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
 import no.feide.moria.log.MessageLogger;
-import no.feide.moria.directory.DirectoryManager;
-import no.feide.moria.directory.Credentials;
-import no.feide.moria.directory.backend.BackendException;
-import no.feide.moria.directory.backend.AuthenticationFailedException;
+import no.feide.moria.store.InvalidTicketException;
+import no.feide.moria.store.MoriaAuthnAttempt;
+import no.feide.moria.store.MoriaStore;
+import no.feide.moria.store.MoriaStoreException;
+import no.feide.moria.store.MoriaStoreFactory;
+import no.feide.moria.store.NonExistentTicketException;
 
 import javax.servlet.ServletContext;
 import java.util.HashMap;
@@ -187,13 +187,18 @@ public class MoriaController {
     /* For Login Servlet */
 
     /**
-     * @param loginTicket
-     * @param ssoTicket
+     * @param loginTicketId
+     * @param ssoTicketId
      * @return
      * @throws UnknownTicketException
      */
-    public static String attemptSingleSignOn(final String loginTicket, final String ssoTicket)
+    public static String attemptSingleSignOn(final String loginTicketId, final String ssoTicketId)
             throws UnknownTicketException, InoperableStateException, IllegalInputException {
+
+        /* Check controller status */
+        if (!ready) {
+            throw new InoperableStateException("Controller is not ready");
+        }
 
         // If the login ticket is invalid throw exception
         // if (!validateLoginTicket(loginTicket))
@@ -202,16 +207,29 @@ public class MoriaController {
         // TODO: Must return two tickets SSO + service
 
         /* Validate arguments */
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalInputException("loginTicketId must be a non-empty string.");
+        }
+        if (ssoTicketId == null || ssoTicketId.equals("")) {
+            throw new IllegalInputException("ssoTicketId must be a non-empty string.");
+        }
 
-        /* Get cached attributes */
-
+        try {
         /* Put transient attributes into authnattempt */
+        store.setTransientAttributes(loginTicketId, ssoTicketId);
 
         /* Get service ticket */
-
-        /* Return service ticket */
-
-        return null;
+        return store.createServiceTicket(loginTicketId);
+        } catch (InvalidTicketException e) {
+            // TODO: Message log
+            throw new UnknownTicketException("The ticket does not exist.");
+        } catch (NonExistentTicketException e) {
+            // TODO: Access log
+            throw new UnknownTicketException("The ticket does not exist.");
+        } catch (MoriaStoreException e) {
+            // TODO: Message log
+            throw new InoperableStateException("Moria is unavailable, the store is down.");
+        }
     }
 
     /**
@@ -225,7 +243,7 @@ public class MoriaController {
      * @throws IllegalInputException
      */
     public static Map attemptLogin(final String loginTicketId, final String ssoTicketId, final String userId,
-                                       final String password)
+                                   final String password)
             throws UnknownTicketException, InoperableStateException, IllegalInputException, AuthenticationException,
                    DirectoryUnavailableException {
 
@@ -251,7 +269,10 @@ public class MoriaController {
         /* Find authentication attempt */
         MoriaAuthnAttempt authnAttempt;
         try {
-            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
+            authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
+        } catch (NonExistentTicketException e) {
+            // TODO: Access log
+            throw new UnknownTicketException("Ticket does not exist");
         } catch (InvalidTicketException e) {
             // TODO: Access log
             throw new UnknownTicketException("Ticket does not exist");
@@ -269,15 +290,18 @@ public class MoriaController {
             // TODO: Access log
             throw new AuthenticationException("Wrong username/password");
         } //catch (BackendException e) {
-            // TODO: Access log
-            //throw new DirectoryUnavailableException("Directory unavailable. Authentication failed.");
+        // TODO: Access log
+        //throw new DirectoryUnavailableException("Directory unavailable. Authentication failed.");
         //}
 
         /* Remove existing SSO ticket */
         try {
             store.removeSSOTicket(ssoTicketId);
-        } catch (InvalidTicketException e) {
+        } catch (NonExistentTicketException e) {
             /* The ticket has probably already timed out. */
+        } catch (InvalidTicketException e) {
+            // TODO: Message log
+            /* This should not happen unless the ticket is not a SSO ticket. Can't do much about it. */
         } catch (MoriaStoreException e) {
             // TODO: Message log
             throw new InoperableStateException("Store is unavailable");
@@ -290,6 +314,9 @@ public class MoriaController {
             serviceTicketId = store.createServiceTicket(loginTicketId);
             store.setTransientAttributes(loginTicketId, attributes);
             newSSOTicketId = store.cacheUserData(attributes);
+        } catch (NonExistentTicketException e) {
+            // TODO: Message log, should not happen due to validation above
+            throw new UnknownTicketException("Ticket does not exist");
         } catch (InvalidTicketException e) {
             // TODO: Message log, should not happen due to validation above
             throw new UnknownTicketException("Ticket does not exist");
@@ -358,12 +385,6 @@ public class MoriaController {
         }
 
         /* URL validation */
-        if (returnURLPrefix == null || returnURLPrefix.equals("")) {
-            throw new IllegalInputException("URLPrefix cannot be null or an empty string.");
-        }
-        if (returnURLPostfix == null) {
-            throw new IllegalInputException("URLPostfix cannot be null.");
-        }
         if (!(isLegalURL(returnURLPrefix + "FakeMoriaID" + "urlPostfix"))) {
             throw new IllegalInputException("URLPrefix and URLPostfix combined does not make a valid URL.");
         }
@@ -373,7 +394,7 @@ public class MoriaController {
             return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix,
                                             forceInteractiveAuthentication, servicePrincipal);
         } catch (MoriaStoreException e) {
-            throw new InoperableStateException("Moria is unavailable, store is down");
+            throw new InoperableStateException("Moria is unavailable, the store is down");
         }
     }
 
@@ -397,8 +418,19 @@ public class MoriaController {
             throw new IllegalInputException("servicePrincipal must be a non-empty string.");
         }
 
-        /* Get authnattempt */
-        return store.getUserData(serviceTicketId, servicePrincipal);
+        /* Return the attributes */
+        try {
+            return store.getAuthnAttempt(serviceTicketId, false, servicePrincipal).getTransientAttributes();
+        } catch (NonExistentTicketException e) {
+            // TODO: Log access
+            throw new UnknownTicketException("The ticket does not exist.");
+        } catch (InvalidTicketException e) {
+            // TODO: Log access?  Throw unknownticketexception os authorizationexception?
+            throw new AuthorizationException("The ticket is invalid.");
+        } catch (MoriaStoreException e) {
+            // TODO: Message log
+            throw new InoperableStateException("Moria is unavailable, the store is down.");
+        }
     }
 
     /**
@@ -622,9 +654,12 @@ public class MoriaController {
 
         MoriaAuthnAttempt authnAttempt;
         try {
-            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
-        } catch (InvalidTicketException e) {
+            authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
+        } catch (NonExistentTicketException e) {
             // TODO: Log
+            throw new UnknownTicketException("Ticket does not exist");
+        } catch (InvalidTicketException e) {
+            // TODO: Log, security error?
             throw new UnknownTicketException("Ticket does not exist");
         } catch (MoriaStoreException e) {
             // TODO: Log
@@ -658,9 +693,12 @@ public class MoriaController {
 
         MoriaAuthnAttempt authnAttempt;
         try {
-            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
-        } catch (InvalidTicketException e) {
+            authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
+        }  catch (NonExistentTicketException e) {
             // TODO: Log
+            throw new UnknownTicketException("Ticket does not exist.");
+        } catch (InvalidTicketException e) {
+            // TODO: Log, security violation?
             throw new UnknownTicketException("Ticket does not exist.");
         } catch (MoriaStoreException e) {
             // TODO: Log
