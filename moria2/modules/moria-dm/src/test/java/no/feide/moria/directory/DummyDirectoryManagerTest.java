@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import no.feide.moria.directory.backend.AuthenticationFailedException;
+import no.feide.moria.directory.backend.BackendException;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -91,21 +92,18 @@ extends TestCase {
             
             // Test successful authentication.
             dm.setConfig(config);
-            while (!dm.ready())
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // Ignored.
-                }
             HashMap attributes = dm.authenticate(goodCredentials, new String[] {});
             
             // Verify attributes.
             Assert.assertEquals("Attributes were returned", attributes.size(), 0);
          
             
-        } catch (DirectoryManagerException e) {
+        } catch (AuthenticationFailedException e) {
             e.printStackTrace();
             Assert.fail("Unexpected DirectoryManagerException");
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
@@ -124,12 +122,6 @@ extends TestCase {
             
             // Test successful authentication.
             dm.setConfig(config);
-            while (!dm.ready())
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // Ignored.
-                }            
             HashMap attributes = dm.authenticate(goodCredentials, goodRequest);
             
             // Verify attributes.
@@ -139,9 +131,12 @@ extends TestCase {
             Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
             Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
             
-        } catch (DirectoryManagerException e) {
+        } catch (AuthenticationFailedException e) {
             e.printStackTrace();
-            Assert.fail("Unexpected DirectoryManagerException");
+            Assert.fail("Unexpected AuthenticationFailedException");
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
@@ -159,13 +154,7 @@ extends TestCase {
         try {
             
             // Test unsuccessful authentication.
-            dm.setConfig(config);
-            while (!dm.ready())
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // Ignored.
-                }            
+            dm.setConfig(config);     
             HashMap attributes = null;
             attributes = dm.authenticate(badCredentials, new String[] {});
             Assert.assertNull("Attributes were returned", attributes);
@@ -173,6 +162,9 @@ extends TestCase {
             
         } catch (AuthenticationFailedException e) {
             // Expected.
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
@@ -196,6 +188,9 @@ extends TestCase {
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
             Assert.fail("Unexpected AuthenticationFailedException");
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
         }
 
     }
@@ -214,13 +209,6 @@ extends TestCase {
             
             // Test bogus config.
             dm.setConfig(config);   
-            while (!dm.ready())
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // Ignored.
-                    System.err.println("xxs");
-                }
             Assert.fail("Managed to set up bad configuration");                
             
         } catch (DirectoryManagerConfigurationException e) {
