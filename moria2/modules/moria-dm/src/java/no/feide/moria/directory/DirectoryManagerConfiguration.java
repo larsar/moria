@@ -52,9 +52,10 @@ public class DirectoryManagerConfiguration {
      *            <code>DirectoryManager.setConfig(Properties)</code>. Must
      *            include the property given by
      *            <code>DirectoryManagerConfiguration.CONFIGURATION_PROPERTY</code>.
-     * @throws IllegalArgumentException
-     *             If <code>config</code> is <code>null</code>, or if the
-     *             property given by
+     * @throws NullPointerException
+     *             If <code>config</code> is <code>null</code>.
+     * @throws DirectoryManagerConfigurationException
+     *             If the property given by
      *             <code>DirectoryManagerConfiguration.CONFIGURATION_PROPERTY</code>
      *             is not set or is an empty string. Also thrown if unable to
      *             read from or parse the configuration file.
@@ -67,7 +68,7 @@ public class DirectoryManagerConfiguration {
 
         // Sanity check.
         if (config == null)
-            throw new IllegalArgumentException("Configuration properties cannot be NULL");
+            throw new NullPointerException("Configuration properties cannot be NULL");
 
         // Preparing to read configuration from file.
         final String configFile = (String) config.get(CONFIGURATION_PROPERTY);
@@ -111,12 +112,19 @@ public class DirectoryManagerConfiguration {
      * considered.
      * @param rootElement
      *            The root configuration element. Cannot be <code>null</code>.
+     * @throws NullPointerException
+     *             If <code>rootElement</code> is <code>null</code>.
+     * @throws DirectoryManagerConfigurationException
+     *             If index file (attribute <code>file</code> in element
+     *             <code>Index</code>) is not set, or if index update
+     *             frequency (attribute <code>update</code> in element
+     *             <code>Index</code>) is not set or is less than zero.
      */
     private void parseIndexConfig(final Element rootElement) {
 
         // Sanity check.
         if (rootElement == null)
-            throw new IllegalArgumentException("Missing root element in configuration file");
+            throw new NullPointerException("Root element cannot be NULL");
 
         // Get the index element, with sanity checks.
         final Element indexElement = rootElement.getChild("Index");
@@ -173,6 +181,12 @@ public class DirectoryManagerConfiguration {
      *            The root configuration element. Cannot be <code>null</code>.
      * @return The backend configuration element, as per
      *         <code>Element.clone()</code>.
+     * @throws NullPointerException
+     *             If <code>rootElement</code> is <code>null</code>.
+     * @throws DirectoryManagerConfigurationException
+     *             If backend factory class (attribute <code>class</code> in
+     *             element <code>Backend</code>) is not set, or if the given
+     *             backend factory class cannot be resolved.
      * @see Element#clone()
      * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#setConfig(Element)
      */
@@ -180,7 +194,7 @@ public class DirectoryManagerConfiguration {
 
         // Sanity check.
         if (rootElement == null)
-            throw new IllegalArgumentException("Missing root element in configuration file");
+            throw new NullPointerException("Root element cannot be NULL");
 
         // Get the backend element, with sanity checks.
         final Element backendElement = rootElement.getChild("Backend");
