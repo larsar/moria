@@ -2,11 +2,15 @@
 
 <DirectoryManagerConfiguration>
 
-  <Index file="src/test/conf/DummyIndex.object"
+	<Index file="src/test/conf/DummyIndex.object"
          update="5"/>
   
-  <Backend>
-    <Class name="no.feide.moria.directory.backend.DummyBackendFactory"/>
-  </Backend>
+	<Backend class="no.feide.moria.directory.backend.DummyBackendFactory">
+		<User name="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base">
+			<Attribute name="someAttribute">
+				<Value>someValue</Value>
+			</Attribute>
+		</User>
+	</Backend>
 
 </DirectoryManagerConfiguration>
