@@ -163,7 +163,7 @@ public class DirectoryManager {
      *            The username to look up.
      * @return <code>true</code> if the user element corresponding to the
      *         username actually exists, otherwise <code>false</code>.
-     * @throws DirectoryManagerConfigurationException
+     * @throws IllegalStateException
      *             If attempting to use this method without successfully using
      *             <code>setConfig(Properties)</code> first.
      * @see DirectoryManagerBackend#userExists(String)
@@ -172,7 +172,7 @@ public class DirectoryManager {
 
         // Sanity check.
         if (configuration == null)
-            throw new DirectoryManagerConfigurationException("Configuration not set");
+            throw new IllegalStateException("Configuration not set");
 
         // TODO: Implement a backend pool.
 
@@ -223,13 +223,12 @@ public class DirectoryManager {
      * @throws AuthenticationFailedException
      *             If we managed to access the backend, and the authentication
      *             failed. In other words, the user credentials are incorrect.
-     * @throws DirectoryManagerConfigurationException
-     *             If attempting to use this method without successfully using
-     *             <code>setConfig(Properties)</code> first.
+     *             Also thrown if the user credentials are <code>null</code>.
      * @throws BackendException
      *             If there was a problem accessing the backend.
      * @throws IllegalStateException
-     *             If the index has not been initialized prior to usage.
+     *             If attempting to use this method without successfully using
+     *             <code>setConfig(Properties)</code> first.
      * @see setConfig(Properties)
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
@@ -238,9 +237,9 @@ public class DirectoryManager {
 
         // Sanity checks.
         if (configuration == null)
-            throw new DirectoryManagerConfigurationException("Configuration not set");
-        if (index == null)
-            throw new IllegalStateException("Index has not been initialized");
+            throw new IllegalStateException("Configuration not set");
+        if (userCredentials == null)
+            throw new AuthenticationFailedException("User credentials cannot be NULL");
 
         // TODO: Implement a backend pool.
 
