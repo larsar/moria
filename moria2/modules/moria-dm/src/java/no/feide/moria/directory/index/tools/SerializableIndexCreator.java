@@ -63,7 +63,7 @@ public class SerializableIndexCreator {
                 final List bases = realm.getChildren("Base");
                 for (int k = 0; k < bases.size(); k++) {
                     Element base = (Element) bases.get(k);
-                    System.out.println('\t' + realm.getAttributeValue("name") + "  " + base.getAttributeValue("name"));
+                    System.out.println('\t' + realm.getAttributeValue("name") + " = " + base.getAttributeValue("name"));
                     generatedIndex.addAssociation(realm.getAttributeValue("name"), base.getAttributeValue("name"));
                 }
 
