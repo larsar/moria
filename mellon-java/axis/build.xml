@@ -6,15 +6,15 @@
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
 
-  <target name="prepare"
+  <target name="axis:prepare"
           description="Mellon API: Prepare build directory"> 
     <mkdir dir="build"/>
     <mkdir dir="dist"/>
   </target>
 
-  <target name="build"
+  <target name="axis:build"
           description="Mellon demo: Compile source"
-          depends="prepare">
+          depends="axis:prepare">
     <javac srcdir="src"
            debug="true"
            destdir="build"
@@ -28,7 +28,7 @@
     <jar destfile="dist/moriaAxisConnector.jar" basedir="build"/>
   </target>
 
-  <target name="javadoc"
+  <target name="axis:javadoc"
           description="Mellon API: Generate JavaDoc">
     <javadoc sourcepath="."
              destdir="build/javadoc"
@@ -40,7 +40,7 @@
     </javadoc>
   </target>
 
-  <target name="clean"
+  <target name="axis:clean"
           description="Mellon API: Clean up">
     <delete dir="build"/>
     <delete dir="dist"/>
