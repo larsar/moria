@@ -721,4 +721,29 @@ public class AuthorizationManagerTest extends TestCase {
         assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "illegal"}));
         assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"illegal"}));
     }
+
+    public void testGetClientProperties() {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        Properties props = new Properties();
+        props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
+        authMan.setConfig(props);
+        
+        /* Invalid arguments */
+        try {
+            authMan.getServiceProperties(null);
+            fail("IllegalArgumentException should be raised, null value");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            authMan.getServiceProperties("");
+            fail("IllegalArgumentException should be raised, empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        assertNull("Properties should be null", authMan.getServiceProperties("DoesNotExist"));
+        assertNotNull("Properties should not be null", authMan.getServiceProperties("test"));
+
+    }
+
 }

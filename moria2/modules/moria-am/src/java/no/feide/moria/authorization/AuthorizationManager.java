@@ -381,4 +381,20 @@ public class AuthorizationManager {
             // MessageLogger.logWarning("Error during authorization database generation. Still using old database.", e);
         }
     }
+
+    public HashMap getServiceProperties(String servicePrincipal) {
+       /* Validate parameters */
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
+
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+        if (authzClient == null) {
+            return null;
+        } else {
+            return authzClient.getProperties();
+        }
+
+    }
+
 }
