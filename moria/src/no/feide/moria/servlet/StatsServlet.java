@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -152,7 +151,8 @@ public class StatsServlet extends VelocityServlet {
 				context.put("userRole", "user");
             	
             	if (ws != null) {
-            		context.put("sortedWsNames", new String[]{serviceName});
+            		if (wsStats.containsKey(serviceName))
+            			context.put("sortedWsNames", new String[]{serviceName});
             		context.put("serviceName", ws.getName());
             	}
             	
