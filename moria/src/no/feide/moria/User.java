@@ -304,10 +304,7 @@ public class User {
                             }
                         }
                     }
-                    
-                } catch (ConfigurationException e) {
-                    log.severe("ConfigurationException caught and re-thrown as BackendException");
-                    throw new BackendException(e);
+
                 } catch (TimeLimitExceededException e) {
                     log.severe("TimelimitExceededException caught after "+(System.currentTimeMillis()-searchStart)+"ms and re-thrown as BackendException");
                     throw new BackendException(e);
@@ -327,10 +324,23 @@ public class User {
                 refEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
                 refEnv.put(Context.REFERRAL, "throw");  // To catch referrals.
                 refEnv.put(Context.SECURITY_PROTOCOL, "ssl");
-                refEnv = e.getReferralContext(refEnv).getEnvironment();
+                try {
+                    refEnv = e.getReferralContext(refEnv).getEnvironment();
+                } catch (TimeLimitExceededException ee) {
+                    log.severe("Time limit exceeded when getting referral context");
+                }
                 log.info("Matched "+pattern+" to referral "+refEnv.get(Context.PROVIDER_URL));
-                ldap.close();
-                ldap = new InitialLdapContext(refEnv, null);
+                try {
+                    ldap.close();
+                } catch (TimeLimitExceededException ee) {
+                    log.warning("Time limit exceeded when closing LIMS connection; ignored");
+                }
+                try {
+                    ldap = new InitialLdapContext(refEnv, null);
+                } catch (TimeLimitExceededException ee) {
+                    log.severe("Time limit exceeded when creating LDAP context to "+refEnv.get(Context.PROVIDER_URL));
+                    throw new BackendException("Time limit exceeded when creating LDAP context");
+                }
                 return ldapSearch(pattern);
                 
             }
@@ -346,6 +356,9 @@ public class User {
                 throw new BackendException(e);
             }
             
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as BackendException");
+            throw new BackendException(e);
         } catch (NamingException e) {
             e.printStackTrace();
             log.severe("NamingException caught and re-thrown as BackendException");
