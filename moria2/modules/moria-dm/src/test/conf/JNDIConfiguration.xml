@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<DirectoryManagerConfiguration>
+
+	<Index file="src/test/conf/DummyIndex.object"
+           update="120"/>
+  
+	<Backend class="no.feide.moria.directory.backend.JNDIBackendFactory">
+	    <JNDI timeout="10">
+	    	<Security>
+	    		<Truststore file="filename" password="password"/>
+	    	</Security>
+		</JNDI>
+	</Backend>
+
+</DirectoryManagerConfiguration>
