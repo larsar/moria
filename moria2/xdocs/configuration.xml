@@ -29,7 +29,6 @@ $Id$
 
   <body>
 
-    <section name="Introduction">
       <p>
         Moria is software for providing authentication over HTTP using multiple directory backends.
         The software designed with a servlet frontend both to the service provider and the user;
@@ -42,7 +41,7 @@ $Id$
       <p>
         This document describes the configuration and setup of Moria from scratch.
       </p>
-    </section>
+
 
     <section name="Presentation">
       <p>
@@ -61,9 +60,11 @@ $Id$
         </source>
         <br/><b>TODO: Logging property</b>
       </p>
+      </section>
 
-      <subsection name="Configuration manager">
+      <section name="Configuration manager">
         <p>
+          <b>TODO: Required system property</b><br/>
           The Configuration Manager reads and watches the configuratin file for all modules.
           When a module's configuration file is changed, the CM pushes the updated configuration to the module.
           Configuration files for all modules can be changed runtime without restart of moria,
@@ -90,9 +91,9 @@ no.feide.moria.configuration.am=authorization.xml
 # Path to the web module's configuration file.
 no.feide.moria.configuration.web=web.properties
         </source>
-      </subsection>
+      </section>
 
-      <subsection name="Web module">
+      <section name="Web module">
         <p>
           The web module's configuration consists mostly of language and cookie information used by the login and logout
           servlet. On the other hand the Axis servlet uses only the URL prefix and the ticket parameter name to generate
@@ -143,9 +144,9 @@ no.feide.moria.web.cookie.org.ttl=240
 # Default language for Moria
 no.feide.moria.web.login.default_language=en
         </source>
-      </subsection>
+      </section>
 
-      <subsection name="Authorization manager">
+      <section name="Authorization manager">
         <p>
           The authorization manager is configured by a XML file which contains a <i>ClientAuthorizationConfig</i>,
           which contains a <i>Client</i> element for every web service allowed to use Moria. Service authentication is
@@ -265,17 +266,17 @@ no.feide.moria.web.login.default_language=en
 
 </ul>&lt;/ClientAuthorizationConfig&gt;<br/>
         </p>
-      </subsection>
+      </section>
 
-      <subsection name="Store manager">
-      </subsection>
+      <section name="Store manager">
+      </section>
 
-      <subsection name="Directory manager">
-      </subsection>
+      <section name="Directory manager">
+      </section>
 
-      <subsection name="Logging">
-      </subsection>
-    </section>
+      <section name="Logging">
+      </section>
+
 
   </body>
 </document>
