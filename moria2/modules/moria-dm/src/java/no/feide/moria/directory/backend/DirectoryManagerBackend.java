@@ -24,9 +24,11 @@ public interface DirectoryManagerBackend {
      *            The username to check for.
      * @return <code>true</code> if we can find a user element with the given
      *         username, otherwise <code>false</code>.
-     * @throws BackendException
+     * @throws UnknownException
+     *             If an exception occurs that we do not know how to explicitly
+     *             handle.
      */
-    public boolean userExists(String username) throws BackendException;
+    public boolean userExists(String username) throws UnknownException;
 
 
     /**
@@ -42,9 +44,12 @@ public interface DirectoryManagerBackend {
      *         authentication. Otherwise, an empty <code>HashMap</code>.
      * @throws AuthenticationFailedException
      *             If the authentication fails.
+     * @throws UnknownException
+     *             If an exception occurs that we do not know how to explicitly
+     *             handle. 
      */
     public HashMap authenticate(Credentials userCredentials, String[] attributeRequest)
-    throws AuthenticationFailedException;
+    throws AuthenticationFailedException, UnknownException;
 
 
     /**

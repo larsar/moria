@@ -10,6 +10,7 @@ import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
 import no.feide.moria.directory.backend.DirectoryManagerBackend;
 import no.feide.moria.directory.backend.DirectoryManagerBackendFactory;
+import no.feide.moria.directory.backend.UnknownException;
 import no.feide.moria.directory.index.DirectoryManagerIndex;
 import no.feide.moria.directory.index.IndexedReference;
 import no.feide.moria.log.MessageLogger;
@@ -227,11 +228,14 @@ public class DirectoryManager {
      * @throws DirectoryManagerConfigurationException
      *             If attempting to use this method without successfully using
      *             <code>setConfig(Properties)</code> first.
+     * @throws UnknownException
+     *             If an exception occurs that we do not know how to explicitly
+     *             handle.
      * @see setConfig(Properties)
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws AuthenticationFailedException {
+    throws AuthenticationFailedException, UnknownException {
 
         // Sanity check.
         if (configuration == null)
