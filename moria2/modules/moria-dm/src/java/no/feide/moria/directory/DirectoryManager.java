@@ -73,11 +73,16 @@ public class DirectoryManager {
         }
 
         // Update the index; (re-)start the index updater.
-        if (indexUpdater == null)
+        if (indexUpdater == null) {
+            
+            // Initial call to setConfig(); manually update the index.
+            updateIndex();
             indexUpdater = new Timer(true); // Daemon.
+        }
         else
             indexUpdater.cancel();
-        indexUpdater.scheduleAtFixedRate(new IndexUpdater(this, currentConfiguration.getIndexFilename()), 0, currentConfiguration.getIndexUpdateFrequency());
+        long frequency = currentConfiguration.getIndexUpdateFrequency();
+        indexUpdater.scheduleAtFixedRate(new IndexUpdater(this, currentConfiguration.getIndexFilename()), frequency, frequency);
 
         // Set the backend factory class.
         // TODO: Initialize backend configuration update.
@@ -171,21 +176,6 @@ public class DirectoryManager {
         
         backend.close();
         return attributes;
-
-    }
-
-
-    /**
-     * Is the Directory Manager ready for use?
-     * @return <code>true</code> if the configuration has been set and the
-     *         index initialized, otherwise <code>false</code>.
-     */
-    public boolean ready() {
-
-        if ((currentConfiguration == null) || (index == null))
-            return false;
-        else
-            return true;
 
     }
 
