@@ -26,8 +26,9 @@ import java.util.logging.Logger;
  * The attributes are flattened (for optimization) from a set of profiles,
  * allowed and denied attributes.
  */
-public class AuthorizationClient {
+class AuthorizationClient {
 
+    // TODO: Change logger
     /**
      * Used for logging.
      */
@@ -81,16 +82,16 @@ public class AuthorizationClient {
     private HashMap attributes = new HashMap();
 
     /**
-     * Private constructor. Should not be called by any one.
-     */
-    private AuthorizationClient() {
-        // Constructor is not allowed to be called without parameters.
-    }
-
-    /**
      * Constructor
      *
-     * @param id Unique id for the web service.
+     * @param name serviceID
+     * @param displayName full name of service
+     * @param url URL to the service main page
+     * @param language default language for the service
+     * @param home service home organization
+     * @param affiliation the organizations affiliated to the service
+     * @param operations operations that the service can perform
+     * @param attributes attributes the service can access
      */
     AuthorizationClient(String name, String displayName, String url, String language, String home, HashSet affiliation, HashSet operations, HashMap attributes) {
 
@@ -145,7 +146,8 @@ public class AuthorizationClient {
 
         for (int i = 0; i < requestedAttributes.length; i++) {
             if (!attributes.containsKey(requestedAttributes[i])) {
-                log.warning("Service " + name + "can access attributes" + attributes.keySet() + " only, not [" + requestedAttributes[i] + ']');
+                // TODO: Access log
+                log.warning("Service '" + name + "' can access attributes" + attributes.keySet() + " only, not [" + requestedAttributes[i] + ']');
                 allow = false;
                 break;
             }
@@ -203,8 +205,8 @@ public class AuthorizationClient {
 
         for (int i = 0; i < requestedOperations.length; i++) {
             if (!operations.contains(requestedOperations[i])) {
-                log.warning("Service " + name + "can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
-
+                // TODO: Access log
+                log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
                 return false;
             }
         }
@@ -215,7 +217,7 @@ public class AuthorizationClient {
     /**
      * Compares object with another, returnes true if all fields are equal.
      *
-     * @param Object The object to compare with
+     * @param object The object to compare with
      * @return True if objects are equal
      */
     public boolean equals(Object object) {
