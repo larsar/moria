@@ -72,17 +72,17 @@ extends HttpServlet {
      * <li><code>RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE</code>
      * <li><code>RequestUtil.PROP_LOGIN_URL_PREFIX</code>
      * </ul>
-     * @see RequestUtil.PROP_COOKIE_SSO
-     * @see RequestUtil.PROP_COOKIE_SSO_TTL
-     * @see RequestUtil.PROP_COOKIE_DENYSSO
-     * @see RequestUtil.PROP_COOKIE_DENYSSO_TTL
-     * @see RequestUtil.PROP_COOKIE_LANG
-     * @see RequestUtil.PROP_COOKIE_LANG_TTL
-     * @see RequestUtil.PROP_COOKIE_ORG
-     * @see RequestUtil.PROP_COOKIE_ORG_TTL
-     * @see RequestUtil.PROP_LOGIN_TICKET_PARAM
-     * @see RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE
-     * @see RequestUtil.PROP_LOGIN_URL_PREFIX
+     * @see RequestUtil#PROP_COOKIE_SSO
+     * @see RequestUtil#PROP_COOKIE_SSO_TTL
+     * @see RequestUtil#PROP_COOKIE_DENYSSO
+     * @see RequestUtil#PROP_COOKIE_DENYSSO_TTL
+     * @see RequestUtil#PROP_COOKIE_LANG
+     * @see RequestUtil#PROP_COOKIE_LANG_TTL
+     * @see RequestUtil#PROP_COOKIE_ORG
+     * @see RequestUtil#PROP_COOKIE_ORG_TTL
+     * @see RequestUtil#PROP_LOGIN_TICKET_PARAM
+     * @see RequestUtil#PROP_LOGIN_DEFAULT_LANGUAGE
+     * @see RequestUtil#PROP_LOGIN_URL_PREFIX
      */
     final String[] REQUIRED_PARAMETERS = {RequestUtil.PROP_COOKIE_DENYSSO, RequestUtil.PROP_LOGIN_TICKET_PARAM, RequestUtil.PROP_COOKIE_SSO, RequestUtil.PROP_COOKIE_LANG, RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE, RequestUtil.PROP_COOKIE_DENYSSO_TTL, RequestUtil.PROP_COOKIE_ORG, RequestUtil.PROP_COOKIE_ORG_TTL, RequestUtil.PROP_COOKIE_SSO_TTL, RequestUtil.PROP_COOKIE_LANG_TTL, RequestUtil.PROP_LOGIN_URL_PREFIX};
 
@@ -358,7 +358,7 @@ extends HttpServlet {
      * @throws IllegalStateException
      *             If the configuration has not been set, or if any required
      *             configuration parameters are missing.
-     * @see REQUIRED_PARAMETERS
+     * @see #REQUIRED_PARAMETERS
      */
     private Properties getConfig() {
 
