@@ -69,7 +69,7 @@
        	<th> <%= bundle.getString("tc_relevance") %> </th></tr>
 		<% 
         final int n = tabledata.size();
-        String piclink = "http://localhost:8080/moria/Picture";
+        String piclink = (String)request.getAttribute(RequestUtil.PIC_LINK);
         for (int i = 0; i < n; i += 4) {
           String link = (String) tabledata.get(i);
           String description = (String) tabledata.get(i+1);

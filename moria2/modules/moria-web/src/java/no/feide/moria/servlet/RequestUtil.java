@@ -248,6 +248,11 @@ public final class RequestUtil {
      * Link to faq, shown on the login page.
      */
     public static final String FAQ_LINK = PATH_PREFIX + "faqlink";
+    
+    /**
+     * Link to pictures from the information service.
+     */
+    public static final String PIC_LINK = PATH_PREFIX + "piclink";
 
     /**
      * Name of property from authorization module giving the default language

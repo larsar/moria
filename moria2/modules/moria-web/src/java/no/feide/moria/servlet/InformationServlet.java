@@ -85,6 +85,7 @@ public class InformationServlet extends HttpServlet {
      * <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
      * <li><code>RequestUtil.PROP_INFORMATION_URL_PREFIX</code>
      * <li><code>RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML</code>
+     * <li><code>RequestUtil.PIC_LINK</code>
      * </ul>
      * @see RequestUtil#PROP_COOKIE_LANG
      * @see RequestUtil#PROP_COOKIE_LANG_TTL
@@ -92,6 +93,7 @@ public class InformationServlet extends HttpServlet {
      * @see RequestUtil#PROP_LOGIN_TICKET_PARAM
      * @see RequestUtil#PROP_INFORMATION_URL_PREFIX
      * @see RequestUtil#PROP_INFORMATION_FEIDEATTRIBS_XML
+     * @see RequestUtil#PIC_LINK
      */
     private static final String[] REQUIRED_PARAMETERS = {
         RequestUtil.PROP_COOKIE_LANG,
@@ -99,7 +101,8 @@ public class InformationServlet extends HttpServlet {
         RequestUtil.PROP_COOKIE_DENYSSO,
         RequestUtil.PROP_LOGIN_TICKET_PARAM,
         RequestUtil.PROP_INFORMATION_URL_PREFIX,
-        RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML
+        RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML,
+        RequestUtil.PIC_LINK
     };
 
     /**
@@ -366,6 +369,7 @@ public class InformationServlet extends HttpServlet {
                                  config.getProperty(RequestUtil.PROP_INFORMATION_URL_PREFIX) + "?"
                                  + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + ticketId);
             request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
+            request.setAttribute(RequestUtil.PIC_LINK, config.getProperty(RequestUtil.PIC_LINK));
 
             // only print language menu if SSO is enabled
             final String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO), request.getCookies());
