@@ -27,17 +27,11 @@
     <servlet-class>no.feide.moria.servlet.LogoutServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
-
-  <servlet>
-    <servlet-name>Client</servlet-name>
-    <servlet-class>no.feide.moria.servlet.ClientServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
   
   <servlet>
     <servlet-name>Demo</servlet-name>
     <servlet-class>no.feide.moria.servlet.DemoServlet</servlet-class>
-    <load-on-startup>6</load-on-startup>
+    <load-on-startup>5</load-on-startup>
   </servlet>
 
   <servlet>
@@ -49,7 +43,7 @@
   <servlet>
     <servlet-name>InformationServlet</servlet-name>
     <servlet-class>no.feide.moria.servlet.InformationServlet</servlet-class>
-    <load-on-startup>5</load-on-startup>
+    <load-on-startup>4</load-on-startup>
   </servlet>
   
    <servlet>
@@ -72,11 +66,6 @@
   <servlet>
     <servlet-name>Login.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/login.jsp</jsp-file>
-  </servlet>
-
-  <servlet>
-    <servlet-name>Client.JSP</servlet-name>
-    <jsp-file>/WEB-INF/jsp/client.jsp</jsp-file>
   </servlet>
 
   <servlet>
@@ -135,30 +124,20 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>Client</servlet-name>
-    <url-pattern>/Client</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
     <servlet-name>Demo</servlet-name>
     <url-pattern>/Demo</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>AxisServlet</servlet-name>
-    <url-pattern>/v1_0/Authentication</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>AxisServlet</servlet-name>
-    <url-pattern>/v1_1/Authentication</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>AxisServlet</servlet-name>
     <url-pattern>/v2_0/Authentication</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>AxisServlet</servlet-name>
+    <url-pattern>/v2_1/Authentication</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>Status.JSP</servlet-name>
     <url-pattern>/Status</url-pattern>
