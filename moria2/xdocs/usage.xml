@@ -29,10 +29,41 @@ $Id$
 
   <body>
 
-    <section name="Intro">
+    <section name="Introduction">
 
-        <b>TODO: General explanation and WSDL documentation</b>
+      <p>
+        Moria is implemented as a <emph>web service</emph>, thus requires that
+        the web service uses SOAP to talk to Moria. The easiest way to use Moria is
+        to use a SOAP implementation for the same programming language used
+        by the service (that are going to use Moria). See the last section
+        for more information about SOAP implementations for different programming
+        languages.
+      </p>
+      <p>
+        Normally the SOAP implementation contains tools for generating stubs from
+        the WSDL interface. The stubs works as the local representation of Moria
+        and makes the communication between the web service and Moria totally transparent.
+        How to use the stubs varies between SOAP implementations thus the SOAP
+        implementation's documentation contains important documentation to understand
+        how to use a webservice as Moria.
+      </p>
+    </section>
+    <section name="WSDL Interface">
+      <b>TODO: Finish</b>
 
+      <subsection name="Version 1.0">
+      </subsection>
+
+      <subsection name="Version 1.1">
+      </subsection>
+    </section>
+
+    <section name="SOAP Implementations">
+      <table>
+        <tr><th>Language</th><th>Name</th><th>Tested with Moria</th></tr>
+        <tr><td>C</td><td>XXXX</td><td>Yes</td></tr>
+        <tr><td>Java</td><td>Axis</td><td>Yes</td></tr>
+      </table>
     </section>
   </body>
 </document>
