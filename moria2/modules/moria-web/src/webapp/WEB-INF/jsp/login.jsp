@@ -51,12 +51,11 @@ function fokuser(){document.loginform.username.focus();}
 
         <tr>
           <td valign="middle">&nbsp;
-            <a href="http://www.feide.no/"><img src="/element/feidelogo.png" alt="FEIDE-logo" border="0"/></a>
           </td>
           <td valign="middle">
             <table summary="" cellspacing="0" cellpadding="0" border="0" >
               <tr>
-                <td valign="top">-&nbsp;</td>
+                <td valign="top"><font size="+3"Moria</font> -&nbsp;</td>
                 <td><font size="-1"><b><%=bundle.getString("body_title")%></b><br>
 
 </font></td>
@@ -135,7 +134,7 @@ function fokuser(){document.loginform.username.focus();}
 
 
 
-                  <tr>    
+                  <tr>
                     <td colspan="3" valign="top">
                     <input type="submit" value="<%=bundle.getString("form_login")%>">
                     </td>
@@ -178,7 +177,6 @@ function fokuser(){document.loginform.username.focus();}
       <tr valign="top">
         <td>&nbsp;</td>
         <td>
-        <a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a>
 	</td>
       </tr>
     </table>
@@ -186,7 +184,7 @@ function fokuser(){document.loginform.username.focus();}
 
 <%} else {%>
 
-<td><a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a>
+<td></td>
 <%}%>
 
 
