@@ -739,6 +739,18 @@ static int mf_global_init(apr_pool_t *pconf, apr_pool_t *plog,
 	apr_size_t mem_size;
 	auth_mellon_server_rec *cfg;
 	int i;
+	const char *userdata_key = "auth_mellon_init";
+	void *data;
+
+	/* we want to make sure that the contents of this function is ran once,
+     * and onle once. */
+	apr_pool_userdata_get(&data, userdata_key, s->process->pool);
+	if (!data) {
+		apr_pool_userdata_set((conse void *)1, userdata_key,
+		                      apr_pool_cleanup_null, s->process->pool);
+	} else {
+		return OK;
+	}
 	
 	cfg = ap_get_module_config(s->module_config,
 	                           &auth_mellon_module);
