@@ -382,6 +382,13 @@ public class AuthorizationManager {
         }
     }
 
+    /**
+     * Returns the service properties for a given service.
+     *
+     * @param servicePrincipal
+     * @return a hashmap with properties for a given service
+     * @see AuthorizationClient#getProperties()
+     */
     public HashMap getServiceProperties(String servicePrincipal) {
        /* Validate parameters */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
@@ -397,6 +404,14 @@ public class AuthorizationManager {
 
     }
 
+    /**
+     * Returns the seclevel for a set of attributes for a given service.
+     *
+     * @param servicePrincipal
+     * @param requestedAttributes
+     * @return integer >= 0
+     * @see AuthorizationClient#getSecLevel(java.lang.String[])
+     */
     public int getSecLevel(String servicePrincipal, String[] requestedAttributes) {
         /* Validate arguments */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
