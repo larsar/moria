@@ -220,8 +220,6 @@ public class SessionStore {
 
         Vector invalidatedSessions = new Vector();
         Date start = new Date();
-               
-        log.warning("Number of sessions: "+sessions.size());
 
        // Find all timedout sessions.
         synchronized (sessions) {
@@ -240,7 +238,7 @@ public class SessionStore {
                 deleteSession((Session)enum.nextElement());
             }
         }
-        log.warning(invalidatedSessions.size()+" sessions invalidated in "+(new Date().getTime()-start.getTime())+ " ms.");
+        log.info(invalidatedSessions.size()+" of "+sessions.size()+" sessions invalidated in "+(new Date().getTime()-start.getTime())+ " ms.");
 
     }
 

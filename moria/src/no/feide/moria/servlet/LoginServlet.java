@@ -92,11 +92,12 @@ public class LoginServlet extends VelocityServlet {
         
         try {
             /* Initialize session timeout timer */
-            int sessionDelay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
-            log.info("Starting time out service with delay= "+sessionDelay+"ms");
-            sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelay);
+            int sessionDelayMin = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
+             // Minutes to milliseconds
+            log.config("Starting time out service. Repeat every "+sessionDelayMin+" minutes.");
+            sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelayMin*60*1000);
         
-            // Set local pointer to session store.
+            /* Set local pointer to session store. */
             sessionStore = SessionStore.getInstance();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as ServletException");
@@ -121,20 +122,17 @@ public class LoginServlet extends VelocityServlet {
      */
     protected Properties loadConfiguration(ServletConfig config )
         throws IOException, FileNotFoundException {
-  
         log.finer("loadConfiguration(ServletConfig)");
-
 
         loginURL = System.getProperty("no.feide.moria.LoginURL");
 
         Properties p = new Properties();
         String path = System.getProperty("no.feide.moria.servlet.TemplateDir");
 
-
-        /* If path is null, log it. */ // Should also abort?
+        /* If path is null, log it. */ 
         if (path == null) {
-            log.severe("Path to Velocity templates not set. (Properties, moria.properties)");
-            path = "/";
+            log.severe("Path to Velocity templates not set.");
+            throw new FileNotFoundException("Template path not found.");
         }
 
         p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH,  path);
@@ -409,7 +407,7 @@ public class LoginServlet extends VelocityServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Get session
+        /* Get session */
         try {
             session = sessionStore.getSession(id);
         }
@@ -423,7 +421,7 @@ public class LoginServlet extends VelocityServlet {
         }
 
 
-        // Authenticate
+        /* Authenticate */
         try {
             Credentials c = new Credentials(username, password);
             if (!session.authenticateUser(c)) {
@@ -444,13 +442,11 @@ public class LoginServlet extends VelocityServlet {
         } 
         
         catch (BackendException e) {
-            // A user-friendly message would be preferable...
             log.severe("BackendException caught and re-thrown as ServletException");
                 return genLoginTemplate(request, response, context, null, GENERIC);
         } 
 
         catch (SessionException e) {
-            // A user-friendly message would be preferable...
             log.severe("SessionException caught and re-thrown as ServletException");
                 return genLoginTemplate(request, response, context, null, GENERIC);
         }

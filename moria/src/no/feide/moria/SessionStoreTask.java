@@ -11,7 +11,7 @@ public class SessionStoreTask
 extends TimerTask {
 
     /** Session time out value. */
-    private int timeout = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue()*60*1000; // Minutes to milliseconds
+    private int timeoutMin;
 
 
     /** Used for logging. */
@@ -29,6 +29,8 @@ extends TimerTask {
     public SessionStoreTask()
     throws SessionException {
         sessionStore = SessionStore.getInstance();
+        timeoutMin = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue(); // Minutes to milliseconds
+        log.config("Session time out set to "+timeoutMin+" minutes.");
     }
      
     
@@ -37,7 +39,7 @@ extends TimerTask {
      **/
     public void run() {
         log.fine("run()");
-        sessionStore.checkTimeout(timeout);
+        sessionStore.checkTimeout(timeoutMin*60*1000);
     }    
     
 }
