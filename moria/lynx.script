@@ -1,0 +1,10 @@
+# Command logfile created by Lynx 2.8.4rel.1 (17 Jul 2001)
+# Arg0 = lynx
+# Arg1 = -auth=manager:manager
+# Arg2 = -cmd-log=test.log
+# Arg3 = https://klungset.uninett.no:8443/feide-moria/FeideAuthentication?WSDL
+key d
+key ^J
+key ^J
+key q
+key y
