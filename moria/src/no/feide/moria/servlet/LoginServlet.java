@@ -254,18 +254,12 @@ public class LoginServlet extends VelocityServlet {
         String selectedLanguage = defaultLang;
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
-        
+
         if (session != null) {
             sessionID = session.getID();
-
-            if (!session.authenticationInitiated()) {
-                log.warning("User tried to authenticate without requesting login page first. "+session.getID());
-                throw new Exception("Login page has to be requested before attempting login.");
-            }
-
         }
 
-        if (acceptLanguage == null || acceptLanguage.equals("")) 
+       if (acceptLanguage == null || acceptLanguage.equals("")) 
             acceptLanguage = "no";
 
         StringTokenizer tokenizer = new StringTokenizer(acceptLanguage, ",");
@@ -392,6 +386,7 @@ public class LoginServlet extends VelocityServlet {
             context.remove("errorDescription");
         }
 
+
         if (sessionID != null) { 
             context.put("loginURL", loginURL+"?id="+sessionID);
 
@@ -443,6 +438,7 @@ public class LoginServlet extends VelocityServlet {
     private Template loginPage(HttpServletRequest request, HttpServletResponse response, Context context) throws ParseErrorException, ResourceNotFoundException, Exception {
 
         log.finer("loginPage(HttpServletRequest, HttpServletResponse, Context");
+
         /* Get session ID */
         String id = request.getParameter("id");
         log.fine("SessionID: "+id);
@@ -490,7 +486,7 @@ public class LoginServlet extends VelocityServlet {
                     if (cachedAttributes != null && cachedAttributes.size() > 0) {
 
                         if (session.allowSso()) {
-                            log.info("SSO Redirect.");
+                            log.info("Redirect to WebService (SSO), "+session.getWebService().getName());
                             session.setCachedAttributes(cachedAttributes);
                             sessionStore.deleteSession(existingSession);
                             session.unlock(existingSession.getUser());
@@ -507,7 +503,7 @@ public class LoginServlet extends VelocityServlet {
         }
         
         catch (NoSuchSessionException e) {
-            log.warning("Session not found: "+id);
+            log.warning("Request Login page: DENIED, Session not found: "+id);
             return genLoginTemplate(request, response, context, null, NOSESSION);
         }
 
@@ -562,12 +558,20 @@ public class LoginServlet extends VelocityServlet {
             return genLoginTemplate(request, response, context, null, GENERIC);
         }
 
+        String log_prefix = "Authentication attempt from "+username+": ";
+
+        if (!session.authenticationInitiated()) {
+            log.warning(log_prefix+"DENIED, Login page not requested SID="+session.getID());
+            throw new Exception("Premature login attempt.");
+        }
+
+
 
         /* Authenticate */
         try {
             Credentials c = new Credentials(username, password);
             if (!session.authenticateUser(c)) {
-                log.info("Authentication failed");
+                log.info(log_prefix+"FAILED");
         
                 /* If the user has exceeded the maximum login
                 attempts, the session is now gone. */
@@ -598,6 +602,8 @@ public class LoginServlet extends VelocityServlet {
         /* Success; redirect to the original session URL and
          * include the updated session ID in URL and HttpSession. */
         
+        log.info(log_prefix+"SUCCESS");
+
         HttpSession httpSession = 
             ((HttpServletRequest)request).getSession(true);
         
@@ -608,7 +614,7 @@ public class LoginServlet extends VelocityServlet {
         Cookie cookie = new Cookie("realm", realm);
         int validDays = new Integer(Configuration.getProperty("no.feide.moria.servlet.realmCookieValidDays")).intValue();
         cookie.setMaxAge(validDays*24*60*60); // Days to seconds
-        cookie.setComment("Home institution");
+        cookie.setComment("Home organization");
         cookie.setVersion(1);
         response.addCookie(cookie);
 
@@ -627,7 +633,7 @@ public class LoginServlet extends VelocityServlet {
     throws ConfigurationException {
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
         response.setHeader("Location", session.getRedirectURL());
-        log.info("Redirect to Mellon: "+session.getRedirectURL());
+        log.info("Authenticated user, redirected back to: "+session.getRedirectURL());
     }
 
 

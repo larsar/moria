@@ -181,35 +181,42 @@ implements AuthenticationIF, ServiceLifecycle {
     throws RemoteException {
         log.finer("requestSession(String[], String, String, boolean)");
         
-        /* Check if prefix and postfix, together with a possible
-         * session ID, is a valid URL. */
-        String simulatedURL = prefix+"MORIAID"+postfix;
-        try {
-            new URL(simulatedURL);
-        } catch (MalformedURLException e) {
-            log.severe("Malformed URL: "+simulatedURL);
-            throw new RemoteException("Malformed URL: "+simulatedURL);
-        }
 
         /* Look up service authorization data. */
         Principal p = ctx.getUserPrincipal();
         String serviceName = null;
         if (p != null)
             serviceName = p.getName();
-	log.fine("Client service requesting session: "+serviceName);
         
+        String log_prefix = "Session requested by "+serviceName+": ";
+
+
+        /* Check if prefix and postfix, together with a possible
+         * session ID, is a valid URL. */
+        String simulatedURL = prefix+"MORIAID"+postfix;
+        try {
+            new URL(simulatedURL);
+        } catch (MalformedURLException e) {
+            log.warning(log_prefix+"DENIED, Invalid URL");
+            throw new RemoteException("Malformed URL: "+simulatedURL);
+        }
+
+
+        log.info("ServiceName: "+serviceName+", Attrs: "+attributes+", DenySSO: "+denySso+", URL: "+simulatedURL);
+
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
-            log.warning("Unauthorized service access: "+serviceName);
+            log.warning(log_prefix+"DENIED, Unauthorized");
             throw new RemoteException("Web Service not authorized for use with Moria");
         } else if (!ws.allowAccessToAttributes(attributes)) {
-            log.warning("Attribute request from service "+serviceName+" refused");
+            log.warning(log_prefix+"DENIED, Authorization faliure");
             throw new RemoteException("Access to one or more attributes prohibited");
         }
 
         try {
             Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);      
-            
+            log.info(log_prefix+"ACCEPTED, SID="+session.getID());
+
             /* Turn of SSO if required by web service. */
             if (denySso) 
                 session.denySso();
@@ -240,6 +247,7 @@ implements AuthenticationIF, ServiceLifecycle {
     throws RemoteException {
         log.finer("getAttributes(String)");
 
+
 	try {
 
 	    /* Look up session and check the client identity. */
@@ -250,20 +258,24 @@ implements AuthenticationIF, ServiceLifecycle {
             if (ctx.getUserPrincipal() != null)
                 serviceName = ctx.getUserPrincipal().getName();
             
+            String log_prefix = "Attributes requested by "+serviceName;
+
+            /* Reauthorize the WebService */
             if (!session.getWebService().getId().equals(serviceName)) {
-                log.severe("WebService ("+serviceName+") tried to get unauthorized access to auth session.");
+                log.warning(log_prefix+"DENIED, Unauthorized (Wrong web service)");
                 throw new RemoteException("Access denied");
             }
 
 
             if (session.isLocked()) {
-                log.warning("Service ("+serviceName+") tried to access locked session: "+session.getID());
+                log.warning(log_prefix+"DENIED, Session is locked");
                 throw new RemoteException("No such session.");
             }
 
 	    assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
 
 	    /* Return attributes. */
+            log.info(log_prefix+"ACCEPTED, SID="+session.getID());
             HashMap result = session.getAttributes();
             return result;
 
