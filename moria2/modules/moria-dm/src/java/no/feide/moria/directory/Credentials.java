@@ -28,15 +28,22 @@ public class Credentials {
      *            empty string.
      * @throws NullPointerException
      *             If either <code>username</code> or <code>password</code>
-     *             is <code>null</code> or an empty string.
+     *             is <code>null</code>.
+     * @throws IllegalArgumentException
+     *             If either <code>username</code> or <code>password</code>
+     *             is an empty string.
      */
     public Credentials(final String username, final String password) {
 
         // Sanity checks.
-        if ((username == null) || (username.length() == 0))
-            throw new NullPointerException("User name cannot be NULL or an empty string");
-        if ((password == null || password.length() == 0))
-            throw new NullPointerException("Password cannot be NULL or an empty string");
+        if (username == null)
+            throw new NullPointerException("User name cannot be NULL");
+        if (username.length() == 0)
+            throw new NullPointerException("User name cannot be an empty string");
+        if (password == null)
+            throw new NullPointerException("Password cannot be NULL");
+        if (password.length() == 0)
+            throw new NullPointerException("Password cannot be an empty string");
 
         this.username = username;
         this.password = password;
