@@ -32,7 +32,16 @@ import java.io.IOException;
  * @version $Revision$
  */
 public class LoginServlet extends HttpServlet {
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+
+    /**
+     * Handles the GET requests.
+     *
+     * @param request           the HTTP request object
+     * @param response          the HTTP response object
+     * @throws IOException
+     * @throws ServletException
+     */
+    public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
         request.setAttribute("foo", "bar");
 
