@@ -179,8 +179,6 @@ class AuthorizationClient {
 
         for (int i = 0; i < requestedAttributes.length; i++) {
             if (!attributes.containsKey(requestedAttributes[i])) {
-                // TODO: Access log, move to controller
-                // log.warning("Service '" + name + "' can access attributes" + attributes.keySet() + " only, not [" + requestedAttributes[i] + ']');
                 allow = false;
                 break;
             }
@@ -248,8 +246,6 @@ class AuthorizationClient {
 
         for (int i = 0; i < requestedOperations.length; i++) {
             if (!operations.contains(requestedOperations[i])) {
-                // TODO: Access log, move to controller
-                // log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
                 return false;
             }
         }
@@ -276,8 +272,6 @@ class AuthorizationClient {
 
         for (int i = 0; i < requestedSubsystems.length; i++) {
             if (!subsystems.contains(requestedSubsystems[i])) {
-                // TODO: Access log, move to Controller
-                // log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
                 return false;
             }
         }
