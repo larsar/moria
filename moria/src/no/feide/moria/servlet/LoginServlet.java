@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Cookie;
 
 import no.feide.moria.Credentials;
 import no.feide.moria.SessionException;
@@ -198,9 +199,6 @@ public class LoginServlet extends VelocityServlet {
 
 
 
-
-
-
     /**
      *  Creates a Template based on the login tamplate file. If an
      *  error message is supplied, the error message is displayed. If
@@ -213,8 +211,7 @@ public class LoginServlet extends VelocityServlet {
         String sessionID = null;
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
-
-
+        
         if (session != null)
             sessionID = session.getID();
 
@@ -278,19 +275,30 @@ public class LoginServlet extends VelocityServlet {
             wsURL  = session.getWebService().getUrl();
         }
 
-            /* Set template-variables from properties */
-            for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
-                String key = (String) e.nextElement();
-                String value = bundle.getString(key);
-                int index;
+        /* Set template-variables from properties */
+        for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
+            String key = (String) e.nextElement();
+            String value = bundle.getString(key);
+            int index;
             
-                /* This changes WS_NAME to hyperlink in all property
-                 * strings from the bundle.*/
-                if ((index = value.indexOf("WS_NAME")) != -1 && wsName != null) {
-                    value = value.substring(0, index)+"<A href=\""+wsURL+"\">"+wsName+"</A>"+value.substring(index+7, value.length());
-                }
-                context.put(key, value);
-            }        
+            /* This changes WS_NAME to hyperlink in all property
+             * strings from the bundle.*/
+            if ((index = value.indexOf("WS_NAME")) != -1 && wsName != null) {
+                value = value.substring(0, index)+"<A href=\""+wsURL+"\">"+wsName+"</A>"+value.substring(index+7, value.length());
+            }
+
+            context.put(key, value);
+        }   
+
+        /* Get realm from cookie. */
+        Cookie[] cookies = request.getCookies();
+        context.put("preset_realm", "");
+        for (int i = 0; i < cookies.length; i++) {
+            if (cookies[i].getName().equals("realm")) {
+                context.put("preset_realm", cookies[i].getValue());
+            }
+        }
+
 
         /* Set or reset error messages */
         if (errorType != null) {
@@ -356,9 +364,10 @@ public class LoginServlet extends VelocityServlet {
     private Template loginPage(HttpServletRequest request, HttpServletResponse response, Context context) throws ParseErrorException, ResourceNotFoundException, Exception {
 
         log.finer("loginPage(HttpServletRequest, HttpServletResponse, Context");
-        
+        /* Get session ID */
         String id = request.getParameter("id");
-        
+                
+
         if (request.getParameter("showAttrs") != null)
             showAllAttributes = request.getParameter("showAttrs").equals("yes");
         else 
@@ -366,9 +375,6 @@ public class LoginServlet extends VelocityServlet {
 
         try {
             Session session = sessionStore.getSession(id);
-            /*sessionStore.renameSession(session); Not nessesary
-              unless a session lock (that requires this method to be
-              called before authentication attempt) is in place. */
             return genLoginTemplate(request, response, context, session, null);
         }
         
@@ -405,7 +411,11 @@ public class LoginServlet extends VelocityServlet {
         Session session = null;
         String id       = request.getParameter("id");
         String username = request.getParameter("username");
+        String realm    = request.getParameter("realm");
         String password = request.getParameter("password");
+
+        if (realm != null && !realm.equals(""))
+            username += "@"+realm;
 
         /* Get session */
         try {
@@ -452,13 +462,21 @@ public class LoginServlet extends VelocityServlet {
         }
 
 
-        /* Success; redirect to the original session URL and
-         * include the updated session ID. */
+
+        /* Success; redirect the user back to the web service. */
 
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
         response.setHeader("Location", session.getRedirectURL());
         log.info("Redirect to Mellon: "+session.getRedirectURL());
-    
+
+        /* Remember realm (cookie). */
+        Cookie cookie = new Cookie("realm", realm);
+        int validDays = new Integer(System.getProperty("no.feide.moria.servlet.realmCookieValidDays")).intValue();
+        cookie.setMaxAge(validDays*24*60*60); // Days to seconds
+        cookie.setComment("Home institution");
+        cookie.setVersion(1);
+        response.addCookie(cookie);
+
         return null; // Do not use template for redirect.
     }
 }
