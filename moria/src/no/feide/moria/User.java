@@ -268,7 +268,7 @@ public class User {
         log.finer("ldapSearch(String)");
         
         // Check for illegal content.
-        String[] illegals = {'*', "\2a"};
+        String[] illegals = {"*", "\2a"};
         for (int i=0; i< illegals.length; i++)
             if (pattern.indexOf(illegals[i]) > -1)
                 return null;
@@ -278,14 +278,14 @@ public class User {
             NamingEnumeration results;
             try {
                 
+		long searchStart = System.currentTimeMillis();
                 try {
-                    long searchStart = System.currentTimeMillis();
                     results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, true));
                 } catch (ConfigurationException e) {
                     log.severe("ConfigurationException caught and re-thrown as BackendException");
                     throw new BackendException(e);
                 } catch (TimeLimitExceededException e) {
-                    log.severe("TimelimitExceededException caught after "+System.currentTimeMillis()-searchStart+"ms and re-thrown as BackendException");
+                    log.severe("TimelimitExceededException caught after "+(System.currentTimeMillis()-searchStart)+"ms and re-thrown as BackendException");
                     throw new BackendException(e);
                 }
                 
