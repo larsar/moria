@@ -26,7 +26,8 @@
      </condition>
  
     <mkdir dir="dist"/>
-    <mkdir dir="dist/doc/javadoc">
+    <mkdir dir="dist/doc"/>
+    <mkdir dir="dist/doc/javadoc"/>
     <mkdir dir="build/WEB-INF/classes/templates"/>
     <copy file="jaxrpc-ri-runtime.xml"
           todir="build/WEB-INF"/>
