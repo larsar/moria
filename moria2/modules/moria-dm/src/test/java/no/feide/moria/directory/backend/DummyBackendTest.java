@@ -52,7 +52,7 @@ extends TestCase {
 
         backend = new DummyBackend();
         Assert.assertNotNull("Failed to instantiate backend object", backend);
-        backend.open(new IndexedReference("foobar", new String[] {"ldap://my.ldap.server:636/dc=search,dc=base"}, true));
+        backend.open(new IndexedReference(new String[] {"ldap://my.ldap.server:636/dc=search,dc=base"}, true));
 
     }
 

@@ -81,13 +81,13 @@ implements Serializable, DirectoryManagerIndex {
         // Do we have an explicit match? That is, an exception from the
         // association rule?
         if (exceptions.containsKey(id))
-            return new IndexedReference(id, new String[] {(String)exceptions.get(id)}, true);
+            return new IndexedReference(new String[] {(String)exceptions.get(id)}, true);
 
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
         if (i < 0)
             return null;
-        return new IndexedReference(id, (String[])associations.get(id.substring(i)), false);
+        return new IndexedReference((String[])associations.get(id.substring(i)), false);
 
     }
 
