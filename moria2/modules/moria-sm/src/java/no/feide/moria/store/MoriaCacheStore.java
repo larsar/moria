@@ -52,7 +52,7 @@ implements MoriaStore {
     private Boolean isConfigured = new Boolean(false);
 
     /** The logger used by this class. */
-    private MessageLogger messageLogger = new MessageLogger(MoriaCacheStore.class);
+    private MessageLogger log = new MessageLogger(MoriaCacheStore.class);
 
     /** Map to contain the ticket ttl vaules. */
     private Map ticketTTLs;
@@ -90,7 +90,7 @@ implements MoriaStore {
     public MoriaCacheStore() throws MoriaStoreException {
 
         isConfigured = new Boolean(false);
-        messageLogger = new MessageLogger(no.feide.moria.store.MoriaCacheStore.class);
+        log = new MessageLogger(no.feide.moria.store.MoriaCacheStore.class);
 
         try {
             store = new TreeCache();
@@ -129,7 +129,7 @@ implements MoriaStore {
 
         synchronized (isConfigured) {
             if (isConfigured.booleanValue()) {
-                messageLogger.logWarn("setConfig() called on already configured instance.");
+                log.logWarn("setConfig() called on already configured instance.");
                 return;
             }
 
@@ -196,7 +196,7 @@ implements MoriaStore {
                         throw new NullPointerException("No default value defined for: " + ticketType);
 
                     ticketTTLs.put(ticketType, defaultTTL);
-                    messageLogger.logCritical("TTL for " + ticketType + " not found.  Using default value. This is not a good thing.");
+                    log.logCritical("TTL for " + ticketType + " not found.  Using default value. This is not a good thing.");
                 } else {
                     ticketTTLs.put(ticketType, ttl);
                 }
@@ -223,7 +223,7 @@ implements MoriaStore {
             store = null; // Remove object reference for garbage collection.
             isConfigured = new Boolean(false);
         }
-        messageLogger.logWarn("The cache has been stopped.");
+        log.logWarn("The cache has been stopped.");
     }
 
 
@@ -694,48 +694,53 @@ implements MoriaStore {
     /**
      * Retrives a ticket instance from the store.
      * @param ticketType
-     *            the type of the ticket
+     *            The type of ticket.
      * @param ticketId
-     *            the id of the ticket
-     * @return a ticket instance
+     *            The ID of the ticket.
+     * @return The ticket.
      * @throws IllegalArgumentException
-     *             if ticketType is null, or ticketId is null or an empty string
+     *             If <code>ticketType</code> is <code>null</code>, or if
+     *             <code>ticketId</code> is <code>null</code> or an empty
+     *             string.
      * @throws MoriaStoreException
-     *             thrown if operations on the TreeCache fails
+     *             If operations on the underlying <code>TreeCache</code>
+     *             fails; acts as a wrapper.
      */
     MoriaTicket getFromStore(final MoriaTicketType ticketType, final String ticketId)
     throws MoriaStoreException {
 
-        /* Validate parameters. */
-        if (ticketType == null) { throw new IllegalArgumentException("ticketType cannot be null."); }
+        // Sanity checks.
+        if (ticketType == null)
+            throw new IllegalArgumentException("Ticket type cannot be null");
+        if (ticketId == null || ticketId.equals("")) 
+            throw new IllegalArgumentException("Ticket ID must be a non-empty string");
 
-        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketId must be a non-empty string."); }
-
-        /* The name of the node to be retrived. */
+        // The name of the TreeCache node to be retrived.
         Fqn fqn = new Fqn(new Object[] {ticketType, ticketId});
 
-        /* Return null if the node does not exist. */
-        if (store.exists(fqn)) {
-            /* The object to hold the node that will be retrived from the store. */
-            Node node;
-
-            try {
-                node = store.get(fqn);
-            } catch (LockingException e) {
-                throw new MoriaStoreException("Locking of store failed. [" + ticketId + "]", e);
-            } catch (TimeoutException e) {
-                throw new MoriaStoreException("Access to store timed out. [" + ticketId + "]", e);
-            }
-
-            if (node == null) {
-                return null;
-            } else {
-                return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node.get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE), (MoriaStoreData) node.get(DATA_ATTRIBUTE));
-            }
+        // Does the node exist at all?
+        if (!store.exists(fqn))
+            return null;
+            
+        // Look up the node.
+        Node node = null;
+        try {
+            node = store.get(fqn);
+        } catch (LockingException e) {
+            throw new MoriaStoreException("Locking of store failed for ticket '" + ticketId + "'", e);
+        } catch (TimeoutException e) {
+            throw new MoriaStoreException("Access to store timed out for ticket '" + ticketId + "'", e);
         }
 
-        /* Return null if node isn't found. */
-        return null;
+        // Sanity check.
+        if (node == null) {
+            log.logInfo(ticketType.toString()+" '"+ticketId+"' exists, but cannot be found");
+            return null;
+        }
+        
+        // Return the node.
+        return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node.get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE), (MoriaStoreData) node.get(DATA_ATTRIBUTE));
+        
     }
 
 
