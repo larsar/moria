@@ -61,6 +61,14 @@
         <listitem>
           <para>com.oreilly.servlet 05Nov2002; <ulink url="???">http://www.servlets.com/cos/index.html</ulink>.</para>
         </listitem>
+
+        <listitem>
+          <para>common-logging; <ulink url="???">http://www.ibiblio.org/maven/commons-logging/jars/</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>logkit; <ulink url="???">http://www.ibiblio.org/maven/logkit/jars/</ulink>.</para>
+        </listitem>
       </itemizedlist>
     </section>
   </section>
@@ -171,6 +179,15 @@
             <listitem>
               <para><filename>xercesImpl.jar</filename>; from JWSDP 1.1 (JAXP
               1.2.2).</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>common-logging-1.0.3.jar</filename>; from
+              common-logging.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>logkit-1.0.1.jar</filename>; from logkit.</para>
             </listitem>
           </itemizedlist>
         </listitem>
