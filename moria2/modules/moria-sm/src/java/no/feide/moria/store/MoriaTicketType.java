@@ -20,6 +20,7 @@
 
 package no.feide.moria.store;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /**
@@ -29,10 +30,16 @@ import java.io.Serializable;
  * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
-final class MoriaTicketType implements Serializable {
+public final class MoriaTicketType implements Serializable {
 
     /** Description of ticket type. */
     private final String name;
+
+    /** Ordinal of next ticket type to be created. */
+    private static int nextOrdinal = 0;
+
+    /** Assigns an ordinal to this ticket type. */
+    private final int ordinal = nextOrdinal++;
 
     /**
      * Default private constructor.
@@ -67,4 +74,19 @@ final class MoriaTicketType implements Serializable {
 
     /** Issued to a service when a valid TGT is presented. */
     public static final MoriaTicketType PROXY_TICKET = new MoriaTicketType("Proxy Ticket");
+
+    /**
+     * Static array that hold all objects. Used by readResolve() to
+     * return correct object after de-serialization.
+     */
+    private static final MoriaTicketType[] TYPES = {LOGIN_TICKET, SERVICE_TICKET, SSO_TICKET, TICKET_GRANTING_TICKET, PROXY_TICKET};
+
+    /**
+     * Needed for serialization to work.
+     *
+     * @return the local classloader representation of the object.
+     */
+    public Object readResolve() {
+        return TYPES[ordinal];
+    }
 }
