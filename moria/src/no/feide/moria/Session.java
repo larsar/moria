@@ -51,8 +51,10 @@ public class Session {
     /** Number of failed logins (wrong username/password). */
     private int failedLogins = 0;
 
-    /** The user for this session, set after a successful authentication. */
-    private Backend user;
+    /** The backend handle for this session, set after a successful
+     *  authentication attempt.
+     */
+    private Backend backend;
 
     /** The identity of the client service requesting this session. */
     private Principal client;
@@ -118,7 +120,7 @@ public class Session {
         this.urlPrefix = urlPrefix;
         this.urlPostfix = urlPostfix;
         this.client = client;
-        user = null;
+        backend = null;
 
         /* SSO */
         Vector ssoAttributes = AuthorizationData.getInstance().getSsoAttributes();
@@ -158,9 +160,9 @@ public class Session {
 
         timestamp = new Date().getTime();
                 
-        // Authenticate user.
-        user = Backend.getInstance();
-        if (user.authenticate(c)) {
+        // Authenticate user through backend.
+        backend = Backend.getInstance();
+        if (backend.authenticateUser(c)) {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
             log.fine("Session authenticated");
@@ -170,7 +172,7 @@ public class Session {
         
         // Authentication failed. Check if the session should be invalidated.
         log.fine("Authentication failed");
-        user = null;
+        backend = null;  // Dropping the backend handle.
         failedLogins++;
         try {
             Integer maxFailures = Integer.decode(Configuration.getProperty("no.feide.moria.MaxFailedLogins", "3"));
@@ -202,8 +204,8 @@ public class Session {
     public boolean isAuthenticated() {
         log.finer("isAuthenticated()");
         
-        // The user variable is only set after a successful authentication.
-        return (user != null);
+        // The backend handle is only set after a successful authentication.
+        return (backend != null);
     }
        
        
@@ -223,7 +225,7 @@ public class Session {
     throws ConfigurationException {
         
         String retval = "";
-        if (user == null) {
+        if (backend == null) {
             retval = Configuration.getProperty("no.feide.moria.LoginURL")+"?id="+sessionID;
         } else {
             if (urlPrefix != null)
@@ -255,7 +257,7 @@ public class Session {
         }
 
         // Check for authentication.
-        if (user == null) {
+        if (backend == null) {
             log.warning("Backend attribute request without previous authentication");
             throw new SessionException("Backend attribute request without previous authentication");
         }
@@ -273,12 +275,12 @@ public class Session {
             */
             if (cachedAttributes == null) {
                 Vector ssoAttributes = AuthorizationData.getInstance().getSsoAttributes();
-                cachedAttributes = user.lookup((String[]) ssoAttributes.toArray(new String[ssoAttributes.size()]));
+                cachedAttributes = backend.getAttributes((String[]) ssoAttributes.toArray(new String[ssoAttributes.size()]));
             }
 
             HashMap noCachedAttributes = new HashMap();
             if (noneSsoAttributes.length > 0) {
-                noCachedAttributes = user.lookup(noneSsoAttributes);
+                noCachedAttributes = backend.getAttributes(noneSsoAttributes);
             }
 
             HashMap result = genAttrResult(cachedAttributes, noCachedAttributes, request);
@@ -326,7 +328,7 @@ public class Session {
         stats.increaseCounter("sessionsSSOActive");
 
         locked = true;
-        user.close();
+        backend.close();
         webService = null;
         urlPrefix = null;
         urlPostfix = null;
@@ -435,19 +437,21 @@ public class Session {
 
     /**
      * Unlock session. 
-     * @param user The user attribute that is assosiated with a
+     * @param handle The backend handle that is assosiated with a
      * session.
      */
-    public void unlock(Backend user) {
-        this.user = user;
+    public void unlock(Backend handle) {
+        this.backend = handle;
         locked = false;
     }
 
     /**
-     * Return the user object that is authenticated.
-     */
-    public Backend getUser() {
-        return user;
+     * Return the backend object for this session.
+     * @return <code>null</code> if the backend has not been through
+     *         authentication, otherwise the backend object  .
+     */ 
+    public Backend getBackendInstance() {
+        return backend;
     }
 
     /**
