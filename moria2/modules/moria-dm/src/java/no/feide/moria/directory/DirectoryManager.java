@@ -59,13 +59,12 @@ public class DirectoryManager {
 
 
     /**
-     * Destructor. Cancels the index update timer, given that it has been
-     * initialized.
+     * Destructor. Will call <code>stop()</code>.
+     * @see DirectoryManager#stop()
      */
     public void destroy() {
 
-        if (indexTimer != null)
-            indexTimer.cancel();
+        stop();
 
     }
 
@@ -276,6 +275,21 @@ public class DirectoryManager {
         // Close the backend and return any attributes.
         backend.close();
         return attributes;
+
+    }
+
+
+    /**
+     * Stop the Directory Manager. <br>
+     * <br>
+     * Will stop the index updater thread. Note that the Directory Manager may
+     * be used after <code>stop()</code>, but this is discouraged.
+     */
+    public void stop() {
+
+        // Stop the index update timer, if it has been initialized.
+        if (indexTimer != null)
+            indexTimer.cancel();
 
     }
 
