@@ -2,16 +2,10 @@ package no.feide.moria;
 
 import java.util.logging.Logger;
 
-// TODO:
-// Remove logging.
 public class SessionException extends Exception{
     
-    /** Used for logging. */
-    private Logger log = Logger.getLogger(SessionException.class.toString());
-
-    public SessionException(String message) {
+     public SessionException(String message) {
         super(message);
-        log.finer("SessionException(String)");
     }
     
     /**
@@ -20,7 +14,6 @@ public class SessionException extends Exception{
      */
     public SessionException(Throwable cause) {
         super(cause);
-        log.finer("SessionException(Throwable)");
     }
 
 }
