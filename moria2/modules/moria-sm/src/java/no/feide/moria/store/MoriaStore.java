@@ -171,4 +171,13 @@ public interface MoriaStore {
      *          object containing the necessary attributes for store configuration
      */
     void setConfig(Properties properties);
+
+    /**
+     * Removes a ssoTicket from the store.
+     *
+     * @param ssoTicketId the ticketId of the ticket to remove
+     * @throws InvalidTicketException if the ticket does not exist
+     * @throws MoriaStoreException if the operation fails
+     */
+    void removeSSOTicket(final String ssoTicketId) throws InvalidTicketException, MoriaStoreException;
 }
