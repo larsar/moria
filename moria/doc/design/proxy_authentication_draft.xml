@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD Simplified DocBook XML V1.0//EN"
+"http://www.oasis-open.org/docbook/xml/simple/1.0/sdocbook.dtd">
+<article>
+  <title>Single Sign-On support in Moria Authentication Service</title>
+
+  <articleinfo>
+    <date>02.09.2003</date>
+
+    <author>
+      <surname>Bjørn Ola Smievoll and Lars Preben S. Arnesen</surname>
+    </author>
+  </articleinfo>
+
+  <abstract>
+    <para>The FEIDE project&#39;s goal is to create a common user
+    administration system for higher education in Norway. FEIDE consists of
+    several sub projects - one of them with the goal to create a HTTP based
+    authentication service for web resource providers. This sub project has
+    been named &#34;Moria&#34;.</para>
+
+    <para>In FEIDE each academic institutions has its own user administration
+    system for its own students and employees, but services at one institution
+    should be able to allow access to a user from another institution without
+    importing that user into it&#39;s own user administration system. FEIDE
+    requires access to an LDAP front end of the user administration system to
+    provide such service. Potentially more than hundred institutions with a
+    total of a few hundred thousand users will be a part of FEIDE. The number
+    of services that requires access to user data from FEIDE are expected to
+    be in the hundreds, if not thousands. In this scenario FEIDE cannot trust
+    every one of the FEIDE-enabled services (services that receives user data
+    from FEIDE). Without such trust FEIDE will not allow service providers to
+    get access to the user&#39;s username and password, requiring the
+    authentication to be done by FEIDE and not by the service itself.</para>
+
+    <para>This paper describes three extensions to the authentication model
+    implemented by Moria enabling Single Sign-On support for systems using the
+    service.</para>
+  </abstract>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>Single Sign-On is a requested feature in Moria both from users and
+    web service providers. Users don&#39;t want to supply their username and
+    password every time they access a new web service and the service
+    providers want to be able to authenticate the users to subsystems. The
+    current version of Moira has SSO for users which means that users can roam
+    between services without performing more than one interactive login. Even
+    before Moria went in production developers started to demand proxy
+    authentication functionality, mainly when developing portals that requires
+    to authenticate to other components on behalf of the user.</para>
+  </section>
+
+  <section>
+    <title>Ticked based reauthentication (SSO Light)</title>
+
+    <para>The ticked based reauthentication uses the existing Moria model. The
+    first time a user logs into a service via Moria, a ticked is stored in a
+    cookie. The next time the user is redirected to Moria for login Moria uses
+    the ticket to find the authentication session from last login. If it still
+    exist (i.e. the session has not timed out), the user is immediately
+    redirected back to the web service and the web service get access to the
+    cached user data. If reauthentication cannot be used, the user is
+    presented with a login form and a regular authentication process is
+    performed.</para>
+
+    <para>There are three scenarios when ticked based reauthentication fails,
+    and a normal authentication process is required:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The ticket refers to a non-existing authentication session. This
+        happens when the a session times out and thus is removed from the
+        session store or if the session has been removed for any other reason.</para>
+      </listitem>
+
+      <listitem>
+        <para>The web service requests user attributes that Moria does not
+        allow to be cached. The attributes are not stored in the
+        authentication session and have to be retrieved from the LDAP server,
+        which requires the user to supply their username and password.</para>
+      </listitem>
+
+      <listitem>
+        <para>The web service insists that the user performs a regular
+        authentication. Before critical operations, typically writing data,
+        some services want to reauthenticate the user to be sure that no
+        impersonator issues commands as the user. When requesting a user
+        authentication the web service can insist that SSO should not be used.
+        In this case Moria will remove the cached authentication session and
+        present the user with a login form.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Proxy authentication</title>
+
+    <para>For both of the following examples the following amendments to
+    <ulink url="http://www.feide.no/programvare/authentication_model.html">standard
+    authentication process</ulink> apply:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>Step 2</term>
+
+        <listitem>
+          <para>The service asks Moria for an additional attribute during the
+          initialisation of the authentication process: a ticket granting
+          ticket (TGT).</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>After step 9</term>
+
+        <listitem>
+          <para>Moria generates the TGT.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>Step 13</term>
+
+        <listitem>
+          <para>TGT returned to service.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>Both scenarios describes SSO after a regular authentication process
+    has been performed.</para>
+
+    <section>
+      <title>Between Moria enabled components</title>
+
+      <figure>
+        <title>Proxy model</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="proxy.eps" format="EPS" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <orderedlist>
+        <listitem>
+          <para>Service 1 (S1) requests, from Moria, tickets to log into
+          service 2 (S2). S1 supplies the TGT obtained from Moria in the
+          regular user authentication process.</para>
+        </listitem>
+
+        <listitem>
+          <para>Upon the request Moria looks up the session and associated
+          user id (UID) using the TGT as session identificator. A new ticket
+          is generated for S2 and returned to S1. This ticket can only be used
+          once and only by S2.</para>
+        </listitem>
+
+        <listitem>
+          <para>S1 relays the ticket to S2, probably with other parameters.</para>
+        </listitem>
+
+        <listitem>
+          <para>S2 uses the ticket to fetch attributes from Moria. The request
+          must contain both the ticked and a list of attributes. S2 can also
+          ask for a TGT that it can use to log into other sub systems.</para>
+        </listitem>
+
+        <listitem>
+          <para>Moria either returns the requested attributes or denies the
+          request (due to timeout or if S2 has requested non-cached attributes
+          or attributes it&#39;s not allowed to get access to)</para>
+        </listitem>
+
+        <listitem>
+          <para>If the authentication was successful, S2 probably returns the
+          data S1 requested.</para>
+        </listitem>
+      </orderedlist>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Using Kerberos 5</title>
+
+      <figure>
+        <title>Kerberos model</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="kerberos.eps" format="EPS" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <orderedlist>
+        <listitem>
+          <para>Service 1 (S1) requests from Moria tickets to authenticate to
+          service 2 (S2).</para>
+        </listitem>
+
+        <listitem>
+          <para>Upon the request Moria looks up the session and associated
+          user id (UID) using the TGT. Moria contacts the Kerberos Key
+          Distribution Centre (KDC), giving the UID and S2-id as parameters.</para>
+        </listitem>
+
+        <listitem>
+          <para>The KDC returns a newly generated session key and a ticket
+          containing the UID and session key (SID) encrypted with the S2
+          service&#39;s key. This key is only known to the KDC and the S2
+          service.</para>
+        </listitem>
+
+        <listitem>
+          <para>Moria creates a second ticket containing at least a timestamp,
+          but possibly other attributes contained in the Moria session,
+          encrypting it with the SID. Moria then responds to S1 with the
+          tickets.</para>
+        </listitem>
+
+        <listitem>
+          <para>On retrieval of the two tickets from Moria S1 sends them to S2
+          in a regular Kerberos authentication operation. S2 decrypts ticket
+          one retrieving the SID and UID. Using the SID it retrieves and
+          verifies the timestamp in ticket two, and possibly uses the
+          attributes contained in the second ticket to populate some internal
+          data structure.</para>
+        </listitem>
+
+        <listitem>
+          <para>Optionally S2 can create another ticket containing the
+          timestamp from ticket 2 and it&#39;s service name and return this to
+          S1. This way S1 can verify the identity of S2. However, this
+          requires the SID which only Moria knows and therefore S1 possibly
+          must rely on Moria to do the actual decryption and verification.
+          Another alternative would be to send the SID to S1 in operation 4,
+          but that complicates the service-side implementation.</para>
+        </listitem>
+      </orderedlist>
+
+      <para></para>
+    </section>
+  </section>
+
+  <section>
+    <title>Logging out</title>
+
+    <para>All the SSO scenarios has some security implications. How can the
+    user log out of SSO mode?</para>
+
+    <para>For the ticked based reauthentication the service providers can link
+    to a special Moria logout component. Visiting this URL Moria removes the
+    authentication session. Moria then redirect the user to a URL provided as
+    URL parameter. If no redirect URL is present, Moria show a generic logout
+    message.</para>
+
+    <para>There are no service authentication when performing a SSO logout. In
+    other words anyone can trick the user to log out of the SSO session, but
+    this is considered as no risk since he only implication is that the user
+    is required to supply username and password the next time he/she tries to
+    access a restricted web service.</para>
+
+    <para>The SSO logout does not log the user out from services he/she
+    already has logged in on. Each web service has to maintain it&#39;s own
+    state and Moria cannot control when the different web services performs a
+    user logout.</para>
+
+    <para>Both proxy and Kerberos authentication can use the same approach for
+    user logout as the implemented logout method. When a user logs out of SSO
+    all TGTs associated with the user should be removed.</para>
+  </section>
+
+  <section>
+    <title>Evaluation of the scenarios</title>
+
+    <para>Ticket based reauthentication is implemented and seems to be working
+    correctly. No further work is required for this scenario.</para>
+
+    <para>Proxy authentication for Moria enabled services requires some
+    extension of the existing model. It&#39;s considered most practical to
+    implement support in the current version of Moria instead of separating
+    it.</para>
+
+    <para>The Kerberos implementation seems to be straight forward and should
+    be possible to include in Moria without affecting the basic authentication
+    model.</para>
+
+    <para>Estimating the cost of implementing these scenarios requires a more
+    thorough analysis of the complexity of the different designs. A rough
+    estimate would be in order of 10 to 12 work weeks for doing both versions,
+    including 3 to 5 work weeks of initial research and specification work to
+    produce more precise estimates. Of the total time 60 to 70% will probably
+    be used on the Kerberos 5 based scenario.</para>
+  </section>
+</article>

@@ -1,0 +1,26 @@
+<!ELEMENT ServiceConfiguation  (Attributes?,Profiles?,WebServices?)>
+<!ELEMENT Attributes  (Attribute*)>
+<!ELEMENT Attribute   (#PCDATA)>
+<!ELEMENT Profiles    (Profile*)>
+<!ELEMENT Profile     (Attribute*)>
+<!ELEMENT WebServices (WebService*)>
+<!ELEMENT Organization (#PCDATA)>
+<!ELEMENT WebService  (Name,URL,Affiliation?,AllowLocalAuth?,DefaultOrg?,DefaultLang?AllowedAttributes?,DeniedAttributes?,WSProfiles?)>
+<!ELEMENT Name        (#PCDATA)>
+<!ELEMENT URL         (#PCDATA)>
+<!ELEMENT Affiliation (Organization*)>
+<!ELEMENT AllowLocalAuth (#PCDATA)>
+<!ELEMENT DefaultOrg (#PCDATA>
+<!ELEMENT DefaultLang (#PCDATA)>
+<!ELEMENT WSProfiles  (Attribute*)>
+<!ELEMENT AllowedAttributes (Attribute*)>
+<!ELEMENT DeniedAttributes  (Attribute*)>
+
+<!ATTLIST Attribute name CDATA #REQUIRED>
+<!ATTLIST Attribute sso  CDATA "false">
+<!ATTLIST Attribute secLevel (HIGH|MEDIUM|LOW) "HIGH">
+<!ATTLIST Profile   name CDATA #REQUIRED>
+<!ATTLIST WebService id  CDATA #REQUIRED>
+<!ATTLIST Organization name CDATA #REQUIRED>
+<!ATTLIST DefaultLang name CDATA #REQUIRED>
+<!ATTLIST DefaultOrg name CDATA #REQUIRED>
