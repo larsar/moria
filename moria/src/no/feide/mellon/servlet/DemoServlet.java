@@ -42,7 +42,6 @@ public class DemoServlet extends HttpServlet {
             ((HttpServletResponse)response).setHeader("Location", "http://demo.feide.no/");
         }
 
-        System.out.println("URL: "+request.getQueryString());
         
         /* HTML header */
         out.println("<HTML>");
