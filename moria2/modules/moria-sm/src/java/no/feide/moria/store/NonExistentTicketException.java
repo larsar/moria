@@ -36,6 +36,9 @@ public class NonExistentTicketException extends Exception {
     }
 
     /**
+     * Constructor. Creates a new exception with only an exception message.
+     * @param message
+     *            The exception message.
      * @see java.lang.Exception#Exception(java.lang.String)
      */
     public NonExistentTicketException(final String message) {
@@ -43,6 +46,9 @@ public class NonExistentTicketException extends Exception {
     }
 
     /**
+     * Constructor. Creates a new exception with only a cause.
+     * @param cause
+     *            The exception cause.
      * @see java.lang.Exception#Exception(java.lang.Throwable)
      */
     public NonExistentTicketException(final Throwable cause) {
@@ -50,6 +56,12 @@ public class NonExistentTicketException extends Exception {
     }
 
     /**
+     * Constructor. Creates a new exception with both an exception message and a
+     * cause.
+     * @param message
+     *            The exception message.
+     * @param cause
+     *            The exception cause.
      * @see java.lang.Exception#Exception(java.lang.String, java.lang.Throwable)
      */
     public NonExistentTicketException(final String message, final Throwable cause) {

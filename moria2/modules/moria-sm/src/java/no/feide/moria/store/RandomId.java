@@ -25,7 +25,7 @@ import java.security.SecureRandom;
 import java.util.Date;
 
 /**
- * Returns an id that's random and unique across a cluster of JVMs. Each JVM
+ * Returns an id that is random and unique across a cluster of JVMs. Each JVM
  * needs to be configured with a unique node id, identifying each node. This is
  * done by setting the system property <code>no.feide.moria.store.nodeid</code>.
  * The value must be a ascii string of 3 character length. The returned id is an
@@ -38,7 +38,7 @@ import java.util.Date;
 public final class RandomId {
 
     /**
-     * The id of this instance (JVM). Used to guaratee unique ids across the
+     * The id of this instance (JVM). Used to guarantee unique ids across the
      * cluster.
      */
     private static byte[] nodeId;
@@ -82,8 +82,8 @@ public final class RandomId {
 
 
     /**
-     * Generate a new random id.
-     * @return a 79 character random string
+     * Generates a new random id.
+     * @return A 79 character random string.
      */
     public static String newId() {
 
@@ -113,14 +113,14 @@ public final class RandomId {
 
     /**
      * Takes a byte array and returns a string encoded with a slightly modified
-     * version of Base64. The difference compared to standard Base64 is that the
-     * extra two chars; "+" and "/" have been exchanged for the more
+     * version of Base64. The difference to standard Base64 is that the
+     * extra two chars, "+" and "/" have been exchanged for the more
      * url-friendly "-" and "*", and the resulting string is not padded with =
      * as required by the spec (rfc 2045). Parts of code Copyright (c) 2003,
      * Sverre H. Huseby &lt;shh@thathost.com&gt;
      * @param bytes
-     *            the data to convert
-     * @return the encoded version of the input
+     *            The data to convert.
+     * @return The encoded version of the input.
      */
     static String pseudoBase64Encode(final byte[] bytes) {
 
@@ -182,8 +182,8 @@ public final class RandomId {
      * Takes a long value (64 bit) and returns it as an eight element byte
      * array.
      * @param in
-     *            the long value to be converted
-     * @return a byte array representation of the long value given as input
+     *            The long value to be converted.
+     * @return A byte array representation of the long value given as input.
      */
     static byte[] longToByteArray(final long in) {
 

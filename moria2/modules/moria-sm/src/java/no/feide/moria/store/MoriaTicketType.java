@@ -54,9 +54,9 @@ public final class MoriaTicketType implements Serializable {
     }
 
     /**
-     * Return string representation of object.
+     * Returns string representation of object.
      *
-     * @return name of object
+     * @return Name of object.
      */
     public String toString() {
         return name;
@@ -78,7 +78,7 @@ public final class MoriaTicketType implements Serializable {
     public static final MoriaTicketType PROXY_TICKET = new MoriaTicketType("Proxy Ticket");
 
     /**
-     * Static array that hold all objects. Used by readResolve() to
+     * Static array that holds all objects. Used by readResolve() to
      * return correct object after de-serialization.
      */
     private static final MoriaTicketType[] PRIVATE_TICKET_TYPES = {LOGIN_TICKET, SERVICE_TICKET, SSO_TICKET,
@@ -88,9 +88,10 @@ public final class MoriaTicketType implements Serializable {
     public static final List TICKET_TYPES = Collections.unmodifiableList(Arrays.asList(PRIVATE_TICKET_TYPES));
 
     /**
+     * Returns the local classloader representation of the object.
      * Needed for serialization to work.
      *
-     * @return the local classloader representation of the object.
+     * @return The local classloader representation of the object.
      */
     Object readResolve() {
         return PRIVATE_TICKET_TYPES[ordinal];
