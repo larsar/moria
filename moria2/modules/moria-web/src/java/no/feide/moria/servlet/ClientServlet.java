@@ -23,6 +23,7 @@ package no.feide.moria.servlet;
 import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.MoriaController;
+import no.feide.moria.controller.InoperableStateException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -85,6 +86,9 @@ public class ClientServlet extends HttpServlet {
             request.setAttribute("error", e);
 
         } catch (AuthorizationException e) {
+            error = true;
+            request.setAttribute("error", e);
+        } catch (InoperableStateException e) {
             error = true;
             request.setAttribute("error", e);
         }
