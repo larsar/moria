@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <name>Moria NextGen Authorization manager</name>
+  <id>moria-am</id>
+  <package>no.feide.moria.authorizationmanager</package>
+
+  <shortDescription>This is the authorization manager for
+  Moria</shortDescription>
+
+  <dependencies>
+  </dependencies>
+
+  <build>
+
+    <resources>
+
+    </resources>
+
+  </build>
+
+</project>

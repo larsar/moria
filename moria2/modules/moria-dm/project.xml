@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <name>Moria NextGen Directory manager</name>
+  <id>moria-dm</id>
+  <package>no.feide.moria.directorymanager</package>
+
+  <shortDescription>This is the directory manager for Moria</shortDescription>
+
+  <dependencies>
+  </dependencies>
+
+  <build>
+
+    <resources>
+
+    </resources>
+
+  </build>
+
+</project>
