@@ -230,5 +230,28 @@ extends TestCase {
         }
         
     }
+    
+    
+    /**
+     * Test configuration with missing index update frequency.
+     */
+    public void testMissingIndexUpdateFrequency() {
+        
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, "src/test/conf/MissingIndexUpdateFrequencyConfiguration.xml");
+
+        try {
+            
+            // Test bogus config.
+            dm.setConfig(config);
+            Assert.fail("Managed to set up bad configuration");
+         
+            
+        } catch (DirectoryManagerConfigurationException e) {
+            // Expected.
+        }
+        
+    }    
 
 }

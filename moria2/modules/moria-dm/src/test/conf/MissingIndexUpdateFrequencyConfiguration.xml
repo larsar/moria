@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<DirectoryManagerConfiguration>
+
+  <Index file="src/test/conf/DummyIndex.object">
+  
+  <Backend>
+    <Class name="no.feide.moria.directory.backend.DummyBackendFactory"/>
+  </Backend>
+
+</DirectoryManagerConfiguration>
