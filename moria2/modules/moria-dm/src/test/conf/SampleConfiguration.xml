@@ -23,11 +23,16 @@ these system properties being set by JNDIBackendFactory.setConfig(Element).
     <!--
 	     - Use no.feide.moria.directory.backend.JNDIBackendFactory to create backend instances.
 	     - Use a 10 second timeout when accessing the JNDI backend.
+	     - Assume that the user element can be found by searching for an element with the
+           username in the attribute myUsernameAttribute.
+         - If the user element cannot be found using a search, guess that the (R)DN starts with
+           the substring guessAnAttributeForDN=usernamePrefix,... where usernamePrefix is
+	       extracted from the full username on the form usernamePrefix@usernameRealm.
          - Do NOT set the system property javax.net.ssl.trustStore to MyTrustStoreFilename.
          - Do NOT set the system property javax.net.ssl.trustStorePassword to MyTrustStorePassword.
 	-->
 	<Backend class="no.feide.moria.directory.backend.JNDIBackendFactory">
-	    <JNDI timeout="10">
+	    <JNDI timeout="10" usernameAttribute="myUsernameAttribute" guessedAttribute="guessAnAttributeForDN">
 	    	<!-- Security>
 	    		<Truststore filename="MyTrustStoreFilename" password="MyTrustStorePassword"/>
 	    	</Security -->
