@@ -18,6 +18,11 @@ implements DirectoryManagerBackendFactory {
      */
     private int backendTimeouts = 15;
 
+    /**
+     * Should the backend use SSL? Default is <code>false</code>.
+     */
+    private boolean useSSL = false;
+
 
     /**
      * Used to set the factory-specific configuration. Must be called before
@@ -57,11 +62,16 @@ implements DirectoryManagerBackendFactory {
         // Sanity checks.
         if (config == null)
             throw new IllegalArgumentException("Configuration cannot be NULL");
-        if (!config.getName().equalsIgnoreCase("JNDI"))
-            throw new DirectoryManagerConfigurationException("Unexpected configuration element (was " + config.getName() + ", expected JNDI)");
+        if (!config.getName().equalsIgnoreCase("Backend"))
+            throw new DirectoryManagerConfigurationException("Cannot find backend configuration element");
+
+        // Get JNDI element, with sanity check.
+        final Element jndiElement = config.getChild("JNDI");
+        if (jndiElement == null)
+            throw new DirectoryManagerConfigurationException("Cannot find JNDI configuration element");
 
         // Get optional timeout value.
-        String timeout = config.getAttributeValue("timeout");
+        String timeout = jndiElement.getAttributeValue("timeout");
         if (timeout != null)
             try {
                 backendTimeouts = Integer.parseInt(timeout);
@@ -74,7 +84,7 @@ implements DirectoryManagerBackendFactory {
         // TODO: Add support for javax.net.ssl.keystore.
 
         // Get the optional Security element.
-        final Element securityElement = config.getChild("Security");
+        final Element securityElement = jndiElement.getChild("Security");
         if (securityElement != null) {
 
             // Get the optional Truststore element.
@@ -92,6 +102,9 @@ implements DirectoryManagerBackendFactory {
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"password\" not found in Truststore element");
                 System.setProperty("javax.net.ssl.truststorepassword", value);
+                
+                // Now we're ready to use SSL.
+                useSSL = true;
 
             }
 
@@ -109,7 +122,7 @@ implements DirectoryManagerBackendFactory {
      */
     public DirectoryManagerBackend createBackend() {
 
-        return new JNDIBackend(backendTimeouts);
+        return new JNDIBackend(backendTimeouts, useSSL);
 
     }
 
