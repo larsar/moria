@@ -31,6 +31,7 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import no.feide.moria.Backend;
 import no.feide.moria.BackendException;
 import no.feide.moria.Configuration;
 import no.feide.moria.ConfigurationException;
@@ -124,9 +125,32 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new ServiceException("ConfigurationException caught", e);
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as ServiceException");
-            throw new ServiceException("SessionException caught", e);
+            throw new ServiceException("SessionException caught and re-thrown as ServiceException", e);
         }
 
+    }
+    
+    
+    
+    /**
+     * Method to check if a given user name exists. Does not require an active
+     * session.
+     * @param username The user name.
+     * @return <true> if the user exists, otherwise <code>false</code>.
+     * @throws RemoteException If a BackendException is caught.
+     */
+    public boolean userExists(String username)
+    throws RemoteException {
+    	log.finer("userExists(String)");
+    	
+    	// TODO: Web service authorization.
+    	
+    	try {
+    		return Backend.getInstance().userExists(username);
+    	} catch (BackendException e) {
+    		log.severe("BackendException caught and re-thrown as RemoteException");
+    		throw new RemoteException("BackendException caught and re-thrown as RemoteException", e);
+    	}
     }
 
 

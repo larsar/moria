@@ -75,6 +75,14 @@
   <message name="requestSessionOut">
     <part name="result" type="xsd:string"/>
   </message>
+  
+  <message name="userExistsIn">
+    <part name="username" type="xsd:string"/>
+  </message>
+
+  <message name="userExistsOut">
+    <part name="result" type="xsd:string"/>
+  </message>
 
   <portType name="AuthenticationIF">
 
@@ -91,6 +99,11 @@
     <operation name="requestSession" parameterOrder="attributes prefix postfix denySSO">
       <input message="tns:requestSessionIn"/>
       <output message="tns:requestSessionOut"/>
+    </operation>
+    
+    <operation name="userExists" parameterOrder="username">
+      <input message="tns:userExistsIn"/>
+      <output message="tns:userExistsOut"/>
     </operation>
 
   </portType>
@@ -128,6 +141,20 @@
     </operation>
 
     <operation name="requestSession">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </output>
+      <soap:operation soapAction=""/>
+    </operation>
+    
+    <operation name="userExists">
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"

@@ -25,4 +25,5 @@ public interface AuthenticationIF extends Remote {
     public String requestSession(String[] attributes, String prefix, String postfix, boolean denySSO) throws RemoteException;
     public String authenticateUser(String id, String username, String password) throws RemoteException;
     public Attribute[] getAttributes(String id) throws RemoteException;
+    public boolean userExists(String username) throws RemoteException;
 }

@@ -166,23 +166,10 @@ public class Backend {
             return false;
         }
 
-        /**
-         * Do one-time JNDI initialization and some other configuration -
-         * so we don't need to catch ConfigurationException later.
-         */
-        String pattern = null;
-        try {
-            if (!initialized)
-                init();   
-            pattern = Configuration.getProperty("no.feide.moria.backend.ldap.usernameAttribute")+'='+username;
-        } catch (ConfigurationException e) {
-            log.severe("ConfigurationException caught and re-thrown as BackendException");
-            throw new BackendException("ConfigurationException caught", e);
-        }
-        
         try {
             
             // Map user ID domain to LDAP URL and connect to server.
+        	String pattern = jndiReset(username);
 			Hashtable env = new Hashtable(defaultEnv);
 			String urls[] = BackendIndex.lookup(c.getIdentifier().toString());
 			
@@ -325,6 +312,78 @@ public class Backend {
     
     
     /**
+     * Internal method to do JNDI initialization.
+     * @param username
+     * @return The initial search pattern.
+     * @throws ConfigurationException If the property
+     *                                <code>no.feide.moria.backend.ldap.usernameAttribute</code>
+     *                                is not set.
+     * @throws BackendException If thrown by <code>init</code>.
+     */
+    private String jndiReset(String username)
+    throws ConfigurationException, BackendException {
+    	log.finer("jndiInit(String)");
+    	
+    	String pattern = new String();
+		if (!initialized)
+			init();   
+		pattern = Configuration.getProperty("no.feide.moria.backend.ldap.usernameAttribute")+'='+username;
+    	return pattern;
+    }
+    
+    
+    /**
+     * Wrapper for private method <code>ldapSearch</code>, used as a simple
+     * check that a given user name exists in the underlying backend.
+     * @param username The user name.
+     * @return <code>true</code> if the user name exists, otherwise
+     *         <code>false</code>.
+     * @throws BackendException Passed on from <code>ldapSearch</code> or
+     *                          <code>BackendIndex.lookup</code>, or thrown
+     *                          locally if unable to connect to the
+     *                          authentication server.
+     */
+    public boolean userExists(String username)
+    throws BackendException {
+    	log.finer("userExists(String");
+   	
+    	// Map user ID domain to LDAP URL and connect to server.
+    	Hashtable env = new Hashtable(defaultEnv);
+    	try {
+
+			// Try each backend URL in turn.
+    		String pattern = jndiReset(username);
+    		String urls[] = BackendIndex.lookup(username);
+			for (int urlIndex = 0; urlIndex < urls.length; urlIndex++) {
+				
+				env.put(Context.PROVIDER_URL, urls[urlIndex]);
+				try {
+					ldap = new InitialLdapContext(env, null);
+				} catch (CommunicationException e) {
+					log.severe("Unable to connect to "+env.get(Context.PROVIDER_URL));
+					throw new BackendException("Unable to connect to "+env.get(Context.PROVIDER_URL));
+				}
+				
+				// Search for user element.
+				log.config("Connected to "+env.get(Context.PROVIDER_URL));
+				ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
+				ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
+				if (ldapSearch(pattern) != null)
+					return true;  // Found a user element.
+			}
+			return false;  // No user element found.
+    	
+	    } catch (ConfigurationException e) {
+	    	log.severe("ConfigurationException caught and re-thrown as BackendException");
+	    	throw new BackendException("ConfigurationException caught and re-thrown as BackendException");
+	    } catch (NamingException e) {
+	    	log.severe("NamingException caught and re-thrown as BackendException");
+	    	throw new BackendException("NamingException caught and re-thrown as BackendException");
+	    }
+    }
+    
+    
+    /**
      * Retrieves a list of attributes from a user element.
      * @param attributes User element attribute names.
      * @return The requested user attributes.
@@ -332,7 +391,7 @@ public class Backend {
      */
     public HashMap getAttributes(String[] attributes)
     throws BackendException {
-        log.finer("lookup(String[])");
+        log.finer("getAttributes(String[])");
         
         try {
             // Translate from BasicAttribute to HashMap, using the original
