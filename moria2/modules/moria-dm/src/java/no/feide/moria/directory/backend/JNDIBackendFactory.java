@@ -1,5 +1,6 @@
 package no.feide.moria.directory.backend;
 
+import java.io.File;
 import java.security.Security;
 
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
@@ -53,7 +54,7 @@ implements DirectoryManagerBackendFactory {
      *             is found, but without either of the <code>filename</code>
      *             or <code>password</code> attributes. Also thrown if the
      *             <code>timeout</code> attribute contains an illegal timeout
-     *             value.
+     *             value, or if the <code>filename</code> file does not exist.
      * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
     public synchronized void setConfig(final Element config)
@@ -91,27 +92,27 @@ implements DirectoryManagerBackendFactory {
             final Element trustStoreElement = securityElement.getChild("Truststore");
             if (trustStoreElement != null) {
 
-                // Get truststore filename.
+                // Get truststore filename and check that it exists.
                 String value = trustStoreElement.getAttributeValue("filename");
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"filename\" not found in Truststore element");
-                System.setProperty("javax.net.ssl.truststore", value);
+                if (!(new File(value).exists()))
+                    throw new DirectoryManagerConfigurationException("Truststore file "+value+" does not exist");
+                System.setProperty("javax.net.ssl.trustStore", value);
 
                 // Get truststore password.
                 value = trustStoreElement.getAttributeValue("password");
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"password\" not found in Truststore element");
-                System.setProperty("javax.net.ssl.truststorepassword", value);
+                System.setProperty("javax.net.ssl.trustStorePassword", value);
                 
                 // Now we're ready to use SSL.
+                Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
                 useSSL = true;
 
             }
 
-        }
-
-        // Wrap up.
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+        }        
 
     }
 
