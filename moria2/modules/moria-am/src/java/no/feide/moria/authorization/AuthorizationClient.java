@@ -37,7 +37,7 @@ final class AuthorizationClient {
     private final MessageLogger log = new MessageLogger(AuthorizationClient.class);
 
     /**
-     * Cached hashCode.
+     * Cached hash code.
      */
     private volatile int hashCode = 0;
 
@@ -129,13 +129,13 @@ final class AuthorizationClient {
      * @param operations
      *            Operations that the service can perform. Cannot be
      *            <code>null</code>.
-     * @param attributes
-     *            Attributes the service can access. Cannot be <code>null</code>.
      * @param subsystems
      *            Subsystems the service can create proxy tickets for. May be
      *            <code>null</code>.
+     * @param attributes
+     *            Attributes the service can access. Cannot be <code>null</code>.
      * 
-     *      * @throws IllegalArgumentException
+     * @throws IllegalArgumentException
      *             If any of <code>name</code>,<code>displayName</code>,
      *             <code>url</code>,<code>language</code>,
      *             <code>home</code>,<code>affiliation</code>,
@@ -188,10 +188,12 @@ final class AuthorizationClient {
 
 
     /**
-     * Check all if all the requested attributes are legal for this web service.
+     * Checks if all the requested attributes are legal for this web service.
      * @param requestedAttributes
      *            Names of all requested attributes.
-     * @return true if access to the attributes is granted, else false
+     * @return true if access to the attributes is granted, else false.
+     * @throws IllegalArgumentException
+     *             If <code>requestedAttributes</code> is <code>null</code>.
      */
     boolean allowAccessTo(final String[] requestedAttributes) {
 
@@ -212,12 +214,15 @@ final class AuthorizationClient {
 
 
     /**
-     * Check attributes for use with SSO. If all attributes are registered in
-     * the web services's attributes list and all attributes are allowed to use
+     * Checks attributes for use with single sign-on (SSO). If all attributes
+     * are registered in 
+     * the web service's attributes list and all attributes are allowed to use
      * with SSO, then so be it.
      * @param requestedAttributes
-     *            The names of all requested attributes
-     * @return true if the attributes can be used with SSO, else false
+     *            The names of all requested attributes.
+     * @return true if the attributes can be used with SSO, else false.
+     * @throws IllegalArgumentException
+     *             If <code>requestedAttributes</code> is <code>null</code>.
      */
     boolean allowSSOForAttributes(final String[] requestedAttributes) {
 
@@ -240,9 +245,12 @@ final class AuthorizationClient {
      * Returns true if the supplied organization name is affiliated with the
      * client.
      * @param organization
-     *            Name of the organization to match
-     * @return True if the supplied organization name is affiliated with the
-     *         client
+     *            Name of the organization to match.
+     * @return true if the supplied organization name is affiliated with the
+     *         client.
+     * @throws IllegalArgumentException
+     *             If <code>organization</code> is <code>null</code> or 
+     *             an empty string.
      */
     boolean hasAffiliation(final String organization) {
 
@@ -253,11 +261,13 @@ final class AuthorizationClient {
 
 
     /**
-     * Returns true if all elements in the requestedOperations array is
+     * Returns true if all elements in the requestedOperations array are
      * represented in the objects operations set.
      * @param requestedOperations
      *            A string array of operation names
-     * @return True if all operations are allowed, else false.
+     * @return true if all operations are allowed, else false.
+     * @throws IllegalArgumentException
+     *             If <code>requestedOperations</code> is <code>null</code>.
      */
     boolean allowOperations(final String[] requestedOperations) {
 
@@ -273,11 +283,13 @@ final class AuthorizationClient {
     }
     
     /**
-     * Returns true for the organizations that are allowed to use this service
+     * Returns true for the organizations that are allowed to use this service.
      * 
      * @param organization
-     * 				The organization requesting authorization
-     * @return True if the organization can use this service				
+     * 				The organization requesting authorization.
+     * @return true if the organization can use this service.
+     * @throws IllegalArgumentException
+     *             If <code>organization</code> is <code>null</code>.
      */
     boolean allowUserorg(final String organization){
         
@@ -297,7 +309,7 @@ final class AuthorizationClient {
 
     /**
      * Used to decide whether subsystems are allowed for this particular client,
-     * based on its configuration
+     * based on its configuration.
      * @param requestedSubsystems
      *            A string array of subsystem names. Cannot be <code>null</code>.
      * @return <code>true</code> if subsystems are allowed, otherwise
@@ -332,8 +344,8 @@ final class AuthorizationClient {
     /**
      * Compares object with another, returnes true if all fields are equal.
      * @param object
-     *            The object to compare with
-     * @return True if objects are equal
+     *            The object to compare with.
+     * @return true if objects are equal.
      */
     public boolean equals(final Object object) {
 
@@ -349,7 +361,7 @@ final class AuthorizationClient {
     /**
      * Generate a hash code for the object. The hash code is computed from all
      * fields.
-     * @return The hash code
+     * @return The hash code.
      */
     public int hashCode() {
 
@@ -374,7 +386,8 @@ final class AuthorizationClient {
 
     /**
      * Returns a string representation of this object.
-     * @return A string representation of this object: "Name: NAME DisplayName:
+     * @return A string representation of this object: 
+     * Name: NAME DisplayName:
      *         DISPLAYNAME URL: URL Language: LANGUAGE Home: HOME Affiliations:
      *         AFFILIATION Operations: OPERATIONS Attributes: ATTRIBUTES
      */
@@ -396,7 +409,7 @@ final class AuthorizationClient {
 
     /**
      * Returns the principal of this client.
-     * @return Clients principal.
+     * @return Client's principal.
      */
     public String getName() {
 
@@ -426,7 +439,7 @@ final class AuthorizationClient {
 
     /**
      * Returns the home organization for this client.
-     * @return The short for the home organization of the client service.
+     * @return The home organization of the client service.
      */
     public String getHome() {
 
@@ -445,7 +458,7 @@ final class AuthorizationClient {
     
     /**
      * Returns the organizations that are allowed to use the client
-     * @return the organizations.
+     * @return The organizations.
      */
     HashSet getOrgsAllowed() {
 
@@ -488,9 +501,9 @@ final class AuthorizationClient {
 
 
     /**
-     * Get the properties for this client. The properties object contains the
+     * Gets the properties for this client. The properties object contains the
      * data that should be transferred to other packages.
-     * @return the properties for this object
+     * @return The properties for this object.
      */
     public HashMap getProperties() {
 
@@ -499,7 +512,7 @@ final class AuthorizationClient {
 
 
     /**
-     * Return the highest secLevel for the requested attributes.
+     * Returns the highest secLevel of the requested attributes.
      * @param requestedAttributes
      *            the requested attributes
      * @return the highest of the attributes seclevel, 0 if no attributes are
@@ -507,6 +520,8 @@ final class AuthorizationClient {
      * @throws UnknownAttributeException
      *             if one (or more) of the requested attributes are not present
      *             in the authorization client
+     * @throws IllegalArgumentException
+     *             If <code>requestedAttributes</code> is <code>null</code>.
      */
     int getSecLevel(final String[] requestedAttributes)
     throws UnknownAttributeException {
