@@ -56,7 +56,7 @@ public final class MessageLogger implements Serializable {
      * Default constructor.
      *
      * @param callingClass
-     *            the class that will use this logger instance
+     *            The class that will use this logger instance.
      */
     public MessageLogger(final Class callingClass) {
         this.callingClass = callingClass;
@@ -70,10 +70,10 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level critical.
+     * Logs a message with level critical.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      */
     public void logCritical(final String message) {
         if (Level.FATAL_INT >= logLevel)
@@ -81,13 +81,13 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level critical.
+     * Logs a message with level critical.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logCritical(final String message, final Exception exception) {
         if (Level.FATAL_INT >= logLevel)
@@ -95,12 +95,12 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level critical including ticket id.
+     * Logs a message with level critical including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      */
     public void logCritical(final String message, final String ticketId) {
         if (Level.FATAL_INT >= logLevel)
@@ -108,15 +108,15 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level critical including ticket id.
+     * Logs a message with level critical including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logCritical(final String message, final String ticketId, final Exception exception) {
         if (Level.FATAL_INT >= logLevel)
@@ -124,10 +124,10 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level warn.
+     * Logs a message with level warn.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      */
     public void logWarn(final String message) {
         if (Level.WARN_INT >= logLevel)
@@ -135,13 +135,13 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level warn.
+     * Logs a message with level warn.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logWarn(final String message, final Exception exception) {
         if (Level.WARN_INT >= logLevel)
@@ -149,12 +149,12 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level warn including ticket id.
+     * Logs a message with level warn including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      */
     public void logWarn(final String message, final String ticketId) {
         if (Level.WARN_INT >= logLevel)
@@ -162,15 +162,15 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level warn including ticket id.
+     * Logs a message with level warn including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logWarn(final String message, final String ticketId, final Exception exception) {
         if (Level.WARN_INT >= logLevel)
@@ -178,10 +178,10 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level info.
+     * Logs a message with level info.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      */
     public void logInfo(final String message) {
         if (Level.INFO_INT >= logLevel)
@@ -189,13 +189,13 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level info.
+     * Logs a message with level info.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logInfo(final String message, final Exception exception) {
         if (Level.INFO_INT >= logLevel)
@@ -203,12 +203,12 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level info including ticket id.
+     * Logs a message with level info including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      */
     public void logInfo(final String message, final String ticketId) {
         if (Level.INFO_INT >= logLevel)
@@ -216,15 +216,15 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level info including ticket id.
+     * Logs a message with level info including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logInfo(final String message, final String ticketId, final Exception exception) {
         if (Level.INFO_INT >= logLevel)
@@ -232,10 +232,10 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level debug.
+     * Logs a message with level debug.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      */
     public void logDebug(final String message) {
         if (Level.DEBUG_INT >= logLevel)
@@ -243,13 +243,13 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level debug.
+     * Logs a message with level debug.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logDebug(final String message, final Exception exception) {
         if (Level.DEBUG_INT >= logLevel)
@@ -257,12 +257,12 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level debug including ticket id.
+     * Logs a message with level debug including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      */
     public void logDebug(final String message, final String ticketId) {
         if (Level.DEBUG_INT >= logLevel)
@@ -270,15 +270,15 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Log message with level debug including ticket id.
+     * Logs a message with level debug including ticket id.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            the ticketid assosiated with this log message
+     *            The ticket id associated with this log message.
      * @param exception
-     *            an exception associated with this log entry. Message and
-     *            stacktrace will be logged
+     *            An exception associated with this log entry. Message and
+     *            stacktrace will be logged.
      */
     public void logDebug(final String message, final String ticketId, final Exception exception) {
         if (Level.DEBUG_INT >= logLevel)
@@ -286,15 +286,15 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Generate the final log entry to give to the underlying log api.
+     * Generates the final log entry to give to the underlying log api.
      *
      * @param message
-     *            the message to log
+     *            The message to log.
      * @param ticketId
-     *            a ticket id. May be null.
+     *            A ticket id. May be null.
      * @param exception
-     *            exception to get stacktrace from. May be null.
-     * @return the final log string
+     *            Exception to get stacktrace from. May be null.
+     * @return The final log string.
      */
     private String generateLogMessage(final String message, final String ticketId, final Exception exception) {
 
@@ -318,11 +318,11 @@ public final class MessageLogger implements Serializable {
     }
 
     /**
-     * Returns the logger, instanciates it if not already so.
-     * Private so that nobody overrides the formatting that is done by
-     * generateLogMessage.
+     * Returns the logger, instantiates it if not already done.
+     * Private, so that nothing is able to override the formatting that is 
+     * done by generateLogMessage.
      *
-     * @return the logger instance of this class
+     * @return The logger instance of this class.
      */
     private Logger getLogger() {
         if (logger == null) {

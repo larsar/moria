@@ -56,7 +56,7 @@ public final class AccessStatusType implements Serializable {
     }
 
     /**
-     * Return string representation of object.
+     * Returns string representation of object.
      *
      * @return name of object
      */
@@ -163,72 +163,72 @@ public final class AccessStatusType implements Serializable {
     public static final AccessStatusType NONEXISTENT_TGT = new AccessStatusType("NONEXISTENT TGT");
 
     /**
-     * Access log type used to indicate that initiate authentication failed due to invalid prefix/postfix URL.
+     * Access log type used to indicate that authentication initiation failed due to invalid prefix/postfix URL.
      */
     public static final AccessStatusType INITIATE_DENIED_INVALID_URL = new AccessStatusType(
             "INITIATE_DENIED_INVALID_URL");
 
     /**
-     * Access log type used to indicate that the proxy authentication was denied due to request for non-cached
+     * Access log type used to indicate that proxy authentication was denied due to request for non-cached
      * attributes.
      */
     public static final AccessStatusType PROXY_AUTH_DENIED_UNCACHED_ATTRIBUTES = new AccessStatusType(
             "PROXY AUTH DENIED UNCACHED ATTRIBUTES");
 
     /**
-     * Access log type used to indicate that the generation of proxy ticket was denied, not authorized.
+     * Access log type used to indicate that generation of proxy ticket was denied, not authorized.
      */
     public static final AccessStatusType PROXY_TICKET_GENERATION_DENIED_UNAUTHORIZED = new AccessStatusType(
             "PROXY TICKET GENERATION DENIED UNAUTHORIZED");
 
     /**
-     * Access log type used to indicate that the generation of proxy ticket was denied, invalid subsystem.
+     * Access log type used to indicate that generation of proxy ticket was denied, invalid subsystem.
      */
     public static final AccessStatusType PROXY_TICKET_GENERATION_DENIED_INVALID_PRINCIPAL = new AccessStatusType(
             "PROXY TICKET GENERATION DENIED INVALID PRINCIPAL");
 
     /**
-     * Access log type used to indicate that the SSO authentication was successful.
+     * Access log type used to indicate that SSO authentication was successful.
      */
     public static final AccessStatusType SUCCESSFUL_SSO_AUTHENTICATION = new AccessStatusType(
             "SUCCESSFUL SSO AUTHENTICATION");
 
     /**
-     * Access log type used to indicate that the interactive authentication was successful.
+     * Access log type used to indicate that interactive authentication was successful.
      */
     public static final AccessStatusType SUCCESSFUL_INTERACTIVE_AUTHENTICATION = new AccessStatusType(
             "SUCCESSFUL INTERACTIVE AUTHENTICATION");
 
     /**
-     * Access log type used to indicate that the direct authentication was successful.
+     * Access log type used to indicate that direct authentication was successful.
      */
     public static final AccessStatusType SUCCESSFUL_DIRECT_AUTHENTICATION = new AccessStatusType(
             "SUCCESSFUL DIRECT AUTHENTICATION");
 
     /**
-     * Access log type used to indicate that the proxy authentication was successful.
+     * Access log type used to indicate that proxy authentication was successful.
      */
     public static final AccessStatusType SUCCESSFUL_PROXY_AUTHENTICATION = new AccessStatusType(
             "SUCCESSFUL PROXY AUTHENTICATION");
 
     /**
-     * Access log type used to indicate that the authentication initiation was succesful.
+     * Access log type used to indicate that authentication initiation was succesful.
      */
     public static final AccessStatusType SUCCESSFUL_AUTH_INIT = new AccessStatusType("SUCCESSFUL AUTH INIT");
 
     /**
-     * Access log type used to indicate that the attributes was successfully retrieved.
+     * Access log type used to indicate that the attributes were successfully retrieved.
      */
     public static final AccessStatusType SUCCESSFUL_GET_ATTRIBUTES = new AccessStatusType("SUCCESSFUL GET ATTRIBUTES");
 
     /**
-     * Access log type used to indicate that the generation of proxy ticket was successful.
+     * Access log type used to indicate that generation of proxy ticket was successful.
      */
     public static final AccessStatusType SUCCESSFUL_GET_PROXY_TICKET = new AccessStatusType(
             "SUCCESSFUL GET PROXY TICKET");
 
     /**
-     * Access log type used to indicate that the user verification was successful.
+     * Access log type used to indicate that user verification was successful.
      */
     public static final AccessStatusType SUCCESSFUL_VERIFY_USER = new AccessStatusType("SUCCESSFUL VERIFY USER");
 
@@ -238,7 +238,7 @@ public final class AccessStatusType implements Serializable {
     public static final AccessStatusType SSO_TICKET_INVALIDATED = new AccessStatusType("SSO TICKET INVALIDATED");
 
     /**
-     * Static array that hold all objects. Used by readResolve() to return correct object after de-serialization.
+     * Static array that holds all objects. Used by readResolve() to return correct object after de-serialization.
      */
     private static final AccessStatusType[] TYPES = {BAD_USER_CREDENTIALS, BAD_SERVICE_CREDENTIALS,
                                                      OPERATIONS_NOT_PERMITTED, ACCESS_DENIED_USERORG,
@@ -262,7 +262,7 @@ public final class AccessStatusType implements Serializable {
     /**
      * Needed for serialization to work.
      *
-     * @return the local classloader representation of the object.
+     * @return The local classloader representation of the object.
      */
     Object readResolve() {
         return TYPES[ordinal];

@@ -52,7 +52,7 @@ public final class AccessLogger implements Serializable {
 
     /**
      * Log to this logger.
-     * Transient so the class can be serialized.
+     * Transient, so the class can be serialized.
      */
     private transient Logger logger = null;
 
@@ -64,19 +64,19 @@ public final class AccessLogger implements Serializable {
     }
 
     /**
-     * Used for logging user-inititated access (user interaction through the
+     * Logs user-initiated access (user interaction through the
      * web interface).
      *
      * @param status
-     *            indicates the type of event
+     *            Indicates the type of event.
      * @param servicePrincipal
-     *            the id of the service that is responsible for this operation
+     *            The id of the service that is responsible for this operation.
      * @param userId
-     *            the id of the user, may be null if unknow at time of event
+     *            The id of the user, may be null if unknown at time of event.
      * @param incomingTicketId
-     *            the id of the ticket given with the request
+     *            The id of the ticket given with the request.
      * @param outgoingTicketId
-     *            the id of the potentially returned ticket, may be null
+     *            The id of the potentially returned ticket, may be null.
      */
     public void logUser(final AccessStatusType status, final String servicePrincipal, final String userId,
             final String incomingTicketId, final String outgoingTicketId) {
@@ -85,16 +85,16 @@ public final class AccessLogger implements Serializable {
     }
 
     /**
-     * Used for logging service-inititated access.
+     * Logs service-initiated access.
      *
      * @param status
-     *            indicates the type of event
+     *            Indicates the type of event.
      * @param servicePrincipal
-     *            the id of the service that is peforming the operation
+     *            The id of the service that is performing the operation.
      * @param incomingTicketId
-     *            the id of the ticket given with the request
+     *            The id of the ticket given with the request.
      * @param outgoingTicketId
-     *            the id of the potentially returned ticket, may be null
+     *            The id of the potentially returned ticket, may be null.
      */
     public void logService(final AccessStatusType status, final String servicePrincipal, final String incomingTicketId,
             final String outgoingTicketId) {
@@ -107,16 +107,16 @@ public final class AccessLogger implements Serializable {
      * Generates log messages in the correct format.
      *
      * @param status
-     *            indicates the type of event
+     *            Indicates the type of event.
      * @param servicePrincipal
-     *            the id of the service that is peforming the operation
+     *            The id of the service that is performing the operation.
      * @param userId
-     *            the id of the user
+     *            The id of the user.
      * @param incomingTicketId
-     *            the id of the ticket given with the request
+     *            The id of the ticket given with the request.
      * @param outgoingTicketId
-     *            the id of the potentially returned ticket, may be null
-     * @return the string to be logged
+     *            The id of the potentially returned ticket, may be null.
+     * @return The string to be logged.
      */
     private String generateLogMessage(final AccessStatusType status, final String servicePrincipal, final String userId,
             final String incomingTicketId, final String outgoingTicketId) {
@@ -134,11 +134,11 @@ public final class AccessLogger implements Serializable {
     }
 
     /**
-     * Returns the logger, instanciates it if not already so.
-     * Private so that nobody overrides the formatting that is done by
-     * generateLogMessage.
+     * Returns the logger, instantiates it if not already done.
+     * Private, so that nothing is able to override the formatting that is 
+     * done by generateLogMessage.
      *
-     * @return the logger instance of this class
+     * @return The logger instance of this class.
      */
     private Logger getLogger() {
         if (logger == null)
