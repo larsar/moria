@@ -20,7 +20,6 @@
 
 package no.feide.moria.servlet;
 
-import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
@@ -182,11 +181,6 @@ public class LoginServlet extends HttpServlet {
             serviceProperties = MoriaController.getServiceProperties(loginTicketId);
             /* Seclevel */
             request.setAttribute(RequestUtil.ATTR_SEC_LEVEL, "" + MoriaController.getSecLevel(loginTicketId));
-        } catch (AuthorizationException e) {
-            /* This should only happen if a service configuration is removed during use.
-             *  Highly unlikely.
-             */
-            errorType = RequestUtil.ERROR_MORIA_DOWN;
         } catch (UnknownTicketException e) {
             errorType = RequestUtil.ERROR_UNKNOWN_TICKET;
         } catch (IllegalInputException e) {
