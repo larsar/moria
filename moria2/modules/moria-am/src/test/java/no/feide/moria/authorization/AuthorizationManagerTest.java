@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * This class tests the AuthorizationManager class.
@@ -72,7 +73,9 @@ public final class AuthorizationManagerTest extends TestCase {
 
         /* Set configuration */
         final AuthorizationClient authzClient = new AuthorizationClient("test", "testDisplay",
-                "http://moria.sf.net/", "en", "feide.no", affiliation, operations, subsystems, attributes);
+                                                                        "http://moria.sf.net/", "en", "feide.no",
+                                                                        affiliation, operations, subsystems,
+                                                                        attributes);
         authzClients = new HashMap();
         authzClients.put("test", authzClient);
     }
@@ -89,7 +92,7 @@ public final class AuthorizationManagerTest extends TestCase {
      *
      * @param name name of the client element
      * @return The new Element
-     **/
+     */
     private static Element createValidClientElem(final String name) {
         final Element clientElem = new Element("Client");
         Element child;
@@ -149,7 +152,7 @@ public final class AuthorizationManagerTest extends TestCase {
      * @param sso
      * @param secLevel
      * @return Element object with attributes according to the paramteres.
-     **/
+     */
     private static Element createAttrElem(final String name, final String sso, final String secLevel) {
         final Element element = new Element("Attribute");
 
@@ -218,12 +221,13 @@ public final class AuthorizationManagerTest extends TestCase {
         }
 
         /* Test equality of generated object */
-        assertTrue("Expects an equal AuthenticationAttribute object", new AuthorizationAttribute("foo", false, 2).equals(AuthorizationManager.parseAttributeElem(createAttrElem("foo", "false", "2"))));
+        assertTrue("Expects an equal AuthenticationAttribute object",
+                   new AuthorizationAttribute("foo", false, 2).equals(
+                           AuthorizationManager.parseAttributeElem(createAttrElem("foo", "false", "2"))));
     }
 
     /**
-     * Test parsing of attributes element that contains attribute child
-     * elements. (testParseAttributes method)
+     * Test parsing of attributes element that contains attribute child elements. (testParseAttributes method)
      *
      * @throws IllegalArgumentException
      * @throws IllegalConfigException
@@ -247,12 +251,14 @@ public final class AuthorizationManagerTest extends TestCase {
         final Iterator it = attributes.keySet().iterator();
         while (it.hasNext()) {
             final String attrName = (String) it.next();
-            assertTrue("Generated attribute should be eqal to master", attributes.get(attrName).equals(parsedAttributes.get(attrName)));
+            assertTrue("Generated attribute should be eqal to master",
+                       attributes.get(attrName).equals(parsedAttributes.get(attrName)));
         }
 
         /* Attributes element without children */
         attributesElem = new Element("Attributes");
-        assertTrue("No attribute elements should result in empty map", AuthorizationManager.parseAttributesElem(attributesElem).size() == 0);
+        assertTrue("No attribute elements should result in empty map",
+                   AuthorizationManager.parseAttributesElem(attributesElem).size() == 0);
 
         /* Null as parameter */
         try {
@@ -279,8 +285,8 @@ public final class AuthorizationManagerTest extends TestCase {
     }
 
     /**
-     * Test parseChildElem method. The child element is either an
-     * 'Operation' or 'Organization', which are treated the same way.
+     * Test parseChildElem method. The child element is either an 'Operation' or 'Organization', which are treated the
+     * same way.
      *
      * @throws IllegalConfigException
      * @see AuthorizationManager#parseChildElem(org.jdom.Element)
@@ -321,7 +327,8 @@ public final class AuthorizationManagerTest extends TestCase {
 
             /* Proper use */
             operationElem.setAttribute("name", "foobar");
-            assertEquals("Input name attribute should be equal to returned value", "foobar", AuthorizationManager.parseChildElem(operationElem));
+            assertEquals("Input name attribute should be equal to returned value", "foobar",
+                         AuthorizationManager.parseChildElem(operationElem));
         }
     }
 
@@ -356,7 +363,8 @@ public final class AuthorizationManagerTest extends TestCase {
 
             /* Attributes element without children */
             operationsElem = new Element(elementType[i]);
-            assertTrue("No operation elements should result in empty map", AuthorizationManager.parseListElem(operationsElem).size() == 0);
+            assertTrue("No operation elements should result in empty map",
+                       AuthorizationManager.parseListElem(operationsElem).size() == 0);
 
             /* Null as parameter */
             try {
@@ -411,7 +419,8 @@ public final class AuthorizationManagerTest extends TestCase {
 
         /* Check operations */
         assertTrue("Operation should  be allowed", client.allowOperations(new String[]{"localAuth", "directAuth"}));
-        assertFalse("Operation should  not be allowed", client.allowOperations(new String[]{"localAuth", "wrongOperation"}));
+        assertFalse("Operation should  not be allowed",
+                    client.allowOperations(new String[]{"localAuth", "wrongOperation"}));
 
         /* Check subsystems */
         assertTrue("Subsystem should  be allowed", client.allowSubsystems(new String[]{"sub1", "sub2"}));
@@ -426,7 +435,8 @@ public final class AuthorizationManagerTest extends TestCase {
         assertTrue("Should have access to", client.allowAccessTo(new String[]{"attr1", "attr2", "attr3"}));
         assertFalse("Should not have access to", client.allowAccessTo(new String[]{"attr3", "attr4"}));
         assertTrue("Should be allowed with SSO", client.allowSSOForAttributes(new String[]{"attr1", "attr2"}));
-        assertFalse("Should not be allowed with SSO", client.allowSSOForAttributes(new String[]{"attr1", "attr2", "attr3"}));
+        assertFalse("Should not be allowed with SSO",
+                    client.allowSSOForAttributes(new String[]{"attr1", "attr2", "attr3"}));
 
         /* Check fields of generated object */
         assertEquals("Name differs", "client1", client.getName());
@@ -512,8 +522,7 @@ public final class AuthorizationManagerTest extends TestCase {
     }
 
     /**
-     * Test setConfig method. This requires that the test configuration file "am-data.xml" is
-     * present in the classpath.
+     * Test setConfig method. This requires that the test configuration file "am-data.xml" is present in the classpath.
      *
      * @see AuthorizationManager#setConfig(java.util.Properties)
      */
@@ -530,6 +539,17 @@ public final class AuthorizationManagerTest extends TestCase {
         final Properties props = new Properties();
         props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
         authMan.setConfig(props);
+
+        /* Check allowed SSO attribute list */
+        String[] expectedSSOAttrs = new String[]{"attr1", "attr2"};
+        Set actualSSOAttrs = authMan.getSSOAttributes();
+
+        assertEquals("Allowed SSO attribute list's sizes differs", expectedSSOAttrs.length, actualSSOAttrs.size());
+
+        for (int i = 0; i < expectedSSOAttrs.length; i++) {
+            assertTrue("Missing SSO attribute: '" + expectedSSOAttrs[i] + "'",
+                       actualSSOAttrs.contains(expectedSSOAttrs[i]));
+        }
     }
 
     /**
@@ -540,14 +560,14 @@ public final class AuthorizationManagerTest extends TestCase {
     public void testSetAuthzClients() {
         final AuthorizationManager authMan = new AuthorizationManager();
 
-         /* Illegal */
-         try {
+        /* Illegal */
+        try {
             authMan.setAuthzClients(null);
             fail("IllegalArgumentException should be raised, null value");
-         } catch (IllegalArgumentException success) {
-         }
+        } catch (IllegalArgumentException success) {
+        }
 
-         /* Legal */
+        /* Legal */
         authMan.setAuthzClients(new HashMap());
         authMan.setAuthzClients(authzClients);
     }
@@ -555,8 +575,9 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Test allowSSOForAttributes method.
      *
-     * @see AuthorizationManager#allowAccessTo(java.lang.String, java.lang.String[])
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#allowAccessTo(java.lang.String, java.lang.String[])
      */
     public void testAllowAccessTo() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -605,10 +626,12 @@ public final class AuthorizationManagerTest extends TestCase {
 
         /* Allowed attributes */
         assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2"}));
-        assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2", "attr3"}));
+        assertTrue("Should be allowed to get access",
+                   authMan.allowAccessTo("test", new String[]{"attr1", "attr2", "attr3"}));
 
         /* Illegal attributes */
-        assertFalse("Should not be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "illegal"}));
+        assertFalse("Should not be allowed to get access",
+                    authMan.allowAccessTo("test", new String[]{"attr1", "illegal"}));
 
 
     }
@@ -616,8 +639,9 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Test allowSSOForAttributes method.
      *
-     * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
      */
     public void testAllowSSOForAttributes() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -669,7 +693,8 @@ public final class AuthorizationManagerTest extends TestCase {
         assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr3"}));
 
         /* Illegal attributes */
-        assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "illegal"}));
+        assertFalse("SSO should not be allowed",
+                    authMan.allowSSOForAttributes("test", new String[]{"attr1", "illegal"}));
         assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr2"}));
         assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr2"}));
     }
@@ -677,8 +702,9 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Test allowSSOForAttributes method.
      *
-     * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
      */
     public void testAllowOperations() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -726,19 +752,24 @@ public final class AuthorizationManagerTest extends TestCase {
         assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{}));
 
         /* Allowed operations */
-        assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth"}));
-        assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "directAuth"}));
+        assertTrue("Should be allowed access to operations",
+                   authMan.allowOperations("test", new String[]{"localAuth"}));
+        assertTrue("Should be allowed access to operations",
+                   authMan.allowOperations("test", new String[]{"localAuth", "directAuth"}));
 
         /* Illegal attributes */
-        assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "illegal"}));
-        assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"illegal"}));
+        assertFalse("Should not be allowed access to operations",
+                    authMan.allowOperations("test", new String[]{"localAuth", "illegal"}));
+        assertFalse("Should not be allowed access to operations",
+                    authMan.allowOperations("test", new String[]{"illegal"}));
     }
 
     /**
      * Test the getServiceProperties method.
      *
-     * @see AuthorizationManager#getServiceProperties(java.lang.String)
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#getServiceProperties(java.lang.String)
      */
     public void testGetServiceProperties() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -772,8 +803,9 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Test the getSecLevel method.
      *
-     * @see AuthorizationManager#getSecLevel(java.lang.String, java.lang.String[])
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#getSecLevel(java.lang.String, java.lang.String[])
      */
     public void testGetSecLevel() throws UnknownServicePrincipalException, UnknownAttributeException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -834,8 +866,9 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Test the getAttributes method.
      *
-     * @see AuthorizationManager#getAttributes(java.lang.String)
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#getAttributes(java.lang.String)
      */
     public void testGetAttributes() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -875,8 +908,9 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Test the getSubsystems method.
      *
-     * @see AuthorizationManager#getSubsystems(java.lang.String)
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#getSubsystems(java.lang.String)
      */
     public void testGetSubsystems() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -915,8 +949,9 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Test the getOperations method.
      *
-     * @see AuthorizationManager#getOperations(java.lang.String)
      * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#getOperations(java.lang.String)
      */
     public void testGetOperations() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
@@ -954,16 +989,16 @@ public final class AuthorizationManagerTest extends TestCase {
     /**
      * Compares two HashSets and expects them to contain equal set of strings.
      *
-     * @param type The name of the element in the HashSet.
+     * @param type     The name of the element in the HashSet.
      * @param expected The HashSet to compare to 'actual'
-     * @param actual The HashSet to compare to 'expected'
+     * @param actual   The HashSet to compare to 'expected'
      */
     private static void compareHashSets(final String type, final HashSet expected, final HashSet actual) {
         assertEquals("HashSet size differs", expected.size(), actual.size());
         final Iterator it = expected.iterator();
         while (it.hasNext()) {
             final String element = (String) it.next();
-            assertTrue(type+" differs. '"+element+"' was not found.", actual.contains(element));
+            assertTrue(type + " differs. '" + element + "' was not found.", actual.contains(element));
         }
     }
 

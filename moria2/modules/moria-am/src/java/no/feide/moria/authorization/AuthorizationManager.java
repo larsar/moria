@@ -52,7 +52,12 @@ public final class AuthorizationManager {
     /**
      * List of client authorization objects. Must be synchronized.
      */
-    private Map authzClients = Collections.synchronizedMap(new HashMap());
+    private HashMap authzClients = new HashMap();
+
+    /**
+     * List of attributes that is allowed to be cached
+     */
+    private HashSet ssoAttributes = new HashSet();
 
     /**
      * True if the authorization manager is ready to be used.
@@ -368,8 +373,27 @@ public final class AuthorizationManager {
         if (newClients == null) {
             throw new IllegalArgumentException("newClients to be set cannot be null");
         }
+
+        /* Generate a list of attributes that is allowed to be cached */
+        HashSet newSSOAttributes = new HashSet();
+        Iterator clientIt = newClients.keySet().iterator();
+        while (clientIt.hasNext()) {
+            AuthorizationClient authzClient = (AuthorizationClient) newClients.get(clientIt.next());
+
+            HashMap attributes = authzClient.getAttributes();
+            Iterator attrIt = attributes.keySet().iterator();
+            while (attrIt.hasNext()) {
+                AuthorizationAttribute attr = (AuthorizationAttribute) attributes.get(attrIt.next());
+                if (attr.getAllowSSO()) {
+                    newSSOAttributes.add(attr.getName());
+                }
+            }
+        }
+
+        /* Set new authorization configuration */
         synchronized (authzClients) {
-            authzClients = Collections.synchronizedMap(newClients);
+            authzClients = newClients;
+            ssoAttributes = newSSOAttributes;
             activated = true;
         }
     }
@@ -527,5 +551,14 @@ public final class AuthorizationManager {
         }
 
         return authzClient.getOperations();
+    }
+
+    /**
+     * Returns the set of SSO attributes names (the attributes that can be cached).
+     *
+     * @return a set of attributes that can be cached.
+     */
+    public HashSet getSSOAttributes() {
+        return new HashSet(ssoAttributes);
     }
 }
