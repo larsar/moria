@@ -486,13 +486,12 @@ public class LoginServlet extends VelocityServlet {
                    using the session. */
                 if (existingSession.isAuthenticated() && existingSession.isLocked()) {
                     HashMap cachedAttributes = existingSession.getCachedAttributes();
-
                     if (cachedAttributes != null && cachedAttributes.size() > 0) {
-                        session.setCachedAttributes(cachedAttributes);
-                        sessionStore.deleteSession(existingSession);
 
                         if (session.allowSso()) {
-                            log.fine("SSO Redirect.");
+                            log.info("SSO Redirect.");
+                            session.setCachedAttributes(cachedAttributes);
+                            sessionStore.deleteSession(existingSession);
                             session.unlock(existingSession.getUser());
                             redirectToWebService(response, session);
                             return null;
