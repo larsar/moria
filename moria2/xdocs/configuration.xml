@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+Copyright (c) 2004 UNINETT FAS
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+
+<document>
+
+  <properties>
+    <title>Configuration</title>
+    <author email="lars.preben.arnesen@conduct.no">Lars Preben S. Arnesen</author>
+  </properties>
+
+  <body>
+
+    <section name="Introduction">
+      <p>
+        Moria is software for providing authentication over HTTP using multiple directory backends.
+        The software designed with a servlet frontend both to the service provider and the user;
+        the service frontend is SOAP based and HTML is used for the interactive user interface.
+      </p>
+      <p>
+        The authentication design is described in detail in the <a href="design.html">design document</a>.
+      </p>
+
+      <p>
+        This document describes the configuration and setup of Moria from scratch.
+      </p>
+    </section>
+
+    <section name="Presentation">
+      <p>
+        JSP is used for the user login and logout page and Moria ships with standard versions of both.
+
+        <br/><b>TODO: How to localize</b>
+      </p>
+    </section>
+
+
+    <section name="Base configuration">
+      <p>
+        Moria is dependent on two system properties which has to be specified as system properties in the VM.
+        <source>
+          no.feide.moria.configuration.base=/full/path/to/configuration_managers.properties
+        </source>
+        <br/><b>TODO: Logging property</b>
+      </p>
+
+      <subsection name="Configuration manager">
+        <p>
+          The Configuration Manager reads and watches the configuratin file for all modules.
+          When a module's configuration file is changed, the CM pushes the updated configuration to the module.
+          Configuration files for all modules can be changed runtime without restart of moria,
+          but changes in the base configuration (CM config file) requires a restart of Moria.
+        </p>
+        <p>
+          All file paths can be given as a <strong>full path or relative to the location of the base
+          configuration file</strong>.
+       </p>
+
+       <source>
+# Number of seconds between polling the configuration files
+no.feide.moria.configuration.fileListenerIntervalSeconds=1
+
+# Path to the store manager's configuration file.
+no.feide.moria.configuration.sm=/full/path/to/store.properties
+
+# Path to the directory manager's configuration file.
+no.feide.moria.configuration.dm=../../directory.properties
+
+# Path to the authorization manager's configuration file.
+no.feide.moria.configuration.am=authorization.xml
+
+# Path to the web module's configuration file.
+no.feide.moria.configuration.web=web.properties
+        </source>
+      </subsection>
+
+      <subsection name="Web module">
+        <p>
+          The web module's configuration consists mostly of language and cookie information used by the login and logout
+          servlet. On the other hand the Axis servlet uses only the URL prefix and the ticket parameter name to generate
+          a URL to the login page after the web service has initiated an authentication attempt.
+        </p>
+        <p>
+          It's important that there exist a language bundle for the default language, else the the login and logout
+          servlet will fail whenever they try to use the default language.
+        </p>
+        <source>
+# Prefix for the login page
+no.feide.moria.web.login.url_prefix=https://login.feide.no/moria/Login
+
+# Ticket parameter name (for reading the login ticket from the user's request URL)
+no.feide.moria.web.login.ticket_param=moriaID
+
+# Organization names on different languages (English). Format: shortName1:LongName1,shortName2:LongName2
+no.feide.moria.web.org_en=uninett.no:UNINETT,uio.no:University of Oslo
+no.feide.moria.web.org_no=uninett.no:UNINETT,uio.no:Universitetet i Oslo
+
+# Supported languages. Format: lang1Short:lang1Name,lang2Short:lang2Name
+no.feide.moria.web.lang_common=no:Norsk,nn:Nynorsk,en:English
+
+# SSO ticket cookie name
+no.feide.moria.web.cookie.sso.name=ssoTicket
+
+# SSO cookie time to live in hours
+no.feide.moria.web.cookie.sso.ttl=8
+
+# Deny SSO cookie name
+no.feide.moria.web.cookie.denysso.name=denySSO
+
+# Deny SSO cookie time to live in hours
+no.feide.moria.web.cookie.denysso.ttl=240
+
+# Selected language cookie name
+no.feide.moria.web.cookie.lang.name=lang
+
+# Selected language cookie time to live in hours
+no.feide.moria.web.cookie.lang.ttl=240
+
+# Selected organization cookie name
+no.feide.moria.web.cookie.org.name=org
+
+# Selected organization cookie time to live in hours
+no.feide.moria.web.cookie.org.ttl=240
+
+# Default language for Moria
+no.feide.moria.web.login.default_language=en
+        </source>
+      </subsection>
+
+      <subsection name="Authorization manager">
+        <p>
+          The authorization manager is configured by a XML file which contains a <i>ClientAuthorizationConfig</i>,
+          which contains a <i>Client</i> element for every web service allowed to use Moria. Service authentication is
+          performed outside of Moria so password and/or certificates must be configured in the server that performs the
+          authentication.
+        </p>
+        <p><b>TODO: Link to DTD</b></p>
+        <p>
+          A client element consists of the following:
+          <ol>
+            <li>
+              A required name attribute which is the same as the principal used for the external authentication.
+            </li>
+            <li><i>DisplayName</i> element that contains the full name to the web service. This is the name that
+              presented on the login page.
+            </li>
+            <li><i>URL</i> element which points to the main page of the web service. This URL is used to connect a
+              link to the displayed web service name on the login page.
+            </li>
+            <li>
+              <i>Home</i> specifies which organization the web service belongs to.
+              <i>This element is not currently in use, but should be present for future authorization use.</i>
+            </li>
+            <li>
+              <i>Language</i> is the language used on the web service's web interface. This language will be used
+              as default language for the login page if the user hasn't selected another language.
+            </li>
+            <li>
+              <i>Affiliation</i> is used to connect the service with a group of organizations. The element contains
+              <i>Organization</i> elements that contains the short name of each affiliated organization. It is not
+              to list the home organization as a affiliated organization.
+              <i>The <i>Affiliation</i> element is not currently in use, but should be present for future
+              authorization use.</i>
+            </li>
+            <li>
+              <i>Attributes</i> contains the attributes that the web service is granted access to. The element
+              contains <i>Attribute</i> elements that contains the attribute name, specification for SSO usage
+              and security level. <i>sso</i> can be set to true or false and <i>secLevel</i> must be >= 0.
+              The <i>secLevel</i> attribute is used for classifying an attribute request and display
+              a warning/description to the user on the login page.
+            </li>
+            <li>
+              The <i>Operations</i> element contains <i>Operation</i> elements for all operations the web service is
+              allowed to perform. The following operations are implemented in Moria:
+              <table>
+                <tr><th>Operation</th><th>Explanation</th></tr>
+                <tr><td>InteractiveAuth</td><td>Normal interactive authentication</td></tr>
+                <tr><td>DirectAuth</td><td>The user sends username/password through the web service</td></tr>
+                <tr><td>ProxyAuth</td><td>Authentication using a proxy ticket</td></tr>
+                <tr><td>VerifyUserExistence</td><td>Allow the web service to check for user existence</td></tr>
+              </table>
+            </li>
+            <li>
+              The <i>Subsystems</i> element contains a <i>Subsystem</i> element for every service/client the client
+              is allowed to use proxy authentication with. Each sub system must be configured as a client with the
+              <i>proxy operation</i>.
+            </li>
+          </ol>
+
+        </p>
+
+        <!-- Example config -->
+        <p>
+<hr/>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;<br/>
+<br/>
+&lt;ClientAuthorizationConfig&gt;
+
+<ul>    &lt;Client name="test"&gt;<br/>
+<ul>        &lt;DisplayName&gt;Foobar&lt;/DisplayName&gt;<br/>
+        &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;<br/>
+        &lt;Home&gt;uio.no&lt;/Home&gt;<br/>
+        &lt;Language&gt;no&lt;/Language&gt;<br/>
+        &lt;Affiliation&gt;<br/>
+<ul>            &lt;Organization name="uninett.no"/&gt;<br/>
+            &lt;Organization name="uio.no"/&gt;<br/>
+</ul>        &lt;/Affiliation&gt;<br/>
+        &lt;Attributes&gt;<br/>
+<ul>            &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;<br/>
+            &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;<br/>
+            &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;<br/>
+</ul>            &lt;Attribute name="tgt"   sso="false" secLevel="0"/&gt;<br/>
+        &lt;/Attributes&gt;<br/>
+        &lt;Operations&gt;<br/>
+<ul>            &lt;Operation name="DirectAuth"/&gt;<br/>
+            &lt;Operation name="InteractiveAuth"/&gt;<br/>
+            &lt;Operation name="VerifyUserExistence"/&gt;<br/>
+</ul>            &lt;Operation name="ProxyAuth"/&gt;<br/>
+        &lt;/Operations&gt;<br/>
+        &lt;Subsystems&gt;<br/>
+<ul>            &lt;Subsystem name="sub1"/&gt;<br/>
+            &lt;Subsystem name="sub2"/&gt;<br/>
+</ul>        &lt;/Subsystems&gt;<br/>
+</ul>    &lt;/Client&gt;<br/>
+<br/>
+
+&lt;Client name="sub1"&gt;<br/>
+<ul>    &lt;DisplayName&gt;Subsystem 1&lt;/DisplayName&gt;<br/>
+    &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;<br/>
+    &lt;Home&gt;uio.no&lt;/Home&gt;<br/>
+    &lt;Language&gt;no&lt;/Language&gt;<br/>
+    &lt;Affiliation&gt;<br/>
+<ul>        &lt;Organization name="uninett.no"/&gt;<br/>
+        &lt;Organization name="uio.no"/&gt;<br/>
+</ul>    &lt;/Affiliation&gt;<br/>
+    &lt;Attributes&gt;<br/>
+<ul>        &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;<br/>
+        &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;<br/>
+        &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;<br/>
+</ul>    &lt;/Attributes&gt;<br/>
+    &lt;Operations&gt;<br/>
+<ul>        &lt;Operation name="ProxyAuth"/&gt;<br/>
+</ul>    &lt;/Operations&gt;<br/>
+    &lt;Subsystems&gt;<br/>
+    &lt;/Subsystems&gt;<br/>
+</ul>&lt;/Client&gt;
+
+</ul>&lt;/ClientAuthorizationConfig&gt;<br/>
+        </p>
+      </subsection>
+
+      <subsection name="Store manager">
+      </subsection>
+
+      <subsection name="Directory manager">
+      </subsection>
+
+      <subsection name="Logging">
+      </subsection>
+    </section>
+
+  </body>
+</document>
