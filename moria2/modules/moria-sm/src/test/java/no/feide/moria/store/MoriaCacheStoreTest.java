@@ -48,6 +48,8 @@ public class MoriaCacheStoreTest extends TestCase {
     /** Dummy organization identifier. */ 
     private final String dummyOrg = "dummyOrg";
 
+    final String nodeId = "127.0.0.1:113";
+
     /** The instance of the store. */
     MoriaCacheStore store;
 
@@ -77,11 +79,11 @@ public class MoriaCacheStoreTest extends TestCase {
 
     public void tearDown() {
         store.stop();
+        /* Without this old store objects seems to not get GC'ed. */
+        store = null;
     }
 
     Properties getSystemProperties() {
-        if (System.getProperty(nodeIdPropertyName) == null)
-            fail("System property: " + nodeIdPropertyName + " must be set.");
 
         Properties storeProperties = new Properties();
 
@@ -431,7 +433,8 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Test with invalid (non-existent) ticket */
 
-        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), userData, dummyOrg).getTicketId();
+        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, nodeId, null, new Long(new Date().getTime() + 500), userData, dummyOrg).getTicketId();
+
         try {
             userData = store.getUserData(ssoTicketId, null);
             fail("NonExistentTicketException should be raised, ticket is invalid.");
@@ -483,7 +486,8 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Non-existing ticket */
         tgTicketId = null;
-        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), null, dummyOrg).getTicketId();
+        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, nodeId, null, new Long(new Date().getTime() + 500), null, dummyOrg).getTicketId();
+
         try {
             tgTicketId = store.createTicketGrantingTicket(ssoTicketId, principal);
             fail("NonExistentTicketException should have been thrown");

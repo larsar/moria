@@ -49,20 +49,20 @@
     <appender-ref ref="MESSAGE"/>
   </logger>
 
-  <category name="org.jboss.system" additivity="false">
-    <level value="info" class="org.jboss.logging.XLevel"/>
+  <logger name="org.jboss.system" additivity="false">
+    <level value="trace" class="org.jboss.logging.XLevel"/>
     <appender-ref ref="JBOSSCACHE"/>
-  </category>
+  </logger>
 
-  <category name="org.jboss.cache" additivity="false">
-    <level value="info" class="org.jboss.logging.XLevel"/>
+  <logger name="org.jboss.cache" additivity="false">
+    <level value="trace" class="org.jboss.logging.XLevel"/>
     <appender-ref ref="JBOSSCACHE"/>
-  </category>
+  </logger>
 
-  <category name="org.jboss.tm" additivity="false">
-    <level value="info" class="org.jboss.logging.XLevel"/>
+  <logger name="org.jboss.tm" additivity="false">
+    <level value="trace" class="org.jboss.logging.XLevel"/>
     <appender-ref ref="JBOSSCACHE"/>
-  </category>
+  </logger>
 
   <root>
     <level value="debug"/>

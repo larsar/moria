@@ -31,55 +31,17 @@ import junit.framework.TestSuite;
  * @version $Revision$
  */
 public class RandomIdTest extends TestCase {
-	
+
     public static Test suite() {
         return new TestSuite(RandomIdTest.class);
-    }
-
-    public void setUp() {
-        /* Property needed by the RandomId class */
-    	String nodeIdPropertyName = "no.feide.moria.store.nodeid";
-
-    	if (System.getProperty(nodeIdPropertyName) == null)
-    		fail(nodeIdPropertyName + " must be set.");
     }
 
     /**
      * Test the base64 encoder
      */
     public void testPseudoBase64Encode() {
-        byte[] input =
-            {
-                -127,
-                -120,
-                -110,
-                -100,
-                -90,
-                -80,
-                -70,
-                -60,
-                -50,
-                -40,
-                -30,
-                -20,
-                -10,
-                -1,
-                0,
-                1,
-                2,
-                10,
-                20,
-                30,
-                40,
-                50,
-                60,
-                70,
-                80,
-                90,
-                100,
-                110,
-                120,
-                127 };
+        byte[] input = {-127, -120, -110, -100, -90, -80, -70, -60, -50, -40, -30, -20, -10, -1, 0, 1, 2, 10, 20, 30, 40, 50, 60,
+                        70, 80, 90, 100, 110, 120, 127};
 
         // Stupid check of my own counting
         assertTrue(input.length == 30);
@@ -99,7 +61,7 @@ public class RandomIdTest extends TestCase {
         HashSet ids = new HashSet(noOfIds);
 
         for (int i = 0; i < noOfIds; i++) {
-            String id = RandomId.newId();
+            String id = RandomId.newId("127.0.0.1:42767");
             assertNotNull("No ids should be null", id);
 
             if (!ids.contains(id)) {
@@ -107,11 +69,26 @@ public class RandomIdTest extends TestCase {
             }
         }
 
-        assertTrue(
-            "Size of id set ("
-                + ids.size()
-                + ") does not match number of generated ids, duplicate ids generated",
-            ids.size() == noOfIds);
+        assertTrue("Size of id set (" + ids.size() + ") does not match number of generated ids, duplicate ids generated",
+                ids.size() == noOfIds);
+    }
+
+    /**
+     * 
+     *
+     */
+    public void testNodeIdToByteArray() {
+        final String input = "10.183.0.254:32975";
+        final byte[] correctAnswer = {(byte) 0x8a, (byte) 0x37, (byte) 0x80, (byte) 0x7e, (byte) 0x80, (byte) 0xcf};
+
+        final short resultLength = 6;
+        byte[] result = RandomId.nodeIdToByteArray(input);
+
+        assertEquals("Length of result array is not correct: ", resultLength, result.length);
+
+        for (short i = 0; i < resultLength; i++) {
+            assertEquals("Array elements " + i + " does not match: ", correctAnswer[i], result[i]);
+        }
     }
 
     /**
@@ -119,21 +96,51 @@ public class RandomIdTest extends TestCase {
      *  
      */
     public void testLongToByteArray() {
-        long input = 4410259550623765063L; // 0x3d3463b1da341247L;
-        byte[] correctAnswer =
-            {
-                (byte) 0x3d,
-                (byte) 0x34,
-                (byte) 0x63,
-                (byte) 0xb1,
-                (byte) 0xda,
-                (byte) 0x34,
-                (byte) 0x12,
-                (byte) 0x47 };
+        final long input = 4410259550623765063L; // 0x3d3463b1da341247L;
+        final byte[] correctAnswer = {(byte) 0x3d, (byte) 0x34, (byte) 0x63, (byte) 0xb1, (byte) 0xda, (byte) 0x34, (byte) 0x12,
+                                      (byte) 0x47};
+
+        final short resultLength = 8;
 
         byte[] result = RandomId.longToByteArray(input);
 
-        for (int i = 0; i < 8; i++) {
+        assertEquals("Length of result array is not correct: ", resultLength, result.length);
+
+        for (short i = 0; i < resultLength; i++) {
+            assertEquals("Array elements " + i + " does not match: ", correctAnswer[i], result[i]);
+        }
+    }
+
+    /**
+     * 
+     *
+     */
+    public void testUnsignedIntToByteArray() {
+        int input = 65536;
+
+        try {
+            byte[] result = RandomId.unsignedShortToByteArray(input);
+            fail("IllegalArgumentException should have been thrown.");
+        } catch (IllegalArgumentException success) {
+        }
+
+        input = -1;
+
+        try {
+            byte[] result = RandomId.unsignedShortToByteArray(input);
+            fail("IllegalArgumentException should have been thrown.");
+        } catch (IllegalArgumentException success) {
+        }
+
+        input = 45432;
+        final byte[] correctAnswer = {(byte) 0xb1, (byte) 0x78};
+        final short resultLength = 2;
+
+        byte[] result = RandomId.unsignedShortToByteArray(input);
+
+        assertEquals("Length of result array is not correct: ", resultLength, result.length);
+
+        for (short i = 0; i < resultLength; i++) {
             assertEquals("Array elements " + i + " does not match: ", correctAnswer[i], result[i]);
         }
     }

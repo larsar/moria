@@ -20,25 +20,33 @@
 
 package no.feide.moria.store;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
+import java.util.Vector;
 
 import no.feide.moria.log.MessageLogger;
 
+import org.jboss.cache.CacheException;
 import org.jboss.cache.Fqn;
+import org.jboss.cache.Node;
 import org.jboss.cache.TreeCache;
-import org.jboss.cache.TreeCacheListener;
 import org.jboss.cache.eviction.EvictionAlgorithm;
-import org.jboss.cache.eviction.EvictionPolicy;
 import org.jboss.cache.eviction.EvictionTimerTask;
+import org.jboss.cache.eviction.LRUPolicy;
 import org.jboss.cache.eviction.Region;
 import org.jboss.cache.eviction.RegionManager;
 import org.jboss.cache.eviction.RegionNameConflictException;
 import org.jboss.cache.lock.LockingException;
 import org.jboss.cache.lock.TimeoutException;
+import org.jgroups.MergeView;
 import org.jgroups.View;
+import org.jgroups.stack.IpAddress;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
@@ -49,10 +57,10 @@ import org.w3c.dom.Text;
  * @version $Revision$
  */
 
-public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListener {
+public final class TicketTTLEvictionPolicy extends LRUPolicy {
 
     /** The logger used by this class. */
-    private MessageLogger messageLogger;
+    private MessageLogger messageLogger = new MessageLogger(TicketTTLEvictionPolicy.class);
 
     /** Manages the regions for each ticket type. */
     private RegionManager regionManager;
@@ -84,6 +92,9 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /** Constant representing the ttl attribute key. */
     private static final String TTL_ATTRIBUTE_NAME = "timeToLive";
 
+    /** Constant holding default error message. */
+    private static final String OPERATION_FAILED_MESSAGE = "Operation failed";
+
     /** Contains the different regions registered for this policy. */
     private RegionValue[] regionValues;
 
@@ -103,124 +114,15 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      * Creates a new instance.
      */
     public TicketTTLEvictionPolicy() {
-        messageLogger = new MessageLogger(TicketTTLEvictionPolicy.class);
-        regionManager = null;
     }
 
     /**
-     * @see org.jboss.cache.eviction.EvictionPolicy#getRegions()
+     * @see org.jboss.cache.eviction.EvictionPolicy#configure(org.jboss.cache.TreeCache)
      */
-    public final Region[] getRegions() {
-        return regionManager.getRegions();
-    }
-
-    /**
-     * @see org.jboss.cache.eviction.EvictionPolicy#evict(org.jboss.cache.Fqn)
-     */
-    public final void evict(final Fqn fqn)
-            throws Exception {
-        cache.evict(fqn);
-    }
-
-    /**
-     * @see org.jboss.cache.eviction.EvictionPolicy#getChildrenNames(org.jboss.cache.Fqn)
-     */
-    public final Set getChildrenNames(final Fqn fqn) {
-        try {
-            return cache.getChildrenNames(fqn);
-        } catch (LockingException le) {
-            throw new RuntimeException(le);
-        } catch (TimeoutException te) {
-            throw new RuntimeException(te);
-        }
-    }
-
-    /**
-     * @see org.jboss.cache.eviction.EvictionPolicy#hasChild(org.jboss.cache.Fqn)
-     */
-    public final boolean hasChild(final Fqn fqn) {
-        return cache.hasChild(fqn);
-    }
-
-    /**
-     * @see org.jboss.cache.eviction.EvictionPolicy#getCacheData(org.jboss.cache.Fqn, java.lang.Object)
-     */
-    public final Object getCacheData(final Fqn fqn, final Object key) {
-        try {
-            return cache.get(fqn, key);
-        } catch (LockingException le) {
-            throw new RuntimeException(le);
-        } catch (TimeoutException te) {
-            throw new RuntimeException(te);
-        }
-    }
-
-    /**
-     * @see org.jboss.cache.eviction.EvictionPolicy#getWakeupIntervalSeconds()
-     */
-    public final int getWakeupIntervalSeconds() {
-        return wakeUpIntervalSeconds;
-    }
-
-    /**
-     * @see org.jboss.cache.TreeCacheListener#nodeAdded(org.jboss.cache.Fqn)
-     */
-    public final void nodeAdded(final Fqn fqn) {
-        if (!fqn.equals(ROOT)) {
-            Region region = regionManager.getRegion(fqn.toString());
-            if (region != null) {
-                region.setAddedNode(fqn);
-            } else {
-                messageLogger.logDebug("No region returned for FQN: " + fqn);
-            }
-        }
-    }
-
-    /**
-     * @see org.jboss.cache.TreeCacheListener#nodeRemoved(org.jboss.cache.Fqn)
-     */
-    public final void nodeRemoved(final Fqn fqn) {
-        Region region = regionManager.getRegion(fqn.toString());
-        if (region != null) {
-            region.setAddedNode(fqn);
-        } else {
-            messageLogger.logDebug("No region returned for FQN: " + fqn);
-        }
-    }
-
-    /**
-     * @see org.jboss.cache.TreeCacheListener#nodeEvicted(org.jboss.cache.Fqn)
-     */
-    public final void nodeEvicted(final Fqn fqn) {
-    }
-
-    /**
-     * @see org.jboss.cache.TreeCacheListener#nodeModified(org.jboss.cache.Fqn)
-     */
-    public final void nodeModified(final Fqn fqn) {
-        nodeVisited(fqn);
-    }
-
-    /**
-     * @see org.jboss.cache.TreeCacheListener#nodeVisited(org.jboss.cache.Fqn)
-     */
-    public final void nodeVisited(final Fqn fqn) {
-        Region region = regionManager.getRegion(fqn.toString());
-        if (region != null) {
-            region.setVisitedNode(fqn);
-        } else {
-            messageLogger.logDebug("No region returned for FQN: " + fqn);
-        }
-    }
-
-    /**
-     * @see org.jboss.cache.TreeCacheListener#cacheStarted(org.jboss.cache.TreeCache)
-     */
-    public final void cacheStarted(final TreeCache treeCache) {
-        messageLogger.logInfo("Starting eviction policy using provider: " + this.getClass().getName());
-        parseConfig(treeCache.getEvictionPolicyConfig());
+    public void configure(final TreeCache cache) {
+        parseConfig(cache.getEvictionPolicyConfig());
         regionManager = new RegionManager(this);
-        cache = treeCache;
+        this.cache = cache;
 
         for (int i = 0; i < regionValues.length; i++) {
             EvictionAlgorithm algorithm = new TicketTTLEvictionAlgorithm();
@@ -228,27 +130,355 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
             try {
                 Region region = regionManager.createRegion(ROOT.toString() + regionValues[i].regionName, algorithm);
                 region.setMaxNodes(maxNodes);
-                region.setTimeToIdleSeconds(wakeUpIntervalSeconds);
-            } catch (RegionNameConflictException rnce) {
-                throw new EvictionConfigurationException("Unable to create region " + regionValues[i].regionName, rnce);
+                region.setTimeToLiveSeconds(wakeUpIntervalSeconds);
+            } catch (RegionNameConflictException e) {
+                messageLogger.logWarn("Name conflict in region naming.", e);
+                throw new EvictionConfigurationException("Unable to create region " + regionValues[i].regionName, e);
             }
         }
 
+    }
+
+    /**
+     * @see org.jboss.cache.eviction.EvictionPolicy#getRegions()
+     */
+    public Region[] getRegions() {
+        return regionManager.getRegions();
+    }
+
+    /**
+     * @see org.jboss.cache.eviction.EvictionPolicy#evict(org.jboss.cache.Fqn)
+     */
+    public void evict(final Fqn fqn)
+            throws Exception {
+        cache.evict(fqn);
+    }
+
+    /**
+     * @see org.jboss.cache.eviction.EvictionPolicy#getChildrenNames(org.jboss.cache.Fqn)
+     */
+    public Set getChildrenNames(final Fqn fqn) {
+        /* Here the API forces us to use RuntimeException. */
+        try {
+            return cache.getChildrenNames(fqn);
+        } catch (LockingException le) {
+            messageLogger.logWarn(OPERATION_FAILED_MESSAGE, le);
+            throw new RuntimeException(le);
+        } catch (TimeoutException te) {
+            messageLogger.logWarn(OPERATION_FAILED_MESSAGE, te);
+            throw new RuntimeException(te);
+        } catch (CacheException ce) {
+            messageLogger.logWarn(OPERATION_FAILED_MESSAGE, ce);
+            throw new RuntimeException(ce);
+        }
+    }
+
+    /**
+     * @see org.jboss.cache.eviction.EvictionPolicy#hasChild(org.jboss.cache.Fqn)
+     */
+    public boolean hasChild(final Fqn fqn) {
+        return cache.hasChild(fqn);
+    }
+
+    /**
+     * @see org.jboss.cache.eviction.EvictionPolicy#getCacheData(org.jboss.cache.Fqn, java.lang.Object)
+     */
+    public Object getCacheData(final Fqn fqn, final Object key) {
+        /* Here the API forces us to use RuntimeException. */
+        try {
+            return cache.get(fqn, key);
+        } catch (LockingException le) {
+            messageLogger.logWarn(OPERATION_FAILED_MESSAGE, le);
+            throw new RuntimeException(le);
+        } catch (TimeoutException te) {
+            messageLogger.logWarn(OPERATION_FAILED_MESSAGE, te);
+            throw new RuntimeException(te);
+        } catch (CacheException ce) {
+            messageLogger.logWarn(OPERATION_FAILED_MESSAGE, ce);
+            throw new RuntimeException(ce);
+        }
+    }
+
+    /**
+     * @see org.jboss.cache.eviction.EvictionPolicy#getWakeupIntervalSeconds()
+     */
+    public int getWakeupIntervalSeconds() {
+        return wakeUpIntervalSeconds;
+    }
+
+    /**
+     * @see org.jboss.cache.TreeCacheListener#nodeAdded(org.jboss.cache.Fqn)
+     */
+    public void nodeCreated(final Fqn fqn) {
+        if (fqn.equals(ROOT))
+            return;
+
+        if (regionManager != null) {
+            Region region = regionManager.getRegion(fqn.toString());
+
+            if (region != null) {
+                region.setAddedNode(fqn);
+                messageLogger.logDebug("Node created: " + fqn);
+            } else {
+                messageLogger.logInfo("No region returned for created node: " + fqn);
+            }
+        } else {
+            messageLogger.logWarn("regionManager is null");
+        }
+    }
+
+    /**
+     * @see org.jboss.cache.TreeCacheListener#nodeLoaded(org.jboss.cache.Fqn)
+     */
+    public void nodeLoaded(final Fqn fqn) {
+        if (fqn.equals(ROOT))
+            return;
+
+        if (regionManager != null) {
+            Region region = regionManager.getRegion(fqn.toString());
+
+            if (region != null) {
+                region.setAddedNode(fqn);
+                messageLogger.logDebug("Node loaded: " + fqn);
+            } else {
+                messageLogger.logInfo("No region returned for loaded node: " + fqn);
+            }
+        } else {
+            messageLogger.logWarn("regionManager is null");
+        }
+    }
+
+    /**
+     * @see org.jboss.cache.TreeCacheListener#nodeRemoved(org.jboss.cache.Fqn)
+     */
+    public void nodeRemoved(final Fqn fqn) {
+        if (fqn.equals(ROOT))
+            return;
+
+        if (regionManager != null) {
+            Region region = regionManager.getRegion(fqn.toString());
+
+            if (region != null) {
+                region.setRemovedNode(fqn);
+                messageLogger.logDebug("Listener got node removed: " + fqn);
+            } else {
+                messageLogger.logInfo("No region returned for removed node: " + fqn);
+            }
+        } else {
+            messageLogger.logWarn("regionManager is null");
+        }
+    }
+
+    /**
+     * @see org.jboss.cache.TreeCacheListener#nodeEvicted(org.jboss.cache.Fqn)
+     */
+    public void nodeEvicted(final Fqn fqn) {
+        if (fqn.equals(ROOT))
+            return;
+
+        messageLogger.logDebug("Listener got node evicted: " + fqn);
+    }
+
+    /**
+     * @see org.jboss.cache.TreeCacheListener#nodeModified(org.jboss.cache.Fqn)
+     */
+    public void nodeModified(final Fqn fqn) {
+        if (fqn.equals(ROOT))
+            return;
+
+        if (regionManager != null) {
+            Region region = regionManager.getRegion(fqn.toString());
+
+            if (region != null) {
+                region.setVisitedNode(fqn);
+                messageLogger.logDebug("Listener got node modified: " + fqn);
+            } else {
+                messageLogger.logInfo("No region returned for modified node: " + fqn);
+            }
+        } else {
+            messageLogger.logWarn("regionManager is null");
+        }
+    }
+
+    /**
+     * @see org.jboss.cache.TreeCacheListener#nodeVisited(org.jboss.cache.Fqn)
+     */
+    public void nodeVisited(final Fqn fqn) {
+        if (fqn.equals(ROOT))
+            return;
+
+        if (regionManager != null) {
+            Region region = regionManager.getRegion(fqn.toString());
+
+            if (region != null) {
+                region.setVisitedNode(fqn);
+                messageLogger.logDebug("Listener got node visited: " + fqn);
+            } else {
+                messageLogger.logInfo("No region returned for visited node: " + fqn);
+            }
+        } else {
+            messageLogger.logWarn("regionManager is null");
+        }
+    }
+
+    /**
+     * @see org.jboss.cache.TreeCacheListener#cacheStarted(org.jboss.cache.TreeCache)
+     */
+    public void cacheStarted(final TreeCache cache) {
+        messageLogger.logInfo("Starting eviction policy using provider: " + this.getClass().getName());
+
+        if (!this.cache.equals(cache)) {
+            messageLogger.logWarn("Cache instance given on start not equal to configured cache.");
+        }
+
         evictionTimer = new Timer();
-        evictionTimer.schedule(new EvictionTimerTask(this), wakeUpIntervalSeconds * 1000, wakeUpIntervalSeconds * 1000);
+        evictionTimer.schedule(new EvictionTimerTask(this), 1000, wakeUpIntervalSeconds * 1000);
     }
 
     /**
      * @see org.jboss.cache.TreeCacheListener#cacheStopped(org.jboss.cache.TreeCache)
      */
-    public final void cacheStopped(final TreeCache treeCache) {
-        evictionTimer.cancel();
+    public void cacheStopped(final TreeCache cache) {
+
+        if (!this.cache.equals(cache)) {
+            messageLogger.logWarn("Cache instance given on stop not equal to configured cache.");
+        }
+
+        if (evictionTimer != null) {
+            evictionTimer.cancel();
+            messageLogger.logInfo("Stopped eviction policy timer.");
+        } else {
+            messageLogger.logInfo("Cache stop called with uninitialized eviction timer.");
+        }
     }
 
     /**
      * @see org.jboss.cache.TreeCacheListener#viewChange(org.jgroups.View)
      */
-    public final void viewChange(final View view1) {
+    public void viewChange(final View view) {
+        messageLogger.logDebug("Listener got a view change.");
+
+        Vector subGroupMembers = null;
+        final Object myAddress = cache.getLocalAddress();
+
+        /* Exit unless this is a merge. */
+        if (view instanceof MergeView) {
+            messageLogger.logDebug("View is a MergeView!");
+            MergeView mergeView = (MergeView) view;
+
+            Vector subgroups = mergeView.getSubgroups();
+
+            for (int v = 0; v < subgroups.size(); v++) {
+                subGroupMembers = ((View) subgroups.get(v)).getMembers();
+                /* We run until we find a the subgroup we were coordinating. */
+                if (subGroupMembers.get(0).equals(myAddress)) {
+                    break;
+                } else {
+                    subGroupMembers = null;
+                }
+            }
+        } else {
+            return;
+        }
+
+        /* If we're one of the old coords we get workin'. Basically we
+         * recommit all nodes that belonged to us. */
+        if (subGroupMembers != null) {
+            messageLogger.logDebug("This was previously a coordinator.");
+
+            /* Identify our group members. */
+            ArrayList memberIds = new ArrayList();
+
+            for (Iterator i = subGroupMembers.iterator(); i.hasNext();) {
+                /* Create ticket id prefix. */
+                String nodeId;
+
+                Object memberAddress = i.next();
+
+                if (memberAddress instanceof IpAddress) {
+                    IpAddress ipAddress = (IpAddress) memberAddress;
+                    InetAddress inetAddress = ipAddress.getIpAddress();
+                    nodeId = inetAddress.getHostAddress() + ":" + ipAddress.getPort();
+                } else {
+                    messageLogger.logWarn("Skipping a group member. Address not an IpAddress: " + memberAddress);
+                    continue;
+                }
+
+                memberIds.add(RandomId.pseudoBase64Encode(RandomId.nodeIdToByteArray(nodeId)));
+            }
+
+            /* Get data. */
+
+            List branches = MoriaTicketType.TICKET_TYPES;
+
+            int ticketCount = 0;
+
+            for (Iterator i = branches.iterator(); i.hasNext();) {
+
+                Node branch;
+                Map tickets;
+
+                try {
+                    branch = cache.get(new Fqn(i.next()));
+                } catch (LockingException le) {
+                    messageLogger.logCritical("Locking cache failed.", le);
+                    continue;
+                } catch (TimeoutException te) {
+                    messageLogger.logCritical("Got timeout from cache.", te);
+                    continue;
+                } catch (CacheException ce) {
+                    messageLogger.logCritical("Got exception from cache.", ce);
+                    continue;
+                }
+
+                if (branch != null) {
+                    tickets = branch.getChildren();
+                } else {
+                    continue;
+                }
+
+                /* In case a null value is returned instead of a empty Map. */
+                if (tickets == null)
+                    continue;
+
+                for (Iterator j = tickets.keySet().iterator(); j.hasNext();) {
+                    Object ticketId = j.next();
+                    String nodeId = ticketId.toString().substring(0, 7);
+
+                    for (Iterator k = memberIds.iterator(); k.hasNext();) {
+                        String memberId = (String) k.next();
+
+                        if (nodeId.equals(memberId)) {
+                            Node ticket = (Node) tickets.get(ticketId);
+
+                            if (ticket != null) {
+                                try {
+                                    cache.put(ticket.getFqn(), ticket.getData());
+                                    ticketCount++;
+                                } catch (RuntimeException re) {
+                                    /* We do this to weed out RuntimeExceptions from the catch below. */
+                                    throw re;
+                                } catch (Exception e) {
+                                    messageLogger.logCritical("Insertion into store failed. [" + ticket.getName() + "]", e);
+                                    continue;
+                                }
+
+                                /* Throttle redistribution somewhat. */
+                                try {
+                                    Thread.sleep(30);
+                                } catch (InterruptedException ie) {
+                                    messageLogger.logWarn("Thread sleep interrupted", ie);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            messageLogger.logDebug("Number of redistributed tickets: " + ticketCount);
+        } else {
+            messageLogger.logDebug("Got a MergeView, but this wasn't a coordinator before.");
+            return;
+        }
     }
 
     /**
@@ -257,7 +487,8 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      *
      * @param config configuration for this eviction policy
      */
-    final void parseConfig(final Element config) {
+    synchronized void parseConfig(final Element config) {
+
         if (config == null)
             throw new IllegalArgumentException("config cannot be null");
 
@@ -284,7 +515,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
 
         for (int i = 0; i < regionValues.length; i++) {
             RegionValue regionValue = new RegionValue();
-            Node node = regions.item(i);
+            org.w3c.dom.Node node = regions.item(i);
 
             if (node.getNodeType() != 1)
                 continue;
@@ -300,6 +531,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
                 throw new EvictionConfigurationException("Illegal value for time to live: " + regionValue.timeToLive);
 
             regionValues[i] = regionValue;
+            messageLogger.logDebug("Added region: " + regionValue);
         }
     }
 
@@ -311,13 +543,13 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      * @param attributeName the name of the requested attribute.
      * @return the value of the requested attribute, null if no attribute exists in element.
      */
-    final String getAttribute(final Element element, final String attributeName) {
+    String getAttribute(final Element element, final String attributeName) {
         NodeList nodes = element.getElementsByTagName(ATTRIBUTE_NAME);
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
+            org.w3c.dom.Node node = nodes.item(i);
 
-            if (node.getNodeType() != Node.ELEMENT_NODE)
+            if (node.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE)
                 continue;
 
             Element subElement = (Element) node;
@@ -337,12 +569,12 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      * @param trim Whether or not to trim whitespace before returing.
      * @return A concatenated string of the text of the child nodes of the element.
      */
-    final String getElementContent(final Element element, final boolean trim) {
+    String getElementContent(final Element element, boolean trim) {
         NodeList nodes = element.getChildNodes();
         String attributeText = "";
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
+            org.w3c.dom.Node node = nodes.item(i);
             if (node instanceof Text)
                 attributeText = attributeText + ((Text) node).getData();
         }
@@ -358,7 +590,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      *
      * @return Array containing the region values.
      */
-    final RegionValue[] getRegionValues() {
+    RegionValue[] getRegionValues() {
         return regionValues;
     }
 
@@ -371,7 +603,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     final RegionValue getRegionValue(final String fqn) {
 
         for (int i = 0; i < regionValues.length; i++) {
-            if (fqn.equals(ROOT.toString() + regionValues[i].regionName))
+            if (fqn.startsWith(ROOT.toString() + regionValues[i].regionName))
                 return regionValues[i];
         }
 
@@ -381,7 +613,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * Simple data container for region values.
      */
-    static class RegionValue {
+    static final class RegionValue {
 
         /** Region name. */
         private String regionName;
@@ -401,7 +633,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
          * Gets region name.
          * @return The region name.
          */
-        final String getRegionName() {
+        String getRegionName() {
             return regionName;
         }
 
@@ -409,7 +641,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
          * Gets time to live.
          * @return Time to live.
          */
-        final long getTimeToLive() {
+        long getTimeToLive() {
             return timeToLive;
         }
     }

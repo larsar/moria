@@ -22,6 +22,7 @@ package no.feide.moria.store;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,12 +31,14 @@ import java.util.Properties;
 
 import no.feide.moria.log.MessageLogger;
 
+import org.jboss.cache.CacheException;
 import org.jboss.cache.Fqn;
 import org.jboss.cache.Node;
 import org.jboss.cache.PropertyConfigurator;
 import org.jboss.cache.TreeCache;
 import org.jboss.cache.lock.LockingException;
 import org.jboss.cache.lock.TimeoutException;
+import org.jgroups.stack.IpAddress;
 
 /**
  * Distributed store implementation using JBoss Cache.
@@ -52,7 +55,7 @@ implements MoriaStore {
     private Boolean isConfigured = new Boolean(false);
 
     /** The logger used by this class. */
-    private MessageLogger log = new MessageLogger(MoriaCacheStore.class);
+    private MessageLogger messageLogger = new MessageLogger(MoriaCacheStore.class);
 
     /** Map to contain the ticket ttl values. */
     private Map ticketTTLs;
@@ -68,6 +71,9 @@ implements MoriaStore {
 
     /** The common hashmap key for the principal. */
     private static final String PRINCIPAL_ATTRIBUTE = "Principal";
+
+    /** The node identificator for this node (<ip-addr>:<port>). */
+    private String nodeId;
 
     /**
      * The common hashmap key for the data attributes (MoriaAuthnAttempt &
@@ -94,8 +100,7 @@ implements MoriaStore {
      */
     public MoriaCacheStore() throws MoriaStoreException {
 
-        isConfigured = new Boolean(false);
-        log = new MessageLogger(no.feide.moria.store.MoriaCacheStore.class);
+        messageLogger = new MessageLogger(no.feide.moria.store.MoriaCacheStore.class);
 
         try {
             store = new TreeCache();
@@ -104,6 +109,9 @@ implements MoriaStore {
         } catch (Exception e) {
             throw new MoriaStoreException("Unable to create TreeCache instance.", e);
         }
+
+        /* Add listener to primarily handle view events. */
+        //store.addTreeCacheListener(new MoriaTreeCacheListener(store));
 
         ticketDefaultTTLs.put(MoriaTicketType.LOGIN_TICKET, new Long(300000L));
         ticketDefaultTTLs.put(MoriaTicketType.SERVICE_TICKET, new Long(300000L));
@@ -131,12 +139,12 @@ implements MoriaStore {
      *             If defaultTTL is null.
      * @see no.feide.moria.store.MoriaStore#setConfig(java.util.Properties)
      */
-    public synchronized void setConfig(final Properties properties)
+    public void setConfig(final Properties properties)
     throws MoriaStoreConfigurationException {
 
         synchronized (isConfigured) {
             if (isConfigured.booleanValue()) {
-                log.logWarn("setConfig() called on already configured instance.");
+                messageLogger.logWarn("setConfig() called on already configured instance.");
                 return;
             }
 
@@ -174,6 +182,7 @@ implements MoriaStore {
                 throw new MoriaStoreConfigurationException("Unable to configure the cache.", e);
             }
 
+            messageLogger.logInfo("Using TicketTTLEvictionPolicy to get TTL configuration.");
             TicketTTLEvictionPolicy ticketTTLEvictionPolicy = new TicketTTLEvictionPolicy();
 
             try {
@@ -203,18 +212,33 @@ implements MoriaStore {
                         throw new NullPointerException("No default value defined for: " + ticketType);
 
                     ticketTTLs.put(ticketType, defaultTTL);
-                    log.logCritical("TTL for " + ticketType + " not found.  Using default value. This is not a good thing.");
+                    messageLogger.logCritical("TTL for " + ticketType + " not set or value to low (below ~2 seconds). Using default value.");
                 } else {
                     ticketTTLs.put(ticketType, ttl);
                 }
             }
-
+            
             try {
+                messageLogger.logInfo("Attempting to start the TreeCache.");
                 store.start();
+                messageLogger.logInfo("TreeCache started.");
             } catch (Exception e) {
                 throw new MoriaStoreConfigurationException("Unable to start the cache", e);
             }
 
+            /* Get the node id. */
+            Object localAddress = store.getLocalAddress();
+
+            if (localAddress instanceof IpAddress) {
+                IpAddress ipAddress = (IpAddress) localAddress;
+                InetAddress inetAddress = ipAddress.getIpAddress();
+                nodeId = inetAddress.getHostAddress() + ":" + ipAddress.getPort();
+            } else {
+                nodeId = "0.0.0.0:0";
+            }
+
+            messageLogger.logWarn("Node id set to " + nodeId);
+            
             isConfigured = new Boolean(true);
         }
     }
@@ -231,7 +255,7 @@ implements MoriaStore {
             store = null; // Remove object reference for garbage collection.
             isConfigured = new Boolean(false);
         }
-        log.logWarn("The cache has been stopped.");
+        messageLogger.logWarn("The cache has been stopped.");
     }
 
 
@@ -281,7 +305,8 @@ implements MoriaStore {
                 responseURLPostfix, forceInteractiveAuthentication, servicePrincipal);
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.LOGIN_TICKET)).longValue() + new Date().getTime());
-        ticket = new MoriaTicket(MoriaTicketType.LOGIN_TICKET, servicePrincipal, expiryTime, authnAttempt, null);
+
+        ticket = new MoriaTicket(MoriaTicketType.LOGIN_TICKET, nodeId, servicePrincipal, expiryTime, authnAttempt, null);
 
         insertIntoStore(ticket);
 
@@ -326,7 +351,7 @@ implements MoriaStore {
         // Get ticket from store.
         MoriaTicket ticket = getFromStore(potentialTicketTypes, ticketId);
         if (ticket == null) {
-            log.logInfo("Ticket does not exist in the store", ticketId);
+            messageLogger.logInfo("Ticket does not exist in the store", ticketId);
             throw new NonExistentTicketException(ticketId);
         }
 
@@ -346,7 +371,7 @@ implements MoriaStore {
 
         /* Delete the ticket if so indicated. */
         if (!keep) {
-            log.logInfo("Removing ticket from store", ticketId);
+            messageLogger.logDebug("Removing ticket from store", ticketId);
             removeFromStore(ticket);
         }
 
@@ -384,7 +409,7 @@ implements MoriaStore {
         CachedUserData userData = new CachedUserData(attributes);
         /* Create new SSO ticket with null-value servicePrincipal */
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.SSO_TICKET)).longValue() + new Date().getTime());
-        MoriaTicket ssoTicket = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, expiryTime, userData, userorg);
+        MoriaTicket ssoTicket = new MoriaTicket(MoriaTicketType.SSO_TICKET, nodeId, null, expiryTime, userData, userorg);
         insertIntoStore(ssoTicket);
 
         return ssoTicket.getTicketId();
@@ -418,7 +443,9 @@ implements MoriaStore {
     MoriaStoreException {
 
         /* Validate argument. */
-        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("loginTicketId must be a non-empty string."); }
+        if (ticketId == null || ticketId.equals("")) {
+            throw new IllegalArgumentException("ticketId must be a non-empty string.");
+        }
 
         MoriaTicketType[] potentialTicketTypes = new MoriaTicketType[] {
             MoriaTicketType.SSO_TICKET,
@@ -432,7 +459,7 @@ implements MoriaStore {
 
         if (!ticket.getTicketType().equals(MoriaTicketType.SSO_TICKET)) {
             if (servicePrincipal == null || servicePrincipal.equals("")) {
-throw new IllegalArgumentException("servicePrincipal must be a non-empty string for this ticket type.");
+                throw new IllegalArgumentException("servicePrincipal must be a non-empty string for this ticket type.");
             }
         }
 
@@ -500,7 +527,7 @@ throw new IllegalArgumentException("servicePrincipal must be a non-empty string 
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.SERVICE_TICKET)).longValue() + new Date().getTime());
         MoriaTicket serviceTicket = new MoriaTicket(
-                MoriaTicketType.SERVICE_TICKET, loginTicket.getServicePrincipal(),
+                MoriaTicketType.SERVICE_TICKET, nodeId, loginTicket.getServicePrincipal(),
                  expiryTime, authnAttempt, loginTicket.getUserorg());
         insertIntoStore(serviceTicket);
         /* Delete the now used login ticket. */
@@ -564,7 +591,7 @@ throw new IllegalArgumentException("servicePrincipal must be a non-empty string 
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.TICKET_GRANTING_TICKET)).longValue() + new Date().getTime());
         MoriaTicket tgTicket = new MoriaTicket(
-                MoriaTicketType.TICKET_GRANTING_TICKET, targetServicePrincipal,
+                MoriaTicketType.TICKET_GRANTING_TICKET, nodeId, targetServicePrincipal,
                 expiryTime, cachedUserData, ssoTicket.getUserorg());
         insertIntoStore(tgTicket);
 
@@ -640,7 +667,7 @@ throw new IllegalArgumentException("servicePrincipal must be a non-empty string 
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.PROXY_TICKET)).longValue() + new Date().getTime());
         MoriaTicket proxyTicket = new MoriaTicket(
-                MoriaTicketType.PROXY_TICKET, targetServicePrincipal,
+                MoriaTicketType.PROXY_TICKET, nodeId, targetServicePrincipal,
                 expiryTime, cachedUserData, tgTicket.getUserorg());
         insertIntoStore(proxyTicket);
 
@@ -1040,11 +1067,13 @@ throw new IllegalArgumentException("servicePrincipal must be a non-empty string 
             throw new MoriaStoreException("Locking of store failed for ticket. [" + ticketId + "]", e);
         } catch (TimeoutException e) {
             throw new MoriaStoreException("Access to store timed out for ticket. [" + ticketId + "]", e);
+        } catch (CacheException e) {
+            throw new MoriaStoreException("Cache store failure for ticket. [" + ticketId + "]", e);
         }
 
         // Sanity check.
         if (node == null) {
-            log.logInfo(ticketType.toString() + " exists, but cannot be found", ticketId);
+            messageLogger.logInfo(ticketType.toString() + " exists, but cannot be found", ticketId);
             return null;
         }
 

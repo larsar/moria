@@ -37,27 +37,10 @@ import java.util.Date;
  */
 public final class RandomId {
 
-    /**
-     * The id of this instance (JVM). Used to guarantee unique ids across the
-     * cluster.
-     */
-    private static byte[] nodeId;
-
     /** The random generator. */
     private static SecureRandom random;
 
     static {
-
-        /* Initiate the node identifier */
-        String nodeIdPropertyName = "no.feide.moria.store.nodeid";
-        String nodeIdProperty = System.getProperty(nodeIdPropertyName);
-
-        if (nodeIdProperty == null || nodeIdProperty.length() != 3) {
-            throw new RuntimeException("Local node ID property '" + nodeIdPropertyName + "' must be 3 characters, not '" + nodeIdProperty + "'");
-        } else {
-            nodeId = nodeIdProperty.getBytes();
-        }
-
         /* Initiate the random generator */
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
@@ -82,10 +65,13 @@ public final class RandomId {
 
 
     /**
-     * Generates a new random id.
-     * @return A 79 character random string.
+     * Generate a new random id.
+     *
+     * @return an encoded random string
      */
-    public static String newId() {
+    public static String newId(final String nodeId) {
+
+        final byte[] nodeIdBytes = nodeIdToByteArray(nodeId);
 
         /* Get timestamp */
         byte[] now = longToByteArray(new Date().getTime());
@@ -101,10 +87,10 @@ public final class RandomId {
         random.nextBytes(randomBytes);
 
         /* Build the complete id */
-        byte[] id = new byte[nodeId.length + now.length + randomBytes.length];
-        System.arraycopy(nodeId, 0, id, 0, nodeId.length);
-        System.arraycopy(now, 0, id, nodeId.length, now.length);
-        System.arraycopy(randomBytes, 0, id, nodeId.length + now.length, randomBytes.length);
+        byte[] id = new byte[nodeIdBytes.length + now.length + randomBytes.length];
+        System.arraycopy(nodeIdBytes, 0, id, 0, nodeIdBytes.length);
+        System.arraycopy(now, 0, id, nodeIdBytes.length, now.length);
+        System.arraycopy(randomBytes, 0, id, nodeIdBytes.length + now.length, randomBytes.length);
 
         /* Encode and return the id */
         return pseudoBase64Encode(id);
@@ -206,5 +192,75 @@ public final class RandomId {
         }
 
         return out;
+    }
+
+    /**
+     * Takes an unsigned short value (16 bit, as an 32 bit int value) and returns it as
+     * an two element byte array.
+     *
+     * @param in
+     *          the unsigned short value to be converted. 
+     * @return a byte array representation of the short value given as input
+     */
+    static byte[] unsignedShortToByteArray(final int in) {
+
+        if (in < 0 || in > 65535) {
+            throw new IllegalArgumentException("in value must be between 0 and 2^16.");
+        }
+
+        /* Make a copy that we can harass. */
+        int local = in;
+
+        /* short is 16 bits, 2 byte */
+        final int shortSize = 2;
+        byte[] out = new byte[shortSize];
+
+        /* Add first 16 bits to byte array. Ignore remaing as we 
+         * start with the least signifcant bits. */
+        for (int i = shortSize - 1; i > -1; i--) {
+            out[i] = (byte) (local & 0xffL);
+            local >>= 8;
+        }
+
+        return out;
+    }
+
+    static byte[] nodeIdToByteArray(final String nodeId) {
+
+        final String errorMsg = "nodeId has illegal form.  Must be <ip-addr>:<port>.";
+
+        /* Split address from port. */
+        String[] nodeElements = nodeId.split(":");
+
+        if (nodeElements.length != 2) {
+            throw new IllegalArgumentException(errorMsg);
+        }
+
+        /* Parse address part. */
+        String[] addressBytes = nodeElements[0].split("\\.");
+
+        if (addressBytes.length != 4) {
+            throw new IllegalArgumentException(errorMsg);
+        }
+
+        byte[] buffer = new byte[6];
+
+        for (int i = 0; i < 4; i++) {
+            /* Subtract 128 to get the value into the signed range. */
+            buffer[i] = Byte.parseByte(Integer.toString(Integer.parseInt(addressBytes[i]) - 128));
+        }
+
+        /* Parse port part. */
+        byte[] portBytes = unsignedShortToByteArray(Integer.parseInt(nodeElements[1]));
+
+        if (portBytes.length != 2) {
+            throw new IllegalArgumentException(errorMsg);
+        }
+
+        for (int i = 0; i < 2; i++) {
+            buffer[i + 4] = portBytes[i];
+        }
+
+        return buffer;
     }
 }

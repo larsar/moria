@@ -29,6 +29,7 @@ import no.feide.moria.log.MessageLogger;
 import no.feide.moria.store.TicketTTLEvictionPolicy.RegionValue;
 
 import org.jboss.cache.Fqn;
+import org.jboss.cache.eviction.EvictedEventNode;
 import org.jboss.cache.eviction.EvictionAlgorithm;
 import org.jboss.cache.eviction.EvictionException;
 import org.jboss.cache.eviction.EvictionPolicy;
@@ -46,7 +47,7 @@ import EDU.oswego.cs.dl.util.concurrent.WriterPreferenceReadWriteLock;
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
-public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
+public final class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
 
     /** The logger used by this class. */
     private final MessageLogger messageLogger = new MessageLogger(TicketTTLEvictionAlgorithm.class);
@@ -70,37 +71,51 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
      * Perfoms the eviction algorithm. Called periodically.
      * @see org.jboss.cache.eviction.EvictionAlgorithm#process(org.jboss.cache.eviction.Region)
      */
-    public final void process(final Region region)
+    public void process(final Region region)
             throws EvictionException {
 
         while (true) {
-            Fqn fqn = region.takeLastNode();
 
+            EvictedEventNode node = region.takeLastEventNode();
+
+            /* Exit if queue is empty. */
+            if (node == null)
+                break;
+
+            Fqn fqn = node.getFqn();
+
+            // TODO This isn't quite right.  If I have a node it must contain a fqn?
             /* Exit if queue is empty. */
             if (fqn == null)
                 break;
 
-            Integer event = region.takeLastEvent();
+            Integer event = node.getEvent();
 
             /* Something's fishy, but we'll just ignore this node and keep on truckin. */
             if (event == null) {
                 messageLogger.logWarn("Last event is null for FQN: " + fqn);
                 continue;
-            }
-
-            if (event.equals(Region.ADD_EVENT)) {
+            } else if (event.equals(EvictedEventNode.ADD_EVENT)) {
                 processAddedNodes(region, fqn);
-            } else if (event.equals(Region.REMOVE_EVENT)) {
+                messageLogger.logDebug("Got add event");
+            } else if (event.equals(EvictedEventNode.REMOVE_EVENT)) {
                 processRemovedNodes(fqn);
-            } else if (event.equals(Region.VISIT_EVENT)) {
+                messageLogger.logDebug("Got remove event");
+            } else if (event.equals(EvictedEventNode.VISIT_EVENT)) {
                 /* Node visits are of no interest. */
+                messageLogger.logDebug("Ignoring visit event");
             } else {
-                throw new RuntimeException("Illegal event type: " + event);
+                messageLogger.logCritical("Illegal event type: " + event);
+                continue;
             }
         }
 
         /* Do the evicto-motion. */
         prune(region);
+    }
+
+    public void resetEvictionQueue(final Region region) {
+        // TODO Maybe implement?
     }
 
     /**
@@ -111,6 +126,11 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     private void processAddedNodes(final Region region, final Fqn fqn) {
         TicketTTLEvictionPolicy policy = (TicketTTLEvictionPolicy) region.getEvictionPolicy();
         RegionValue regionValue = policy.getRegionValue(region.getFqn());
+
+        if (regionValue == null) {
+            messageLogger.logWarn("Values for region not found. Aborting further processing.");
+            return;
+        }
 
         /* Now pluss TTL for region gives the time when the ticket should be evicted. */
         Long nodeEvictionTime = new Long(new Date().getTime() + regionValue.getTimeToLive());
@@ -143,9 +163,12 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
         EvictionPolicy policy = region.getEvictionPolicy();
 
         Sync lock = nodeList.writerSync();
+
         try {
             lock.acquire();
             int counter = 0;
+            int nodeListSize = nodeList.size();
+
             for (ListIterator i = nodeList.listIterator(); i.hasNext();) {
                 NodeEntry node = (NodeEntry) i.next();
 
@@ -153,8 +176,10 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
                     nodeMap.remove(node.fqn);
                     i.remove();
                     counter++;
+
                     try {
                         policy.evict(node.fqn);
+                        messageLogger.logDebug("Evicted node " + node.fqn);
                     } catch (Exception e) {
                         messageLogger.logWarn("Eviction failed for FQN: " + node.fqn, e);
                         throw new EvictionException("Eviction failed for fqn: " + node.fqn, e);
@@ -163,7 +188,9 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
                     break;
                 }
             }
-            messageLogger.logDebug("Number of nodes evicted in " + region.getFqn() + ": " + counter);
+
+            messageLogger.logDebug("Number of nodes in region " + region.getFqn() + ": " + nodeListSize
+                                   + ". Number of evicted nodes: " + counter);
         } catch (InterruptedException ie) {
             throw new EvictionException("Node list pruning interrupted", ie);
         } finally {
@@ -182,7 +209,9 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
         /** Fully qualified name. */
         private final Fqn fqn;
 
-        /** Constructs a new instance.
+        /**
+         * Constructs a new instance.
+         *
          * @param evictionTime Eviction time.
          * @param fqn          Fully qualified name.
          */

@@ -38,36 +38,36 @@
         <attribute name="maxNodes">200000</attribute>
 
         <region name="Login Ticket">
-          <attribute name="timeToLive">30000</attribute>
+          <attribute name="timeToLive">30</attribute>
         </region>
 
         <region name="Service Ticket">
-          <attribute name="timeToLive">30000</attribute>
+          <attribute name="timeToLive">30</attribute>
         </region>
 
         <region name="Single Sign-On Ticket">
-          <attribute name="timeToLive">288000</attribute>
+          <attribute name="timeToLive">288</attribute>
         </region>
 
         <region name="Ticket Granting Ticket">
-          <attribute name="timeToLive">36000</attribute>
+          <attribute name="timeToLive">36</attribute>
         </region>
 
         <region name="Proxy Ticket">
-          <attribute name="timeToLive">60000</attribute>
+          <attribute name="timeToLive">60</attribute>
         </region>
       </config>
     </attribute>
 
     <attribute name="ClusterConfig">
       <config>
-        <TCP1_4
+        <TCP
            start_port="7800"
-           bind_addr="localhost"
+           bind_addr="127.246.5.42"
            loopback="false"/>
 
         <TCPPING
-           initial_hosts="localhost[7800],localhost[7801]"
+           initial_hosts="127.246.5.42[7800],127.246.5.42[7801]"
            port_range="3"
            timeout="3000"
            num_initial_members="2"

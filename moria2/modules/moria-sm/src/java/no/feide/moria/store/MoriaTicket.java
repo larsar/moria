@@ -35,6 +35,9 @@ import java.util.Date;
  */
 final class MoriaTicket implements Serializable {
 
+    /** Generated serial version UID. */
+    private static final long serialVersionUID = 4051047471184687665L;
+
     /** The unique identifier of this ticket. */
     private final String ticketId;
 
@@ -58,6 +61,8 @@ final class MoriaTicket implements Serializable {
      *
      * @param ticketType
      *          the type of ticket
+     * @param nodeId
+     *          the id of the node creating this ticket
      * @param servicePrincipal
      *          the id of the service this ticket relates to
      * @param expiryTime
@@ -67,9 +72,9 @@ final class MoriaTicket implements Serializable {
      * @param userorg
      *          the userorg associated with this ticket. Can be null if unknown.
      */
-    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal,
+    MoriaTicket(final MoriaTicketType ticketType, final String nodeId, final String servicePrincipal,
             final Long expiryTime, final MoriaStoreData data, final String userorg) {
-        this(MoriaTicket.newId(), ticketType, servicePrincipal, expiryTime, data, userorg);
+        this(MoriaTicket.newId(nodeId), ticketType, servicePrincipal, expiryTime, data, userorg);
     }
 
     /**
@@ -178,10 +183,7 @@ final class MoriaTicket implements Serializable {
          * If the expiry time is in the future return false, the ticket has not
          * expired.
          */
-        if (expiryTime.longValue() > now)
-            return false;
-
-        return true;
+        return expiryTime.longValue() < now;
     }
 
     /**
@@ -244,8 +246,8 @@ final class MoriaTicket implements Serializable {
      *
      * @return A new unique identifier.
      */
-    static String newId() {
-        return RandomId.newId();
+    static String newId(final String nodeId) {
+        return RandomId.newId(nodeId);
     }
 
     /**

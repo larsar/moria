@@ -53,6 +53,8 @@ public class MoriaTicketTest extends TestCase {
     String urlPrefix;
 
     String urlPostfix;
+    
+    String nodeId;
 
     public MoriaTicketTest(String testName) {
         super(testName);
@@ -63,14 +65,11 @@ public class MoriaTicketTest extends TestCase {
     }
 
     public void setUp() {
-        /* Property needed by the RandomId class */
-        String nodeIdPropertyName = "no.feide.moria.store.nodeid";
 
-        if (System.getProperty(nodeIdPropertyName) == null)
-            fail(nodeIdPropertyName + " must be set.");
+        nodeId = "127.0.0.1:113";
 
-        id1 = MoriaTicket.newId();
-        id2 = MoriaTicket.newId();
+        id1 = MoriaTicket.newId(nodeId);
+        id2 = MoriaTicket.newId(nodeId);
         principal1 = "no.feide.test1";
         principal2 = "no.feide.test2";
 
