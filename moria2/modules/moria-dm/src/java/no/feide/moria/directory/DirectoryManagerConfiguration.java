@@ -1,6 +1,5 @@
 package no.feide.moria.directory;
 
-//import no.feide.moria.log.log;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,20 +18,26 @@ import org.jdom.input.SAXBuilder;
 public class DirectoryManagerConfiguration {
 
     /** Internal representation of the index class. */
-    private static Class indexClass;
+    private Class indexClass;
 
     /** Internal representation of the backend class. */
-    private static Class backendFactoryClass;
-    
-    /** The message logger. */
-    private static MessageLogger log = new MessageLogger(DirectoryManagerConfiguration.class);
+    private Class backendFactoryClass;
 
-    
+    /** The message logger. */
+    private MessageLogger log = new MessageLogger(DirectoryManagerConfiguration.class);
+
+
     /**
+     * Constructor. Creates a new configuration object and reads the
+     * configuration file(s).
      * @param config
+     *            The Directory Manager configuration passed on from
+     *            <code>DirectoryManager.setConfig(Properties)</code>. Must
+     *            include the property <code>directoryConfiguration</code>.
      * @throws DirectoryManagerConfigurationException
+     *             If the configuration file(s) cannot be properly processed.
      */
-    protected static void read(Properties config)
+    public DirectoryManagerConfiguration(Properties config)
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
@@ -78,14 +83,14 @@ public class DirectoryManagerConfiguration {
      *             If the given element cannot be found, or if it is found more
      *             than once.
      */
-    private static Element getUniqueElement(Element rootElement, String name)
+    private Element getUniqueElement(Element rootElement, String name)
     throws DirectoryManagerConfigurationException {
 
         // Get the element, with sanity checks.
         List elements = rootElement.getChildren(name);
         if (elements.size() != 1) {
-            log.logCritical('\"'+name + " element not unique in configuration file");
-            throw new DirectoryManagerConfigurationException('\"'+name + "\" element not unique in configuration file");
+            log.logCritical('\"' + name + " element not unique in configuration file");
+            throw new DirectoryManagerConfigurationException('\"' + name + "\" element not unique in configuration file");
         }
         elements = null; // Cleanup.
 
@@ -104,7 +109,7 @@ public class DirectoryManagerConfiguration {
      *             configuration file relating to the index cannot be parsed as
      *             expected.
      */
-    private static void parseIndexConfig(Element rootElement)
+    private void parseIndexConfig(Element rootElement)
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
@@ -137,7 +142,7 @@ public class DirectoryManagerConfiguration {
      * Get the index class implementation.
      * @return The index class.
      */
-    public static Class getIndexClass() {
+    public Class getIndexClass() {
 
         return indexClass;
 
@@ -154,7 +159,7 @@ public class DirectoryManagerConfiguration {
      *             configuration file relating to the backend cannot be parsed
      *             as expected.
      */
-    private static void parseBackendConfig(Element rootElement)
+    private void parseBackendConfig(Element rootElement)
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
@@ -181,13 +186,13 @@ public class DirectoryManagerConfiguration {
         }
 
     }
-    
-    
+
+
     /**
      * Get the backend factory class implementation.
      * @return The backend factory class.
      */
-    public static Class getBackendFactoryClass() {
+    public Class getBackendFactoryClass() {
 
         return backendFactoryClass;
 

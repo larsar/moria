@@ -33,9 +33,12 @@ public class DirectoryManager {
 
     /** Internal representation of the backend factory. */
     private static DirectoryManagerBackendFactory backendFactory;
-    
+
     /** The message logger. */
-    private static MessageLogger messageLog = new MessageLogger(DirectoryManager.class);
+    private static MessageLogger log = new MessageLogger(DirectoryManager.class);
+
+    /** The current (valid) Directory Manager configuration. */
+    private static DirectoryManagerConfiguration currentConfiguration = null;
 
 
     /**
@@ -45,8 +48,25 @@ public class DirectoryManager {
     public static void setConfig(Properties config)
     throws DirectoryManagerConfigurationException {
 
-        // Pass on to the configuration handler.
-        DirectoryManagerConfiguration.read(config);
+        // Update current configuration.
+        try {
+            DirectoryManagerConfiguration newConfiguration = new DirectoryManagerConfiguration(config);
+            currentConfiguration = newConfiguration;
+        } catch (DirectoryManagerConfigurationException e) {
+            if (currentConfiguration == null) {
+                
+                // Critical error; we don't have a working configuration.
+                log.logCritical("Unable to update configuration", e);
+                throw new DirectoryManagerConfigurationException("Unable to update configuration", e);
+                
+            } else {
+                
+                // Non-critical error; we still have a working configuration.
+                log.logWarn("Unable to update configuration", e);
+                
+            }
+                
+        }
 
         // Preparations.
         Class[] noParameters = {};
@@ -56,13 +76,13 @@ public class DirectoryManager {
         // TODO: Initialize index update.
         // TODO: Gracefully handle switch between index classes.
         try {
-            constructor = DirectoryManagerConfiguration.getIndexClass().getConstructor(noParameters);
+            constructor = currentConfiguration.getIndexClass().getConstructor(noParameters);
             index = (DirectoryManagerIndex) constructor.newInstance(noParameters);
         } catch (NoSuchMethodException e) {
-            messageLog.logCritical("Cannot find index constructor", e);
+            log.logCritical("Cannot find index constructor", e);
             throw new DirectoryManagerConfigurationException("Cannot find index constructor", e);
         } catch (Exception e) {
-            messageLog.logCritical("Unable to instantiate index object", e);
+            log.logCritical("Unable to instantiate index object", e);
             throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
         }
 
@@ -70,13 +90,13 @@ public class DirectoryManager {
         // TODO: Initialize backend configuration update.
         // TODO: Gracefully handle switch between backend factories.
         try {
-            constructor = DirectoryManagerConfiguration.getBackendFactoryClass().getConstructor(noParameters);
+            constructor = currentConfiguration.getBackendFactoryClass().getConstructor(noParameters);
             backendFactory = (DirectoryManagerBackendFactory) constructor.newInstance(noParameters);
         } catch (NoSuchMethodException e) {
-            messageLog.logCritical("Cannot find backend factory constructor", e);
+            log.logCritical("Cannot find backend factory constructor", e);
             throw new DirectoryManagerConfigurationException("Cannot find backend factory constructor", e);
         } catch (Exception e) {
-            messageLog.logCritical("Unable to instantiate backend factory object", e);
+            log.logCritical("Unable to instantiate backend factory object", e);
             throw new DirectoryManagerConfigurationException("Unable to instantiate backend factory object", e);
         }
 
@@ -96,13 +116,15 @@ public class DirectoryManager {
      * @return The user attributes matching the attribute request, if those were
      *         available. Otherwise an empty array, which still indicate a
      *         successful authentication.
-     * @throws BackendException If an unrecoverable error is encountered when operating the backend.
+     * @throws BackendException
+     *             If an unrecoverable error is encountered when operating the
+     *             backend.
      */
     public static UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
     throws BackendException {
-        
+
         // TODO: Implement a backend pool.
-      
+
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
         backend.open(index.lookup(userCredentials.getUsername()));
