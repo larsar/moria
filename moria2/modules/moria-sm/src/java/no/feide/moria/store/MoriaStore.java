@@ -103,6 +103,8 @@ public interface MoriaStore {
      *
      * @param ticketId
      *          a ticket to identify a userdata object (SSO, TG or PROXY)
+     * @param servicePrincipal
+     *          the name of the service requesting the data
      * @return a clone of the object containing the userdata
      * @throws InvalidTicketException
      *          thrown if the incoming ticket is not of the correct type or
@@ -114,8 +116,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if ticketId is null or zero length
      */
-    CachedUserData getUserData(final String ticketId) throws InvalidTicketException, NonExistentTicketException,
-            MoriaStoreException;
+    CachedUserData getUserData(final String ticketId, final String servicePrincipal) throws InvalidTicketException,
+            NonExistentTicketException, MoriaStoreException;
 
     /**
      * Creates a service ticket that the service will use when requesting user attributes after a
