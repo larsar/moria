@@ -121,7 +121,6 @@ public class DirectoryManager {
 
             constructor = configuration.getBackendFactoryClass().getConstructor(null);
             backendFactory = (DirectoryManagerBackendFactory) constructor.newInstance(null);
-            backendFactory.setConfig(configuration.getBackendElement());
 
         } catch (NoSuchMethodException e) {
             log.logCritical("Cannot find backend factory constructor", e);
@@ -130,6 +129,9 @@ public class DirectoryManager {
             log.logCritical("Unable to instantiate backend factory object", e);
             throw new DirectoryManagerConfigurationException("Unable to instantiate backend factory object", e);
         }
+        
+        // Set backend configuration.
+        backendFactory.setConfig(configuration.getBackendElement());
 
     }
 
