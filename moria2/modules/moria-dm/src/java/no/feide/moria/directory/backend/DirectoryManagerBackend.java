@@ -3,6 +3,7 @@ package no.feide.moria.directory.backend;
 import java.util.HashMap;
 
 import no.feide.moria.directory.Credentials;
+import no.feide.moria.directory.index.IndexedReference;
 
 /**
  * 
@@ -16,7 +17,7 @@ public interface DirectoryManagerBackend {
      * @throws BackendException
      *             If the backend connection could not be made.
      */
-    public void open(String reference) throws BackendException;
+    public void open(IndexedReference reference) throws BackendException;
 
 
     /**
