@@ -11,6 +11,17 @@ extends DirectoryManagerException {
      * Constructor.
      * @param message
      *            The exception message.
+     */
+    public DirectoryManagerConfigurationException(String message) {
+
+        super(message);
+
+    }
+    
+    /**
+     * Constructor.
+     * @param message
+     *            The exception message.
      * @param cause
      *            The exception cause.
      */
