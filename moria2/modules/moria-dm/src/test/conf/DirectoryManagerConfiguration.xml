@@ -3,11 +3,11 @@
 <DirectoryManagerConfiguration>
 
   <Index>
-    <Class name="no.feide.moria.directory.DummyIndex"/>
+    <Class name="no.feide.moria.directory.index.DummyIndex"/>
   </Index>
   
   <Backend>
-    <Class name="no.feide.moria.directory.DummyBackend"/>
+    <Class name="no.feide.moria.directory.backend.DummyBackend"/>
   </Backend>
 
 </DirectoryManagerConfiguration>
