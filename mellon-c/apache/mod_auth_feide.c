@@ -233,7 +233,7 @@ static void *create_auth_server_config(apr_pool_t *p, server_rec *s)
 	cfg = apr_palloc(p, sizeof(*cfg));
 	cfg->nelms = 100;  /* number of authorizations to cache */
 	cfg->cache = NULL; /* will be allocated later */
-	cfg->cache_age = 3600; /* default to one hour */
+	cfg->cache_age = 300; /* default to five minutes */
 
 	return cfg;
 }
@@ -330,10 +330,10 @@ static const command_rec auth_feide_cmds[] =
 	               OR_AUTHCFG, "The 'domain' of the authentication."),
 	AP_INIT_TAKE1("FeideCacheSize", ap_set_int_slot,
 	              (void *)APR_OFFSETOF(auth_feide_server_rec, nelms),
-	              OR_AUTHCFG, "The size of the server cache."),
+	              RSRC_CONF, "The size of the server cache."),
 	AP_INIT_TAKE1("FeideCacheAge", ap_set_int_slot,
 	              (void *)APR_OFFSETOF(auth_feide_server_rec, cache_age),
-	              OR_AUTHCFG, "Local authentication cache age in seconds.  Defaults to 3600."),
+	              RSRC_CONF, "Local authentication cache age in seconds.  Defaults to 3600."),
 	AP_INIT_RAW_ARGS("FeideRequire", set_require_slot, NULL,
 	                 OR_AUTHCFG, "Attribute requirements."),
 	{NULL}
@@ -585,8 +585,6 @@ static int authenticate_feide_user(request_rec *r)
 	auth_feide_server_rec *scfg = ap_get_module_config(r->server->module_config,
 	                                                   &auth_feide_module);
 	int return_code = HTTP_UNAUTHORIZED;
-	/* temporary value, this will need a better solution when requests
-	 * become more structured */
 	char *key, *cookie;
 	f_config *fc;
 
@@ -609,20 +607,43 @@ static int authenticate_feide_user(request_rec *r)
 		/* we have a way of accessing an ID */
 		int ret;
 		f_attr_array *fa;
+		mf_cache_entry_t *cache;
+		char *cache_key;
 
-		ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-		             "cookie=%s, key=%s", cookie, key);
+		cache = apr_shm_baseaddr_get(scfg->cache);
+
+		if (key) {
+			char *cache_key;
+
+			cache_key = mf_cache_genkey(r->pool, key, cfg->domain,
+			                            r->connection->remote_ip);
+
+			if (mf_cache_find(cache, scfg->nelms, cache_key) == -1) {
+				ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+				             "key=%s not in cache.");
+				return_code = HTTP_UNAUTHORIZED;
+			} else {
+				ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+				             "key=%s in cache.");
+				return_code = OK;
+			}
+		}
 
 		/* first attempt to validate the key, look at the cookie later */
-		if (key) {
+		if (key && return_code != OK) {
 			ret = f_get_attributes(fc, key, &fa);
 			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
 			             "key=%s got result %d", key, ret);
 			if (ret == F_OK) {
 				if (mf_check_permissions(fa, cfg->require, r)) {
 					return_code = OK;
+					ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+					             "return_code = OK (%d)", return_code);
 				} else {
 					return_code = HTTP_UNAUTHORIZED;
+					ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+					             "return_code = HTTP_UNAUTHORIZED (%d)",
+					             return_code);
 				}
 				f_free_attributes(fa);
 			} else {
@@ -630,6 +651,9 @@ static int authenticate_feide_user(request_rec *r)
 				             "auth_feide: getAttributes error \"%s\".",
 				             fc->error_str);
 				return_code = HTTP_INTERNAL_SERVER_ERROR;
+				ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+				             "return_code = HTTP_INTERNAL_SERVER_ERROR (%d)",
+				             return_code);
 			}
 		}
 
@@ -638,13 +662,9 @@ static int authenticate_feide_user(request_rec *r)
 			/* here we're supposed to look up the cookie in a local cache
 			 * but there's no cache implemented yet.  just log that we're
 			 * here and then continue as normal */
-			mf_cache_entry_t *cache;
-
 			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
 			             "hash: cookie=%s, ip=%s.",
 			             cookie, r->connection->remote_ip);
-
-			cache = apr_shm_baseaddr_get(scfg->cache);
 
 			if (mf_cache_find(cache, scfg->nelms, cookie) == -1) {
 				ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
@@ -694,7 +714,7 @@ static int authenticate_feide_user(request_rec *r)
 			             "Cache has been set/updated.");
 		}
 	} else {
-		/* we don't have a way to accvess an ID, redirect to authenticate */
+		/* we don't have a way to access an ID, redirect to authenticate */
 		int   ret;
 		char *url, *redirect, **attributes;
 
@@ -715,6 +735,10 @@ static int authenticate_feide_user(request_rec *r)
 		}
 	}
 	f_end(fc);
+
+	ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+	             "returning return_code = %d", return_code);
+
 	return return_code;
 }
 
