@@ -152,10 +152,7 @@ function fokuser(){document.loginform.username.focus();}
       </tr>
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
-        <td><%=RequestUtil.insertLink("CLIENT_LINK",
-                                         bundle.getString("expl_user"),
-                                         (String) request.getAttribute("clientName"),
-                                         (String) request.getAttribute("clientURL"))%></td>
+        <td><%=bundle.getString("expl_user")%></td>
       </tr>
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
