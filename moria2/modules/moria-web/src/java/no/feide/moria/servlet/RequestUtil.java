@@ -367,6 +367,11 @@ public final class RequestUtil {
     public static final String ERROR_AUTHENTICATION_FAILED = "authnFailed";
 
     /**
+     * Error type: Authorization failed.
+     */
+    public static final String ERROR_AUTHORIZATION_FAILED = "authorizationFailed";
+
+    /**
      * Error type: Unknown ticket.
      */
     public static final String ERROR_UNKNOWN_TICKET = "unknownTicket";
