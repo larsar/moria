@@ -70,7 +70,7 @@
         </includes>
       </resource>
       <resource>
-        <directory>src/bundles</directory>
+        <directory>${project.resourcebundle.dir}</directory>
         <includes>
           <include>*.properties</include>
         </includes>
