@@ -36,7 +36,7 @@ implements DirectoryManagerBackend {
      *      String[])
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws BackendException {
+    throws AuthenticationFailedException {
 
         // Sanity check.
         if (userCredentials == null)
