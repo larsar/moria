@@ -60,9 +60,9 @@ public class Configuration {
         "no.feide.moria.SessionStoreInitMapSize",
         "no.feide.moria.SessionStoreMapLoadFactor",
         "no.feide.moria.AuthorizationTimerDelay",
-        "no.feide.moria.SessionTimeout",
-        "no.feide.moria.SessionSSOTimeout",
-        "no.feide.moria.AuthenticatedSessionTimeout",
+        "no.feide.moria.sessionLifetime.login",
+        "no.feide.moria.sessionLifetime.authenticated",
+        "no.feide.moria.sessionLifetime.sso",
         "no.feide.moria.defaultLanguage",
         "no.feide.moria.backend.ldap.url1",
         "no.feide.moria.backend.ldap.usernameAttribute",
@@ -327,4 +327,28 @@ public class Configuration {
     public static HashMap getLanguages() {
         return languages;
     }
+
+
+
+    /**
+     * Return the session lifetime. Get the lifetime for a given time
+     * out type.
+     * @param type Time out type
+     * @return Number of seconds
+     */ 
+    public static int getSessionLifetime(String type) {
+        try {
+            int lifetime = new Integer(Configuration.getProperty("no.feide.moria.sessionLifetime."+type.toLowerCase(), "0")).intValue();
+
+            return lifetime*1000;
+        }
+        
+        catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught.");
+            return 0;
+        }
+    }
+    
+    
+    
 }
