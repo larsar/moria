@@ -70,9 +70,9 @@ public class AuthorizationData {
         /* Only update if file has changed. */
         if (file.lastModified() > fileTimestamp) {
             if (fileTimestamp == 0)
-                log.info("Generating web service datastructure.");
+                log.config("Generating web service datastructure.");
             else
-                log.info("Web service authorization file changed. Updating web service datastructure.");
+                log.config("Web service authorization file changed. Updating web service datastructure.");
 
             double start = new Date().getTime(); // For timing
 
@@ -81,7 +81,7 @@ public class AuthorizationData {
                 synchronized (webServices) {
                     webServices = newWebServices;
                 }
-                log.info("Datastructure updated in "+(new Date().getTime()-start)+" ms");
+                log.config("Datastructure updated in "+(new Date().getTime()-start)+" ms");
                 fileTimestamp = file.lastModified();
 
             }
