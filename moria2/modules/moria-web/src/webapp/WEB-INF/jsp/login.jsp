@@ -77,8 +77,7 @@ function fokuser(){document.loginform.username.focus();}
    <table summary="" cellpadding="0" cellspacing="0" border="0" width="100%">
     <tr>
     <td valign="top">
-    <img src="/element/varseltrekant.png" alt="feilmelding"/>
-    </td>
+        </td>
     <td valign="middle" width="99%">
     <b><%=bundle.getString("error_" + (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE))%></b><br/>
     <i><%=bundle.getString("error_" + (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE) + "_desc")%></i>
@@ -154,18 +153,18 @@ function fokuser(){document.loginform.username.focus();}
     <td width="70%">
       <table summary="" cellspacing="3" cellpadding="3" border="0" >
       <tr valign="top">
-        <td><img src="/element/listepunkt.gif" alt="-"/></td>
+        <td>-</td>
         <td><%=RequestUtil.insertLink("CLIENT_LINK",
                                          bundle.getString("expl_ws"),
                                          (String) request.getAttribute(RequestUtil.ATTR_CLIENT_NAME),
                                          (String) request.getAttribute(RequestUtil.ATTR_CLIENT_URL))%></td>
       </tr>
       <tr valign="top">
-        <td><img src="/element/listepunkt.gif" alt="-"/></td>
+        <td>-</td>
         <td><%=bundle.getString("expl_user")%></td>
       </tr>
       <tr valign="top">
-        <td><img src="/element/listepunkt.gif" alt="-"/></td>
+        <td>-</td>
         <td><%=RequestUtil.insertLink("CLIENT_LINK",
                                          bundle.getString("expl_data_"+request.getAttribute(RequestUtil.ATTR_SEC_LEVEL)),
                                          (String) request.getAttribute(RequestUtil.ATTR_CLIENT_NAME),
@@ -175,7 +174,7 @@ function fokuser(){document.loginform.username.focus();}
        </td>
       </tr>
       
-            <td><img src="/element/listepunkt.gif" alt="-"/></td>
+            <td>-</td>
         <td><%=bundle.getString("expl_link1")%><A HREF=<%=request.getAttribute("faqlink")%>><%=bundle.getString("expl_link2")%></A>
         <%=bundle.getString("expl_link3")%><BR/>
 
