@@ -200,11 +200,11 @@ public final class RequestUtil {
     public static final String BUNDLE_LOGIN = "login";
 
     /**
-     * TODO Eva Rename, and configure
+     * Configuration property for the InformationServlet feideattribs xml file path
      */
-    public static final String PATH_FEIDEATTRIBS = "webapps/moria/WEB-INF/classes/feideattribs.xml";
-  
-     /**
+    public static final String PROP_INFORMATION_FEIDEATTRIBS_XML = PATH_PREFIX + "information.feideattribs_xml";
+     
+    /**
      * Bundle for the information servlet.
      */
     public static final String BUNDLE_INFORMATIONSERVLET = "feideattribs";
@@ -218,6 +218,11 @@ public final class RequestUtil {
      * Bundle for the faq page
      */
     public static final String BUNDLE_FAQ = "faq";
+    
+    /**
+     * Bundle for the error page
+     */
+    public static final String BUNDLE_ERROR = "error";
 
     /**
      * Legal name for an organization, used by Information Servlet
