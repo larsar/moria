@@ -13,6 +13,11 @@ public interface DirectoryManagerBackendFactory {
 
     /**
      * Creates a new instance of a proper directory manager backend.
+     * @param reference
+     *            The backend reference.
+     * @return A new instance of the backend, tied to the proper reference.
+     * @throws BackendException
+     *             If the backend could not be instantiated.
      */
     public DirectoryManagerBackend createBackend()
     throws BackendException;
