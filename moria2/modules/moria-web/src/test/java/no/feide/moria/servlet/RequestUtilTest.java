@@ -113,7 +113,7 @@ public class RequestUtilTest extends TestCase {
     /**
      * Test getBundle method.
      *
-     * @see RequestUtil#getBundle(java.lang.String, java.lang.String, javax.servlet.http.Cookie[], java.lang.String, java.lang.String, java.lang.String)
+     * @see RequestUtil#getBundle(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String) 
      */
     public void testGetBundle() {
         ResourceBundle bundle;
@@ -160,11 +160,11 @@ public class RequestUtilTest extends TestCase {
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("foo", "bar")};
-        bundle = RequestUtil.getBundle("test", "", cookies, "", "", "nb");
+        bundle = RequestUtil.getBundle("test", "", "bar", "", "", "nb");
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("lang", "wrong")};
-        bundle = RequestUtil.getBundle("test", "wrong", cookies, "wrong", "wrong", "nb");
+        bundle = RequestUtil.getBundle("test", "wrong", "wrong", "wrong", "wrong", "nb");
         checkBundle("nb", bundle);
 
         /* Browser specified language */
@@ -173,11 +173,11 @@ public class RequestUtilTest extends TestCase {
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("foo", "bar")};
-        bundle = RequestUtil.getBundle("test", "", cookies, "", acceptLang, "wrong");
+        bundle = RequestUtil.getBundle("test", "", "bar", "", acceptLang, "wrong");
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("lang", "wrong")};
-        bundle = RequestUtil.getBundle("test", "wrong", cookies, "wrong", acceptLang, "en");
+        bundle = RequestUtil.getBundle("test", "wrong", "wrong", "wrong", acceptLang, "en");
         checkBundle("nb", bundle);
 
         /* Service specified language */
@@ -185,22 +185,22 @@ public class RequestUtilTest extends TestCase {
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("foo", "bar")};
-        bundle = RequestUtil.getBundle("test", "", cookies, "nb", "", "wrong");
+        bundle = RequestUtil.getBundle("test", "", "bar", "nb", "", "wrong");
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("lang", "wrong")};
-        bundle = RequestUtil.getBundle("test", "wrong", cookies, "nb", "wrong", "wrong");
+        bundle = RequestUtil.getBundle("test", "wrong", "wrong", "nb", "wrong", "wrong");
         checkBundle("nb", bundle);
 
         /* Cookie specified language */
         cookies = new Cookie[]{new Cookie("lang", "nb")};
-        bundle = RequestUtil.getBundle("test", null, cookies, null, null, "wrong");
+        bundle = RequestUtil.getBundle("test", null, "nb", null, null, "wrong");
         checkBundle("nb", bundle);
 
-        bundle = RequestUtil.getBundle("test", "", cookies, "", "", "wrong");
+        bundle = RequestUtil.getBundle("test", "", "nb", "", "", "wrong");
         checkBundle("nb", bundle);
 
-        bundle = RequestUtil.getBundle("test", "wrong", cookies, "wrong", "wrong", "wrong");
+        bundle = RequestUtil.getBundle("test", "wrong", "nb", "wrong", "wrong", "wrong");
         checkBundle("nb", bundle);
 
         /* URL parameter specified language */
@@ -208,11 +208,11 @@ public class RequestUtilTest extends TestCase {
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("foo", "bar")};
-        bundle = RequestUtil.getBundle("test", "nb", cookies, "", "", "wrong");
+        bundle = RequestUtil.getBundle("test", "nb", "bar", "", "", "wrong");
         checkBundle("nb", bundle);
 
         cookies = new Cookie[]{new Cookie("lang", "wrong")};
-        bundle = RequestUtil.getBundle("test", "nb", cookies, "wrong", "wrong", "wrong");
+        bundle = RequestUtil.getBundle("test", "nb", "wrong", "wrong", "wrong", "wrong");
         checkBundle("nb", bundle);
 
 
@@ -331,19 +331,19 @@ public class RequestUtilTest extends TestCase {
         expected.put("UNINETT", "uninett.no");
 
         /* Correct syntax */
-        actual = RequestUtil.parseConfig(props, LoginServlet.PROP_ORG, "en");
+        actual = RequestUtil.parseConfig(props, RequestUtil.PROP_ORG, "en");
         assertTrue("TreeMaps doesn't match. Might be mismatch between config file and test code.", expected.equals(actual));
 
         /* Wrong syntax "," */
         props = new Properties();
         props.load(this.getClass().getResourceAsStream("/web-test-invalid.properties"));
         try {
-            RequestUtil.parseConfig(props, LoginServlet.PROP_ORG, "en");
+            RequestUtil.parseConfig(props, RequestUtil.PROP_ORG, "en");
             fail("Should raise IllegalStateException, config separation error ':'");
         } catch (IllegalStateException success) {
         }
         try {
-            RequestUtil.parseConfig(props, LoginServlet.PROP_ORG, "en2");
+            RequestUtil.parseConfig(props, RequestUtil.PROP_ORG, "en2");
             fail("Should raise IllegalStateException, config separation error ','");
         } catch (IllegalStateException success) {
         }
