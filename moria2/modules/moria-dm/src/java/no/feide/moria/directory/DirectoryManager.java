@@ -44,6 +44,13 @@ public class DirectoryManager {
     /**
      * Set the directory manager's configuration.
      * @param config
+     *            The configuration. Must include the property
+     *            <code>directoryConfiguration</code> that points to a file
+     *            containing the Directory Manager configuration.
+     * @throws DirectoryManagerConfigurationException
+     *             If the configuration could not be updated, and the Directory
+     *             Manager does not have a previous configuration to fall back
+     *             on.
      */
     public static void setConfig(Properties config)
     throws DirectoryManagerConfigurationException {
@@ -54,18 +61,18 @@ public class DirectoryManager {
             currentConfiguration = newConfiguration;
         } catch (DirectoryManagerConfigurationException e) {
             if (currentConfiguration == null) {
-                
+
                 // Critical error; we don't have a working configuration.
                 log.logCritical("Unable to update configuration", e);
                 throw new DirectoryManagerConfigurationException("Unable to update configuration", e);
-                
+
             } else {
-                
+
                 // Non-critical error; we still have a working configuration.
                 log.logWarn("Unable to update configuration", e);
-                
+
             }
-                
+
         }
 
         // Preparations.
