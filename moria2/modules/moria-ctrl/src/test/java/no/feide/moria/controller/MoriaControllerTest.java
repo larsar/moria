@@ -815,5 +815,47 @@ public class MoriaControllerTest extends TestCase {
                    MoriaController.verifyUserExistence("doesNotExist", validPrincipal));
 
     }
-    // TODO: Implement invalidateSSOTicket
+
+    public void testInvalidateSSOTicket() throws MoriaControllerException {
+        controllerInitialization();
+
+        /* Invalid arguments */
+        try {
+            MoriaController.invalidateSSOTicket(null);
+            fail("IllegalInputException should be raised, ssoTicketId is null.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.invalidateSSOTicket("");
+            fail("IllegalInputException should be raised, ssoTicketId is an empty string.");
+        } catch (IllegalInputException success) {
+        }
+
+        /* Non-existing SSO ticket, should be ignored */
+        MoriaController.invalidateSSOTicket("doesNotExist");
+
+        /* Existing SSO ticket */
+        String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+                                                                      validPrincipal);
+        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
+
+        /* Verify that SSO is possible */
+        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+                                                                      validPrincipal);
+        MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
+
+        /* Invalidate ticket and verify that SSO is no longer possible */
+        MoriaController.invalidateSSOTicket(ssoTicketId);
+        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+                                                                      validPrincipal);
+        try {
+            MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
+            fail("UnknownTicketException should be raised, invalidated SSO-ticket");
+        } catch (UnknownTicketException success) {
+
+        }
+
+
+    }
 }
