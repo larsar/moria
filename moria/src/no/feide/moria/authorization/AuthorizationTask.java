@@ -39,7 +39,6 @@ extends TimerTask {
 
         try {
             
-            int timeout = new Integer(Configuration.getProperty("no.feide.moria.SessionTimeout")).intValue()*60*1000; // Minutes to milliseconds
             AuthorizationData.getInstance().upToDate();
             
         } catch (ConfigurationException e) {
