@@ -9,11 +9,11 @@
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
   <package>no.feide.moria.directorymanager</package>
 
-  <shortDescription>This is the directory manager for Moria, handling
-    communication with external directories (LDAP) and indexing of
-    users.</shortDescription>
+  <shortDescription>This is the directory manager for Moria</shortDescription>
 
-  <description/>
+  <description>This is the directory manager for Moria, handling
+    communication with external directories (LDAP) and indexing of
+    users.<description/>
 
   <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-dm</siteDirectory>
 
@@ -26,9 +26,7 @@
       <properties>
       </properties>
     </dependency>
-  </dependencies>
-  
-  <dependencies>
+
     <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
@@ -39,8 +37,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <resources>
-    </resources>
-  </build>
 </project>
