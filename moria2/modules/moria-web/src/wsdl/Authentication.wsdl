@@ -254,7 +254,7 @@
 
   <service name="Authentication">
     <port name="AuthenticationIFPort" binding="tns:AuthenticationIFBinding">
-      <soap:address location="https://login.feide.no:443/moria/v1_1/Authentication"/>
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
     </port>
   </service>
 
