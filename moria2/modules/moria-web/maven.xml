@@ -18,4 +18,38 @@
     prereqs="clean"
     description="Clean this project"/>
 
+  <postGoal name="java:prepare-filesystem">
+    <mkdir dir="${project.generated.src.dir}"/>
+  </postGoal>
+
+  <postGoal name="clean:clean">
+    <delete dir="${project.generated.src.dir}"/>
+  </postGoal>
+
+  <preGoal name="java:compile">
+    <path id="project.generated.src.compile.src.set"
+          location="${project.generated.src.dir}"/>
+    <m:addPath id="maven.compile.src.set"
+               refid="project.generated.src.compile.src.set"/>
+    <attainGoal name="project:wsdl2java"/>
+  </preGoal>
+
+  <goal
+    name="project:wsdl2java"
+    description="Generate Java clients from a wsdl url"
+    prereqs="java:prepare-filesystem">
+
+    <taskdef
+      name="axis-wsdl2java"
+      classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask">
+      <classpath refid="maven.dependency.classpath"/>
+    </taskdef>
+
+    <axis-wsdl2java
+      url="${project.axis.wsdl.url}"
+      output="${project.axis.generated.src}"
+      testCase="${project.axis.testCase}"
+      verbose="${project.axis.verbose}"/>
+  </goal>
+
 </project>
