@@ -184,6 +184,15 @@ public final class ConfigurationManager {
             final String entry = (String) it.next();
             removeFileChangeListener(entry);
         }
+        
+        timer.cancel();
+    }
+
+    /**
+     * @see java.lang.Object#destroy()
+     */
+    public void destroy() {
+        stop();
     }
 
     /**
