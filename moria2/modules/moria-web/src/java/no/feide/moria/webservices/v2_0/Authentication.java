@@ -42,7 +42,7 @@ import org.apache.axis.session.Session;
 import org.apache.axis.transport.http.AxisHttpSession;
 
 /**
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class Authentication implements AuthenticationIF {
@@ -51,7 +51,7 @@ public final class Authentication implements AuthenticationIF {
     private MessageLogger messageLogger;
 
     /** Log message for AuthorizationExceptions. */
-    private static final String AUTHZ_EX_MESSAGE = "Authorization failed. Throwing RemoteException to service: ";
+    private static final String AUTHZ_EX_MSG = "Authorization failed. Throwing RemoteException to service: ";
 
     /** Log message for AuthenticationExceptions. */
     private static final String AUTHN_EX_MSG = "Authentication failed. Throwing RemoteException to service: ";
@@ -59,8 +59,8 @@ public final class Authentication implements AuthenticationIF {
     /** Log message for DirectoryUnavailableExceptions. */
     private static final String DIR_UNAV_EX_MSG = "Directory unavailable. Throwing RemoteException to service: ";
 
-    /** Log message for MoriaControllerExceptions. */
-    private static final String MORIACTRL_EX_MESSAGE = "Exception from MoriaController. Throwing RemoteException to service: ";
+    /** Log message for IllegalInputExceptions. */
+    private static final String ILLEGAL_INPUT_EX_MSG = "Illegal input. Throwing RemoteException to service: ";
 
     /** Log message for InoperableStateExceptions. */
     private static final String INOP_STATE_EX_MSG = "Controller in inoperable state. Throwing RemoteException to service: ";
@@ -70,14 +70,14 @@ public final class Authentication implements AuthenticationIF {
 
     /**
      * Default constructor.
-     * Initiates logger.
+     * Initiates the logger.
      */
     public Authentication() {
         messageLogger = new MessageLogger(Authentication.class);
     }
 
     /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#initiateAuthentication(java.lang.String[],
+     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#initiateAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String, boolean)
      */
     public String initiateAuthentication(final String[] attributes, final String returnURLPrefix, final String returnURLPostfix,
@@ -103,10 +103,10 @@ public final class Authentication implements AuthenticationIF {
                     + MoriaController.initiateAuthentication(attributes, returnURLPrefix, returnURLPostfix,
                             forceInteractiveAuthentication, servicePrincipal);
         } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
+            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
         } catch (IllegalInputException iie) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
         } catch (InoperableStateException ise) {
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
@@ -115,7 +115,7 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
+     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String)
      */
     public Attribute[] directNonInteractiveAuthentication(final String[] attributes, final String username, final String password)
@@ -129,17 +129,17 @@ public final class Authentication implements AuthenticationIF {
             Map returnAttributes = MoriaController.directNonInteractiveAuthentication(attributes, username, password,
                     servicePrincipal);
             return mapToAttributeArray(returnAttributes, null);
-        } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
-            throw new RemoteException(ae.getMessage());
         } catch (AuthenticationException ae) {
             messageLogger.logWarn(AUTHN_EX_MSG + servicePrincipal, ae);
+            throw new RemoteException(ae.getMessage());
+        } catch (AuthorizationException ae) {
+            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
         } catch (DirectoryUnavailableException due) {
             messageLogger.logWarn(DIR_UNAV_EX_MSG + servicePrincipal, due);
             throw new RemoteException(due.getMessage());
         } catch (IllegalInputException iie) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
         } catch (InoperableStateException ise) {
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
@@ -148,64 +148,7 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#proxyAuthentication(java.lang.String[],
-     *      java.lang.String)
-     */
-    public Attribute[] proxyAuthentication(final String[] attributes, final String proxyTicket) throws RemoteException {
-
-        /* Axis message context containg request data. */
-        MessageContext messageContext = MessageContext.getCurrentContext();
-        String servicePrincipal = messageContext.getUsername();
-
-        try {
-            Map returnAttributes = MoriaController.proxyAuthentication(attributes, proxyTicket, servicePrincipal);
-            return mapToAttributeArray(returnAttributes, proxyTicket);
-        } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
-            throw new RemoteException(ae.getMessage());
-        } catch (IllegalInputException iie) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
-            throw new RemoteException(iie.getMessage());
-        } catch (InoperableStateException ise) {
-            messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
-            throw new RemoteException(ise.getMessage());
-        } catch (UnknownTicketException ute) {
-            messageLogger.logWarn(UNKNOWN_TICKET_EX_MSG + servicePrincipal, ute);
-            throw new RemoteException(ute.getMessage());
-
-        }
-    }
-
-    /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#getProxyTicket(java.lang.String,
-     *      java.lang.String)
-     */
-    public String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal) throws RemoteException {
-
-        /* Axis message context containg request data. */
-        MessageContext messageContext = MessageContext.getCurrentContext();
-        String servicePrincipal = messageContext.getUsername();
-
-        try {
-            return MoriaController.getProxyTicket(ticketGrantingTicket, proxyServicePrincipal, servicePrincipal);
-        } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
-            throw new RemoteException(ae.getMessage());
-        } catch (IllegalInputException iie) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
-            throw new RemoteException(iie.getMessage());
-        } catch (InoperableStateException ise) {
-            messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
-            throw new RemoteException(ise.getMessage());
-        } catch (UnknownTicketException ute) {
-            messageLogger.logWarn(UNKNOWN_TICKET_EX_MSG + servicePrincipal, ute);
-            throw new RemoteException(ute.getMessage());
-
-        }
-    }
-
-    /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#getUserAttributes(java.lang.String)
+     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#getUserAttributes(java.lang.String)
      */
     public Attribute[] getUserAttributes(final String serviceTicket) throws RemoteException {
 
@@ -217,7 +160,7 @@ public final class Authentication implements AuthenticationIF {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
             return mapToAttributeArray(returnAttributes, serviceTicket);
         } catch (IllegalInputException iie) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
         } catch (InoperableStateException ise) {
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
@@ -232,15 +175,7 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#getGroupAttributes(java.lang.String)
-     */
-    public Attribute[] getGroupAttributes(final String groupname) throws RemoteException {
-        // TODO: There's no support for this in the underlying layers at the moment.
-        return new Attribute[] {};
-    }
-
-    /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#verifyUserExistence(java.lang.String)
+     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#verifyUserExistence(java.lang.String)
      */
     public boolean verifyUserExistence(final String username) throws RemoteException {
 
@@ -251,35 +186,18 @@ public final class Authentication implements AuthenticationIF {
         try {
             return MoriaController.verifyUserExistence(username, servicePrincipal);
         } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
+            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
         } catch (DirectoryUnavailableException due) {
             messageLogger.logWarn(DIR_UNAV_EX_MSG + servicePrincipal, due);
             throw new RemoteException(due.getMessage());
         } catch (IllegalInputException iie) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
         } catch (InoperableStateException ise) {
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
             throw new RemoteException(ise.getMessage());
         }
-    }
-
-    /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#verifyGroupExistence(java.lang.String)
-     */
-    public boolean verifyGroupExistence(final String groupname) throws RemoteException {
-        // TODO: There's no support for this in the underlying layers at the moment.
-        return false;
-    }
-
-    /**
-     * @see no.feide.moria.webservices.v1_1.AuthenticationIF#verifyUserMemberOfGroup(java.lang.String,
-     *      java.lang.String)
-     */
-    public boolean verifyUserMemberOfGroup(final String username, final String groupname) throws RemoteException {
-        // TODO: There's no support for this in the underlying layers at the moment.
-        return false;
     }
 
     /**

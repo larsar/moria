@@ -30,91 +30,62 @@ import java.rmi.RemoteException;
 public interface AuthenticationIF extends Remote {
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#initiateAuthentication(java.lang.String[],
-     *      java.lang.String, java.lang.String, boolean)
+     * The initial call done by services to start a login attempt.
+     *
+     * @param attributes
+     *          the attributes the service wants returned on login
+     * @param returnURLPrefix
+     *          the prefix of the url the user is to be returned to
+     * @param returnURLPostfix
+     *          the optional postfix of the return url
+     * @param forceInteractiveAuthentication
+     *          wether or not cookie based authentication (SSO-Light)
+     *          should be allowed
+     * @return the Moria url the client is to be redirected to
+     * @throws RemoteException
+     *          if anything fails during the call
      */
     String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix,
             boolean forceInteractiveAuthentication) throws RemoteException;
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
-     *      java.lang.String, java.lang.String)
-     */
-    Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
-
-    /**
-     * Called by a subsystem to authenticate a user.
+     * A redirect- and html-less login method.  Only to be used in
+     * special cases where the client for some reason does not
+     * support the standard login procedure.  Inherently insecure as
+     * the service will have knowledge of the clear-text password.
      *
      * @param attributes
      *          the attributes the service wants returned on login
-     * @param proxyTicket
-     *          the proxy ticket given to the calling system by its initiator
+     * @param username
+     *          the user name of the user to be authenticated
+     * @param password
+     *          the password of the user to be authenticated
      * @return array of attributes as requested
      * @throws RemoteException
      *          if anything fails during the call
      */
-    Attribute[] proxyAuthentication(String[] attributes, String proxyTicket) throws RemoteException;
+    Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
 
     /**
-     * A service may as part of the initial attribute request ask for
-     * a ticket granting ticket that later may be used in this call.
+     * Called by the service when the user returns after an successful
+     * login.
      *
-     * The returned proxy ticket is to be handed over to the specified
-     * underlying system and may be used to authenticatethe request
-     * by that system only.
-     *
-     * @param ticketGrantingTicket
-     *          a TGT that has issued previously
-     * @param proxyServicePrincipal
-     *          the service which the proxy ticket should be issued for
-     * @return a proxy ticket
+     * @param serviceTicket
+     *          the ticket included in the return request issued by the client
+     * @return array of attributes as requested in initiateAuthentication
      * @throws RemoteException
      *          if anything fails during the call
-     */
-    String getProxyTicket(String ticketGrantingTicket, String proxyServicePrincipal) throws RemoteException;
-
-    /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#getUserAttributes(java.lang.String)
      */
     Attribute[] getUserAttributes(String serviceTicket) throws RemoteException;
 
     /**
-     * Get public attributes for a given group.
-     *
-     * @param groupname
-     *          the name of the group
-     * @return array of public attributes
-     * @throws RemoteException
-     *          if anything fails during the call
-     */
-    Attribute[] getGroupAttributes(String groupname) throws RemoteException;
-
-    /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#getUserExistence(java.lang.String)
-     */
-    boolean verifyUserExistence(String username) throws RemoteException;
-
-    /**
-     * Verifies the existence of a given group in the underlying directories.
-     *
-     * @param groupname
-     *          the groupname to be validated
-     * @return true if the group exists
-     * @throws RemoteException
-     *           if anything fails during the call
-     */
-    boolean verifyGroupExistence(String groupname) throws RemoteException;
-
-    /**
-     * Verify that a given user is member of a specific group.
+     * Verifies the existence of a given user in the underlying directories.
      *
      * @param username
      *          the username to be validated
-     * @param groupname
-     *          the name of the group that may contain the user
-     * @return true if the user is a member of the group
+     * @return true if the user is found
      * @throws RemoteException
      *          if anything fails during the call
      */
-    boolean verifyUserMemberOfGroup(String username, String groupname) throws RemoteException;
+    boolean verifyUserExistence(String username) throws RemoteException;
 }

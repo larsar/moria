@@ -18,7 +18,7 @@
  * $Id$
  */
 
-package no.feide.moria.webservices.v1_1;
+package no.feide.moria.webservices.v2_1;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -30,14 +30,14 @@ import java.rmi.RemoteException;
 public interface AuthenticationIF extends Remote {
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#initiateAuthentication(java.lang.String[],
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#initiateAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String, boolean)
      */
     String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix,
             boolean forceInteractiveAuthentication) throws RemoteException;
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String)
      */
     Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
@@ -74,7 +74,7 @@ public interface AuthenticationIF extends Remote {
     String getProxyTicket(String ticketGrantingTicket, String proxyServicePrincipal) throws RemoteException;
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#getUserAttributes(java.lang.String)
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#getUserAttributes(java.lang.String)
      */
     Attribute[] getUserAttributes(String serviceTicket) throws RemoteException;
 
@@ -90,7 +90,7 @@ public interface AuthenticationIF extends Remote {
     Attribute[] getGroupAttributes(String groupname) throws RemoteException;
 
     /**
-     * @see no.feide.moria.webservices.v1_0.AuthenticationIF#getUserExistence(java.lang.String)
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#getUserExistence(java.lang.String)
      */
     boolean verifyUserExistence(String username) throws RemoteException;
 
