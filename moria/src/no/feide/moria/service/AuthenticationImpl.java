@@ -235,6 +235,9 @@ implements AuthenticationIF, ServiceLifecycle {
     throws RemoteException {
         log.finer("getAttributes(String)");
 
+        if (id == null) 
+            throw new RemoteException("Session id cannot be null.");
+        
     	try {
 
             /* Look up session and check the client identity. */
@@ -244,6 +247,9 @@ implements AuthenticationIF, ServiceLifecycle {
             if (ctx.getUserPrincipal() != null)
                 serviceName = ctx.getUserPrincipal().getName();
 
+            if (serviceName == null) 
+                throw new RemoteException("Invalid service name.");
+                
             String log_prefix = "Attributes requested by "+serviceName+": ";
 
             /* Reauthorize the WebService */
