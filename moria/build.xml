@@ -47,6 +47,7 @@
     <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
     <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
     <delete file="build.moria/WEB-INF/classes/moria.properties"/>
+    <echo message="Using config: ${moria_config}"/>
     <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/moria.properties"/>
     <copy todir="build.moria/WEB-INF/lib">
       <fileset dir="moria/lib/">
@@ -288,8 +289,6 @@
           description="Test: Create JAR file"
           depends="test:prepare">
     <delete file="dist/AuthenticationServiceClient.jar"/>
-    <delete file="build.test/Mellon.xml"/>
-    <copy file="${mellon_config}" tofile="build.test/Mellon.xml"/>
     <jar destfile="dist/AuthenticationServiceClient.jar"
          basedir="build.test"
          includes="Mellon.xml no/feide/mellon/test/*"/>
@@ -301,6 +300,7 @@
 
   <target name="test:run"
           description="Test: Run the test code">
+    <echo message="Using config: ${mellon_config}"/>
     <java fork="on"
           classname="no.feide.mellon.test.AuthenticationServiceClient">
       <classpath>
