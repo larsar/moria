@@ -18,7 +18,6 @@
 
 package no.feide.moria.directory.index;
 
-
 /**
  * This is the interface used to access an underlying index implementation.
  */

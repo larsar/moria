@@ -146,7 +146,7 @@ public class DirectoryManager {
             log.logCritical("Unable to instantiate backend factory object", e);
             throw new DirectoryManagerConfigurationException("Unable to instantiate backend factory object", e);
         }
-        
+
         // Set backend configuration.
         backendFactory.setConfig(configuration.getBackendElement());
 

@@ -64,30 +64,29 @@ implements Serializable, DirectoryManagerIndex {
         if (obj.getClass() != this.getClass())
             return false;
         final SerializableIndex other = (SerializableIndex) obj;
-        
+
         // Check associations. Normal equals(...) doesn't work here.
         if (!associations.keySet().equals(other.associations.keySet()))
             return false;
         Iterator keys = associations.keySet().iterator();
         while (keys.hasNext()) {
-            String key = (String)keys.next();
-            String[] values = (String[])associations.get(key);
+            String key = (String) keys.next();
+            String[] values = (String[]) associations.get(key);
             ArrayList myValues = new ArrayList(values.length);
-            for (int i=0; i<values.length; i++)
+            for (int i = 0; i < values.length; i++)
                 myValues.add(values[i]);
-            values = (String[])other.associations.get(key);
+            values = (String[]) other.associations.get(key);
             ArrayList otherValues = new ArrayList(values.length);
-            for (int i=0; i<values.length; i++)
-                otherValues.add(values[i]);    
+            for (int i = 0; i < values.length; i++)
+                otherValues.add(values[i]);
             if (!myValues.equals(otherValues))
                 return false;
         }
-        
 
         // Check exceptions; much simple data structure.
         if (!exceptions.equals(other.exceptions))
             return false;
-        
+
         // We're okay.
         return true;
     }

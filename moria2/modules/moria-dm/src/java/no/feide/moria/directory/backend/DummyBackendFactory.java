@@ -57,8 +57,8 @@ implements DirectoryManagerBackendFactory {
             throw new IllegalArgumentException("Backend configuration element cannot be NULL");
         if (!config.getName().equalsIgnoreCase("Backend"))
             throw new DirectoryManagerConfigurationException("Cannot find backend configuration element");
-        
-        myConfig = (Element)config.clone();
+
+        myConfig = (Element) config.clone();
 
     }
 

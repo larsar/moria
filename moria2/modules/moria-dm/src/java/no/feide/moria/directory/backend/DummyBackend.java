@@ -41,7 +41,7 @@ implements DirectoryManagerBackend {
      */
     private HashMap users;
 
-    
+
     /**
      * Protected constructor. Sets the configuration used by this instance.
      * @param config
@@ -159,6 +159,7 @@ implements DirectoryManagerBackend {
         }
 
     }
+
 
     /**
      * Does nothing, but needed to fulfill the

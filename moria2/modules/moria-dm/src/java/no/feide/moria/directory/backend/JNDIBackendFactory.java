@@ -74,11 +74,11 @@ implements DirectoryManagerBackendFactory {
      *            If this value is a negative number, the timeout value will be
      *            set to zero (meaning the connection will never time out).
      *            Also, the <code>JNDI</code> element may contain an attribute
-     *            <code>guessedAttribute</code>, which should give the name of an
-     *            attribute used to construct "guessed" user element (R)DNs if
-     *            the actual element cannot be found by searching (the default
-     *            value is <code>uid</code>). Finally the <code>JNDI</code>
-     *            element must contain an attribute
+     *            <code>guessedAttribute</code>, which should give the name
+     *            of an attribute used to construct "guessed" user element
+     *            (R)DNs if the actual element cannot be found by searching (the
+     *            default value is <code>uid</code>). Finally the
+     *            <code>JNDI</code> element must contain an attribute
      *            <code>usernameAttribute</code>, which should give the name
      *            of the attribute holding the username.
      * @throws IllegalArgumentException
@@ -117,7 +117,7 @@ implements DirectoryManagerBackendFactory {
             }
         if (backendTimeouts < 0)
             backendTimeouts = 0;
-        
+
         // Get username attribute and guessed attribute.
         usernameAttribute = jndiElement.getAttributeValue("usernameAttribute");
         if (usernameAttribute == null)
