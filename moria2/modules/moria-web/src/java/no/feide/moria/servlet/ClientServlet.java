@@ -54,7 +54,7 @@ public class ClientServlet extends HttpServlet {
 
         // Do not have ticket
         // - Contact dsssfsd
-        if (request.getParameter("moriaID") == null) {
+        if (request.getParameter(RequestUtil.PROP_TICKET_PARAM) == null) {
             RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/client.jsp");
             rd.include(request, response);
         }
@@ -94,10 +94,10 @@ public class ClientServlet extends HttpServlet {
         }
 
         if (!error) {
-            Properties config = (Properties) getServletContext().getAttribute("no.feide.moria.web.config");
-            String redirectURL = config.getProperty("loginURLPrefix") + "?" + config.getProperty("loginTicketID") + "=" + moriaID;
-            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-            ((HttpServletResponse) response).setHeader("Location", redirectURL);
+            Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
+            String redirectURL = config.getProperty(RequestUtil.PROP_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_TICKET_PARAM) + "=" + moriaID;
+            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            response.setHeader("Location", redirectURL);
         } else {
             RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/client.jsp");
             rd.include(request, response);
