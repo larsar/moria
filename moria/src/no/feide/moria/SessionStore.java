@@ -156,28 +156,62 @@ public class SessionStore {
      *                          has just timed out (but hasn't been garbage
      *                          collected yet).
      */
-    public Session getSession(String sessionID) 
+    private Session getSession(String sessionID, String lifetimeType) 
     throws SessionException {
         log.finer("getSession(String)");
         
-        // First check if the session exists.
-        if (sessionID == null || !sessions.containsKey(sessionID)) {
-            log.fine("No such session: "+sessionID);
-            throw new NoSuchSessionException("No such session: "+sessionID);
-        } else {
+        synchronized(sessions) {
+            // First check if the session exists.
+            if (sessionID == null || !sessions.containsKey(sessionID)) {
+                log.fine("No such session: "+sessionID);
+                throw new NoSuchSessionException("No such session: "+sessionID);
+            } else {
             
-            // Then check if the session exists, but has just timed out.
-            // TODO.
-            Session s = (Session)sessions.get(sessionID);
-            /*
-            if (!s.isValid(???)) {
-                log.fine("Session exists, but has timed out: "+sessionID);
-                throw new NoSuchSessionException("Session exists, but has timed out: "+sessionID);
+                // Then check if the session exists, but has just timed out.
+                // TODO.
+                Session session = (Session)sessions.get(sessionID);
+                if (!session.isValidAt(new Date().getTime(), Configuration.getSessionLifetime(lifetimeType))) {
+                    log.fine("Session exists, but has timed out: "+sessionID);
+                    throw new NoSuchSessionException("Session has timed out.");
+                }
+                return session;
             }
-            */
-            return s;
         }
     }
+
+
+
+    /**
+     * Wrapper for getSession. Called when user wants to log in.
+     * @param sessionID The ID of the requested session.
+     * @return Session found with getSession
+     */ 
+    public Session getSessionLogin(String sessionID) throws SessionException {
+        return getSession(sessionID, "login");
+    }
+
+
+
+    /**
+     * Wrapper for getSession. Called when service requests user attributes.
+     * @param sessionID The ID of the requested session.
+     * @return Session found with getSession
+     */ 
+    public Session getSessionAuthenticated(String sessionID) throws SessionException {
+        return getSession(sessionID, "authenticated");
+    }
+
+
+
+    /**
+     * Wrapper for getSession. Called when user wants to log in or out.
+     * @param sessionID The ID of the requested session.
+     * @return Session found with getSession
+     */ 
+    public Session getSessionSSO(String sessionID) throws SessionException {
+        return getSession(sessionID, "sso");
+    }
+    
 
   
     /**
@@ -218,8 +252,14 @@ public class SessionStore {
     }
 
     
-    protected void checkTimeout(int lifetimeLogin, int lifetimeAuth, int lifetimeSSO) {
-
+    /**
+     * Invalidate timedout sessions. Loop through all sessions and
+     * check for three time outs: user timeout (to long time to supply
+     * username/password), Mellon timeout (to long time to fetch user
+     * data), SSO timeout.
+     */
+    protected void checkTimeout() {
+        
         Vector invalidatedSessions = new Vector();
         Date start = new Date();
 
@@ -237,7 +277,7 @@ public class SessionStore {
                     
                     /* Look for timed out SSO sessions. */
                     if (session.isLocked() && 
-                        !session.isValidAt(now, lifetimeSSO)) {
+                        !session.isValidAt(now, Configuration.getSessionLifetime("sso"))) {
                             log.info("Invalidating SSO session (timeout): "+session.getID());
                             stats.incStatsCounter(wsName, "timeoutSSO");
                             stats.decStatsCounter(wsName, "activeSessions");
@@ -245,7 +285,7 @@ public class SessionStore {
                     }
 
                     /* Web service to slow to fetch user attributes */
-                    else if (!session.isLocked() && !session.isValidAt(now, lifetimeAuth)) {
+                    else if (!session.isLocked() && !session.isValidAt(now, Configuration.getSessionLifetime("authenticated"))) {
                             log.info("Invalidating authenticated session (Mellon timeout): "+session.getID());
                             stats.incStatsCounter(wsName, "timeoutMellon");
                             stats.decStatsCounter(wsName, "activeSessions");
@@ -255,7 +295,7 @@ public class SessionStore {
 
                 /* Time out due to missing login info from user */
                 else {
-                    if (!session.isValidAt(now, lifetimeLogin)) {
+                    if (!session.isValidAt(now, Configuration.getSessionLifetime("login"))) {
                         log.info("Invalidating session (user timeout): "+session.getID());
                         stats.incStatsCounter(wsName, "timeoutUser");
                         stats.decStatsCounter(wsName, "activeSessions");
