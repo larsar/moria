@@ -74,7 +74,7 @@ public class MoriaControllerTest extends TestCase {
      * @see MoriaController#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean, java.lang.String)
      */
     public void testInitiateMoriaAuthentication()
-            throws AuthorizationException, IllegalInputException, UnknownTicketException {
+            throws AuthorizationException, IllegalInputException, UnknownTicketException, InoperableStateException {
 
         controllerInitialization();
 
@@ -145,33 +145,6 @@ public class MoriaControllerTest extends TestCase {
         // TODO: Implement
     }
 
-//    /**
-//     * Test the validateLoginTicket method.
-//     *
-//     * @throws IllegalInputException
-//     * @throws AuthorizationException
-//     * @see MoriaController#validateLoginTicket(java.lang.String)
-//     */
-//    public void testValidateLoginTicket() throws IllegalInputException, AuthorizationException {
-//        controllerInitialization();
-//
-//        try {
-//            //MoriaController.validateLoginTicket(null);
-//            fail("IllegalInputException should be raised, ticket is null.");
-//        } catch (IllegalArgumentException success) {
-//        }
-//        try {
-//            //MoriaController.validateLoginTicket("");
-//            fail("IllegalInputException should be raised, ticket is empty string.");
-//        } catch (IllegalArgumentException success) {
-//        }
-//
-//        /* Normal use */
-//        String ticket;
-//        ticket = MoriaController.initiateAuthentication(new String[]{"attr1"}, "http://foo/", "/bar/", false, "test");
-//        //assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
-//    }
-
     public void testGetUserAttributes() {
         // TODO: Implement
     }
@@ -216,7 +189,8 @@ public class MoriaControllerTest extends TestCase {
      * @see MoriaController#getServiceProperties(java.lang.String)
      */
 
-    public void testGetServiceProperties() throws IllegalInputException, AuthorizationException, UnknownTicketException {
+    public void testGetServiceProperties() throws IllegalInputException, AuthorizationException,
+            UnknownTicketException, InoperableStateException {
         controllerInitialization();
         /* Invalid arguments */
         try {
@@ -236,7 +210,8 @@ public class MoriaControllerTest extends TestCase {
         assertEquals("Principal differs", validPrincipal, properties.get("name"));
     }
 
-    public void testGetSecLevel() throws IllegalInputException, AuthorizationException, UnknownTicketException {
+    public void testGetSecLevel() throws IllegalInputException, AuthorizationException,
+            UnknownTicketException, InoperableStateException {
         controllerInitialization();
 
         /* Invalid arguments */
@@ -293,7 +268,7 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Verify that the controller initialization checks works and then initates the conftroller.
      */
-    private void controllerInitialization() {
+    private void controllerInitialization() throws InoperableStateException {
         /* Controller not initialized */
         MoriaController.stop();
         try {
