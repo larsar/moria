@@ -228,7 +228,6 @@ public class MoriaControllerTest extends TestCase {
 
         /* Invalid ticket */
         try {
-            //TODO: This returns null, but should maybe throw an IllegalTicketException?
             MoriaController.getSecLevel("doesNotExist");
             fail("InvalidTicketException should be raised");
         } catch (UnknownTicketException success) {
