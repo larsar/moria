@@ -101,6 +101,14 @@ public final class RequestUtil {
      */
     public static final String PROP_COOKIE_SSO_TTL = PATH_PREFIX + "cookie.sso.ttl";
     /**
+     * Element in cookie: deny SSO.
+     */
+    public static final String PROP_COOKIE_DENYSSO = PATH_PREFIX + "cookie.denysso.name";
+    /**
+     * Property name for: TTL of cookie.
+     */
+    public static final String PROP_COOKIE_DENYSSO_TTL = PATH_PREFIX + "cookie.denysso.ttl";
+    /**
      * Property name for: Logout URL.
      */
     public static final String PROP_LOGOUT_URL_PARAM = PATH_PREFIX + "logout.url_param";
@@ -144,6 +152,10 @@ public final class RequestUtil {
      * Parameter in request object: Language.
      */
     public static final String PARAM_LANG = "lang";
+    /**
+     * Parameter in request object: Deny SSO.
+     */
+    public static final String PARAM_DENYSSO = "denySSO";
 
     /**
      * Attribute in request object: Base URL.
@@ -169,6 +181,10 @@ public final class RequestUtil {
      * Attribute in request object: Preselected organization.
      */
     public static final String ATTR_SELECTED_ORG = "selectedOrg";
+    /**
+     * Attribute in request object: Denial of SSO.
+     */
+    public static final String ATTR_SELECTED_DENYSSO = "selectedDenySSO";
     /**
      * Attribute in request object: Preselected lanugage.
      */
