@@ -14,6 +14,6 @@ public interface DirectoryManagerIndex {
      * @return One or more backend references , or <code>null</code> if no
      *         such reference was found.
      */
-    public IndexedReference[] lookup(String id);
+    public IndexedReference lookup(String id);
 
 }
