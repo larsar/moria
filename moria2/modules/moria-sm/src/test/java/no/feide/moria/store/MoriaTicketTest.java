@@ -62,16 +62,16 @@ public class MoriaTicketTest extends TestCase {
     public void testTicketTypes() {
 
         /* Check every combination of tickets */
-        assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.SERVICE_TICKET);
-        assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.SSO_TICKET);
-        assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.TICKET_GRANTING_TICKET);
-        assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.PROXY_TICKET);
-        assertTrue(MoriaTicket.SERVICE_TICKET != MoriaTicket.SSO_TICKET);
-        assertTrue(MoriaTicket.SERVICE_TICKET != MoriaTicket.TICKET_GRANTING_TICKET);
-        assertTrue(MoriaTicket.SERVICE_TICKET != MoriaTicket.PROXY_TICKET);
-        assertTrue(MoriaTicket.SSO_TICKET != MoriaTicket.TICKET_GRANTING_TICKET);
-        assertTrue(MoriaTicket.SSO_TICKET != MoriaTicket.PROXY_TICKET);
-        assertTrue(MoriaTicket.TICKET_GRANTING_TICKET != MoriaTicket.PROXY_TICKET);
+        assertTrue(MoriaTicketType.LOGIN_TICKET != MoriaTicketType.SERVICE_TICKET);
+        assertTrue(MoriaTicketType.LOGIN_TICKET != MoriaTicketType.SSO_TICKET);
+        assertTrue(MoriaTicketType.LOGIN_TICKET != MoriaTicketType.TICKET_GRANTING_TICKET);
+        assertTrue(MoriaTicketType.LOGIN_TICKET != MoriaTicketType.PROXY_TICKET);
+        assertTrue(MoriaTicketType.SERVICE_TICKET != MoriaTicketType.SSO_TICKET);
+        assertTrue(MoriaTicketType.SERVICE_TICKET != MoriaTicketType.TICKET_GRANTING_TICKET);
+        assertTrue(MoriaTicketType.SERVICE_TICKET != MoriaTicketType.PROXY_TICKET);
+        assertTrue(MoriaTicketType.SSO_TICKET != MoriaTicketType.TICKET_GRANTING_TICKET);
+        assertTrue(MoriaTicketType.SSO_TICKET != MoriaTicketType.PROXY_TICKET);
+        assertTrue(MoriaTicketType.TICKET_GRANTING_TICKET != MoriaTicketType.PROXY_TICKET);
     }
 
     /**
@@ -82,40 +82,33 @@ public class MoriaTicketTest extends TestCase {
 
         /* Test for illegal id */
         try {
-            MoriaTicket ticket = new MoriaTicket(null, MoriaTicket.LOGIN_TICKET, principal1, 5);
+            MoriaTicket ticket = new MoriaTicket(null, MoriaTicketType.LOGIN_TICKET, principal1, new Long(5));
             fail("An IllegalArgumentException should have been thrown");
-        } catch (IllegalArgumentException success) {
-        }
-
-        /* Test for illegal ticket */
-        try {
-            MoriaTicket ticket = new MoriaTicket(id1, -1, principal1, 5);
-            fail("An InvalidTicketException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         /* Test for illegal principal */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, null, 5);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, null, new Long(5));
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.SSO_TICKET, principal1, 5);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.SSO_TICKET, principal1, new Long(5));
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success){
         }
 
         /* Test for illegal time to live */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, principal1, -1);
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(-1));
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException e) {
         }
 
         /* Test for expiry */
-        MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, principal1, 1);
+        MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(1));
         Thread.sleep(1001);
         assertTrue("Ticket should have expired", ticket.hasExpired());
     }
@@ -134,14 +127,14 @@ public class MoriaTicketTest extends TestCase {
          */
         assertFalse(
             "Tickets supposed to have different id and not be equal",
-            new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, principal1, 5).equals(
-                new MoriaTicket(id2, MoriaTicket.LOGIN_TICKET, principal1, 5)));
+            new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(5)).equals(
+                new MoriaTicket(id2, MoriaTicketType.LOGIN_TICKET, principal1, new Long(5))));
 
         /* Same id, different type and principal. Should result in equality. */
         assertEquals(
             "Tickets have same id and should be considered equal",
-            new MoriaTicket(id2, MoriaTicket.TICKET_GRANTING_TICKET, principal1, 5),
-            new MoriaTicket(id2, MoriaTicket.SSO_TICKET, null, 5));
+            new MoriaTicket(id2, MoriaTicketType.TICKET_GRANTING_TICKET, principal1, new Long(5)),
+            new MoriaTicket(id2, MoriaTicketType.SSO_TICKET, null, new Long(5)));
 
     }
 
@@ -152,11 +145,11 @@ public class MoriaTicketTest extends TestCase {
      * @throws InvalidTicketException
      */
     public void testGetters() throws IllegalArgumentException, InvalidTicketException {
-        MoriaTicket ticket = new MoriaTicket(id2, MoriaTicket.LOGIN_TICKET, principal2, 5);
+        MoriaTicket ticket = new MoriaTicket(id2, MoriaTicketType.LOGIN_TICKET, principal2, new Long(5));
 
         String errorMsg = "The value given at object construction does not match the returned value";
         assertEquals(errorMsg, id2, ticket.getTicketId());
-        assertEquals(errorMsg, MoriaTicket.LOGIN_TICKET, ticket.getTicketType());
+        assertEquals(errorMsg, MoriaTicketType.LOGIN_TICKET, ticket.getTicketType());
         assertEquals(errorMsg, principal2, ticket.getServicePrincipal());
     }
 }
