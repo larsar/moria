@@ -18,7 +18,7 @@
 package no.feide.moria.stats;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashfMap;
 import java.util.logging.Logger;
 
 
@@ -28,12 +28,6 @@ import java.util.logging.Logger;
  */
 public class WebServiceStats {
     
-    /** Timestamp - first use of web service */
-    private Date firstUsed = null;
-
-    /** Timestamp - last use of web service */
-    private Date lastUsed  = null;
-
     private HashMap counters = new HashMap();
 
     /** Used for logging. */
@@ -61,14 +55,12 @@ public class WebServiceStats {
 
 
     /**
-     * Constructor. Updates timestamps and sets the web service name.
+     * Constructor. Sets the web service name.
      * @param name The web service Name/ID
      */
     public WebServiceStats(String name) {
         log.finer("WebServiceStats()");
         this.name = name;
-        firstUsed = new Date();
-        lastUsed  = firstUsed;
 
         /** Reset known counters */
         for (int i = 0; i < knownCounters.length; i++) {
@@ -131,10 +123,4 @@ public class WebServiceStats {
 
 
 
-    /** 
-     * Updated timestamp
-     */
-    private void timeStamp() {
-        lastUsed = new Date();
-    }
-}
+ }
