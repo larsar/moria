@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.io.Serializable;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 /**
  * Logs generic messages from the system, may include ticket id
@@ -48,6 +49,9 @@ public final class MessageLogger implements Serializable {
     /** Class using this logger instance. */
     private Class callingClass;
 
+    /** The current log level. Intitalized to 'ALL' */
+    private int logLevel = Level.ALL_INT;
+
     /**
      * Default constructor.
      *
@@ -55,8 +59,14 @@ public final class MessageLogger implements Serializable {
      *            the class that will use this logger instance
      */
     public MessageLogger(final Class callingClass) {
-        this.logger = Logger.getLogger(callingClass);
         this.callingClass = callingClass;
+        logger = Logger.getLogger(callingClass);
+
+        /* Cache the log level for the logger. */
+        Level level = logger.getEffectiveLevel();
+
+        if (level != null)
+            logLevel = level.toInt();
     }
 
     /**
@@ -66,7 +76,8 @@ public final class MessageLogger implements Serializable {
      *            the message to log
      */
     public void logCritical(final String message) {
-        getLogger().fatal(generateLogMessage(message, null, null));
+        if (Level.FATAL_INT >= logLevel)
+            getLogger().fatal(generateLogMessage(message, null, null));
     }
 
     /**
@@ -79,7 +90,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logCritical(final String message, final Exception exception) {
-        getLogger().fatal(generateLogMessage(message, null, exception));
+        if (Level.FATAL_INT >= logLevel)
+            getLogger().fatal(generateLogMessage(message, null, exception));
     }
 
     /**
@@ -91,7 +103,8 @@ public final class MessageLogger implements Serializable {
      *            the ticketid assosiated with this log message
      */
     public void logCritical(final String message, final String ticketId) {
-        getLogger().fatal(generateLogMessage(message, ticketId, null));
+        if (Level.FATAL_INT >= logLevel)
+            getLogger().fatal(generateLogMessage(message, ticketId, null));
     }
 
     /**
@@ -106,7 +119,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logCritical(final String message, final String ticketId, final Exception exception) {
-        getLogger().fatal(generateLogMessage(message, ticketId, exception));
+        if (Level.FATAL_INT >= logLevel)
+            getLogger().fatal(generateLogMessage(message, ticketId, exception));
     }
 
     /**
@@ -116,7 +130,8 @@ public final class MessageLogger implements Serializable {
      *            the message to log
      */
     public void logWarn(final String message) {
-        getLogger().warn(generateLogMessage(message, null, null));
+        if (Level.WARN_INT >= logLevel)
+            getLogger().warn(generateLogMessage(message, null, null));
     }
 
     /**
@@ -129,7 +144,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logWarn(final String message, final Exception exception) {
-        getLogger().warn(generateLogMessage(message, null, exception));
+        if (Level.WARN_INT >= logLevel)
+            getLogger().warn(generateLogMessage(message, null, exception));
     }
 
     /**
@@ -141,7 +157,8 @@ public final class MessageLogger implements Serializable {
      *            the ticketid assosiated with this log message
      */
     public void logWarn(final String message, final String ticketId) {
-        getLogger().warn(generateLogMessage(message, ticketId, null));
+        if (Level.WARN_INT >= logLevel)
+            getLogger().warn(generateLogMessage(message, ticketId, null));
     }
 
     /**
@@ -156,7 +173,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logWarn(final String message, final String ticketId, final Exception exception) {
-        getLogger().warn(generateLogMessage(message, ticketId, exception));
+        if (Level.WARN_INT >= logLevel)
+            getLogger().warn(generateLogMessage(message, ticketId, exception));
     }
 
     /**
@@ -166,7 +184,8 @@ public final class MessageLogger implements Serializable {
      *            the message to log
      */
     public void logInfo(final String message) {
-        getLogger().info(generateLogMessage(message, null, null));
+        if (Level.INFO_INT >= logLevel)
+            getLogger().info(generateLogMessage(message, null, null));
     }
 
     /**
@@ -179,7 +198,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logInfo(final String message, final Exception exception) {
-        getLogger().info(generateLogMessage(message, null, exception));
+        if (Level.INFO_INT >= logLevel)
+            getLogger().info(generateLogMessage(message, null, exception));
     }
 
     /**
@@ -191,7 +211,8 @@ public final class MessageLogger implements Serializable {
      *            the ticketid assosiated with this log message
      */
     public void logInfo(final String message, final String ticketId) {
-        getLogger().info(generateLogMessage(message, ticketId, null));
+        if (Level.INFO_INT >= logLevel)
+            getLogger().info(generateLogMessage(message, ticketId, null));
     }
 
     /**
@@ -206,7 +227,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logInfo(final String message, final String ticketId, final Exception exception) {
-        getLogger().info(generateLogMessage(message, ticketId, exception));
+        if (Level.INFO_INT >= logLevel)
+            getLogger().info(generateLogMessage(message, ticketId, exception));
     }
 
     /**
@@ -216,7 +238,8 @@ public final class MessageLogger implements Serializable {
      *            the message to log
      */
     public void logDebug(final String message) {
-        getLogger().debug(generateLogMessage(message, null, null));
+        if (Level.DEBUG_INT >= logLevel)
+            getLogger().debug(generateLogMessage(message, null, null));
     }
 
     /**
@@ -229,7 +252,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logDebug(final String message, final Exception exception) {
-        getLogger().debug(generateLogMessage(message, null, exception));
+        if (Level.DEBUG_INT >= logLevel)
+            getLogger().debug(generateLogMessage(message, null, exception));
     }
 
     /**
@@ -241,7 +265,8 @@ public final class MessageLogger implements Serializable {
      *            the ticketid assosiated with this log message
      */
     public void logDebug(final String message, final String ticketId) {
-        getLogger().debug(generateLogMessage(message, ticketId, null));
+        if (Level.DEBUG_INT >= logLevel)
+            getLogger().debug(generateLogMessage(message, ticketId, null));
     }
 
     /**
@@ -256,7 +281,8 @@ public final class MessageLogger implements Serializable {
      *            stacktrace will be logged
      */
     public void logDebug(final String message, final String ticketId, final Exception exception) {
-        getLogger().debug(generateLogMessage(message, ticketId, exception));
+        if (Level.DEBUG_INT >= logLevel)
+            getLogger().debug(generateLogMessage(message, ticketId, exception));
     }
 
     /**
@@ -299,8 +325,18 @@ public final class MessageLogger implements Serializable {
      * @return the logger instance of this class
      */
     private Logger getLogger() {
-        if (logger == null) logger = Logger.getLogger(callingClass);
+        if (logger == null) {
+            logger = Logger.getLogger(callingClass);
 
+            /* Cache the log level for the logger. */
+            Level level = logger.getEffectiveLevel();
+
+            if (level != null) {
+                logLevel = level.toInt();
+            } else {
+                logLevel = Level.ALL_INT;
+            }
+        }
         return logger;
     }
 }
