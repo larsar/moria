@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="FeideAuthentication" targetNamespace="https://login.feide.no/moria/FeideAuthentication" xmlns:tns="https://login.feide.no/moria/FeideAuthentication" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <types>
+    <schema targetNamespace="https://login.feide.no/moria/FeideAuthentication" xmlns:tns="https://login.feide.no/moria/FeideAuthentication" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://www.w3.org/2001/XMLSchema">
+      <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+      <complexType name="ArrayOfAttribute">
+        <complexContent>
+          <restriction base="soap-enc:Array">
+            <attribute ref="soap-enc:arrayType" wsdl:arrayType="tns:Attribute[]"/></restriction></complexContent></complexType>
+      <complexType name="Attribute">
+        <sequence>
+          <element name="name" type="string"/>
+          <element name="values" type="tns:ArrayOfstring"/></sequence></complexType>
+      <complexType name="ArrayOfstring">
+        <complexContent>
+          <restriction base="soap-enc:Array">
+            <attribute ref="soap-enc:arrayType" wsdl:arrayType="string[]"/></restriction></complexContent></complexType></schema></types>
+  <message name="AuthenticationIF_getAttributes">
+    <part name="String_1" type="xsd:string"/></message>
+  <message name="AuthenticationIF_getAttributesResponse">
+    <part name="result" type="tns:ArrayOfAttribute"/></message>
+  <message name="AuthenticationIF_requestSession">
+    <part name="arrayOfString_1" type="tns:ArrayOfstring"/>
+    <part name="String_2" type="xsd:string"/>
+    <part name="String_3" type="xsd:string"/>
+    <part name="boolean_4" type="xsd:boolean"/></message>
+  <message name="AuthenticationIF_requestSessionResponse">
+    <part name="result" type="xsd:string"/></message>
+  <portType name="AuthenticationIF">
+    <operation name="getAttributes" parameterOrder="String_1">
+      <input message="tns:AuthenticationIF_getAttributes"/>
+      <output message="tns:AuthenticationIF_getAttributesResponse"/></operation>
+    <operation name="requestSession" parameterOrder="arrayOfString_1 String_2 String_3 boolean_4">
+      <input message="tns:AuthenticationIF_requestSession"/>
+      <output message="tns:AuthenticationIF_requestSessionResponse"/></operation></portType>
+  <binding name="AuthenticationIFBinding" type="tns:AuthenticationIF">
+    <operation name="getAttributes">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></output>
+      <soap:operation soapAction=""/></operation>
+    <operation name="requestSession">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></output>
+      <soap:operation soapAction=""/></operation>
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/></binding>
+  <service name="FeideAuthentication">
+    <port name="AuthenticationIFPort" binding="tns:AuthenticationIFBinding">
+      <soap:address location="https://demo.feide.no/moria/FeideAuthentication?WSDL"/></port></service></definitions>
