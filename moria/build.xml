@@ -41,9 +41,11 @@
       <fileset dir="moria/templates">
 	<include name="**/*.properties"/>
       </fileset>
-    </copy>  
+    </copy>
+    <copy file="build.moria/WEB-INF/classes/login_nb.properties" tofile="build.moria/WEB-INF/classes/login_no.properties"/>
     <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
     <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
+    <delete file="build.moria/WEB-INF/classes/Moria.xml"/>
     <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
     <copy todir="build.moria/WEB-INF/lib">
       <fileset dir="moria/lib/">
@@ -247,6 +249,7 @@
           description="Test: Create JAR file"
           depends="test:prepare">
     <delete file="dist/AuthenticationServiceClient.jar"/>
+    <delete file="build.test/Mellon.xml"/>
     <copy file="${mellon_config}" tofile="build.test/Mellon.xml"/>
     <jar destfile="dist/AuthenticationServiceClient.jar"
          basedir="build.test"
