@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2004 UNINETT FAS
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * $Id$
  */
 
@@ -26,16 +26,16 @@ import java.util.Date;
 
 /**
  * Returns an id that's random and unique across a cluster of JVMs.
- * 
+ *
  * Each JVM needs to be configured with an unique node id, identifying each
  * node. This is done by setting the system property <code>no.feide.moria.store.randomid.nodeid</code>.
  * The value must be a ascii string of 3 character length.
- * 
+ *
  * The returned id is an encoded String (pseudo Base64, see method
  * documentation for details) constructed from the node id, the current time
  * and a random string. This should guarantee unique ids across the cluster and
  * node restarts.
- * 
+ *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
@@ -47,6 +47,7 @@ public class RandomId {
 
     static {
 
+        // TODO: Should be set dynamically with SM.setConfig()
         /* Initiate the node identificator */
         String property = System.getProperty("no.feide.moria.store.randomid.nodeid");
 
@@ -97,15 +98,15 @@ public class RandomId {
     /**
      * Takes a byte array and returns a string encoded with a slightly modified
      * version of Base64.
-     * 
+     *
      * The difference compared to standard Base64 is that the extra two chars;
      * "+" and "/" have been exchanged for the more url-friendly "-" and "*",
      * and the resulting string is not padded with = as required by the spec
      * (rfc 2045).
-     * 
+     *
      * Parts of code Copyright (c) 2003, Sverre H. Huseby
      * &lt;shh@thathost.com&gt;
-     * 
+     *
      * @param bytes
      *            the data to convert
      * @return the encoded version of the input
@@ -167,7 +168,7 @@ public class RandomId {
     /**
      * Takes a long value (64 bit) and returns it as an eight element byte
      * array.
-     * 
+     *
      * @param in
      *            the long value to be converted
      * @return a byte array representation of the long value given as input
