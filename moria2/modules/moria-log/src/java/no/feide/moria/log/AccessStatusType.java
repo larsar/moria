@@ -60,4 +60,12 @@ public final class AccessStatusType implements Serializable {
     /** Access log type used to indicate that the service failed to authenticate itself. */
     public static final AccessStatusType BAD_SERVICE_CREDENTIALS = new AccessStatusType("BAD SERVICE CREDENTIALS");
 
+    /** Access log type used to indicate that the service requests illegal operations. */
+    public static final AccessStatusType OPERATIONS_NOT_PERMITTED = new AccessStatusType("OPERATIONS NOT PERMITTED");
+
+    /** Access log type used to indicate that the service requests illegal attributes. */
+    public static final AccessStatusType ATTRIBUTES_ACCESS_DENIED = new AccessStatusType("ATTRIBUTES ACCESS DENIED");
+
+    /** Access log type used to indicate that the service requests illegal subsystems. */
+    public static final AccessStatusType SUBSYSTEM_ACCESS_DENIED  = new AccessStatusType("SUBSYSTEM ACCESS DENIED");
 }
