@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -80,7 +79,7 @@ public class ConfigurationManager {
     /**
      * Name of the Configuration module, used in configuration properties.
      */
-    public static final String MODULE_CM = "cm";
+    public static final String MODULE_CM = "base";
 
     /**
      * Name of the Web module, used in configuration properties.
@@ -95,7 +94,7 @@ public class ConfigurationManager {
     /**
      * Attribute name prefix for file name properties
      */
-    private static final String PROPS_FILE_PREFIX = "no.feide.moria.configuration.";
+    private static final String PROPS_PREFIX = "no.feide.moria.configuration.";
 
     /**
      * List of the modules that have configuration to watch
@@ -123,7 +122,12 @@ public class ConfigurationManager {
 
         /* Read configuration manager properties file */
         Properties cmProps = new Properties();
-        String cmPropsFile = System.getProperty(PROPS_FILE_PREFIX + MODULE_CM);
+        String cmPropsFile = System.getProperty(PROPS_PREFIX + MODULE_CM);
+        String filePrefix  = new File(cmPropsFile).getParent()+"/";
+
+        if (cmPropsFile == null || cmPropsFile.equals("")) {
+            throw new BaseConfigException("System property '"+PROPS_PREFIX+MODULE_CM+"' must be a non-empty string.");
+        }
 
         /* Read configuration manager's properties file */
         try {
@@ -160,10 +164,10 @@ public class ConfigurationManager {
         /* Create listener for every module config file */
         for (int i = 0; i < NEEDS_LISTENER.length; i++) {
             String module = NEEDS_LISTENER[i];
-            String fileName = cmProps.getProperty(PROPS_FILE_PREFIX + module);
+            String fileName = cmProps.getProperty(PROPS_PREFIX + module);
 
             try {
-                addFileChangeListener(fileName, module, timerDelay);
+                addFileChangeListener(filePrefix+fileName, module, timerDelay);
             } catch (FileNotFoundException e) {
                 // TODO: Log
                 // MessageLogger.logCritical("Configuration file not found: " + fileName, e);
@@ -306,14 +310,6 @@ public class ConfigurationManager {
         }
 
         File file = new File(fileURI);
-        if (!file.exists()) {
-            URL fileURL = this.getClass().getResource(fileURI);
-            if (fileURL != null) {
-                file = new File(fileURL.getFile());
-            } else {
-                throw new FileNotFoundException("File Not Found: " + fileURI);
-            }
-        }
         return file;
     }
 
