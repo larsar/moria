@@ -100,7 +100,7 @@ public class LogoutServlet extends MoriaServlet {
         if (redirectUrl != null && !redirectUrl.equals("")) {
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
             response.setHeader("Location", redirectUrl);
-            log.info("Logout-redirec to: "+redirectUrl);
+            log.info("Logout-redirect to: "+redirectUrl);
             return null;
         }
 
