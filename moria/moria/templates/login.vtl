@@ -139,15 +139,18 @@ $availableLanguages.get($lang)
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
         <td>$expl_data <BR/>
 
-<!--
-$showHideLink<BR/>
-
-
+#if (!$attrNames)
+<a href="$loginURL&showAttrs">$attrs_show</a>
+#else
+$attrs_desc:
+<ul>
 #foreach( $attrName in $attrNames )
-    $attrName<BR/>
+    <li>$attrName<BR/></li>
 #end
--->
-        </td>
+</ul>
+#end
+
+       </td>
       </tr>
       <tr>
         <td>&nbsp;</td>
@@ -156,7 +159,7 @@ $showHideLink<BR/>
       <tr valign="top">
         <td>&nbsp;</td>
         <td>
-	  <a href="http://www.feide.no/moria/doc/user/faq.html">$faq</a><img src="/element/emblemS.png" border="0" valign="middle" alt="FEIDE FAQ" />
+	  <a href="http://www.feide.no/moria/doc/user/faq.html">$faq</a><img src="/element/emblemS.png" border="0" valign="middle" ALT="Arrow" />
 	</td>
       </tr>
     </table>
@@ -164,7 +167,7 @@ $showHideLink<BR/>
 
 #else 
 
-<td><a href="http://www.feide.no/moria/doc/user/faq.html">$faq</a><img src="/element/emblemS.png" border="0" valign="middle" alt="FEIDE FAQ" /></td>
+<td><a href="http://www.feide.no/moria/doc/user/faq.html">$faq</a><img src="/element/emblemS.png" border="0" valign="middle" ALT="Arrow" /></td>
 #end
 
 
