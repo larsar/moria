@@ -265,7 +265,7 @@ public class User {
 				log.severe("Illegal user identifier; missing @: "+domain);
 				throw new BackendException("Illegal user identifier; missing @: "+domain);
 			} 
-			domain = domain.substring(domain.indexOf('@'));
+			domain = domain.substring(domain.indexOf('@')+1);
 			String url = (String)ldapURLs.get(domain);
 			log.info("Matched domain "+domain+" to LDAP URL "+url);
 			env.put(Context.PROVIDER_URL, url);
