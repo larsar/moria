@@ -58,8 +58,7 @@
     <javac srcdir="src"
            debug="true"
            destdir="build/api"
-           includes="no/feide/mellon/*"
-           excludes="no/feide/mellon/servlet/*,no/feide/mellon/filter/*">
+           includes="no/feide/mellon/jaxrpc/Moria.java">
       <classpath>
         <fileset dir="${include_libs}" includes="*.jar"/>
       </classpath>
@@ -171,7 +170,39 @@
           description="Mellon demo: Clean up">
     <delete dir="build/demo"/>
   </target>
+  
+  <!-- Targets to build the command-line Mellon test application. -->
+  <target name="test:prepare"
+          description="Mellon test: Prepare">
+    <mkdir dir="build/test"/>
+    <mkdir dir="dist"/>
+  </target>
+  
+  <target name="test:compile"
+          description="Mellon test: Compile source"
+          depends="test:prepare,jar">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build/test"
+           includes="no/feide/mellon/jaxrpc/test/*">
+      <classpath>
+        <fileset dir="${include_libs}" includes="*.jar"/>
+        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
+      </classpath>
+    </javac>
+  </target>
+  
+  <target name="test:build"
+          description="Mellon test: All steps necessary to build the test application"
+          depends="test:compile"/>
+  
+  <target name="test:clean"
+          description="Mellon test: clean up">
+    <delete dir="build/test"/>
+  </target>
 
+
+  <!-- Target to create the Mellon distribution package. -->
   <target name="zip"
           description="Mellon jars, docs and example code in zip-file."
           depends="jar">
