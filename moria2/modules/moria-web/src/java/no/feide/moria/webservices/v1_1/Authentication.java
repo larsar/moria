@@ -35,6 +35,7 @@ import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.UnknownTicketException;
 import no.feide.moria.log.MessageLogger;
+import no.feide.moria.servlet.RequestUtil;
 
 import org.apache.axis.MessageContext;
 import org.apache.axis.session.Session;
@@ -91,8 +92,10 @@ public final class Authentication implements AuthenticationIF {
 
         if (genericSession instanceof AxisHttpSession) {
             AxisHttpSession axisHttpSession = (AxisHttpSession) genericSession;
-            urlPrefix = ((Properties) axisHttpSession.getRep().getServletContext().getAttribute("no.feide.moria.web.config"))
-                    .getProperty("no.feide.moria.web.login.url_prefix");
+            Properties properties = (Properties) axisHttpSession.getRep().getServletContext().getAttribute(
+                    "no.feide.moria.web.config");
+            urlPrefix = (properties.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?"
+                    + properties.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=");
         }
 
         try {
