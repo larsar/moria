@@ -1,3 +1,24 @@
+/*
+ *
+ *   mod_auth_mellon.c: an authentication apache module
+ *   Copyright © 2003 UNINETT (http://www.uninett.no/)
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ * 
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 
 #include "auth_mellon.h"
 
@@ -284,20 +305,8 @@ static int am_auth_mellon_user(request_rec *r)
         /* first we want to look for the key in the cache of authentications,
          * if it already exists */
         if (key) {
-
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                         "We have a key!");
-
             cache_key = am_cache_genkey(r, key, dir->domain);
-
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                         "Generated cache_key");
-
             ret = am_cache_find(r->server, cache_key);
-
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                         "Did am_cache_find.");
-
             if (ret == -1) {
                 ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
                              "key=%s not in cache", key);
