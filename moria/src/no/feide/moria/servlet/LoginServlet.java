@@ -81,7 +81,8 @@ public class LoginServlet extends VelocityServlet {
      */
     public void destroy() {
         log.finer("destroy()");
-        
+
+        authTimer.cancel();
         sessionTimer.cancel();
     }
    
