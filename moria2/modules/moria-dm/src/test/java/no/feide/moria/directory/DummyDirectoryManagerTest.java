@@ -22,7 +22,7 @@ import junit.framework.TestSuite;
  * JUnit tests for the DirectoryManager class.
  * @author Cato Olsen
  */
-public class DirectoryManagerTest
+public class DummyDirectoryManagerTest
 extends TestCase {
 
     /** Internal representation of the configuration properties. */
@@ -44,7 +44,7 @@ extends TestCase {
      */
     public static Test suite() {
 
-        return new TestSuite(DirectoryManagerTest.class);
+        return new TestSuite(DummyDirectoryManagerTest.class);
     }
 
 
@@ -54,7 +54,7 @@ extends TestCase {
     public void setUp() {
 
         config = new Properties();
-        config.setProperty("directoryConfiguration", "src/test/conf/DirectoryManagerConfiguration.xml");
+        config.setProperty("directoryConfiguration", "src/test/conf/DummyConfiguration.xml");
         goodCredentials = new Credentials("user@some.realm", "password");
 
     }
