@@ -23,6 +23,7 @@ package no.feide.moria.configuration;
 //import no.feide.moria.controller.MoriaController;
 
 import no.feide.moria.log.MessageLogger;
+import no.feide.moria.controller.MoriaController;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -84,6 +85,11 @@ public class ConfigurationManager {
     public static final String MODULE_CM = "cm";
 
     /**
+     * Name of the Web module, used in configuration properties.
+     */
+    public static final String MODULE_WEB = "web";
+
+    /**
      * Attribute name for timer delay
      */
     private static final String TIMER_DELAY = "fileListenerIntervalSeconds";
@@ -96,7 +102,7 @@ public class ConfigurationManager {
     /**
      * List of the modules that have configuration to watch
      */
-    private static final String[] NEEDS_LISTENER = new String[]{MODULE_SM, MODULE_DM, MODULE_AM};
+    private static final String[] NEEDS_LISTENER = new String[]{MODULE_SM, MODULE_DM, MODULE_AM, MODULE_WEB};
 
     /**
      * Initial value of StringBuffer used to read authorization database
@@ -267,7 +273,7 @@ public class ConfigurationManager {
 
         if (props != null) {
             // TODO: Change to MoriaController.setConfig and fix if-test
-            // MoriaController.setConfig(module, props);
+            MoriaController.setConfig(module, props);
         }
     }
 
