@@ -56,7 +56,7 @@ public interface AuthenticationIF extends Remote {
      * A redirect- and html-less login method.  Only to be used in
      * special cases where the client for some reason does not
      * support the standard login procedure.  Inherently insecure as
-     * the service will have knowledge of the clear-text password.
+     * the service will have knowledge of the plaintext password.
      *
      * @param attributes
      *          The attributes the service wants returned on login.
@@ -73,7 +73,7 @@ public interface AuthenticationIF extends Remote {
     /**
      * Gets user attributes.
      *
-     * Called by the service when the user returns after an successful
+     * Called by the service when the user returns after a successful
      * login.
      *
      * @param serviceTicket

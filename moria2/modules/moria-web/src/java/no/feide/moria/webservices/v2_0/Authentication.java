@@ -77,6 +77,22 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Initiates authentication.
+     *
+     * The initial call done by services to start a login attempt.
+     *
+     * @param attributes
+     *          The attributes the service wants returned on login
+     * @param returnURLPrefix
+     *          The prefix of the url the user is to be returned to
+     * @param returnURLPostfix
+     *          The optional postfix of the return url
+     * @param forceInteractiveAuthentication
+     *          Whether or not cookie based authentication (SSO Light)
+     *          should be allowed.
+     * @return The Moria url the client is to be redirected to.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#initiateAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String, boolean)
      */
@@ -115,6 +131,22 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Performs direct non-interactive authentication.
+     *
+     * A redirect- and html-less login method.  Only to be used in
+     * special cases where the client for some reason does not
+     * support the standard login procedure.  Inherently insecure as
+     * the service will have knowledge of the plaintext password.
+     *
+     * @param attributes
+     *          The attributes the service wants returned on login.
+     * @param username
+     *          The user name of the user to be authenticated.
+     * @param password
+     *          The password of the user to be authenticated.
+     * @return Array of attributes as requested.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String)
      */
@@ -148,6 +180,16 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Gets user attributes.
+     *
+     * Called by the service when the user returns after a successful
+     * login.
+     *
+     * @param serviceTicket
+     *          The ticket included in the return request issued by the client.
+     * @return Array of attributes as requested in initiateAuthentication.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#getUserAttributes(java.lang.String)
      */
     public Attribute[] getUserAttributes(final String serviceTicket) throws RemoteException {
@@ -175,6 +217,13 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Verifies the existence of a given user in the underlying directories.
+     *
+     * @param username
+     *          The username to be validated.
+     * @return true If the user is found.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#verifyUserExistence(java.lang.String)
      */
     public boolean verifyUserExistence(final String username) throws RemoteException {
