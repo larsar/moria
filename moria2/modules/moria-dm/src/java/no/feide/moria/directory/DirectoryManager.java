@@ -190,7 +190,7 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        IndexedReference[] references = index.lookup(username);
+        IndexedReference[] references = index.getReferences(username);
         if (references != null) {
 
             // Found at least one reference.
@@ -256,7 +256,7 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        IndexedReference[] references = index.lookup(userCredentials.getUsername());
+        IndexedReference[] references = index.getReferences(userCredentials.getUsername());
         if (references != null) {
 
             // Found at least one reference.
@@ -275,6 +275,24 @@ public class DirectoryManager {
         // Close the backend and return any attributes.
         backend.close();
         return attributes;
+
+    }
+
+
+    /**
+     * Resolve the realm of a given username. Even for usernames on the form
+     * <i>user@realm </i> this method should be used, since it is possible to
+     * retain such a username even when changing one's realm or home
+     * organization.
+     * @param username
+     *            The username to check.
+     * @return The realm, or <code>null</code> if no such realm can be
+     *         resolved.
+     * @see DirectoryManagerIndex#getRealm(String)
+     */
+    public String getRealm(final String username) {
+
+        return index.getRealm(username);
 
     }
 

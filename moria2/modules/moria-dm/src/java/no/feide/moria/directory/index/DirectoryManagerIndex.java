@@ -31,6 +31,16 @@ public interface DirectoryManagerIndex {
      * @return One or more backend references , or <code>null</code> if no
      *         such reference was found.
      */
-    public IndexedReference[] lookup(String id);
+    public IndexedReference[] getReferences(String id);
+
+
+    /**
+     * Return the related realm of a given logical ID, typically a username.
+     * @param id
+     *            The logical ID.
+     * @return The realm, or <code>null</code> if the realm could not be
+     *         resolved.
+     */
+    public String getRealm(String id);
 
 }

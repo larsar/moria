@@ -45,6 +45,13 @@ implements Serializable, DirectoryManagerIndex {
      */
     private HashMap exceptions = new HashMap();
 
+    /**
+     * Internal list of realms for each exception. The list should have the same
+     * keys as <code>exceptions</code>, but the elements of this list give
+     * the explicit realm (as <code>String</code>s) for each exception.
+     */
+    private HashMap realms = new HashMap();
+
 
     /**
      * Checks whether two index instances are equal. <br>
@@ -53,8 +60,8 @@ implements Serializable, DirectoryManagerIndex {
      * <code>String</code> representation as given by <code>toString()</code>.
      * @return <code>true</code> if two <code>SerializableIndex</code>
      *         objects are equal, otherwise <code>false</code>. To instances
-     *         are equal if and only if their lists of associations and
-     *         exceptions are equal.
+     *         are equal if and only if their lists of associations, exceptions
+     *         and realms are equal.
      * @see java.lang.Object#equals(java.lang.Object)
      * @see #toString()
      */
@@ -83,8 +90,10 @@ implements Serializable, DirectoryManagerIndex {
                 return false;
         }
 
-        // Check exceptions; much simple data structure.
+        // Check exceptions and realms; much simple data structure.
         if (!exceptions.equals(other.exceptions))
+            return false;
+        if (!realms.equals(other.realms))
             return false;
 
         // We're okay.
@@ -105,9 +114,9 @@ implements Serializable, DirectoryManagerIndex {
      *            The logical identificator to look up.
      * @return One or more references matching the given identificator, or
      *         <code>null</code> if no such reference was found.
-     * @see DirectoryManagerIndex#lookup(String)
+     * @see DirectoryManagerIndex#getReferences(String)
      */
-    public IndexedReference[] lookup(final String id) {
+    public IndexedReference[] getReferences(final String id) {
 
         // Sanity check.
         if (id == null)
@@ -130,6 +139,32 @@ implements Serializable, DirectoryManagerIndex {
             return null;
         else
             return (IndexedReference[]) newReferences.toArray(new IndexedReference[] {});
+
+    }
+
+
+    /**
+     * Look up which realm a given identificator belongs to.
+     * @param id
+     *            The logical identificator to get realm for.
+     * @return The resolved realm for this identificator, or <code>null</code>
+     *         if no such realm could be found.
+     * @see DirectoryManagerIndex#getRealm(String)
+     */
+    public String getRealm(String id) {
+
+        // Do we have an exception matching this identificator, with an explicit
+        // realm?
+        if (realms.containsKey(id))
+            return (String) realms.get(id);
+
+        // Do we have an association matching this identificator?
+        int i = id.lastIndexOf('@');
+        if ((i > 0) && (associations.containsKey(id.substring(i + 1))))
+            return (String) associations.get(id.substring(i + 1));
+
+        // No exception/realm and no association.
+        return null;
 
     }
 
@@ -191,11 +226,17 @@ implements Serializable, DirectoryManagerIndex {
      *            reference similar to
      *            <code>ldap://some.ldap.server:636/uid=id,dc=search,dc=base</code>.
      *            Cannot be <code>null</code>.
+     * @param realm
+     *            The actual realm of the reference, which may not be given by
+     *            the identificator (on the form <i>user@realm </i>, for
+     *            example). Since moving between realms while keeping an
+     *            unchanged identificator is possible, this must be accounted
+     *            for.
      * @throws IllegalArgumentException
      *             If either <code>id</code> or <code>reference</code> is
      *             <code>null</code>.
      */
-    public void addException(final String id, final String reference) {
+    public void addException(final String id, final String reference, final String realm) {
 
         // Sanity checks.
         if (id == null)
@@ -204,6 +245,7 @@ implements Serializable, DirectoryManagerIndex {
             throw new IllegalArgumentException("Reference cannot be NULL");
 
         exceptions.put(id, reference);
+        realms.put(id, realm);
 
     }
 
