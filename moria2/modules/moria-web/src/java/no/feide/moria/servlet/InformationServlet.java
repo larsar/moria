@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Arrays;
+import java.net.URI;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -131,7 +132,7 @@ public class InformationServlet extends HttpServlet {
                    throw new IllegalStateException();
                }
                SAXParser saxParser = factory.newSAXParser();
-               saxParser.parse(new File(filename), handler);
+               saxParser.parse(new File(new URI(filename)), handler);
                feideattribsMonitor = new FileMonitor(filename);
             } catch (Throwable t) {
                 log.logCritical("Error parsing feideattribs.xml");
