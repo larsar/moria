@@ -1,0 +1,9 @@
+
+LICENSE:  Most of the software here is available under the GPL, but there
+  are several exceptions.  The source code in the files `soapC.c',
+  `soapClient.c' and `stdsoap2.c' are either directly from the gSOAP
+  (http://gsoap2.sf.net/) or generated from tools in that distribution.
+  Here the gSOAP license (LGPL) applies.
+
+INSTALLATION: Please see the HTML documentation in doc/ for installation
+  routines for both the Apache module and the library.
