@@ -18,6 +18,51 @@
 					<Value>value3</Value>
 				</Attribute>										
 			</User>
+			
+			<User name="user1@some.realm" password="password">
+				<Attribute name="eduPersonPrincipalName">
+					<Value>user1@some.realm</Value>
+				</Attribute>	
+				<Attribute name="eduPersonAffiliation">
+					<Value>employee</Value>
+				</Attribute>											
+			</User>	
+			<User name="user2@some.realm" password="password">
+				<Attribute name="eduPersonPrincipalName">
+					<Value>user2@some.realm</Value>
+				</Attribute>	
+				<Attribute name="eduPersonAffiliation">
+					<Value>employee</Value>
+					<Value>student</Value>					
+				</Attribute>											
+			</User>	
+			<User name="user3@some.realm" password="password">
+				<Attribute name="eduPersonPrincipalName">
+					<Value>user3@some.realm</Value>
+				</Attribute>	
+				<Attribute name="eduPersonAffiliation">
+					<Value>student</Value>
+					<Value>staff</Value>					
+				</Attribute>											
+			</User>		
+			<User name="user4@some.realm" password="password">
+				<Attribute name="eduPersonPrincipalName">
+					<Value>user4@some.realm</Value>
+				</Attribute>	
+				<Attribute name="eduPersonAffiliation">
+					<Value>employee</Value>
+					<Value>student</Value>	
+					<Value>staff</Value>									
+				</Attribute>											
+			</User>		
+			<User name="user5@some.realm" password="password">
+				<Attribute name="eduPersonPrincipalName">
+					<Value>user5@some.realm</Value>
+				</Attribute>	
+				<Attribute name="eduPersonAffiliation">
+					<Value>staff</Value>									
+				</Attribute>											
+			</User>											
 		</Dummy>
 	</Backend>
 

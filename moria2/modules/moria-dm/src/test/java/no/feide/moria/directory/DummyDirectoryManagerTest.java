@@ -12,6 +12,7 @@
  */
 package no.feide.moria.directory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -113,7 +114,7 @@ extends TestCase {
     /**
      * Successful authentication with attribute request.
      */
-    public void testGoodAuthenticationWithAttributes() {
+    public void testGoodAuthenticationWithAttributes1() {
 
         // Set configuration properties.
         Properties config = new Properties();
@@ -148,6 +149,48 @@ extends TestCase {
         }
 
     }
+    
+    
+    /**
+     * Successful authentication with another attribute request.
+     */
+    public void testGoodAuthenticationWithAttributes2() {
+
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
+
+        // Requested attributes.
+        final String[] requestedAttributes = {"eduPersonAffiliation"};
+        
+        try {
+
+            // Test successful authentication.
+            dm.setConfig(config);
+            HashMap attributes = dm.authenticate(new Credentials("user4@some.realm", "password"), requestedAttributes);
+
+            // Verify attributes.
+            Assert.assertNotNull("No attributes returned", attributes);
+            Assert.assertEquals("Unexpected number of attributes returned after authentication", requestedAttributes.length, attributes.size());
+            String[] returnedValues = (String[]) attributes.get(requestedAttributes[0]);
+            ArrayList expectedValues = new ArrayList(3);
+            expectedValues.add("employee");
+            expectedValues.add("student");
+            expectedValues.add("staff");
+            Assert.assertEquals("Unexpected number of attribute values returned after authentication", expectedValues.size(), returnedValues.length);
+            for (int i=0; i<returnedValues.length; i++)
+                Assert.assertTrue("Returned unexpected value: "+returnedValues[i], expectedValues.contains(returnedValues[i]));
+            
+
+        } catch (AuthenticationFailedException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected AuthenticationFailedException");
+        } catch (BackendException e) {
+            e.printStackTrace();
+            Assert.fail("Unexpected BackendException");
+        }
+
+    }    
 
 
     /**
