@@ -428,6 +428,8 @@ public final class MoriaController {
      *            the user's userId
      * @param password
      *            the user's password
+     * @param denySSO
+     *            the user's SSO choice 
      * @return a HashMap with two tickets: login and SSO, indexed with
      *         <code>MoriaController.SSO_TICKET</code> and
      *         <code>MoiraController.LOGIN_TICKET</code>
@@ -448,7 +450,7 @@ public final class MoriaController {
      *             If the directory of the user's home organization is
      *             unavailable.
      */
-    public static Map attemptLogin(final String loginTicketId, final String ssoTicketId, final String userId, final String password)
+    public static Map attemptLogin(final String loginTicketId, final String ssoTicketId, final String userId, final String password, final boolean denySSO)
     throws UnknownTicketException, InoperableStateException,
     IllegalInputException, AuthenticationException,
     DirectoryUnavailableException, AuthorizationException {
@@ -499,12 +501,14 @@ public final class MoriaController {
         final String[] requestedAttributes = authnAttempt.getRequestedAttributes();
         final HashSet parsedRequestAttributes = new HashSet();
         boolean appendTGT = false;
+        
+        //TGT is only granted when users use SSO
         for (int i = 0; i < requestedAttributes.length; i++) {
-            if (requestedAttributes[i].equals(TGT_IDENTIFIER)) {
+            if (requestedAttributes[i].equals(TGT_IDENTIFIER) && !denySSO) {
                 appendTGT = true;
-            } else {
-                parsedRequestAttributes.add(requestedAttributes[i]);
-            }
+                } else {
+                    parsedRequestAttributes.add(requestedAttributes[i]);
+                }                            
         }
 
         // Resolve list of cached and requested attributes.
