@@ -80,10 +80,12 @@ public final class AccessStatusType implements Serializable {
     public static final AccessStatusType OPERATIONS_NOT_PERMITTED = new AccessStatusType("OPERATIONS NOT PERMITTED");
 
     /**
-     * Access log type used to indicate that user from a specific userorg is not allowed to use.
-     * this service
+     * Access log type used to indicate that user from a specific userorg is not
+     * allowed to use this service.<br>
+     * <br>
+     * Current value is <code>"USER ORGANIZATION NOT ALLOWED"</code>.
      */
-    public static final AccessStatusType ACCESS_DENIED_USERORG = new AccessStatusType("ACCESS DENIED USERORG");
+    public static final AccessStatusType ACCESS_DENIED_USERORG = new AccessStatusType("USER ORGANIZATION NOT ALLOWED");
 
     /**
      * Access log type used to indicate that the principal is invalid for the requested attributes.
