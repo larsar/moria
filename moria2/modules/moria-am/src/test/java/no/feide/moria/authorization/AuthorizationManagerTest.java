@@ -24,10 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -66,12 +62,17 @@ public class AuthorizationManagerTest extends TestCase {
         operations.add("localAuth");
         operations.add("directAuth");
 
+        HashSet subsystems = new HashSet();
+        subsystems.add("sub1");
+        subsystems.add("sub2");
+
         HashSet affiliation = new HashSet();
         affiliation.add("uninett.no");
         affiliation.add("feide.no");
 
         /* Set configuration */
-        AuthorizationClient authzClient = new AuthorizationClient("test", "testDisplay", "http://moria.sf.net/", "en", "feide.no", affiliation, operations, attributes);
+        AuthorizationClient authzClient = new AuthorizationClient("test", "testDisplay",
+                "http://moria.sf.net/", "en", "feide.no", affiliation, operations, subsystems, attributes);
         authzClients = new HashMap();
         authzClients.put("test", authzClient);
     }
@@ -116,6 +117,12 @@ public class AuthorizationManagerTest extends TestCase {
         operationsElem.addContent(createChildElem("Operation", "localAuth"));
         operationsElem.addContent(createChildElem("Operation", "directAuth"));
         clientElem.addContent(operationsElem);
+
+        /* Subsystems */
+        Element subsystemElem = new Element("Subsystems");
+        subsystemElem.addContent(createChildElem("Subsystem", "sub1"));
+        subsystemElem.addContent(createChildElem("Subsystem", "sub2"));
+        clientElem.addContent(subsystemElem);
 
         /* Affiliation */
         Element affiliationElem = new Element("Affiliation");
@@ -330,8 +337,8 @@ public class AuthorizationManagerTest extends TestCase {
      */
     public void testParseListElem() throws IllegalArgumentException, IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
-        String elementType[] = new String[]{"Operations", "Affiliation"};
-        String childType[] = new String[]{"Operation", "Organization"};
+        String elementType[] = new String[]{"Operations", "Affiliation", "Subsystems"};
+        String childType[] = new String[]{"Operation", "Organization", "Subsystem"};
 
         for (int i = 0; i < elementType.length; i++) {
             Element operationsElem = new Element(elementType[i]);
@@ -410,6 +417,10 @@ public class AuthorizationManagerTest extends TestCase {
         /* Check operations */
         Assert.assertTrue("Operation should  be allowed", client.allowOperations(new String[]{"localAuth", "directAuth"}));
         Assert.assertFalse("Operation should  not be allowed", client.allowOperations(new String[]{"localAuth", "wrongOperation"}));
+
+        /* Check subsystems */
+        Assert.assertTrue("Subsystem should  be allowed", client.allowSubsystems(new String[]{"sub1", "sub2"}));
+        Assert.assertFalse("Subsystem should  not be allowed", client.allowSubsystems(new String[]{"sub1", "wrongSubsystem"}));
 
         /* Check affiliation */
         Assert.assertTrue("Should have affiliation", client.hasAffiliation("uio.no"));

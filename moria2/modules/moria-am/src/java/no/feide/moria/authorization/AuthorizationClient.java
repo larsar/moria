@@ -70,6 +70,11 @@ class AuthorizationClient {
     private HashSet operations;
 
     /**
+     * The subsystems the client can use proxy authentication for
+     */
+    private HashSet subsystems;
+
+    /**
      * Attributes the client can query
      */
     private HashMap attributes = new HashMap();
@@ -86,7 +91,7 @@ class AuthorizationClient {
      * @param operations operations that the service can perform
      * @param attributes attributes the service can access
      */
-    AuthorizationClient(String name, String displayName, String url, String language, String home, HashSet affiliation, HashSet operations, HashMap attributes) {
+    AuthorizationClient(String name, String displayName, String url, String language, String home, HashSet affiliation, HashSet operations, HashSet subsystems, HashMap attributes) {
 
         if (name == null || name.equals("")) {
             String message = "Name must be a non empty string.";
@@ -137,6 +142,13 @@ class AuthorizationClient {
             throw new IllegalArgumentException(message);
         }
 
+        if (subsystems == null) {
+            String message = "Subsystems cannot be null.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
+
         if (attributes == null) {
             String message = "Attribtues cannot be null.";
             // TODO Log
@@ -151,6 +163,7 @@ class AuthorizationClient {
         this.home = home;
         this.affiliation = affiliation;
         this.operations = operations;
+        this.subsystems = subsystems;
         this.attributes = attributes;
     }
 
@@ -251,6 +264,35 @@ class AuthorizationClient {
     }
 
     /**
+     * Returns true if all elements in the requestedOperations array is
+     * represented in the objects operations set.
+     *
+     * @param requestedSubsystems A string array of operation names
+     * @return True if all operations are allowed, else false.
+     */
+    boolean allowSubsystems(String[] requestedSubsystems) {
+
+        if (requestedSubsystems == null) {
+            // TODO: Log
+            throw new IllegalArgumentException("RequestedSubsystems cannot be null");
+        }
+
+        if (requestedSubsystems.length == 0) {
+            return true;
+        }
+
+        for (int i = 0; i < requestedSubsystems.length; i++) {
+            if (!subsystems.contains(requestedSubsystems[i])) {
+                // TODO: Access log
+                // log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Compares object with another, returnes true if all fields are equal.
      *
      * @param object The object to compare with
@@ -261,7 +303,15 @@ class AuthorizationClient {
             return true;
         if (object instanceof AuthorizationClient) {
             AuthorizationClient client = (AuthorizationClient) object;
-            if (client.getName().equals(name) && client.getDisplayName().equals(displayName) && client.getURL().equals(url) && client.getLanguage().equals(language) && client.getHome().equals(home) && client.getAffiliation().equals(affiliation) && client.getOperations().equals(operations) && client.getAttributes().equals(attributes))
+            if (client.getName().equals(name) &&
+                    client.getDisplayName().equals(displayName) &&
+                    client.getURL().equals(url) &&
+                    client.getLanguage().equals(language) &&
+                    client.getHome().equals(home) &&
+                    client.getAffiliation().equals(affiliation) &&
+                    client.getOperations().equals(operations) &&
+                    client.getSubsystems().equals(subsystems) &&
+                    client.getAttributes().equals(attributes))
                 return true;
         }
         return false;
@@ -283,6 +333,7 @@ class AuthorizationClient {
             result = 37 * result + home.hashCode();
             result = 37 * result + affiliation.hashCode();
             result = 37 * result + operations.hashCode();
+            result = 37 * result + subsystems.hashCode();
             result = 37 * result + attributes.hashCode();
             hashCode = result;
         }
@@ -341,6 +392,13 @@ class AuthorizationClient {
      */
     HashSet getOperations() {
         return new HashSet(operations);
+    }
+
+    /**
+     * @return Returns the operations.
+     */
+    HashSet getSubsystems() {
+        return new HashSet(subsystems);
     }
 
     /**

@@ -125,8 +125,9 @@ public class AuthorizationManager {
         if (element == null)
             throw new IllegalArgumentException("Element cannot be null");
 
-        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Organization"))
-            throw new IllegalConfigException("Element must be of type 'Operation' or 'Organization'");
+        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Subsystem") &&
+                !element.getName().equalsIgnoreCase("Organization"))
+            throw new IllegalConfigException("Element must be of type 'Operation', 'Subsystem' or 'Organization'");
 
         if (element.getAttribute("name") == null)
             throw new IllegalConfigException("Element's name attribute must be set.");
@@ -156,8 +157,9 @@ public class AuthorizationManager {
         if (element == null)
             throw new IllegalArgumentException("Element cannot be null.");
 
-        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Affiliation"))
-            throw new IllegalConfigException("Element isn't of type 'Operations' or 'Affiliation'");
+        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") &&
+                !element.getName().equalsIgnoreCase("Affiliation"))
+            throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems' or 'Affiliation'");
 
         /* Create AuthorizationAttribute of all child elements */
         Iterator it = (element.getChildren()).iterator();
@@ -178,7 +180,7 @@ public class AuthorizationManager {
      */
     AuthorizationClient parseClientElem(Element element) throws IllegalConfigException {
         String name, displayName, url, language, home;
-        HashSet oper, affil;
+        HashSet oper, affil, subsys;
         HashMap attrs;
 
         if (element == null)
@@ -195,9 +197,10 @@ public class AuthorizationManager {
 
         attrs = parseAttributesElem(element.getChild("Attributes"));
         oper = parseListElem(element.getChild("Operations"));
+        subsys = parseListElem(element.getChild("Subsystems"));
         affil = parseListElem(element.getChild("Affiliation"));
 
-        return new AuthorizationClient(name, displayName, url, language, home, affil, oper, attrs);
+        return new AuthorizationClient(name, displayName, url, language, home, affil, oper, subsys, attrs);
     }
 
     /**
