@@ -368,21 +368,7 @@ public class MoriaCacheStore implements MoriaStore {
      * @throws IllegalArgumentException if ticket is null
      */
     private void validateTicket(MoriaTicket ticket, int type) throws InvalidTicketException {
-
-        /* Validate arguments */
-        if (ticket == null) {
-            throw new IllegalArgumentException("ticket cannot be null");
-        }
-
-        /* First check that the ticket has the correct type */
-        if (ticket.getTicketType() != type) throw new InvalidTicketException("Ticket has wrong type: " + ticket.getTicketType());
-
-        /*
-         * Then check if it still is valid. We let the dedicated
-         * vacuuming-service take care of removing it at later time, so we just
-         * throw an exception
-         */
-        if (ticket.hasExpired()) throw new InvalidTicketException("Ticket has expired");
+        validateTicket(ticket, new int[]{type});
     }
 
     /**
