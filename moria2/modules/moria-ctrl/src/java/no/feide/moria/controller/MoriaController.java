@@ -651,9 +651,8 @@ public final class MoriaController {
         if (returnURLPostfix == null)
             throw new IllegalInputException("URL postfix cannot be null");
 
-        // Check authorization for this service. Supply null as userorg to delay this
-        // test until later.
-        authorizationCheck(servicePrincipal, attributes, INTERACTIVE_AUTH_OPER, null);
+        // Check authorization for this service.
+        authorizationCheck(servicePrincipal, attributes, INTERACTIVE_AUTH_OPER);
 
         // Validate the URL pre- and postfix.
         final String validationURL = returnURLPrefix + "FakeMoriaID" + "urlPostfix";
@@ -680,77 +679,113 @@ public final class MoriaController {
 
 
     /**
-     * Performs an authorization validation of a service request. If no exception
-     * is thrown, the authorization was successful.
+     * Performs an authorization validation of a service request; can the
+     * service perform the requested operation? If no exception is thrown, the
+     * authorization was successful.
      * @param servicePrincipal
-     *            The principal for the service performing the request.
+     *            The principal for the service performing the request. Must be
+     *            a non-empty string.
      * @param attributes
-     *            The requested attributes.
+     *            The requested attributes, if any.
      * @param operation
-     *            The requested operation.
-     * @param userorg
-     *            The organization the user comes from, or null if unknown.
+     *            The requested operation. Must be a non-empty string.
      * @throws AuthorizationException
-     *             If the authorization failed.
+     *             If the authorization failed, for some reason.
      * @throws IllegalArgumentException
-     *             If servicePrincipal is an empty string or the operation
-     *             is wrong.
+     *             If <code>servicePrincipal</code> is an empty string, or
+     *             <code>operation</code> is unknown or <code>null</code>.
      */
-    private static void authorizationCheck(final String servicePrincipal, final String[] attributes, final String operation, final String userorg)
+    private static void authorizationCheck(final String servicePrincipal, final String[] attributes, final String operation)
     throws AuthorizationException {
 
+        // Sanity checks.
+        if (servicePrincipal == null || servicePrincipal == "")
+            throw new IllegalArgumentException("Service principal must be a non-empty string");
+        if (operation == null || operation.length() == 0)
+            throw new IllegalArgumentException("Operation must be a non-empty string");
+
+        // Set status type, in case something has to be logged.
         final AccessStatusType statusType;
-
-        /* Validate arguments */
-        if (servicePrincipal == null || servicePrincipal == "") {
-            throw new IllegalArgumentException("'servicePrincipal' must be a non-empty string.");
-        }
-
-        /* Set logging status type */
-        if (operation == DIRECT_AUTH_OPER) {
+        if (operation == DIRECT_AUTH_OPER)
             statusType = AccessStatusType.ACCESS_DENIED_DIRECT_AUTH;
-        } else if (operation.equals(INTERACTIVE_AUTH_OPER)) {
+        else if (operation.equals(INTERACTIVE_AUTH_OPER))
             statusType = AccessStatusType.ACCESS_DENIED_INITIATE_AUTH;
-        } else if (operation.equals(PROXY_AUTH_OPER)) {
+        else if (operation.equals(PROXY_AUTH_OPER))
             statusType = AccessStatusType.ACCESS_DENIED_PROXY_AUTH;
-        } else if (operation.equals(VERIFY_USER_EXISTENCE_OPER)) {
+        else if (operation.equals(VERIFY_USER_EXISTENCE_OPER))
             statusType = AccessStatusType.ACCESS_DENIED_VERIFY_USER_EXISTENCE;
-        } else {
-            throw new IllegalArgumentException("Wrong operation type: " + operation);
-        }
+        else
+            throw new IllegalArgumentException("Unknown operation '" + operation + "' attempted");
 
         try {
-            /* Operations */
+            
+            // Check operations.
             if (!authzManager.allowOperations(servicePrincipal, new String[] {operation})) {
                 accessLogger.logService(statusType, servicePrincipal, null, null);
                 messageLogger.logInfo("Service '" + servicePrincipal + "' tried to perform '" + operation
                         + "', but can only do '" + authzManager.getOperations(servicePrincipal));
-                throw new AuthorizationException("Access to the requested operation is denied.");
+                throw new AuthorizationException("Access to the requested operation is denied");
             }
 
-            /* Attributes */
+            // Check attributes.
             if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
                 accessLogger.logService(statusType, servicePrincipal, null, null);
                 messageLogger.logInfo("Service '" + servicePrincipal + "' tried to access '"
                         + new HashSet(Arrays.asList(attributes)) + "', but have only access to '"
                         + authzManager.getAttributes(servicePrincipal));
-                throw new AuthorizationException("Access to the requested attributes is denied.");
+                throw new AuthorizationException("Access to the requested attribute(s) is denied");
             }
 
-            /* Userorg */
-            if (userorg != null && !authzManager.allowUserorg(servicePrincipal, userorg)) {
-                accessLogger.logService(statusType, servicePrincipal, null, null);
-                //FIXME - this should be fixed to something more specific for the organization-check
-                messageLogger.logInfo("Service '" + servicePrincipal + "' tried to access '"
-                        + new HashSet(Arrays.asList(attributes)) + "', but have only access to '"
-                        + authzManager.getAttributes(servicePrincipal));
-                throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");
-            }
 
         } catch (UnknownServicePrincipalException e) {
+            
+            // Unknown service.
             messageLogger.logWarn("UnknownServicePrincipalException caught during authorizationCheck, "
                                   + "service probably not configured in authorization database.", e);
-            throw new AuthorizationException("Authorization failed for: " + servicePrincipal);
+            throw new AuthorizationException("Authorization failed for service '" + servicePrincipal + "'");
+            
+        }
+    }
+
+
+    /**
+     * Checks whether the user's organization is allowed to use the service in
+     * question. If no exception is thrown, this is allowed.
+     * @param servicePrincipal
+     *            The principal for the service performing the request.
+     * @param userorg
+     *            The organization the user comes from. Must be a non-empty
+     *            string.
+     * @throws AuthorizationException
+     *             If the user is not allowed to use this service.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is an empty string.
+     */
+    private static void organizationCheck(final String servicePrincipal, final String userOrganization)
+    throws AuthorizationException {
+        
+        // Sanity check.
+        if (servicePrincipal == null || servicePrincipal == "")
+            throw new IllegalArgumentException("Service principal must be a non-empty string");
+    
+        try {
+    
+            // Check whether the service is accessible for users from this user's organization. 
+            if (userOrganization != null && !authzManager.allowUserorg(servicePrincipal, userOrganization)) {
+                
+                // Access denied.
+                accessLogger.logService(AccessStatusType.ACCESS_DENIED_USERORG, servicePrincipal, null, null);
+                messageLogger.logInfo("Access to the service '" + servicePrincipal + "' is denied for the organization '" + userOrganization + "'");
+                throw new AuthorizationException("Access to the service '" + servicePrincipal + "' is denied for the organization '" + userOrganization + "'");
+                
+            }
+    
+        } catch (UnknownServicePrincipalException e) {
+            
+            // Unknown service.
+            messageLogger.logWarn("Unknown service '" + servicePrincipal + "'"); 
+            throw new AuthorizationException("Unknown service '" + servicePrincipal + "'");
+            
         }
     }
 
@@ -872,19 +907,23 @@ public final class MoriaController {
      * @param password
      *            The user's password.
      * @param servicePrincipal
-     *            The principal of the calling service.
-     * @return Map containing user attributes in strings or string arrays.
+     *            The principal (read: username) of the calling service.
+     * @return Map containing user attributes with <code>String</code>
+     *         (attribute name) as key and <code>String[]</code> (user
+     *         attributes) as value.
      * @throws AuthorizationException
-     *             If the service is not allowed to perform this operation.
+     *             If the service is not allowed to perform this operation, or
+     *             if the user's organization does not allow the use of this
+     *             service.
      * @throws IllegalInputException
-     *             If <code>requestedAttributes</code> is null, or
-     *             <code>userId</code> is null/empty, or <code>password</code>
-     *             is null/empty, or <code>servicePrincipal</code> is
-     *             null/empty.
+     *             If <code>requestedAttributes</code> is <code>null</code>, or
+     *             <code>userId</code>, <code>password</code>, or
+     *             <code>servicePrincipal</code> is <code>null</code> or an
+     *             empty string.
      * @throws InoperableStateException
-     *             If Moria is not ready for use.
+     *             If Moria is not currently ready for use.
      * @throws AuthenticationException
-     *             If the authentication failed due to bad credentials.
+     *             If the authentication failed due to bad user credentials.
      * @throws DirectoryUnavailableException
      *             If directory of the user's home organization is unavailable.
      */
@@ -894,22 +933,24 @@ public final class MoriaController {
     InoperableStateException, AuthenticationException,
     DirectoryUnavailableException {
 
-        /* Check controller state */
+        // Check controller state.
         if (!ready) { throw new InoperableStateException(NOT_READY); }
 
-        /* Validate arguments */
-        if (requestedAttributes == null) { throw new IllegalInputException("Attributes cannot be null"); }
-        if (userId == null || userId.equals("")) { throw new IllegalInputException("UserId must be a non-empty string"); }
-        if (password == null || password.equals("")) { throw new IllegalInputException("password must be a non-empty string"); }
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalInputException("servicePrincipal must be a non-empty string");
-        }
+        // Sanity checks.
+        if (requestedAttributes == null)
+            throw new IllegalInputException("Attributes cannot be null");
+        if (userId == null || userId.equals("")) 
+            throw new IllegalInputException("Username must be a non-empty string");
+        if (password == null || password.equals("")) 
+            throw new IllegalInputException("User password must be a non-empty string");
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalInputException("Service principal must be a non-empty string");
 
-        //TODO doc and test later when the getUserOrg method is fixed
-        String org = getUserOrg(userId);
-
-        /* Authorize service */
-        authorizationCheck(servicePrincipal, requestedAttributes, DIRECT_AUTH_OPER, org);
+        // Can the service perform this operation?
+        authorizationCheck(servicePrincipal, requestedAttributes, DIRECT_AUTH_OPER);
+        
+        // Does the user's organization allow this service?
+        organizationCheck(servicePrincipal, getUserOrg(userId));
 
         /* Authenticate */
         final HashMap attributes;
@@ -943,13 +984,16 @@ public final class MoriaController {
      *         (attribute name) as key and <code>String[]</code> (user
      *         attributes) as value.
      * @throws AuthorizationException
-     *             If the service is not allowed to perform this operation.
+     *             If the service is not allowed to perform this operation, or
+     *             if the user's organization does not allow the use of this
+     *             service.
      * @throws IllegalInputException
      *             If <code>requestedAttributes</code> is null, or
-     *             <code>proxyTicketId</code> is null/empty, or
-     *             <code>servicePrincipal</code> is null/empty.
+     *             <code>proxyTicketId</code> or
+     *             <code>servicePrincipal</code> is <code>null</code> or an 
+     *             empty string.
      * @throws InoperableStateException
-     *             If the controller is not ready to use.
+     *             If the controller is not currently ready to use.
      * @throws UnknownTicketException
      *             If the proxy ticket is invalid or does not exist.
      */
@@ -957,38 +1001,56 @@ public final class MoriaController {
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, UnknownTicketException {
 
-        /* Check controller state */
+        // Check controller state.
         if (!ready) { throw new InoperableStateException(NOT_READY); }
 
-        /* Validate arguments */
-        if (requestedAttributes == null) { throw new IllegalInputException("'requestedAttributes' cannot be null"); }
-        if (proxyTicketId == null || proxyTicketId.equals("")) { throw new IllegalInputException("'proxyTicket' must be a non-empty string."); }
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalInputException("'servicePrincipal' must be a non-empty string.");
-        }
+        // Sanity checks.
+        if (requestedAttributes == null)
+            throw new IllegalInputException("Requested attributes cannot be null");
+        if (proxyTicketId == null || proxyTicketId.equals("")) 
+            throw new IllegalInputException("'proxyTicket' must be a non-empty string.");
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalInputException("Service principal must be a non-empty string.");
 
-        /* Check that attributes are cached */
+        // Check service authorization.
+        authorizationCheck(servicePrincipal, requestedAttributes, PROXY_AUTH_OPER);
+        
+        // Retrieve cached attributes.
         final HashMap result = new HashMap();
         final HashMap userData;
         final HashSet cachedAttributes = authzManager.getCachableAttributes();
 
         try {
-            final String userorg = store.getTicketUserorg(proxyTicketId, MoriaTicketType.PROXY_TICKET);
-            if (userorg == null) throw new InvalidTicketException("Userorg is not set in ticket");
-            authorizationCheck(servicePrincipal, requestedAttributes,
-                    PROXY_AUTH_OPER, userorg);
+            
+            // Chech whether the user's organization allows this service.
+            final String userOrg = store.getTicketUserorg(proxyTicketId, MoriaTicketType.PROXY_TICKET);
+            if (userOrg == null)
+                throw new InvalidTicketException("User organization is not set in ticket");
+            organizationCheck(servicePrincipal, userOrg);
+            
+            // Read user data.
             userData = store.getUserData(proxyTicketId, servicePrincipal).getAttributes();
+            
         } catch (InvalidTicketException e) {
+            
+            // Invalid ticket.
             accessLogger.logService(AccessStatusType.INVALID_PROXY_TICKET, servicePrincipal, proxyTicketId, null);
             messageLogger.logWarn(CAUGHT_INVALID_TICKET, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
+            
         } catch (NonExistentTicketException e) {
+            
+            // Non-existent ticket.
             accessLogger.logService(AccessStatusType.NONEXISTENT_PROXY_TICKET, servicePrincipal, proxyTicketId, null);
             messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
+            
         } catch (MoriaStoreException e) {
+            
+            // Store problem.
             messageLogger.logCritical(CAUGHT_STORE, e);
             throw new InoperableStateException(STORE_DOWN);
+            
         }
 
         /* Get requested, cached attributes */
@@ -1024,13 +1086,15 @@ public final class MoriaController {
      * @return A <code>String</code> containing the proxy ticket.
      * @throws AuthorizationException
      *             If the requesting service is not allowed to perform the
-     *             operation.
+     *             operation, or if the user's organization does not allow the
+     *             use of this service.
      * @throws IllegalInputException
      *             If <code>ticketGrantingTicket</code>,
      *             <code>proxyServicePrincipal</code> or
-     *             <code>servicePrincipal</code> is null/empty.
+     *             <code>servicePrincipal</code> is <code>null</code> or an
+     *             empty string.
      * @throws InoperableStateException
-     *             If Moria is not ready for use.
+     *             If Moria is not currently ready for use.
      * @throws UnknownTicketException
      *             If the <code>ticketGrantingTicket</code> is invalid or does
      *             not exist, or <code>userorg</code> is not set in ticket.
@@ -1039,29 +1103,32 @@ public final class MoriaController {
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, UnknownTicketException {
 
-        /* Check controller state */
-        if (!ready) { throw new InoperableStateException(NOT_READY); }
+        // Check controller state.
+        if (!ready) 
+            throw new InoperableStateException(NOT_READY);
 
-        /* Validate arguments */
-        if (ticketGrantingTicket == null || ticketGrantingTicket.equals("")) {
-            throw new IllegalInputException("'ticketGrantingTicket' must be a non-empty string.");
-        }
-        if (proxyServicePrincipal == null || proxyServicePrincipal.equals("")) {
-            throw new IllegalInputException("'proxyServicePrincipal' must be a non-empty string.");
-        }
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalInputException("'servicePrincipal' must be a non-empty string.");
-        }
+        // Sanity checks.
+        if (ticketGrantingTicket == null || ticketGrantingTicket.equals(""))
+            throw new IllegalInputException("Ticket granting ticket must be a non-empty string");
+        if (proxyServicePrincipal == null || proxyServicePrincipal.equals(""))
+            throw new IllegalInputException("Proxy service principal must be a non-empty string.");
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalInputException("Service principal must be a non-empty string");
 
+        // Is this service allowed to create proxy tickets?
+        authorizationCheck(servicePrincipal, new String[] {}, PROXY_AUTH_OPER);        
+        
         /* Return proxyTicket */
         final String proxyTicketId;
         try {
-            final String userorg = store.getTicketUserorg(ticketGrantingTicket,
+            
+            // Check whether user's organization allows the use of this service.
+            final String userOrg = store.getTicketUserorg(ticketGrantingTicket,
                                                           MoriaTicketType.TICKET_GRANTING_TICKET);
-            if (userorg == null) throw new UnknownTicketException("Userorg is not set in ticket");
+            if (userOrg == null)
+                throw new UnknownTicketException("User organization is not set in ticket");
+            organizationCheck(servicePrincipal, userOrg);
 
-            /* Authorize creation of proxy ticket */
-            authorizationCheck(servicePrincipal, new String[] {}, PROXY_AUTH_OPER, userorg);
             try {
                 if (!authzManager.getSubsystems(servicePrincipal).contains(proxyServicePrincipal)) {
                     accessLogger.logService(AccessStatusType.PROXY_TICKET_GENERATION_DENIED_UNAUTHORIZED,
@@ -1099,15 +1166,17 @@ public final class MoriaController {
      *            The username to verify.
      * @param servicePrincipal
      *            The principal of the requesting service.
-     * @return true if the user exists, else false.
+     * @return <code>true</code> if the user exists, otherwise
+     *         <code>false</code>.
      * @throws AuthorizationException
      *             If the requesting service is not allowed to perform the
-     *             operation.
+     *             operation, or if the user's organization does not allow the
+     *             use of this service.
      * @throws IllegalInputException
      *             If <code>userId</code> or <code>servicePrincipal</code>
-     *             is null or empty.
+     *             is <code>null</code> or an empty string.
      * @throws InoperableStateException
-     *             If the controller is not ready to use.
+     *             If the controller is not currently ready to use.
      * @throws DirectoryUnavailableException
      *             If the directory for the user is not available.
      */
@@ -1115,25 +1184,25 @@ public final class MoriaController {
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, DirectoryUnavailableException {
 
-        /* Check controller state */
+        // Check controller state.
         if (!ready) { throw new InoperableStateException(NOT_READY); }
 
-        /* Validate arguments */
-        if (userId == null || userId.equals("")) { throw new IllegalInputException("'userId' must be non-empty string."); }
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalInputException("'servicePrincipal' must be non-empty string.");
-        }
+        // Sanity checks.
+        if (userId == null || userId.equals("")) 
+            throw new IllegalInputException("Username must be non-empty string");
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalInputException("Service principal must be non-empty string");
+        
+        // Is the service allowed to check for user existence?
+        authorizationCheck(servicePrincipal, new String[] {}, VERIFY_USER_EXISTENCE_OPER);
 
-        String org = null;
-        if (userId.indexOf("@") != -1) {
-            org = userId.substring(userId.indexOf("@") + 1, userId.length());
-        }
-        if (org == null) {
-            throw new AuthorizationException("Userorg is unknown");
-        }
-
-        /* Authorization */
-        authorizationCheck(servicePrincipal, new String[] {}, VERIFY_USER_EXISTENCE_OPER, org);
+        // Does the user's organization allow the use of this service?
+        String userOrganization = null;
+        if (userId.indexOf("@") != -1)
+            userOrganization = userId.substring(userId.indexOf("@") + 1, userId.length());
+        if (userOrganization == null)
+            throw new AuthorizationException("User organization is unknown");
+        organizationCheck(servicePrincipal, userOrganization);
 
         /* Verify user (call DM) */
         final boolean userExistence;
