@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
@@ -46,6 +47,9 @@ public final class Authentication implements AuthenticationIF {
 
     /** Log message for AuthorizationExceptions. */
     private static final String AUTHZ_EX_MSG = "Authorization failed. Throwing RemoteException to service: ";
+
+    /** Log message for AuthenticationExceptions. */
+    private static final String AUTHN_EX_MSG = "Authentication failed. Throwing RemoteException to service: ";
 
     /** Log message for IllegalInputExceptions. */
     private static final String ILLEGAL_INPUT_EX_MSG = "Illegal input. Throwing RemoteException to service: ";
@@ -105,6 +109,9 @@ public final class Authentication implements AuthenticationIF {
             Map returnAttributes = MoriaController.directNonInteractiveAuthentication(attributes, username, password,
                     servicePrincipal);
             return mapToAttributeArray(returnAttributes, null);
+        } catch (AuthenticationException ae) {
+            messageLogger.logWarn(AUTHN_EX_MSG + servicePrincipal, ae);
+            throw new RemoteException(ae.getMessage());
         } catch (AuthorizationException ae) {
             messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
@@ -129,6 +136,9 @@ public final class Authentication implements AuthenticationIF {
         try {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
             return mapToAttributeArray(returnAttributes, serviceTicket);
+        } catch (AuthorizationException ae) {
+            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
+            throw new RemoteException(ae.getMessage());
         } catch (IllegalInputException iie) {
             messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());

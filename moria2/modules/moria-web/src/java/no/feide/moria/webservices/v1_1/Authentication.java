@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
@@ -46,6 +47,9 @@ public final class Authentication implements AuthenticationIF {
 
     /** Log message for AuthorizationExceptions. */
     private static final String AUTHZ_EX_MESSAGE = "Authorization failed. Throwing RemoteException to service: ";
+
+    /** Log message for AuthenticationExceptions. */
+    private static final String AUTHN_EX_MSG = "Authentication failed. Throwing RemoteException to service: ";
 
     /** Log message for MoriaControllerExceptions. */
     private static final String MORIACTRL_EX_MESSAGE = "Exception from MoriaController. Throwing RemoteException to service: ";
@@ -107,6 +111,9 @@ public final class Authentication implements AuthenticationIF {
             return mapToAttributeArray(returnAttributes, null);
         } catch (AuthorizationException ae) {
             messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
+            throw new RemoteException(ae.getMessage());
+        } catch (AuthenticationException ae) {
+            messageLogger.logWarn(AUTHN_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
         } catch (IllegalInputException iie) {
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
@@ -186,6 +193,9 @@ public final class Authentication implements AuthenticationIF {
         try {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
             return mapToAttributeArray(returnAttributes, serviceTicket);
+        } catch (AuthorizationException ae) {
+            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
+            throw new RemoteException(ae.getMessage());
         } catch (IllegalInputException iie) {
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
