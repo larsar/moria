@@ -17,6 +17,8 @@
 
 package no.feide.moria.servlet;
 
+// FUCKFACE: test
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -358,7 +360,7 @@ public class LoginServlet extends MoriaServlet {
                             sessionStore.deleteSession(existingSession);
  //                           stats.decStatsCounter(wsID, "activeSessions");
                             stats.decreaseCounter("sessionsSSOActive");
-                            session.unlock(existingSession.getUser());
+                            session.unlock(existingSession.getBackendInstance());
                             redirectToWebService(response, session);
                             return null;
                         }
@@ -473,7 +475,11 @@ public class LoginServlet extends MoriaServlet {
             
             log.severe("BackendException caught and re-thrown as ServletException\n"+e);
 			//return genLoginTemplate(request, response, context, null, GENERIC);
-			// TODO: Throw other than BackedException when catching a known exception. 
+			// TODO: Throw other than BackedException when catching a known exception.
+            /**
+             * TODO: Nothing
+             */ 
+            // TODO: Nothing
 			return genLoginTemplate(request, response, context, null, AUTHFAILED);
         } 
 
