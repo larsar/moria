@@ -19,7 +19,7 @@ public final class RandomID {
     private static final byte[] CHAR_64
         = ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
            + "0123456789+/").getBytes();
-    private static final char PAD = '=';
+    private static final char PAD = '#';
 
     /**
      * Encodes a byte array according to the rules of BASE64.
