@@ -159,6 +159,7 @@ public class SessionStore {
      * @return The resource return URL, which may be an empty string
      *         if not set. <code>null</code> if not authenticated.
      */
+    // Should not be here. Belongs in Session
     public String verifySession(String sessionID)
     throws SessionException {
         log.finer("verifySession(String)");
@@ -181,6 +182,7 @@ public class SessionStore {
      * @return The previously requested attributes, or <code>null</code>
      *         if the session doesn't exist.
      */
+    // Should not be here. Belongs in Session
     public UserAttribute[] getAttributes(String sessionID)
     throws SessionException {
         log.finer("verifySession(String)");
@@ -195,3 +197,5 @@ public class SessionStore {
     }
 
 }
+
+
