@@ -44,6 +44,7 @@
       </fileset>
     </copy>
     <copy file="build.moria/WEB-INF/classes/login_nb.properties" tofile="build.moria/WEB-INF/classes/login_no.properties"/>
+    <copy file="build.moria/WEB-INF/classes/logout_nb.properties" tofile="build.moria/WEB-INF/classes/logout_no.properties"/>
     <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
     <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
     <delete file="build.moria/WEB-INF/classes/moria.properties"/>
