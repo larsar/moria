@@ -29,46 +29,70 @@ public class SessionStore {
     
     /**
      * Constructor. Kicks off the session store maintenance thread, to handle
-     * session timeouts.
+     * session timeouts. Will read the Moria property file named in the
+     * system property <code>no.feide.moria.config.file</code>, or
+     * <code>/moria.properties</code> if the property is not set.
+     * @throws SessionException If the properties file doesn't include the
+     *                          properties
+     *                          <code>no.feide.moria.SessionStoreInitMapSize</code>
+     *                          or
+     *                          code>no.feide.moria.SessionStoreMapLoadFactor</code>.
+     *                          Also thrown if a
+     *                          <code>FileNotFoundException</code> or
+     *                          <code>IOException</code> is caught while
+     *                          reading the property file.
      */
-    private SessionStore() {
+    private SessionStore()
+    throws SessionException {
         log.finer("SessionStore()");
-        log.info("Read properties");
+
         // Read properties.
         try {
             if (System.getProperty("no.feide.moria.config.file") == null) {
-                log.fine("no.feide.moria.config.file not set; default is \"/moria.properties\"");
+                log.config("no.feide.moria.config.file not set; default is \"/moria.properties\"");
                 System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
             }
             else {
-                log.fine("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
+                log.config("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
                 System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
             }
         } 
         catch (FileNotFoundException e) {
-            log.severe("FileNotFoundException during system properties import.");
+            log.severe("FileNotFoundException during system properties import");
+            throw new SessionException("FileNotFoundException during system properties import");
         } 
         catch (IOException e) {
-            log.severe("IOException during system properties import.");
+            log.severe("IOException during system properties import");
+            throw new SessionException("IOException during system properties import");
         }
         
-        int initialSize = new Integer(System.getProperty("no.feide.moria.SessionStoreInitMapSize")).intValue();
-        float loadFactor = new Float(System.getProperty("no.feide.moria.SessionStoreMapLoadFactor")).floatValue();
+        // Setting properties, with sanity checks.
+        String s = System.getProperty("no.feide.moria.SessionStoreInitMapSize");
+        if (s == null) {
+            log.severe("Missing required system property: no.feide.moria.SessionStoreInitMapSize");
+            throw new SessionException("Missing required system property: no.feide.moria.SessionStoreInitMapSize");
+        }
+        int initialSize = new Integer(s).intValue();
+        s = System.getProperty("no.feide.moria.SessionStoreMapLoadFactor");
+        if (s == null) {
+            log.severe("Missing required system property: no.feide.moria.SessionStoreMapLoadFactor");
+            throw new SessionException("Missing required system property: no.feide.moria.SessionStoreMapLoadFactor");
+        }
+        float loadFactor = new Float(s).floatValue();
         
         sessions = Collections.synchronizedMap(new HashMap(initialSize, loadFactor));
-        log.info("Session register initialized. Initial size="+initialSize+" loadFactor="+loadFactor);
-
+        log.config("Session register initialized. Initial size="+initialSize+" loadFactor="+loadFactor);
     }
     
     
-    
     /** 
-     * Returns a pointer to the SessionStore singelton object.
+     * Returns a pointer to the SessionStore singleton object.
      * @return SessionStore
      * @throws SessionException If an error occurs creating the singleton
-     *                               instance.
+     *                          instance.
      */
-    public static SessionStore getInstance() {
+    public static SessionStore getInstance() 
+    throws SessionException {
         log.finer("getInstance()");
         
         if (me == null) 
