@@ -127,11 +127,14 @@ public class InformationServlet extends HttpServlet {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             try {
                String filename = (String) config.get(RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML);
+               if ((filename == null) || (filename.equals(""))) {
+                   throw new IllegalStateException("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+               }
                SAXParser saxParser = factory.newSAXParser();
                saxParser.parse(new File(filename), handler);
                feideattribsMonitor = new FileMonitor(filename);
             } catch (Throwable t) {
-              log.logCritical("Error parsing feideattribs.xml");
+              throw new IllegalStateException("Error parsing feideattribs.xml");
             } finally {
               feideattribsStored = handler.getAttribs();
             }
@@ -174,7 +177,6 @@ public class InformationServlet extends HttpServlet {
             AttribsData adata = (AttribsData) attribsArray[i];
             String key2 = (String) adata.getData("key");
             boolean hasuserdata = userData.containsKey(key2);
-            // Vector userdata = (Vector) userData.get(key2);
             String[] userdata = (String[]) userData.get(key2);
 
             String description = adata.getData("description");
@@ -298,8 +300,13 @@ public class InformationServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
 
         request.setAttribute("bundle", bundle);
-        request.setAttribute("urlPrefix", config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX));
-
+        String urlPrefix = (String)config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX);
+        if ((urlPrefix == null) || (urlPrefix.equals(""))) {
+            throw new IllegalStateException("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+        } else {
+            request.setAttribute("urlPrefix", urlPrefix);
+        }
+       
         // update cookie if language has changed
         boolean changelanguage = false;
         if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
