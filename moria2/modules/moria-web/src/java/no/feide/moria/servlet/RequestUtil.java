@@ -515,11 +515,8 @@ public final class RequestUtil {
         // Return cookie value, if set.
         String value = null;
         for (int i = 0; i < cookies.length; i++) {
-            log.logInfo("Cookie name: "+cookies[i].getName());
-            if (cookies[i].getName().equals(cookieName)) {
-                log.logInfo("Found cookie; value is "+ cookies[i].getValue());
+            if (cookies[i].getName().equals(cookieName))
                 value = cookies[i].getValue();
-            }
         }
         return value;
 
