@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD Simplified DocBook XML V1.0//EN"
+"http://www.oasis-open.org/docbook/xml/simple/1.0/sdocbook.dtd">
+<article>
+  <title>Moria Build and Deploy HOWTO</title>
+
+  <abstract>
+    <para>This document contains a brief step-by-step description on how to
+    build and configure your own Moria installation.</para>
+  </abstract>
+
+  <section>
+    <title>Requirements</title>
+
+    <section>
+      <title>Hardware</title>
+
+      <para>Basically, you need a system (or systems) capable of running
+      Tomcat<footnote><para>Tomcat 4.1.24, <ulink url="???">http://jakarta.apache.org/tomcat/</ulink></para></footnote>
+      and an LDAP server<footnote><para>OpenLDAP, <ulink url="???">http://www.openldap.org/</ulink></para></footnote>.</para>
+    </section>
+
+    <section>
+      <title>Software</title>
+
+      <para>To run Moria you need at least the software mentioned above:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Tomcat 4.1.24, <ulink url="???">http://jakarta.apache.org/tomcat/</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>An LDAP server; OpenLDAP 2.1 or similar, <ulink url="???">http://www.openldap.org/</ulink>.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>In addition, you need the following to actually build Moria:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>JDK 1.4.1; <ulink url="???">http://java.sun.com/j2se/</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>Java Web Services Developer Pack 1.1; <ulink url="???">http://java.sun.com/webservices/webservicespack.html</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>Ant 1.5.1; <ulink url="???">http://ant.apache.org/</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>Velocity 1.4; <ulink url="???">http://jakarta.apache.org/velocity/</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>Java UUID Generator 1.0.1; <ulink url="???">http://www.doomdark.org/doomdark/proj/jug/</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>com.oreilly.servlet 05Nov2002; <ulink url="???">http://www.servlets.com/cos/index.html</ulink>.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section>
+    <title>Preparations</title>
+
+    <section>
+      <title>Anonymous CVS</title>
+
+      <para>The Moria source is available by anonymous CVS at SourceForge.
+      Follow the instructions at <ulink url="???">http://moria.sourceforge.net/</ulink>.</para>
+    </section>
+
+    <section>
+      <title>Required Libraries</title>
+
+      <para>Note that the CVS repository does not contain any of the
+      third-party libraries required to compile Moria. To add the required
+      libraries, do the following:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>If MORIA_ROOT is the path to where you checked out the Moria
+          source, create the directories</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>MORIA_ROOT/lib</para>
+            </listitem>
+
+            <listitem>
+              <para>MORIA_ROOT/moria/lib</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+
+        <listitem>
+          <para>In MORIA_ROOT/lib, add the following JAR files:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><filename>activation.jar</filename>, from JWSDP 1.1.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>dom4j.jar</filename>; from JWSDP 1.1 (SAAJ
+              1.1.1).</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>jax-qname.jar</filename>, from JWSDP 1.1.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>jaxrpc-api.jar</filename>; from JWSDP 1.1
+              (JAX-RPC 1.0.3).</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>jaxrpc-ri.jar</filename>; from JWSDP 1.1
+              (JAX-RPC 1.0.3).</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>mail.jar</filename>, from JWSDP 1.1.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>saaj-api.jar</filename>; from JWSDP 1.1 (SAAJ
+              1.1.1).</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>saaj-ri.jar</filename>; from JWSDP 1.1 (SAAJ
+              1.1.1).</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>servlet.jar</filename>; from JWSDP 1.1.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+
+        <listitem>
+          <para>In MORIA_ROOT/moria/lib, add the following JAR files:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><filename>commons-logging.jar</filename>, from JWSDP 1.1.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>cos.jar</filename>; from com.oreilly.servlet
+              05Nov2002.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>dom.jar</filename>; from JWSDP 1.1 (JAXP 1.2.2).</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>jug-1.0.1.jar</filename>; from Java UUID
+              Generator 1.0.1.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>velocity-1.4-dev.jar</filename>; from Velocity
+              1.4.</para>
+            </listitem>
+
+            <listitem>
+              <para><filename>xercesImpl.jar</filename>; from JWSDP 1.1 (JAXP
+              1.2.2).</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </orderedlist>
+    </section>
+
+    <section>
+      <title>Build Properties</title>
+
+      <para>In order for Ant to know where to find the JWSDP tools, you need
+      to create a file called <filename>build.properties</filename> in your
+      home directory. An example file is:</para>
+
+      <programlisting># Necessary to use the JWSDP tools.
+jwsdp_home=/usr/local/jwsdp
+
+# Settings for development/test deployment (needed to override defaults in MORIA_ROOT/build.properties).
+wsdl_url=https://my.hostname.net:8443/feide-moria/FeideAuthentication?WSDL
+moria_config=/home/username/moria.properties</programlisting>
+
+      <para>In addition, you need to create the file pointed to by the
+      <command>moria_config</command> setting; in the example above, this is
+      <filename>/home/username/moria.properties</filename>. An example file
+      is:</para>
+
+      <programlisting># LDAP configuration
+no.feide.moria.backend.ldap.trustStore=/home/tomcat/moria/conf/moria.truststore
+no.feide.moria.backend.ldap.trustStorePassword=changeit
+no.feide.moria.backend.ldap.url1=ldap://my.hostname.net:389/dc=no
+no.feide.moria.backend.ldap.usernameAttribute=edupersonprincipalname
+
+# URL for login page
+no.feide.moria.LoginURL=https://my.hostname.net:8443/feide-moria/Login
+
+# Number of allowed login attempts.
+no.feide.moria.MaxFailedLogins=10
+
+# Velocity template dir. (Should contain velocity templates and language files.)
+no.feide.moria.servlet.TemplateDir=/home/tomcat/moria/webapps/feide-moria/WEB-INF/classes/templates
+
+# The user has X seconds to supply username/password
+no.feide.moria.SessionTimeout=300
+
+# The web service has X seconds to retrieve user attributes from Moria
+no.feide.moria.AuthenticatedSessionTimeout=30
+
+# After X minutes an old session cannot be used for SSO
+no.feide.moria.SessionSSOTimeout=120
+
+# Check sessions every X second
+no.feide.moria.SessionTimerDelay=60
+
+# Initial size and load factor of session store. Tweak for optimization.
+no.feide.moria.SessionStoreInitMapSize=1000
+no.feide.moria.SessionStoreMapLoadFactor=0.75
+
+# Authorization configuration file
+no.feide.moria.authorization.authConfigFile=/home/tomcat/moria/conf/ws_authorization_config.xml
+
+# Check authorization config file every X seconds
+no.feide.moria.AuthorizationTimerDelay=10
+
+# The first request has to sleep X seconds while the authorization data-
+# structure is being built.
+no.feide.moria.AuthorizationTimerInitThreadSleep=2
+
+# Velocity log file
+no.feide.moria.VelocityLog=~/moria/logs/velocity.log
+
+# Number of days to remember where the user belongs to (cookie)
+no.feide.moria.servlet.realmCookieValidDays=7
+
+# Number of seconds an authenticated session will wait for its attributes to be read
+no.feide.moria.AuthenticatedSessionTimeout=30
+
+# Organization list
+no.feide.moria.organizationNames=/home/tomcat/moria/conf/organizations.properties
+
+# Default language
+no.feide.moria.defaultLanguage=nb</programlisting>
+
+      <para>Note that in the example above, <command>CATALINA_HOME</command>
+      is set to <filename>/home/tomcat/moria</filename>. Also, the use of
+      search base <filename>dc=no</filename> for <command>no.feide.moria.backend.ldap.url1</command>
+      depends on the actual data structure of your LDAP server.</para>
+
+      <para>You will likely need or want to modify the files
+      <filename>/home/tomcat/moria/conf/ws_authorization_config.xml</filename>
+      and <filename>/home/tomcat/moria/conf/organizations.properties</filename>;
+      a description of this is beyond the scope of this text. We suggest you
+      take a quick look at the default files available from the CVS
+      repository.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Compiling</title>
+
+    <para>To build Moria you do the following from <filename>MORIA_ROOT</filename>:</para>
+
+    <programlisting>$ ant all:clear all:build</programlisting>
+
+    <para>This should result in a file <filename>dist/feide-moria.war</filename>.
+    If you also want to build the Mellon demo servlet, include the target
+    <command>mellon:demo:build</command>, as in</para>
+
+    <programlisting>$ ant all:clear all:build mellon:demo:build</programlisting>
+
+    <para>This should result in a file <filename>dist/feide-mellon-demo.war</filename>.</para>
+  </section>
+
+  <section>
+    <title>Deploying</title>
+
+    <section>
+      <title>Keystores</title>
+
+      <para>To set up trust relationships between the various components you
+      need to configure the various keystores. In Moria, we have chosen to
+      explicitly divide between keystores (containing a component&#39;s own
+      certificate) and truststores (containing trusted certificates).</para>
+
+      <para>First, use <command>keytool</command> to create a keystore
+      containing a self-signed certificate issued to the host where you will
+      deploy Moria. This keystore should be referred to by the Tomcat SSL
+      connector you create when you later deploy the Moria WAR file.</para>
+
+      <para>Next, the Moria certificate created above and import it into the
+      Mellon-side truststore. The default Java truststore is J<filename>AVA_HOME/jre/lib/security/cacerts</filename>.</para>
+
+      <para>Normally you would also set up a certificate for your LDAP server,
+      but since we do not describe a setup using a two-layer backend (one
+      indexing server in front of one or more LDAP servers) we will forgo this
+      point. This also means that the Moria truststore referred to by
+      <command>no.feide.moria.backend.ldap.trustStore</command> in the example
+      file above won&#39;t actually be used.</para>
+    </section>
+
+    <section>
+      <title>WAR Files</title>
+
+      <para>Deploy the Moria WAR file (<filename>MORIA_ROOT/dist/feide-moria.war</filename>)
+      as described in the Tomcat documentation, creating an SSL connector on
+      port 8443 using the Moria keystore from the previous section.</para>
+
+      <para>You may also choose to deploy the Mellon demo servlet; we
+      currently recommend deploying Moria and the Mellon demo servlet on
+      different hosts.</para>
+
+      <para><emphasis>Note that the Mellon demo servlet will generate a log
+      warning message during Tomcat startup; this warning may be safely
+      ignored.</emphasis></para>
+    </section>
+  </section>
+
+  <section>
+    <title>Testing</title>
+
+    <para>To check if your Moria session is on the air, point your browser to
+    <ulink url="???">https://my.hostname.net:8443/feide-moria/FeideAuthentication</ulink>.
+    If asked for a username/password, use <command>demo</command>/<command>demo</command>,
+    and confirm that you really do have the latest version from SourceForge
+    CVS. You should see the web service description page for Moria, including
+    a link to the WSDL specification. Compare the output to that of the
+    official Moria service at <ulink url="???">https://demo:demo@login.feide.no:8443/feide-moria/FeideAuthentication</ulink>.</para>
+
+    <para>If you also deployed the Mellon test servlet, you can do a complete
+    system test by browsing to <ulink url="???">http://another.hostname.net:8080/feide-mellon-demo/Demo</ulink>
+    and logging on using a username/password known from your LDAP server. You
+    should see some simple status output from the demo servlet, and a logout
+    link. Again, compare what you see with the official Mellon test servlet
+    running at <ulink url="???">http://demo.feide.no:8080/feide-mellon-demo/Demo</ulink>.</para>
+  </section>
+
+  <section>
+    <title>Troubleshooting</title>
+
+    <para>This section will be expanded later.</para>
+
+    <para>All troubleshooting should start with the lowest component, the LDAP
+    server. Check the server logs for any activity; if no connection is made
+    from Moria, move to the Tomcat logs and especially look for log entries
+    marked as SEVERE, WARNING and CONFIG.</para>
+
+    <para>Configuring the key- and truststores incorrectly is a common
+    pitfall.</para>
+  </section>
+</article>
