@@ -773,7 +773,7 @@ public class MoriaController {
         }
     }
 
-    public static void invalidateSSOTicket(final String ssoTicketId) throws IllegalInputException {
+    public static void invalidateSSOTicket(final String ssoTicketId) throws IllegalInputException, InoperableStateException {
         // TODO: Implement
     }
 
