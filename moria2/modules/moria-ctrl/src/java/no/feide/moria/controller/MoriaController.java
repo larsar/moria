@@ -515,7 +515,7 @@ public final class MoriaController {
         // Authentication.
         final HashMap fetchedAttributes;
         try {
-            fetchedAttributes = directoryManager.authenticate(new Credentials(userId, password), (String[]) retrieveAttributes.toArray(new String[retrieveAttributes.size()]));
+            fetchedAttributes = directoryManager.authenticate(loginTicketId, new Credentials(userId, password), (String[]) retrieveAttributes.toArray(new String[retrieveAttributes.size()]));
         } catch (AuthenticationFailedException e) {
             accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, loginTicketId, null);
             messageLogger.logDebug("AuthenticationFailedException caught", loginTicketId, e);
@@ -889,7 +889,7 @@ public final class MoriaController {
         /* Authenticate */
         final HashMap attributes;
         try {
-            attributes = directoryManager.authenticate(new Credentials(userId, password), requestedAttributes);
+            attributes = directoryManager.authenticate(null, new Credentials(userId, password), requestedAttributes);
         } catch (AuthenticationFailedException e) {
             accessLogger.logService(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null);
             messageLogger.logInfo("AuthenticationFailedException caught", e);
@@ -1098,7 +1098,7 @@ public final class MoriaController {
         /* Verify user (call DM) */
         final boolean userExistence;
         try {
-            userExistence = directoryManager.userExists(userId);
+            userExistence = directoryManager.userExists(null, userId);
         } catch (BackendException e) {
             messageLogger.logWarn("BackendException caught", e);
             throw new DirectoryUnavailableException();
