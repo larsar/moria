@@ -333,9 +333,9 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * Retrieves the textual content of an xml element.
      *
-     * @param element the element containing the data to be retrieved.
-     * @param trim whether or not to trim whitespace before returing.
-     * @return a concatenated string of the text of the child nodes of the element
+     * @param element The element containing the data to be retrieved.
+     * @param trim Whether or not to trim whitespace before returing.
+     * @return A concatenated string of the text of the child nodes of the element.
      */
     String getElementContent(Element element, boolean trim) {
         NodeList nodes = element.getChildNodes();
@@ -356,12 +356,18 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * Get the region values.
      *
-     * @return array containing the region values
+     * @return Array containing the region values.
      */
     RegionValue[] getRegionValues() {
         return regionValues;
     }
 
+    /**
+     * Get a region value.
+     *
+     * @param fqn Fully quailified name.
+     * @return A region value.
+     */
     RegionValue getRegionValue(String fqn) {
 
         for (int i = 0; i < regionValues.length; i++) {
@@ -377,10 +383,14 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      */
     class RegionValue {
 
+	/** Region name. */
         String regionName;
 
+	/** Time to live. */
         long timeToLive;
 
+	/** String representation.
+	 * @return The string representation. */
         public String toString() {
             return "[" + regionName + ", " + timeToLive + "]";
         }

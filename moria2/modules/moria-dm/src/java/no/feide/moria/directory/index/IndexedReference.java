@@ -25,8 +25,10 @@ package no.feide.moria.directory.index;
  */
 public class IndexedReference {
 
+    /** External references. */
     private final String[] myReferences;
 
+    /** true if this is a fully qualified reference to an external element. */
     private final boolean explicit;
 
 

@@ -97,6 +97,7 @@ extends HttpServlet {
     /** Copy of configuration properties. */
     private Properties config = null;
 
+    /** Required parameters. */
     private String[] REQUIRED_PARAMETERS = {"MASTER_ATTRIBUTE_REQUEST", "SLAVE_ATTRIBUTE_REQUEST", "SERVICE_ENDPOINT", "MASTER_CLIENT_USERNAME", "MASTER_CLIENT_PASSWORD", "SLAVE_CLIENT_USERNAME", "SLAVE_CLIENT_PASSWORD", "ATTRIBUTE_QNAME"};
 
     /**

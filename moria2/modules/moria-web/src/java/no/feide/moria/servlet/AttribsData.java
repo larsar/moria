@@ -38,10 +38,10 @@ import java.util.Comparator;
 
 public class AttribsData implements Comparator {
 
-    /* Used for sorting the attributes */
+    /** Used for sorting the attributes */
     private int idx;
 
-    /* Used for storing all info about a attribute */
+    /** Used for storing all info about a attribute */
     private HashMap hashmap;
 
     /**
