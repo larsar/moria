@@ -30,22 +30,22 @@ public class Credentials {
 
     /**
      * Retrieve the username part of the credentials.
-     * @return The username.
+     * @return A new <code>String</code> containing the user name.
      */
     public String getUsername() {
 
-        return username;
+        return new String(username);
 
     }
 
 
     /**
      * Retrieve the password part of the credentials.
-     * @return The password.
+     * @return A new <code>String</code> containing the password.
      */
     public String getPassword() {
 
-        return password;
+        return new String(password);
 
     }
 
