@@ -8,6 +8,9 @@ import junit.framework.Assert;
 import javax.servlet.http.Cookie;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
+import java.util.Properties;
+import java.util.TreeMap;
+import java.io.IOException;
 
 
 /**
@@ -58,8 +61,8 @@ public class RequestUtilTest extends TestCase {
 
 
         Assert.assertEquals("Should be equal input, normal use", value, RequestUtil.getCookieValue(name, cookies));
-        Assert.assertEquals("Should be equal '', empty cookie", "", RequestUtil.getCookieValue(name, new Cookie[]{}));
-        Assert.assertEquals("Should be equal '', wrong cookie", "", RequestUtil.getCookieValue("dontExist", cookies));
+        Assert.assertEquals("Should be equal '', empty cookie", null, RequestUtil.getCookieValue(name, new Cookie[]{}));
+        Assert.assertEquals("Should be equal '', wrong cookie", null, RequestUtil.getCookieValue("dontExist", cookies));
     }
 
     /**
@@ -262,6 +265,65 @@ public class RequestUtilTest extends TestCase {
                     fail("Element " + i + " differs.");
                 }
             }
+        }
+    }
+
+    /**
+     * Test the organizationNames method.
+     *
+     * @see RequestUtil#organizationNames(java.util.Properties, java.lang.String)
+     * @throws IOException
+     */
+    public void testOrganizationNames() throws IOException {
+        Properties props = new Properties();
+        props.load(this.getClass().getResourceAsStream("/web-test-valid.properties"));
+
+        /* Illegal parameters */
+        try {
+            RequestUtil.organizationNames(null, "en");
+            fail("IllegalArgumentException should be raised, config is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.organizationNames(props, null);
+            fail("IllegalArgumentException should be raised, language is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.organizationNames(props, "");
+            fail("IllegalArgumentException should be raised, language is empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* No config */
+        try {
+            RequestUtil.organizationNames(new Properties(), "en");
+            fail("IllegalStateException should be raised, empty config.");
+        } catch (IllegalStateException success) {
+        }
+
+
+        TreeMap expected = new TreeMap();
+        TreeMap actual;
+        expected.put("University of Oslo", "uio.no");
+        expected.put("UNINETT", "uninett.no");
+
+
+        /* Correct syntax */
+        actual = RequestUtil.organizationNames(props, "en");
+        Assert.assertTrue("TreeMaps doesn't match. Might be mismatch between config file and test code.", expected.equals(actual));
+
+        /* Wrong syntax "," */
+        props.load(this.getClass().getResourceAsStream("/web-test-invalid.properties"));
+        try {
+            RequestUtil.organizationNames(props, "en");
+            fail("Should raise IllegalStateException, config separation error ':'");
+        } catch (IllegalStateException success) {
+        }
+        try {
+            RequestUtil.organizationNames(props, "en2");
+            fail("Should raise IllegalStateException, config separation error ','");
+        } catch (IllegalStateException success) {
         }
     }
 }
