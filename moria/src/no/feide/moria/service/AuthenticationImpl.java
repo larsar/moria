@@ -149,7 +149,7 @@ implements AuthenticationIF, ServiceLifecycle {
         String serviceName = null;
         if (p != null)
             serviceName = p.getName();
-	log.fine("Client service requesting session: "+serviceName);
+	log.info("Client service requesting session: "+serviceName);
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         
         if (ws == null) {
@@ -164,6 +164,7 @@ implements AuthenticationIF, ServiceLifecycle {
 
         try {
             Session session = sessionStore.createSession(attributes, prefix, postfix, p);
+            session.setWebService(ws);
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");

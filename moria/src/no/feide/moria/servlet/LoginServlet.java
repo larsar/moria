@@ -28,6 +28,7 @@ import no.feide.moria.Session;
 import no.feide.moria.User;
 import no.feide.moria.BackendException;
 import no.feide.moria.SessionStoreTask;
+import no.feide.moria.authorization.WebService;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -173,12 +174,16 @@ public class LoginServlet extends VelocityServlet {
      *  error message is supplied, the error message is displayed. If
      *  no sessionID is supplied the login login form is not displayed.
      */
-    private Template genLoginTemplate(HttpServletRequest request, HttpServletResponse response, Context context, String sessionID, String errorType) throws ParseErrorException, ResourceNotFoundException, MissingResourceException, Exception {
+    private Template genLoginTemplate(HttpServletRequest request, HttpServletResponse response, Context context, Session session, String errorType) throws ParseErrorException, ResourceNotFoundException, MissingResourceException, Exception {
 
         String bundleName = "login";
         String acceptLanguage = request.getHeader("Accept-Language");
+        String sessionID = null;
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
+
+        if (session != null)
+            sessionID = session.getID();
 
         if (acceptLanguage == null || acceptLanguage.equals("")) 
             acceptLanguage = "no";
@@ -234,6 +239,9 @@ public class LoginServlet extends VelocityServlet {
             bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
 
 
+        String wsName = session.getWebService().getName();
+        String wsURL  = session.getWebService().getUrl();
+
         /* Set template-variables from properties */
         for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
             String key = (String) e.nextElement();
@@ -242,7 +250,7 @@ public class LoginServlet extends VelocityServlet {
             
             if ((index = value.indexOf("WS_NAME")) != -1) {
                 // TODO: Read name+url from web service data.
-                value = value.substring(0, index)+"<A href=\"http://www.uio.no\">Tjenestenavn</A>"+value.substring(index+7, value.length());
+                value = value.substring(0, index)+"<A href=\""+wsURL+"\">"+wsName+"</A>"+value.substring(index+7, value.length());
             }
                 
 
@@ -294,7 +302,7 @@ public class LoginServlet extends VelocityServlet {
         try {
             Session session = sessionStore.getSession(id);
             sessionStore.renameSession(session);
-            return genLoginTemplate(request, response, context, session.getID(), null);
+            return genLoginTemplate(request, response, context, session, null);
         }
         
         catch (NoSuchSessionException e) {
@@ -358,11 +366,11 @@ public class LoginServlet extends VelocityServlet {
                     session = sessionStore.getSession(id);
                 }
                 catch (NoSuchSessionException e) {
-                    return genLoginTemplate(request, response, context, session.getID(), MAXLOGIN);
+                    return genLoginTemplate(request, response, context, null, MAXLOGIN);
                 }
 
                 return genLoginTemplate(request, response, context, 
-                                        session.getID(), AUTHFAILED);
+                                        session, AUTHFAILED);
             }
         } 
         

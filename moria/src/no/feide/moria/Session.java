@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
+import no.feide.moria.authorization.WebService;
 
 public class Session {
     
@@ -35,6 +36,7 @@ public class Session {
     /** Timestamp - for invalidating session after time out. */
     private long timestamp = new Date().getTime();
     
+    private WebService webService = null;
     
     /**
      * Protected constructor, only to be used by
@@ -221,7 +223,11 @@ public class Session {
 	return client;
     }
 
-    
+
+    /**
+     * Returns true if sessions has not timed out. 
+     * @param validUntil Milliseconds since epoc
+     */
     protected boolean isValid(double validUntil) {
         if (timestamp < validUntil) 
             return false;
@@ -229,4 +235,21 @@ public class Session {
             return true;
     }
 
+
+    /**
+     * Specify the web service that uses this session.
+     * @param webService The web service object, from authorization
+     * database.
+     */
+    public void setWebService(WebService webService) {
+        this.webService = webService;
+    }
+
+
+    /**
+     * Return the web service that uses this session.
+     */
+    public WebService getWebService() {
+        return webService;
+    }
 }
