@@ -253,6 +253,7 @@ public class Session {
 
 
             locked = true;
+            user.close();
 
             return genAttrResult(cachedAttributes, noCachedAttributes, request);
 
