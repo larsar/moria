@@ -228,5 +228,27 @@ extends TestCase {
         }
         
     }
+    
+    /**
+     * Test configuration with bad configuration file.
+     */
+    public void testBadConfigurationFile() {
+        
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, "src/test/conf/BadConfiguration.xml");
+
+        try {
+            
+            // Test bogus config.
+            dm.setConfig(config);
+            Assert.fail("Managed to set up bad configuration");
+         
+            
+        } catch (DirectoryManagerConfigurationException e) {
+            // Expected.
+        }
+        
+    }
 
 }
