@@ -14,7 +14,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package no.feide.mellon.example.axis;
+package no.feide.mellon.axis.example;
 
 import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
