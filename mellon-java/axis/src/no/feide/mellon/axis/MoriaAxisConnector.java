@@ -24,9 +24,9 @@ import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
-import no.feide.login.moria.Authentication.Attribute;
-import no.feide.login.moria.Authentication.AuthenticationIFBindingStub;
-import no.feide.login.moria.Authentication.AuthenticationLocator;
+import no.feide.login.moria.r001.Authentication.Attribute;
+import no.feide.login.moria.r001.Authentication.AuthenticationIFBindingStub;
+import no.feide.login.moria.r001.Authentication.AuthenticationLocator;
 
 
 /**
@@ -55,14 +55,14 @@ public class MoriaAxisConnector extends MoriaConnector {
 	 * @see no.feide.mellon.jaxrpc.MoriaConnector#requestSession(java.lang.String[], java.lang.String, java.lang.String, boolean)
 	 */
 	public String requestSession(String[] attributes, String urlPrefix, String urlPostfix, boolean denySso) throws RemoteException {
-		return stub.requestSession(attributes, urlPrefix, urlPostfix, denySso);
+		return stub.initiateAuthentication(attributes, urlPrefix, urlPostfix, denySso);
 	}
 
 	/** 
 	 * @see no.feide.mellon.jaxrpc.MoriaConnector#getAttributes(java.lang.String)
 	 */
 	public MoriaUserAttribute[] getAttributes(String ticket) throws RemoteException {
-		Attribute[] attributes = stub.getAttributes(ticket);
+		Attribute[] attributes = stub.getUserAttributes(ticket);
 		Vector moriaUserAttributes = new Vector();
 		
 		for (int i = 0; i < attributes.length; i++) {
