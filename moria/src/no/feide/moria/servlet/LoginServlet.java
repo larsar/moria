@@ -78,7 +78,7 @@ public class LoginServlet extends VelocityServlet {
     private boolean showAllAttributes = false;
 
     /** Timer for the session time out service. */
-    Timer sessionTimer = new Timer();
+    Timer sessionTimer = new Timer(true);
 
     
 
