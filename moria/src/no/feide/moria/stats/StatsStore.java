@@ -56,6 +56,7 @@ public class StatsStore {
         started = new Date();
         wsStats = Collections.synchronizedMap(new HashMap());
     }
+
     
     
     /** 
@@ -73,10 +74,17 @@ public class StatsStore {
     }
     
     
+
+    /**
+     * Return a WebServiceStat object for a given web service. If it
+     * doesn't exist (the web service hasn't used Moria in this
+     * session), a new stats-object is created and inserted in the register.
+     * @param wsName The name/id of the webservice
+     * @return The stats object for the given web service
+     */
     private WebServiceStats getWSStats(String wsName) {
         WebServiceStats wsStat = (WebServiceStats) wsStats.get(wsName);
 
-        // Create new stats object if the WebService doesn't have one
         if (wsStat == null) {
             wsStat =  new WebServiceStats(wsName);
             wsStats.put(wsName, wsStat);
@@ -86,6 +94,12 @@ public class StatsStore {
     }
 
     
+
+    /**
+     * Calculates Morias uptime and returns a HashMap with uptime in
+     * date string along with days, hours and minutes.
+     * @return The HashMap with calculated uptime data
+     */
     public HashMap upTime() {
         HashMap upTime = new HashMap();
         long upMSec  = new Date().getTime()-started.getTime();
@@ -109,6 +123,13 @@ public class StatsStore {
         return upTime;
     }
 
+
+
+    /**
+     * Gathers statistics for all web services into one HashMap. The
+     * HashMap also contains an entry for the sum of all stats.
+     * @return The HashMap with all statisical data
+     */
     public HashMap getStats() {
         HashMap stats = new HashMap();
         HashMap totalStats = new HashMap();
@@ -138,10 +159,24 @@ public class StatsStore {
         return stats;
     }
 
+
+    
+    /**
+     * Log a login attempt for a given web service.
+     * @param wsname The name of the web service
+     * @param result The result of the login attempt: "SUCCESS", "FAILED" or "SSO"
+     */
     public void loginAttempt(String wsID, String result) {
         getWSStats(wsID).loginAttempt(result);
     }
     
+
+
+    /**
+     * Log a "create session" attempt for a given web service.
+     * @param wsname The name of the web service
+     * @param result The result of the attempt: "SUCCESS", "URL", "AUTHO"
+     */
     public void createSessionAttempt(String wsID, String result) {
         if (result.equals("AUTHN")) {
             deniedSessionsAuthentication++;
@@ -150,10 +185,26 @@ public class StatsStore {
             getWSStats(wsID).createSessionAttempt(result);
     }
 
+
+
+
+    /**
+     * Log when a session times out, for a given web service.
+     * @param wsname The name of the web service
+     * @param result Type of TIMEOUT: "SSO", "AUTH", "USER"
+     */
     public void sessionTimeout(String wsID, String type) {
         getWSStats(wsID).sessionTimeout(type);
     }
 
+
+    /**
+     * Returns the number of times unauthorized web services tries to
+     * access Moria. These web services has been let through the web
+     * server but arnen't configured in Moria.
+     * @return The number of denied (authentication) attempts to
+     * create a session.
+     */
     public int getDeniedSessionsAuthentication() {
         return deniedSessionsAuthentication;
     }
