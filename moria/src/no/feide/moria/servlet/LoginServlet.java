@@ -389,7 +389,7 @@ public class LoginServlet extends MoriaServlet {
                             session.setCachedAttributes(cachedAttributes);
                             sessionStore.deleteSession(existingSession);
                             stats.decStatsCounter(wsID, "activeSessions");
-                            stats.incStatsCounter(wsID, "timeoutSSO");
+                            stats.decreaseCounter("sessionsSSOActive");
                             session.unlock(existingSession.getUser());
                             redirectToWebService(response, session);
                             return null;
@@ -500,8 +500,8 @@ public class LoginServlet extends MoriaServlet {
         } 
         
         catch (BackendException e) {
+            
             log.severe("BackendException caught and re-thrown as ServletException\n"+e);
-
             return genLoginTemplate(request, response, context, null, GENERIC);
         } 
 
