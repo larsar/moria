@@ -13,9 +13,6 @@ public class Session {
     /** Used for logging. */
     private static Logger log = Logger.getLogger(Session.class.toString());
     
-    /** Used to store the current redirect URL for this session. */
-    private String redirectURL;
-
     /** Holds the prefix value sent by the resource. */
     private String urlPrefix;
     
@@ -57,8 +54,6 @@ public class Session {
      *                value. May be <code>null</code>.
      * @param client The client service identifier.
      */
-    // TODO:
-    // redirectURL should be removed.
     protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client) {
         log.finer("Session(String, String[], String)");
         
@@ -95,7 +90,7 @@ public class Session {
         if (user != null) {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
-            log.fine("Good authN; new session ID is "+sessionID+", new URL is "+redirectURL);
+            log.fine("Good authN.")
             return true;
         }
         
