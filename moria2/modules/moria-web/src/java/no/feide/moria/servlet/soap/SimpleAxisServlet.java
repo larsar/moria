@@ -18,7 +18,7 @@
  * $Id$
  */
 
-package no.feide.moria.servlet;
+package no.feide.moria.servlet.soap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,7 +48,7 @@ import org.w3c.dom.Document;
  * @version $Revision$
  */
 public final class SimpleAxisServlet extends AxisServlet {
-
+    
     /** Logger for this class. */
     private MessageLogger messageLogger = new MessageLogger(SimpleAxisServlet.class);
 
@@ -426,21 +426,48 @@ public final class SimpleAxisServlet extends AxisServlet {
         /* We're not able to recover from this */
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        messageLogger.logWarn(message, exception);
+        // Get the exception cause.
+        final Throwable cause = exception.getCause();
 
-        /* Get JSP for handling HTML output */
+        // Used later to get the JSP for handling HTML output.
         RequestDispatcher requestDispatcher;
 
-        /* Set up the error response specially for SOAP requests */
+        // Set up the error response specially for SOAP requests.
         if (request.getMethod().equals("POST") && request.getHeader("SOAPAction") != null) {
-            // TODO: Possibly extend this crude exception handling to differentiate
-            // between server and client faults.
-            request.setAttribute("faultCode", "Server");
-            request.setAttribute("faultString", exception.getMessage());
+
+            // Set the faultCode and faultString elements, depending on exception.
+            if (cause instanceof SOAPException) {
+                
+                // A known type of exception.
+                request.setAttribute("faultCode", ((SOAPException)cause).getFaultcode());
+                request.setAttribute("faultString", ((SOAPException)cause).getFaultstring());
+                
+            }
+            else {
+                
+                // An unknown type of exception. Should not happen.
+                InternalException internal = new InternalException("");
+                request.setAttribute("faultCode", internal.getFaultcode());
+                request.setAttribute("faultString", internal.getFaultstring());
+                messageLogger.logCritical("Unknown internal exception", (Exception)cause);
+                
+            }
+            
+            // Log what we're doing.
+            messageLogger.logWarn("Replying with SOAP Fault - faultCode: '" + 
+                                   request.getAttribute("faultCode") + 
+                                   "' faultString: '" + 
+                                   request.getAttribute("faultString") + "'");
+            
+            // Get the request dispatcher.
             requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-SOAP-Error.JSP");
+            
         } else {
+            
+            // Not a SOAP request?
             request.setAttribute("logMessage", message);
             requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-Error.jsp");
+            
         }
 
         /* Log and return if dispatch fails */

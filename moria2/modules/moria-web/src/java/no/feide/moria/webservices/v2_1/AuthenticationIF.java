@@ -23,6 +23,9 @@ package no.feide.moria.webservices.v2_1;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import no.feide.moria.servlet.soap.SOAPException;
+
+
 /**
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
@@ -50,7 +53,8 @@ public interface AuthenticationIF extends Remote {
      *      java.lang.String, java.lang.String, boolean)
      */
     String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix,
-            boolean forceInteractiveAuthentication) throws RemoteException;
+                                  boolean forceInteractiveAuthentication)
+    throws SOAPException;
 
     /**
      * Performs direct non-interactive authentication.
@@ -72,7 +76,8 @@ public interface AuthenticationIF extends Remote {
      * @see no.feide.moria.webservices.v2_0.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String)
      */
-    Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
+    Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password)
+    throws SOAPException;
 
     /**
      * Performs proxy authentication.
@@ -87,7 +92,8 @@ public interface AuthenticationIF extends Remote {
      * @throws RemoteException
      *          If anything fails during the call.
      */
-    Attribute[] proxyAuthentication(String[] attributes, String proxyTicket) throws RemoteException;
+    Attribute[] proxyAuthentication(String[] attributes, String proxyTicket)
+    throws SOAPException;
 
     /**
      * Gets a proxy ticket.
@@ -107,7 +113,8 @@ public interface AuthenticationIF extends Remote {
      * @throws RemoteException
      *          If anything fails during the call.
      */
-    String getProxyTicket(String ticketGrantingTicket, String proxyServicePrincipal) throws RemoteException;
+    String getProxyTicket(String ticketGrantingTicket, String proxyServicePrincipal)
+    throws SOAPException;
 
     /**
      * Gets user attributes.
@@ -122,18 +129,8 @@ public interface AuthenticationIF extends Remote {
      *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_0.AuthenticationIF#getUserAttributes(java.lang.String)
      */
-    Attribute[] getUserAttributes(String serviceTicket) throws RemoteException;
-
-    /**
-     * Gets public attributes for a given group.
-     *
-     * @param groupname
-     *          The name of the group.
-     * @return Array of public attributes.
-     * @throws RemoteException
-     *          If anything fails during the call.
-     */
-    Attribute[] getGroupAttributes(String groupname) throws RemoteException;
+    Attribute[] getUserAttributes(String serviceTicket)
+    throws SOAPException;
 
     /**
      * Verifies the existence of a given user in the underlying directories.
@@ -145,29 +142,6 @@ public interface AuthenticationIF extends Remote {
      *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_0.AuthenticationIF#verifyUserExistence(java.lang.String)
      */
-    boolean verifyUserExistence(String username) throws RemoteException;
-
-    /**
-     * Verifies the existence of a given group in the underlying directories.
-     *
-     * @param groupname
-     *          The groupname to be validated.
-     * @return True if the group exists.
-     * @throws RemoteException
-     *           If anything fails during the call.
-     */
-    boolean verifyGroupExistence(String groupname) throws RemoteException;
-
-    /**
-     * Verifies that a given user is member of a specific group.
-     *
-     * @param username
-     *          The username to be validated.
-     * @param groupname
-     *          The name of the group that may contain the user.
-     * @return True if the user is a member of the group.
-     * @throws RemoteException
-     *          If anything fails during the call.
-     */
-    boolean verifyUserMemberOfGroup(String username, String groupname) throws RemoteException;
+    boolean verifyUserExistence(String username)
+    throws SOAPException;
 }
