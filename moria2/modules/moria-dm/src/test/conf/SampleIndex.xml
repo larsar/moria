@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<-- 
+
+A sample index file, with two associations for the same realm and one exception.
+This file is used to create and write a SerializableIndex object to file, using
+tools such as no.feide.moria.directory.index.tools.SerializableIndexCreator.
+
+More than one base ("implicit reference") may be associated with the same realm,
+but only one reference ("explicit reference") may be associated with any given
+user ID.
+
+-->
+
+<Index>
+
+    <!--
+	     Associate the realm some.realm with two different search bases, using SSL (port 636).
+    -->
+ 	<Associations>
+		<Realm name="some.realm">
+			<Base name="ldap://some.ldap.server:636/ou=users,dc=some,dc=where"/>
+			<Base name="ldap://some.ldap.server:636/ou=people,dc=some,dc=where"/>			
+  		</Realm>
+	</Associations>  		
+	
+    <!--
+	     Associate the user ID with one user element reference, using SSL (port 636).
+	     This will override the above association.
+    -->	
+	<Exception id="user@some.realm" reference="ldap://another.ldap.server:636/uid=user,ou=people,dc=another,dc=place"/>	
+	
+</Index>
