@@ -10,6 +10,8 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 import no.feide.moria.*;
+import no.feide.moria.authorization.WebService;
+import no.feide.moria.authorization.AuthorizationData;
 
 
 public class AuthenticationImpl
@@ -98,6 +100,18 @@ implements AuthenticationIF, ServiceLifecycle {
         // Make a test URL from pre/post and check URL validity. Throw if not.
         // Add a subclass to RemoteException to signal URL invalid?
 
+        WebService ws = AuthorizationData.getInstance().getWebService("foo");
+        
+        if (ws == null) {
+            log.warning("Unauthorized service access: "+"foo");
+            throw new RemoteException("Web Service not authorized for use with Moria.");
+        }
+        
+        else if (!ws.allowAccessToAttributes(attributes)) {
+            log.warning("Access to attributes denied: "+ws.getId()+" "+attributes);
+            throw new RemoteException("Access to attributes prohibited.");
+        }
+
         try {
 	    Principal p = ctx.getUserPrincipal();
 	    log.fine("Client service requesting session: "+p);
@@ -126,7 +140,6 @@ implements AuthenticationIF, ServiceLifecycle {
     public String requestSession(String prefix, String postfix)
     throws RemoteException {
         log.finer("requestSession(String, String)");
-
 	return requestSession(null, prefix, postfix);
     }
     
