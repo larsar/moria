@@ -89,8 +89,6 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new ServiceException("IOException caught", e);
         }
 
-        System.out.println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-
         /* Initialize authorization data timer */
         int authDelay = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerDelay")).intValue()*1000; // Seconds to milliseconds
         log.info("Starting authorization update service with delay= "+authDelay+"ms");
