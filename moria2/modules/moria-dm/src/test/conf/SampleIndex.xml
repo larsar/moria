@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<Index>
+ 	<Associations>
+
+		<Realm name="realm1">
+			<Base name="ldap://some.ldap.server:636/dc=search,dc=base"/>
+			<Base name="ldap://some.ldap.server:636/dc=another,dc=search,dc=base"/>
+  		</Realm>
+  
+	  	<Realm name="realm2">
+		    <Base name="ldap://another.ldap.server:636/dc=search,dc=base"/>
+		</Realm>
+
+	</Associations>
+</Index>
