@@ -249,13 +249,16 @@ public class User {
     /**
      * Do a subtree search for an element given a pattern. Only the first
      * element found is considered. Any referrals are followed recursively.
-     * <em>Note:</em> The default timeout when searching is 10 seconds,
+      <em>Note:</em> The default timeout when searching is 15 seconds,
      *                unless
      *                <code>no.feide.moria.backend.ldap.timeout</code> is
      *                set.
-     * @param pattern The search pattern.
+     * @param pattern The search pattern. Must not include the character
+     *                '*' or the substring '\2a' due to possible LDAP
+     *                exploits.
      * @return The element's relative DN, or <code>null</code> if none was
-     *         found.
+     *         found. <code>null</code> is also returned if the search
+     *         pattern contains an illegal character or substring.
      * @throws BackendException If a <code>NamingException occurs</code>, or
      *                          if a <code>ConfigurationException</code> is
      *                          caught.
@@ -264,17 +267,28 @@ public class User {
     throws BackendException {
         log.finer("ldapSearch(String)");
         
+        // Check for illegal content.
+        String[] illegals = {'*', "\2a"};
+        for (int i=0; i< illegals.length; i++)
+            if (pattern.indexOf(illegals[i]) > -1)
+                return null;
+        
         try {
             
             NamingEnumeration results;
             try {
-                // Search and destroy.
+                
                 try {
-                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, true));
+                    long searchStart = System.currentTimeMillis();
+                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, true));
                 } catch (ConfigurationException e) {
                     log.severe("ConfigurationException caught and re-thrown as BackendException");
                     throw new BackendException(e);
+                } catch (TimeLimitExceededException e) {
+                    log.severe("TimelimitExceededException caught after "+System.currentTimeMillis()-searchStart+"ms and re-thrown as BackendException");
+                    throw new BackendException(e);
                 }
+                
                 if (!results.hasMore()) {
                     log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                     return null;
