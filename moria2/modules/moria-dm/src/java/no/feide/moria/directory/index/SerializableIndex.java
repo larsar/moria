@@ -90,8 +90,11 @@ implements Serializable, DirectoryManagerIndex {
             return (List)list;
         }
         
-        // Extract the realm.
-        String realm = id.substring(id.lastIndexOf('@'));
+        // Extract the realm, with sanity check.
+        int i = id.lastIndexOf('@');
+        if (i < 0)
+            return null;
+        String realm = id.substring(i);
         return (List) associations.get(realm);
 
     }
