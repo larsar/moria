@@ -46,8 +46,8 @@ import java.util.Vector;
 
 
 /**
- * This servlet is responsible for retrieving information about a user, and send
- * it to information.jsp for display.
+ * This servlet is responsible for retrieving information about a user, and 
+ * sending it to information.jsp for display.
  * 
  * @author Eva Indal
  * @version $Revision$
@@ -56,12 +56,12 @@ public class InformationServlet extends HttpServlet {
     
     /** 
      * A hash map containing all possible attributes for a user.
-     * Each item in the hashmap maps from a attribute name to a
+     * Each item in the hashmap maps from an attribute name to an
      * AttribsData class instance 
      */
     private HashMap feideattribs_stored = null;
     
-    /** Principal name of the sercive.
+    /** Principal name of the service.
      *  Current value is "info"
      */ 
     private String PRINCIPAL = "info";
@@ -110,7 +110,6 @@ public class InformationServlet extends HttpServlet {
      * Implements a simple xml parser that parses the feideattribs.xml file
      * into a HashMap with AttribsData instances.
      * 
-     * @param config The configuration for the web module
      * @see AttribsHandler
      *      AttribsData
      */
@@ -136,16 +135,16 @@ public class InformationServlet extends HttpServlet {
     }
         
     /**
-     * Generate table for a user. The vector consists of rows of data. Each row
-     * has four columns. The first column is the URL link for user attribute. The
+     * Generates table for a user. The vector consists of rows of data. Each row
+     * has four columns. The first column is the URL link for the user attribute. The
      * second column is the attribute description as presented to the user. The 
-     * third row is the actual data stored for the attribute, and the fourth
+     * third column is the actual data stored for the attribute, and the fourth
      * columns is either fd_mandatory or fd_optional, as a key for a mandatory
      * or optional attribute.  
      * 
-     * @param userData the user data
-     * @param bundle resourcebundle for language
-     * @return Vector with table data
+     * @param userData The user data.
+     * @param bundle Resource bundle for language.
+     * @return Vector with table data.
      */
     private Vector printTableToVector(Map userData, ResourceBundle bundle) {
         
@@ -214,7 +213,10 @@ public class InformationServlet extends HttpServlet {
      * Get the config from the context. The configuration is expected to be set
      * by the controller before requests are sent to this servlet.
      * 
-     * @return the configuration
+     * @return The configuration.
+     * @throws IllegalStateException
+     *		If the config is not properly set.
+     *
      */
     private Properties getConfig() {
         final Properties config;
@@ -242,10 +244,12 @@ public class InformationServlet extends HttpServlet {
     /**
      * Implements the HttpServlet.doGet method.
      * 
-     * @param request   the HTTP requeest
-     * @param response  the HTTP response
-     * @throws IOException      required by interface
-     * @throws ServletException required by interface
+     * @param request   The HTTP request.
+     * @param response  The HTTP response.
+     * @throws IOException
+     *           If getAttribs returns null.
+     * @throws ServletException
+     *           If the Moria controller throws an exception.
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -364,10 +368,11 @@ public class InformationServlet extends HttpServlet {
     /**
      * Implements the HttpServlet.doPost method.
      * 
-     * @param request   the HTTP requeest
-     * @param response  the HTTP response
-     * @throws IOException      required by interface
-     * @throws ServletException required by interface
+     * @param request   The HTTP request.
+     * @param response  The HTTP response.
+     * @throws IOException      Required by interface.
+     * @throws ServletException
+     *           If the Moria controller throws an exception.
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -421,7 +426,7 @@ public class InformationServlet extends HttpServlet {
     /**
      * Builds a list of all possible user attributes.
      * 
-     * @return Comma-separated list of attributes
+     * @return Comma separated list of attributes.
      */
     private String getAllAttributes() {
         String acc = "";

@@ -34,7 +34,7 @@ import java.util.HashMap;
 public class AttribsHandler extends DefaultHandler {
     
     /**
-     * Constructor
+     * Constructor.
      *
      */
     public AttribsHandler()  {
@@ -52,12 +52,18 @@ public class AttribsHandler extends DefaultHandler {
     
     /**
      * Implements callback that is called at start of document. Empty for now.
+     *
+     * @throws SAXException
+     *          Required by interface.
      */
     public void startDocument() throws SAXException {
     }
     
     /**
      * Implements callback that is called at end of document. Empty for now.
+     *
+     * @throws SAXException
+     *          Required by interface.
      */
     public void endDocument() throws SAXException {
     }
@@ -65,10 +71,12 @@ public class AttribsHandler extends DefaultHandler {
     /**
      * Implements callback that is called at start of an xml element.
      *
-     * @param namespaceURI  namespace URI
+     * @param namespaceURI  Namespace URI.
      * @param sName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
      * @param qName  The qualified name (with prefix), or the empty string if qualified names are not available. 
      * @param attrs  The specified or defaulted attributes.
+     * @throws SAXException
+     *          Required by interface.
      *  
      * @see DefaultHandler.startElement for information about the parameters
      */
@@ -90,10 +98,13 @@ public class AttribsHandler extends DefaultHandler {
     }
     
     /**
-     * Implements callback that is called at end of an xml element
-     * @param namespaceURI  namespace URI
-     * @param sName  The local name (without prefix), or the empty string if Namespace processing is not being performed
+     * Implements callback that is called at end of an xml element.
+     *
+     * @param namespaceURI  Namespace URI.
+     * @param sName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
      * @param qName  The qualified XML 1.0 name (with prefix), or the empty string if qualified names are not available. 
+     * @throws SAXException
+     *          Required by interface.
      * 
      * @see DefaultHandler.endElement for information about the parameters
      */
@@ -113,11 +124,13 @@ public class AttribsHandler extends DefaultHandler {
     }
     
     /**
-     * Implements callback that is called to soup up data for an element
+     * Implements callback that is called to process data for an element.
      * 
      * @param buf  The characters.
      * @param offset  The start position in the character array.
      * @param len  The number of characters to use from the character array. 
+     * @throws SAXException
+     *          Required by interface.
      * 
      * @see DefaultHandler.characters for information about the parameters
      */
@@ -127,6 +140,8 @@ public class AttribsHandler extends DefaultHandler {
     }
     
     /**
+     * Gets parsed attributes.
+     *
      * Each element in the returned HashMap is an AttribsData instance
      * @return The parsed attributes.
      */

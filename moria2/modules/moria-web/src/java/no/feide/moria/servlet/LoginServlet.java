@@ -88,8 +88,9 @@ extends HttpServlet {
 
 
     /**
-     * Handles the GET requests. The GET request should contain a login ticket
-     * as parameter, with . An SSO ticket can also be presented by the user's web
+     * Handles the GET request. The GET request should contain a login ticket
+     * as parameter.
+     * An SSO ticket can also be presented by the user's web
      * browser (in form of a cookie). The method will try to perform an SSO
      * authentication if the conditions for this is met, else it will present
      * the login page to the user.
@@ -98,9 +99,9 @@ extends HttpServlet {
      * @param response
      *            The HTTP response object.
      * @throws IOException
-     *             required by interface
+     *             Required by interface.
      * @throws ServletException
-     *             required by interface
+     *             Required by interface.
      */
 
     // TODO: Elaborate the JavaDoc, with references to RequestUtil and required
@@ -160,18 +161,18 @@ extends HttpServlet {
 
 
     /**
-     * Handles the POST requests. The POST request indicates that the user is
+     * Handles the POST request. The POST request indicates that the user is
      * trying to authenticate. If the authentication is successful, the user is
      * redirected back to the originating web service, else the user is
      * presented with an error message.
      * @param request
-     *            the HTTP request
+     *            The HTTP request.
      * @param response
-     *            the HTTP response
+     *            The HTTP response.
      * @throws IOException
-     *             required by interface
+     *             Required by interface.
      * @throws ServletException
-     *             required by interface
+     *             Required by interface.
      */
     public void doPost(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
@@ -258,17 +259,17 @@ extends HttpServlet {
 
     /**
      * Displays the login page. The method fills the request object with values
-     * and then pass the request to the jsp.
+     * and then passes the request to the jsp.
      * @param request
-     *            the HTTP requeest
+     *            The HTTP request.
      * @param response
-     *            the HTTP response
+     *            The HTTP response.
      * @param errorType
-     *            the type of the error set by the caller
+     *            The type of the error set by the caller.
      * @throws IOException
-     *             required by interface
+     *             Required by interface.
      * @throws ServletException
-     *             required by interface
+     *             Required by interface.
      */
     // TODO: Elaborate JavaDoc
     private void showLoginPage(final HttpServletRequest request, final HttpServletResponse response, String errorType)
@@ -352,7 +353,7 @@ extends HttpServlet {
 
 
     /**
-     * Get the current configuration from the context. The configuration is
+     * Gets the current configuration from the context. The configuration is
      * expected to be set by the controller before requests are sent to this
      * servlet.
      * @return The current configuration, as read from the servlet context.

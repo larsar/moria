@@ -38,7 +38,7 @@ import javax.servlet.http.Cookie;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * This class is a toolkit for the servlets and its main functionality is to
+ * This class is a toolkit for the servlets.Its main functionality is to
  * retrieve resource bundles.
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
@@ -68,7 +68,7 @@ public final class RequestUtil {
     public static final String PROP_LOGIN_TICKET_PARAM = PATH_PREFIX + "login.ticket_param";
 
     /**
-     * Property name for: Organization.
+     * Property name for Organization.
      */
     public static final String PROP_ORG = PATH_PREFIX + "org";
 
@@ -83,12 +83,12 @@ public final class RequestUtil {
     public static final String PROP_LOGIN_DEFAULT_LANGUAGE = PATH_PREFIX + "login.default_language";
 
     /**
-     * Property name for: Language.
+     * Property name for Language.
      */
     public static final String PROP_LANGUAGE = PATH_PREFIX + "lang";
 
     /**
-     * Configuration property giving the URL to the login servlet.
+     * Configuration property giving the URL of the login servlet.
      * <em>This property is required.</em><br>
      * <br>
      * Current value is <code>PATH_PREFIX + "login.url_prefix"</code>.
@@ -96,7 +96,7 @@ public final class RequestUtil {
     public static final String PROP_LOGIN_URL_PREFIX = PATH_PREFIX + "login.url_prefix";
 
     /**
-     * Configuration property giving the URL to the information servlet.
+     * Configuration property giving the URL of the information servlet.
      * <em>This property is required.</em><br>
      * <br>
      * Current value is <code>PATH_PREFIX + "information.url_prefix"</code>.
@@ -108,7 +108,7 @@ public final class RequestUtil {
      * all available languages, on the form
      * <code>PROP_LANGUAGE + "_" + PROP_COMMON</code>.<br>
      * <br>
-     * The actual values are a comma-separated list of elements on the form
+     * The actual values are a comma separated list of elements on the form
      * <code>EN:English</code>, that is, a two-letter language abbreviation
      * and a ':' character followed by its display name. <br>
      * <br>
@@ -193,7 +193,7 @@ public final class RequestUtil {
     public static final String PROP_COOKIE_DENYSSO_TTL = PATH_PREFIX + "cookie.denysso.ttl";
 
     /**
-     * Property name for: Logout URL.
+     * Property name for Logout URL.
      */
     public static final String PROP_LOGOUT_URL_PARAM = PATH_PREFIX + "logout.url_param";
 
@@ -206,7 +206,7 @@ public final class RequestUtil {
 
     /**
      * Configuration property for the InformationServlet feideattribs xml file
-     * path
+     * path.
      */
     public static final String PROP_INFORMATION_FEIDEATTRIBS_XML = PATH_PREFIX + "information.feideattribs_xml";
 
@@ -221,22 +221,22 @@ public final class RequestUtil {
     public static final String BUNDLE_INFOABOUT = "infoabout";
 
     /**
-     * Bundle for the faq page
+     * Bundle for the faq page.
      */
     public static final String BUNDLE_FAQ = "faq";
 
     /**
-     * Bundle for the error page
+     * Bundle for the error page.
      */
     public static final String BUNDLE_ERROR = "error";
 
     /**
-     * Legal name for an organization, used by Information Servlet
+     * Legal name for an organization, used by Information Servlet.
      */
     public static final String EDU_ORG_LEGAL_NAME = "eduOrgLegalName";
 
     /**
-     * Link to faq, shown on the login page
+     * Link to faq, shown on the login page.
      */
     public static final String FAQ_LINK = PATH_PREFIX + "faqlink";
 
@@ -251,7 +251,7 @@ public final class RequestUtil {
     public static final String CONFIG_LANG = "language";
 
     /**
-     * From Authorization config: Home organization of service.
+     * From Authorization config Home organization of service.
      */
     public static final String CONFIG_HOME = "home";
 
@@ -476,7 +476,7 @@ public final class RequestUtil {
 
 
     /**
-     * Generate a resource bundle. The language of the resource bundle is
+     * Generates a resource bundle. The language of the resource bundle is
      * selected from the following priority list:
      * <ol>
      * <li>URL parameter (<code>requestParamLang</code>)
@@ -557,13 +557,16 @@ public final class RequestUtil {
 
 
     /**
-     * Locates a bundle on a given language.
+     * Locates a bundle in a given language.
      * @param bundleName
-     *            name of the bundle, cannot be null or ""
+     *            Name of the bundle, cannot be null or "".
      * @param lang
-     *            the bundles langauge
-     * @return the resourceBundle for the selected language, null if it's not
-     *         found
+     *            The bundle's langauge.
+     * @return The resourceBundle for the selected language, null if it is not
+     *         found.
+     * @throws IllegalArgumentException
+     *             If <code>bundleName</code> or <code>lang</code> is
+     *             <code>null</code> or an empty string.
      */
     private static ResourceBundle locateBundle(final String bundleName, final String lang) {
 
@@ -598,12 +601,12 @@ public final class RequestUtil {
 
 
     /**
-     * Return a requested cookie value from the HTTP request.
+     * Returns a requested cookie value from the HTTP request.
      * @param cookieName
-     *            Name of the cookie
+     *            Name of the cookie.
      * @param cookies
-     *            The cookies from the HTTP request
-     * @return Requested value, empty string if not found
+     *            The cookies from the HTTP request.
+     * @return Requested value, empty string if not found.
      * @throws IllegalArgumentException
      *             If <code>cookieName</code> is null or an empty string.
      */
@@ -628,7 +631,7 @@ public final class RequestUtil {
 
 
     /**
-     * Utility method to create a cookie.
+     * Creates a cookie.
      * @param cookieName
      *            Name of the cookie. Cannot be <code>null</code>.
      * @param cookieValue
@@ -663,13 +666,15 @@ public final class RequestUtil {
 
 
     /**
-     * Parser for the Accept-Language header sent from browsers. The language
+     * Parses an Accept-Language header sent from a browser. The language
      * entries in the string can be weighted and the parser generates a list of
      * the languages sorted by the weight value.
      * @param acceptLang
-     *            the accept language header, cannot be null or ""
-     * @return a string array of language names, sorted by the browsers weight
-     *         preferences
+     *            The accept language header, cannot be null or "".
+     * @return A string array of language names, sorted by the browser's weight
+     *         preferences.
+     * @throws IllegalArgumentException
+     *             If <code>acceptLang</code> is null or an empty string.
      */
     static String[] sortedAcceptLang(final String acceptLang) {
 
@@ -727,7 +732,7 @@ public final class RequestUtil {
 
 
     /**
-     * Read institution names from the servlet configuration and generate a
+     * Reads institution names from the servlet configuration and generates a
      * TreeMap with the result, using the correct language. <br>
      * <br>
      * The configuration <em>must</em> contain properties on the form
@@ -745,7 +750,7 @@ public final class RequestUtil {
      *             <code>element</code> or <code>language</code> is
      *             <code>null</code> or an empty string.
      * @throws IllegalStateException
-     *             If no elements of type <code>element</code> is found in the
+     *             If no elements of type <code>element</code> are found in the
      *             configuration <code>config</code>. Also thrown if the
      *             values found in <code>config</code> contains less than or
      *             more than one occurrence of the ':' separator character.
@@ -800,14 +805,16 @@ public final class RequestUtil {
      * is given as parameters. Every occurance of the token in the data string
      * is replaced by a hyperlink.
      * @param token
-     *            the token to replace with link
+     *            The token to replace with link.
      * @param data
-     *            the data containing text and token(s)
+     *            The data containing text and token(s).
      * @param name
-     *            the link text
+     *            The link text.
      * @param url
-     *            the URL to link to
-     * @return a string with hyperlinks in stead of tokens
+     *            The URL to link to.
+     * @return A string with hyperlinks in stead of tokens.
+     * @throws IllegalArgumentException
+     *             If token, data, name or url is null or an empty string.
      */
     public static String insertLink(final String token, final String data, final String name, final String url) {
 
@@ -828,7 +835,9 @@ public final class RequestUtil {
      * by the controller before requests are sent to this servlet.
      * @param context
      *            ServletContext containing the configuration.
-     * @return the configuration
+     * @return The configuration.
+     * @throws IllegalStateException
+     *            If config is not properly set in the context.
      */
     static Properties getConfig(final ServletContext context) {
 

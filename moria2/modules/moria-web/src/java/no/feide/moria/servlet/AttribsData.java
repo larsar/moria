@@ -45,8 +45,8 @@ public class AttribsData implements Comparator {
     private HashMap hashmap;
    
     /**
-     * Constructor
-     * @param index order in xml file
+     * Constructor.
+     * @param Index order in xml file.
      */
     public AttribsData(int index) {
        idx = index;
@@ -54,11 +54,11 @@ public class AttribsData implements Comparator {
     }
     
     /**
-     * Implements Comparator.compare to be able to sort attributes based on xml file order
+     * Implements Comparator.compare to be able to sort attributes based on xml file order.
      * 
-     * @param ad1 the first object
-     * @param ad2 the second object
-     * @return < 0 if object 1 index is less than object 2, > 0 if object 2 index i larger
+     * @param ad1 The first object.
+     * @param ad2 The second object.
+     * @return < 0 if object 1 index is less than object 2, > 0 if object 2 index i larger.
      * @see Comparator.compare
      */
     public int compare(Object ad1, Object ad2){
@@ -68,10 +68,10 @@ public class AttribsData implements Comparator {
     }
     
     /**
-     * Implements Comparator.equals -- not used
+     * Implements Comparator.equals -- not used.
      * 
-     * @param ad object to compare
-     * @return true if equal
+     * @param ad Object to compare.
+     * @return true If equal.
      */
     public boolean equals(Object ad) {
         AttribsData adata = (AttribsData) ad;
@@ -79,10 +79,12 @@ public class AttribsData implements Comparator {
     }
     
     /**
-     * Add info/data for an attribute.
+     * Adds info/data for an attribute.
      * 
-     * @param name the name of the information
-     * @param data the actual data
+     * @param name The name of the information.
+     * @param data The actual data.
+     * @throws IllegalArgumentException
+     *         	If name or data is null or zero length.
      */
     public void addData(String name, String data) {
         if (name == null || name.equals("")) {
@@ -94,10 +96,12 @@ public class AttribsData implements Comparator {
         hashmap.put(name, data);	
     }
     /**
-     * Returns data for an attribute
+     * Returns data for an attribute.
      * 
      * @param name the name of the infotmation to return
      * @return the data associated with name
+     * @throws IllegalArgumentException
+     *         	If name is null or zero length.
      */
     public String getData(String name) {
         if (name == null || name.equals("")) {

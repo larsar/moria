@@ -44,9 +44,9 @@ import org.apache.axis.encoding.ser.VectorSerializerFactory;
 
 /**
  * This is a simple demonstration servlet, primarily intended as a code example
- * on how to access the Moria SOAP interface. <br>
+ * of how to access the Moria SOAP interface.<br>
  * <br>
- * This implementation uses Axis for its remote operations; for details on how
+ * This implementation uses Axis for its remote operations, for details on how
  * this is done refer to the private methods
  * <ul>
  * <li><code>initiateAuthentication</code>
@@ -113,7 +113,7 @@ extends HttpServlet {
      * Handles the GET requests.
      * @param request
      *            The HTTP request object. If it contains a request parameter
-     *            <i>moriaID </i> then the request's attribute <i>attributes
+     *            <i>moriaID</i>, the request's attribute <i>attributes
      *            </i> will be filled with the attributes contained in the
      *            session given by <i>moriaID </i>.
      * @param response
@@ -285,7 +285,7 @@ extends HttpServlet {
 
 
     /**
-     * Get the previously requested (through
+     * Gets the previously requested (through
      * <code>initiateAuthentication(...)</code> attributes following a
      * successful user authentication.
      * @param serviceTicket
@@ -293,7 +293,7 @@ extends HttpServlet {
      *            following a successful authentication on the user's part.
      * @return An array of <code>Attribute</code> objects, containing the
      *         resulting values of the original attribute request. Note that if
-     *         the requested attributes does not exist, or if the client service
+     *         the requested attributes do not exist, or if the client service
      *         is not authorized to read the attributes, they will not be
      *         returned. May consequently return an empty array, but never
      *         <code>null</code>.
@@ -332,12 +332,12 @@ extends HttpServlet {
 
 
     /**
-     * Get a proxy ticket, by supplying a previously retrieved ticket granting
+     * Gets a proxy ticket, by supplying a previously retrieved ticket granting
      * ticket for the given subsystem. This ticket may then be used by the
-     * subsystem to assume that authentication has taken place. <br>
+     * subsystem as proof that authentication has taken place. <br>
      * <br>
      * @param ticketGrantingTicket
-     *            A legal ticket granting ticket previously retrieved by
+     *            A valid ticket granting ticket previously retrieved by
      *            requesting the special attribute <i>tgt </i> using
      *            <code>initiateAuthentication(...)</code> and
      *            <code>getUserAttributes(...)</code>.
@@ -372,16 +372,17 @@ extends HttpServlet {
 
 
     /**
-     * Use a proxy ticket retrieved by <code>getProxyTicket(...)</code> to
-     * verify that the user has been authenticated, and retrieve a number of
-     * attributes.
+     * Verifies, by using a proxy ticket retrieved by 
+     * <code>getProxyTicket(...)</code>, that the user has been authenticated 
+     * and retrieves a number of attributes.
+     *
      * @param attributes
      *            The attributes requested as part of this proxy authentication.
      * @param proxyTicket
      *            The proxy ticket.
      * @return An array of <code>Attribute</code> objects, containing the
      *         resulting values of the original attribute request. Note that if
-     *         the requested attributes does not exist, or if the client service
+     *         the requested attributes do not exist, or if the client service
      *         is not authorized to read the attributes, they will not be
      *         returned. May consequently return an empty array, but never
      *         <code>null</code>.

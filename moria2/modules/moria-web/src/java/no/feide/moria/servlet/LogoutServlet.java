@@ -36,7 +36,7 @@ import no.feide.moria.log.MessageLogger;
 
 /**
  * This servlet handles logout request. It will invalidate the SSO ticket in the underlying store and remove the cookie
- * form the client.
+ * from the client.
  * <p/>
  * It uses two properties from the config: <dl> <dt>no.feide.moria.web.sso_cookie.name</dt> <dd>The the cookie name</dd>
  * <dt>no.feide.moria.web.logout.url_param</dt> <dd>The name of the optional parameter in the request holding the
@@ -62,8 +62,8 @@ public final class LogoutServlet extends HttpServlet {
     /**
      * Handles the GET requests.
      *
-     * @param request  the HTTP request object
-     * @param response the HTTP response object
+     * @param request  The HTTP request object.
+     * @param response The HTTP response object.
      */
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) {
 
@@ -148,8 +148,8 @@ public final class LogoutServlet extends HttpServlet {
     /**
      * Handles POST requests.  Just calls doGet().
      *
-     * @param request  the HTTP request object
-     * @param response the HTTP response object
+     * @param request  The HTTP request object.
+     * @param response The HTTP response object.
      */
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
         doGet(request, response);
@@ -158,8 +158,8 @@ public final class LogoutServlet extends HttpServlet {
     /**
      * Dispatches request to JSP.
      *
-     * @param request  the HTTP request object
-     * @param response the HTTP response object
+     * @param request  The HTTP request object.
+     * @param response The HTTP response object,
      */
     private void showPage(final HttpServletRequest request, final HttpServletResponse response) {
         /* Resource bundle. */

@@ -67,13 +67,13 @@ public final class SimpleAxisServlet extends AxisServlet {
     }
 
     /**
-     * Handle HTTP GET request. As SOAP uses POST this basically returns a
+     * Handles HTTP GET requests. As SOAP uses POST, this basically returns a
      * empty page.
      *
      * @param request
-     *          the incoming HTTP request object
+     *          The incoming HTTP request object.
      * @param response
-     *          the outgoing HTTP reponse object
+     *          The outgoing HTTP reponse object.
      */
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) {
 
@@ -129,7 +129,7 @@ public final class SimpleAxisServlet extends AxisServlet {
             return;
         }
 
-        /* Throw NullPointerException and return if service is null */
+        /* Make NullPointerException page and return if service is null */
         if (service == null) {
             handleException("No SOAPService object returned", new NullPointerException("service is null"), request, response);
             return;
@@ -168,7 +168,7 @@ public final class SimpleAxisServlet extends AxisServlet {
             if (object instanceof Document)
                 wsdl = (Document) object;
 
-            /* Throw exception and return if the WSDL data was not generated */
+            /* Make exception page and return if the WSDL data was not generated */
             if (wsdl == null) {
                 handleException("No WSDL data available", new NullPointerException("wsdl is null"), request, response);
                 return;
@@ -210,13 +210,13 @@ public final class SimpleAxisServlet extends AxisServlet {
     }
 
     /**
-     * Handle HTTP POST request. This method does the real work, handling the
+     * Handles HTTP POST requests. This method does the real work, handling the
      * SOAP requests.
      *
      * @param request
-     *            the incomming HTTP request object
+     *            The incoming HTTP request object.
      * @param response
-     *            the outgoing HTTP response object
+     *            The outgoing HTTP response object.
      */
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
 
@@ -264,8 +264,8 @@ public final class SimpleAxisServlet extends AxisServlet {
         String serviceName = request.getServletPath();
 
         /*
-         * Retrieve SOAP service object. Throw NullPointerException and return
-         * if SOAP service is null.
+         * Retrieve SOAP service object. Make NullPointerException page and
+	 * return if SOAP service is null.
          */
         try {
             service = axisEngine.getService(serviceName);
@@ -361,15 +361,15 @@ public final class SimpleAxisServlet extends AxisServlet {
     }
 
     /**
-     * Create a new MessageContext, initialized with some standard values.
+     * Creates a new MessageContext, initialized with some standard values.
      *
      * @param axisEngine
-     *          the AxisEngine that will be used to handle SOAP operations
+     *          The AxisEngine that will be used to handle SOAP operations.
      * @param request
-     *          the incoming request
+     *          The incoming request.
      * @param response
-     *          the outgoing response
-     * @return a initiated MessageContext
+     *          The outgoing response.
+     * @return An initialized MessageContext.
      */
     private MessageContext createMessageContext(final AxisEngine axisEngine, final HttpServletRequest request,
             final HttpServletResponse response) {
@@ -408,17 +408,17 @@ public final class SimpleAxisServlet extends AxisServlet {
     }
 
     /**
-     * Log exception with message and print user friendly error message to
+     * Logs exception with message and prints user friendly error message to
      * client.
      *
      * @param message
-     *            message to be logged with the exception
+     *            Message to be logged with the exception.
      * @param exception
-     *            the exception to be handled
+     *            The exception to be handled.
      * @param request
-     *            request object for this invocation
+     *            Request object for this invocation.
      * @param response
-     *            response object for this invocation
+     *            Response object for this invocation.
      */
     private void handleException(final String message, final Exception exception, final HttpServletRequest request,
             final HttpServletResponse response) {

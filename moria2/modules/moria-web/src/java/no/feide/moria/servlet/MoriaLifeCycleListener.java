@@ -38,6 +38,8 @@ public class MoriaLifeCycleListener implements ServletContextListener {
     private MessageLogger messageLogger = null;
 
     /**
+     * Is called when the servlet context is ready to process requests.
+     * @param event The notification event.
      * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
      */
     public void contextInitialized(final ServletContextEvent event) {
@@ -55,6 +57,8 @@ public class MoriaLifeCycleListener implements ServletContextListener {
     }
 
     /**
+     * Is called when the servlet context is about to be shut down.
+     * @param event The notification event.
      * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
      */
     public void contextDestroyed(final ServletContextEvent event) {
