@@ -113,9 +113,9 @@ public class Session {
         this.attributesSecLevel = webService.secLevelNameForAttributes(attributes);
         this.sessionID = sessionID;
         this.request = attributes;
-	this.urlPrefix = urlPrefix;
+        this.urlPrefix = urlPrefix;
         this.urlPostfix = urlPostfix;
-	this.client = client;
+        this.client = client;
         user = null;
 
         /* SSO */
@@ -358,7 +358,6 @@ public class Session {
         else
             return true;
     }
-
 
     /**
      * Specify the web service that uses this session.
