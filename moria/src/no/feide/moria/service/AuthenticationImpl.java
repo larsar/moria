@@ -119,6 +119,7 @@ implements AuthenticationIF, ServiceLifecycle {
                  */
             }
             
+
         } catch (ConfigurationException e) {
             log.severe("ConfigurationException caught and re-thrown as ServiceException");
             throw new ServiceException("ConfigurationException caught", e);
@@ -237,7 +238,7 @@ implements AuthenticationIF, ServiceLifecycle {
     	try {
 
             /* Look up session and check the client identity. */
-            Session session = sessionStore.getSession(id);
+            Session session = sessionStore.getSessionAuthenticated(id);
 
             String serviceName = null;
             if (ctx.getUserPrincipal() != null)
