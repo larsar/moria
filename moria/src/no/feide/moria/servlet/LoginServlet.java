@@ -385,27 +385,6 @@ public class LoginServlet extends MoriaServlet {
 
 
 
-
-
-
-    /**
-	 * @param request
-	 * @param response
-	 * @param context
-	 * @return
-	 * @throws ParseErrorException
-	 * @throws ResourceNotFoundException
-	 * @throws Exception
-	 */
-	/**
-	 * @param request
-	 * @param response
-	 * @param context
-	 * @return
-	 * @throws ParseErrorException
-	 * @throws ResourceNotFoundException
-	 * @throws Exception
-	 */
 	/**
      *  Authenticates the user based on the http request. The request
      *  should be supplied with parameters (from the login form) with
