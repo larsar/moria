@@ -1,40 +1,37 @@
 /*
  * Copyright (c) 2004 UNINETT FAS
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
- *
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program; if
+ * not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ * 
  * $Id$
- *
+ *  
  */
 
 package no.feide.moria.controller;
 
+import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+
+import no.feide.moria.authorization.AuthorizationManager;
+import no.feide.moria.configuration.ConfigurationManager;
+import no.feide.moria.configuration.ConfigurationManagerException;
+import no.feide.moria.store.InvalidTicketException;
+import no.feide.moria.store.MoriaAuthnAttempt;
 import no.feide.moria.store.MoriaStore;
 import no.feide.moria.store.MoriaStoreFactory;
 import no.feide.moria.store.UnknownTicketException;
-import no.feide.moria.store.MoriaTicket;
-import no.feide.moria.store.InvalidTicketException;
-import no.feide.moria.store.MoriaAuthnAttempt;
-import no.feide.moria.configuration.ConfigurationManager;
-import no.feide.moria.configuration.ConfigurationManagerException;
-import no.feide.moria.authorization.AuthorizationManager;
-import no.feide.moria.log.MessageLogger;
-
-import javax.servlet.ServletContext;
 
 /**
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
@@ -68,25 +65,24 @@ public class MoriaController {
     private static ServletContext servletContext;
 
     /**
-     *
-     *
+     * 
+     *  
      */
     synchronized static void init() {
         synchronized (ready) {
             // TODO: Implemented just to get the current code running
-            if (ready.booleanValue()) {
-                return;
-            }
+            if (ready.booleanValue()) { return; }
             ready = new Boolean(true);
 
             // TODO: Ensure single instance of store
             store = MoriaStoreFactory.createMoriaStore();
 
-            // TODO: Should use value specified on the command line, in startup servlet or something like that
+            // TODO: Should use value specified on the command line, in startup servlet or something
+            // like that
             if (System.getProperty("no.feide.moria.configuration.cm") == null)
-                System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
+                    System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
             if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
-                System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+                    System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
 
             /* Authorization manager */
             authzManager = new AuthorizationManager();
@@ -95,7 +91,8 @@ public class MoriaController {
             try {
                 configManager = new ConfigurationManager();
             } catch (ConfigurationManagerException e) {
-                //TODO: Handle exeption properly, should probably throw new MoriaControllerException
+                //TODO: Handle exeption properly, should probably throw new
+                // MoriaControllerException
                 System.out.println("ConfigurationManagerException caught.");
                 e.printStackTrace();
             }
@@ -125,14 +122,11 @@ public class MoriaController {
      */
     public static boolean validateLoginTicket(String loginTicketId) {
 
-        if (!ready.booleanValue()) {
-            throw new IllegalStateException("Controller is not initialized.");
-        }
+        if (!ready.booleanValue()) { throw new IllegalStateException("Controller is not initialized."); }
 
         /* Valdiate parameter */
-        if (loginTicketId == null || loginTicketId.equals("")) {
-            throw new IllegalArgumentException("loginTicketId cannot be null or an empty string.");
-        }
+        if (loginTicketId == null || loginTicketId.equals("")) { throw new IllegalArgumentException(
+                "loginTicketId cannot be null or an empty string."); }
 
         MoriaAuthnAttempt authnAttempt = null;
         try {
@@ -152,15 +146,13 @@ public class MoriaController {
     /**
      * @param loginTicketId
      * @param ssoTicketId
-     * @return
-     * @throws UnknownTicketException
+     * @return @throws UnknownTicketException
      */
-    public static String attemptSingleSignOn(String loginTicketId,
-                                             String ssoTicketId) throws UnknownTicketException {
+    public static String attemptSingleSignOn(String loginTicketId, String ssoTicketId) throws UnknownTicketException {
 
         // If the login ticket is invalid throw exception
         if (!validateLoginTicket(loginTicketId))
-            throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicketId);
+                throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicketId);
         // TODO: Implement
         return null;
     }
@@ -173,8 +165,7 @@ public class MoriaController {
      * @param domain
      * @return
      */
-    public static boolean attemptLogin(String urlId, String cookieId,
-                                       String userId, String password, String domain) {
+    public static boolean attemptLogin(String urlId, String cookieId, String userId, String password, String domain) {
         // TODO: Implement
         return false;
     }
@@ -183,63 +174,56 @@ public class MoriaController {
 
     /**
      * @param attributes
-     * @param urlPrefix
-     * @param urlPostfix
+     * @param returnURLPrefix
+     * @param returnURLPostfix
      * @param forceInteractiveAuthentication
      * @return
+     * @throws AuthorizationException
+     * @throws MoriaControllerException
      */
-    public static String initiateMoriaAuthentication(String principal, String[] attributes,
-                                                     String urlPrefix, String urlPostfix,
-                                                     boolean forceInteractiveAuthentication)
+    public static String initiateAuthentication(final String[] attributes, final String returnURLPrefix,
+            final String returnURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
             throws AuthorizationException, MoriaControllerException {
 
-        if (!ready.booleanValue()) {
-            throw new IllegalStateException("Controller not initialized");
-        }
+        if (!ready.booleanValue()) { throw new IllegalStateException("Controller not initialized"); }
 
         /* Validate parameters */
-        if (principal == null || principal.equals("")) {
-            throw new MoriaControllerException("Principal cannot be null or an empty string.");
-        }
-        if (attributes == null) {
-            throw new MoriaControllerException("Attributes cannot be null.");
-        }
-        if (urlPrefix == null || urlPrefix.equals("")) {
-            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
-        }
-        if (urlPostfix == null || urlPostfix.equals("")) {
-            throw new MoriaControllerException("URLPostfix cannot be null.");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new MoriaControllerException(
+                "servicePrincipal cannot be null or an empty string."); }
+        if (attributes == null) { throw new MoriaControllerException("Attributes cannot be null."); }
+        if (returnURLPrefix == null || returnURLPrefix.equals("")) { throw new MoriaControllerException(
+                "URLPrefix cannot be null or an empty string."); }
+        if (returnURLPostfix == null || returnURLPostfix.equals("")) { throw new MoriaControllerException(
+                "URLPostfix cannot be null."); }
 
         /* Authorization */
-        if (!authzManager.allowAccessTo(principal, attributes)) {
-            // TODO: Access log
-            throw new AuthorizationException("Access to the requested attributes is denied.");
-        }
-        if (!authzManager.allowOperations(principal, new String[]{"InteractiveAuth"})) {
-            throw new AuthorizationException("Access to the requested operations is denied.");
-        }
+        if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
+        // TODO: Access log
+        throw new AuthorizationException("Access to the requested attributes is denied."); }
+        if (!authzManager.allowOperations(servicePrincipal, new String[] { "InteractiveAuth"})) { throw new AuthorizationException(
+                "Access to the requested operations is denied."); }
 
         /* URL validation */
-        if (urlPrefix == null || urlPrefix.equals("")) {
-            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
-        }
-        if (urlPostfix == null) {
-            throw new MoriaControllerException("URLPostfix cannot be null.");
-        }
-        if (!(isLegalURL(urlPrefix + "FakeMoriaID" + "urlPostfix"))) {
-            throw new MoriaControllerException("URLPrefix and URLPostfix combined does not make a valid URL.");
-        }
+        if (returnURLPrefix == null || returnURLPrefix.equals("")) { throw new MoriaControllerException(
+                "URLPrefix cannot be null or an empty string."); }
+        if (returnURLPostfix == null) { throw new MoriaControllerException("URLPostfix cannot be null."); }
+        if (!(isLegalURL(returnURLPrefix + "FakeMoriaID" + "urlPostfix"))) { throw new MoriaControllerException(
+                "URLPrefix and URLPostfix combined does not make a valid URL."); }
 
         /* Create authentication attempt */
-        return store.createAuthnAttempt(attributes, urlPrefix, urlPostfix, principal, forceInteractiveAuthentication);
+        return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, servicePrincipal,
+                forceInteractiveAuthentication);
     }
 
     /**
      * @param ticketId
-     * @return
+     * @param servicePrincipal
+     * @return map containing user attributes in strings or string arrays
+     * @throws AuthorizationException
+     * @throws MoriaControllerException
      */
-    public static String[] getUserAttributes(String ticketId) {
+    public static Map getUserAttributes(final String ticketId, final String servicePrincipal) throws AuthorizationException,
+            MoriaControllerException {
         // TODO: Implement
         return null;
     }
@@ -248,10 +232,27 @@ public class MoriaController {
      * @param attributes
      * @param userId
      * @param password
-     * @param domain
-     * @return
+     * @param servicePrincipal
+     * @return Map containing user attributes in strings or string arrays
+     * @throws AuthorizationException
+     * @throws MoriaControllerException
      */
-    public static String directNonInteractiveAuthentication(String[] attributes, String userId, String password, String domain) {
+    public static Map directNonInteractiveAuthentication(final String[] attributes, final String userId, final String password,
+            final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
+        // TODO: Implement
+        return null;
+    }
+
+    /**
+     * @param attributes
+     * @param proxyTicket
+     * @param servicePrincipal
+     * @return Map containing user attributes in strings or string arrays
+     * @throws AuthorizationException
+     * @throws MoriaControllerException
+     */
+    public static Map proxyAuthentication(final String[] attributes, final String proxyTicket, final String servicePrincipal)
+            throws AuthorizationException, MoriaControllerException {
         // TODO: Implement
         return null;
     }
@@ -280,10 +281,9 @@ public class MoriaController {
     }
 
     /**
-     * Start the controller. The controller is supposed to be started from a servlet.
-     * The supplied ServletContext can be used to transfer config from the configuration
-     * manager to the servlets.
-     *
+     * Start the controller. The controller is supposed to be started from a servlet. The supplied
+     * ServletContext can be used to transfer config from the configuration manager to the servlets.
+     * 
      * @param sc the servletContext from the caller
      */
     public static void initController(ServletContext sc) {
@@ -293,27 +293,20 @@ public class MoriaController {
     }
 
     /**
-     * Validate URL. Uses blacklist to indicate whether the URL should
-     * be accepted or not.
-     *
+     * Validate URL. Uses blacklist to indicate whether the URL should be accepted or not.
+     * 
      * @param url the URL to validate
      * @return true if the URL is valid, else false
      */
     static boolean isLegalURL(String url) {
         // TODO: Implement a more complete URL validator
 
-        if (url == null || url.equals("")) {
-            throw new IllegalArgumentException("url must be a non-empty string.");
-        }
+        if (url == null || url.equals("")) { throw new IllegalArgumentException("url must be a non-empty string."); }
 
-        String[] illegal = new String[]{
-            "\n",
-            "\r"
-        };
+        String[] illegal = new String[] { "\n", "\r"};
 
         /* Protocol */
-        if (url.indexOf("http://") != 0 && url.indexOf("https://") != 0)
-            return false;
+        if (url.indexOf("http://") != 0 && url.indexOf("https://") != 0) return false;
 
         /* Illegal characters */
         for (int i = 0; i < illegal.length; i++) {
