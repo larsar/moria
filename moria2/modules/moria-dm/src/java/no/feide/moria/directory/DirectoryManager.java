@@ -114,13 +114,14 @@ public class DirectoryManager {
         }
         indexTimer.scheduleAtFixedRate(indexUpdater, configuration.getIndexUpdateFrequency(), configuration.getIndexUpdateFrequency());
 
-        // Set the backend factory class.
+        // Set the backend factory class and set its configuration.
         // TODO: Gracefully handle switch between backend factories? Unlikely...
         Constructor constructor = null;
         try {
 
             constructor = configuration.getBackendFactoryClass().getConstructor(null);
             backendFactory = (DirectoryManagerBackendFactory) constructor.newInstance(null);
+            backendFactory.setConfig(configuration.getBackendElement());
 
         } catch (NoSuchMethodException e) {
             log.logCritical("Cannot find backend factory constructor", e);
