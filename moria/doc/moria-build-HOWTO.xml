@@ -150,10 +150,6 @@
 
           <itemizedlist>
             <listitem>
-              <para><filename>commons-logging.jar</filename>, from JWSDP 1.1.</para>
-            </listitem>
-
-            <listitem>
               <para><filename>cos.jar</filename>; from com.oreilly.servlet
               05Nov2002.</para>
             </listitem>
