@@ -38,21 +38,21 @@ public class MoriaStoreConfigurationException extends RuntimeException {
     /**
      * @see java.lang.RuntimeException(java.lang.String)
      */
-    public MoriaStoreConfigurationException(String message) {
+    public MoriaStoreConfigurationException(final String message) {
         super(message);
     }
 
     /**
      * @see java.lang.RuntimeException(java.lang.Throwable)
      */
-    public MoriaStoreConfigurationException(Throwable cause) {
+    public MoriaStoreConfigurationException(final Throwable cause) {
         super(cause);
     }
 
     /**
      * @see java.lang.RuntimeException(java.lang.String, java.lang.Throwable)
      */
-    public MoriaStoreConfigurationException(String message, Throwable cause) {
+    public MoriaStoreConfigurationException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

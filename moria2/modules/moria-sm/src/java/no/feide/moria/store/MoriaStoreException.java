@@ -38,21 +38,21 @@ public class MoriaStoreException extends Exception {
     /**
      * @see java.lang.Exception(java.lang.String)
      */
-    public MoriaStoreException(String message) {
+    public MoriaStoreException(final String message) {
         super(message);
     }
 
     /**
      * @see java.lang.Exception(java.lang.Throwable)
      */
-    public MoriaStoreException(Throwable cause) {
+    public MoriaStoreException(final Throwable cause) {
         super(cause);
     }
 
     /**
      * @see java.lang.Exception(java.lang.String, java.lang.Throwable)
      */
-    public MoriaStoreException(String message, Throwable cause) {
+    public MoriaStoreException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
