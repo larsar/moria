@@ -472,6 +472,11 @@ public class LoginServlet extends VelocityServlet {
         String realm    = request.getParameter("realm");
         String password = request.getParameter("password");
 
+        /* Add .no to realm as default. */
+        if (realm.indexOf(".") == -1) 
+            realm += ".no";
+
+        /* Concatinate realm with username */
         if (realm != null && !realm.equals(""))
             username += "@"+realm;
 
