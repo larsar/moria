@@ -78,15 +78,18 @@ public class LoginServlet extends HttpServlet {
         Properties config = getConfig();
 
         /* Public computer (deny SSO)? */
-        String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO),
-                                                          request.getCookies());
+        String denySSOChoice = "false";
+        if (request.getCookies() != null) {
+            denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO),
+                                                       request.getCookies());
+        }
         boolean denySSO;
         if (denySSOChoice == null || denySSOChoice.equals("false") || denySSOChoice.equals("")) {
             request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(false));
-            denySSO = true;
+            denySSO = false;
         } else {
             request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(true));
-            denySSO = false;
+            denySSO = true;
         }
 
         /* Single Sign On */
@@ -94,7 +97,7 @@ public class LoginServlet extends HttpServlet {
             String serviceTicket;
             try {
                 String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
-                String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM),
+                String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_SSO),
                                                                 request.getCookies());
                 serviceTicket = MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
 
@@ -104,9 +107,9 @@ public class LoginServlet extends HttpServlet {
 
                 /* Single Sign On succeeded, we're finished. */
                 return;
-            } catch(UnknownTicketException e) {
+            } catch (UnknownTicketException e) {
                 /* Single Sing On failed, continue with normal authentication */
-            } catch(MoriaControllerException e) {
+            } catch (MoriaControllerException e) {
                 /* Do not handle this exception here. Will be handeled by the showLoginPage method. */
             }
         }
@@ -190,12 +193,15 @@ public class LoginServlet extends HttpServlet {
                 RequestUtil.createCookie(RequestUtil.PROP_COOKIE_ORG,
                                          request.getParameter(RequestUtil.PARAM_ORG),
                                          new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue());
-        Cookie ssoTicketCookie =
-                RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO),
-                                         (String) tickets.get(MoriaController.SSO_TICKET),
-                                         new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
         response.addCookie(orgCookie);
-        response.addCookie(ssoTicketCookie);
+
+        if (!denySSO) {
+            Cookie ssoTicketCookie =
+                    RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO),
+                                             (String) tickets.get(MoriaController.SSO_TICKET),
+                                             new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
+            response.addCookie(ssoTicketCookie);
+        }
 
         /* Redirect back to web service */
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
