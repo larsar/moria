@@ -52,14 +52,9 @@ public class User {
     /** The set of initial backend URLs. */
     private Vector initialURLs = new Vector();
     
-    // The index of the currently used initial URL.
-    private int initialURLIndex = 0;
-    
-    // Used to avoid endless loop through initial URLs.
-    private int initialURLFailures;
-       
-    /** The currently used URL to the LDAP backend. */
-    private String ldapURL; 
+    // The index of the currently used initial URL. All access should be
+    // synchronized!
+    private static Integer initialURLIndex = new Integer(0);
     
     /**
      * The number of referrals we've followed. Used to switch to a secondary
@@ -83,7 +78,6 @@ public class User {
             if (url == null)
                 break; // No more URLs.
             initialURLs.add(url);
-            log.config("Added initial URL: "+url);
         }
     }
     
@@ -141,7 +135,7 @@ public class User {
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         initialized = true;
     }
-    
+  
     
     /**
      * Initializes the connection to the backend, and authenticates the user
@@ -189,18 +183,41 @@ public class User {
         
         try {
             
-            // Prepare LDAP context and look up user element.
+            // Try all initial (index) servers, if necessary.
             Hashtable env = new Hashtable();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-            ldapURL = (String)initialURLs.get(initialURLIndex);
-            env.put(Context.PROVIDER_URL, ldapURL);
             env.put(Context.REFERRAL, "throw");  // To catch referrals.
-            ldap = new InitialLdapContext(env, null);
+            int failures = 0;
+            synchronized (initialURLIndex) {
+                do {
+                    int index = initialURLIndex.intValue();
+                    env.put(Context.PROVIDER_URL, (String)initialURLs.get(index));
+                    try {
+                        ldap = new InitialLdapContext(env, null);
+                    } catch (CommunicationException e) {
+                        if (e.getRootCause() instanceof ConnectException)
+
+                            // Switch to another initial URL, if available.
+                            failures++;
+                            if (failures == initialURLs.size()) {
+                                log.severe("Unable to connect to any initial (index) server; last URL was "+env.get(Context.PROVIDER_URL));
+                                throw new BackendException("Unable to connect to any initial (index) server; last URL was "+env.get(Context.PROVIDER_URL));
+                            }
+                            index++;
+                            if (index == initialURLs.size())
+                                initialURLIndex = new Integer(0);
+                            else
+                                initialURLIndex = new Integer(index);
+                            log.config("Unable to connect to "+env.get(Context.PROVIDER_URL)+", switching to "+(String)initialURLs.get(initialURLIndex.intValue()));
+
+                        }
+                } while (ldap == null);
+            }
+
+            // Search for user element.
 	    log.config("Connected to "+env.get(Context.PROVIDER_URL));
             ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-            referrals = 0;  // Starting a new search chain.
-            initialURLFailures = 0;  // To avoid an endless loop through the initial URL list.
             rdn = ldapSearch(pattern);
             if (rdn == null) {
                 // No user element found.
@@ -232,14 +249,10 @@ public class User {
     /**
      * Do a subtree search for an element given a pattern. Only the first
      * element found is considered. Any referrals are followed recursively.
-     * <em>Note:</em> The default timeout for the first search is 5 seconds,
-     *                while the default timeout for any subsequent searches
-     *                is 15 seconds. Override this in the Moria configuration
-     *                by setting
-     *                <code>no.feide.moria.backend.ldap.initialTimeout</code>
-     *                and
-     *                <code>no.feide.moria.backend.ldap.searchTimeout</code>,
-     *                respectively.
+     * <em>Note:</em> The default timeout when searching is 10 seconds,
+     *                unless
+     *                <code>no.feide.moria.backend.ldap.timeout</code> is
+     *                set.
      * @param pattern The search pattern.
      * @return The element's relative DN, or <code>null</code> if none was
      *         found.
@@ -253,25 +266,15 @@ public class User {
         
         try {
             
-            /**
-             * Should we use the initial (shorter, for LIMS) or secondary
-             * (longer, for LDAP) timeout?
-             **/
-            int timeout = 0;
-            try {
-                if (referrals == 0)
-                    timeout = Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.initialTimeout", "5"));
-                else
-                    timeout = Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.searchTimeout", "15"));
-            } catch (ConfigurationException e) {
-                log.severe("ConfigurationException caught and re-thrown as BackendException");
-                throw new BackendException(e);
-            }
-            
-            NamingEnumeration results = null;
+            NamingEnumeration results;
             try {
                 // Search and destroy.
-                results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, timeout, new String[] {}, false, true));
+                try {
+                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, true));
+                } catch (ConfigurationException e) {
+                    log.severe("ConfigurationException caught and re-thrown as BackendException");
+                    throw new BackendException(e);
+                }
                 if (!results.hasMore()) {
                     log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                     return null;
@@ -281,7 +284,6 @@ public class User {
                 
                 // We just caught a referral. Follow it recursively, enabling
                 // SSL.
-                referrals++;  // Now we've definately left the index server...
                 log.info("Enabling SSL");
                 Hashtable refEnv = new Hashtable();
                 refEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -293,34 +295,10 @@ public class User {
                 ldap = new InitialLdapContext(refEnv, null);
                 return ldapSearch(pattern);
                 
-            } catch (CommunicationException e) {
-                
-                // Unable to connect to an initial URL?
-                if ( (e.getRootCause() instanceof ConnectException) &&
-                     (referrals == 0) ) {
-                    
-                    // Have we exhausted our list of initial URLs?
-                    initialURLFailures++;
-                    if (initialURLFailures == initialURLs.size()){
-                        log.severe("Unable to connect to any initial (index) server; last URL was "+ldapURL);
-                        throw new BackendException("Unable to connect to any initial (index) server; last URL was "+ldapURL);
-                    }
-                        
-                    // Switch to another URL.
-                    initialURLIndex++;
-                    if (initialURLIndex == initialURLs.size())
-                        initialURLIndex = 0;
-                    String message = "Unable to connect to "+ldapURL+", switching to ";
-                    ldapURL = (String)initialURLs.get(initialURLIndex);
-                    log.config(message+ldapURL);
-                    return ldapSearch(pattern);
-                }
-                
             }
             
             // We just found an element.
             SearchResult entry = (SearchResult)results.next();
-            //assert entry != null : entry;  // Sanity check.
             String rdn = entry.getName();
             log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to element "+rdn);
             return rdn;
