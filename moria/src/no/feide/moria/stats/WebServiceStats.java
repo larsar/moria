@@ -88,6 +88,11 @@ public class WebServiceStats {
     }
    
 
+
+    /**
+     * Increase a counter by one.
+     * @param counter Name of the counter
+     */
     void increaseCounter(String counter) {
         Integer value = (Integer) counters.get(counter);
 
@@ -99,6 +104,10 @@ public class WebServiceStats {
 
     }
 
+    /**
+     * Decrease a counter by one.
+     * @param counter Name of the counter
+     */
     void decreaseCounter(String counter) {
         Integer value = (Integer) counters.get(counter);
 
@@ -112,6 +121,16 @@ public class WebServiceStats {
     }
     
     
+     /**
+     * Reset a counter.
+     * @param counter Name of the counter
+     */
+   void resetCounter(String counter) {
+        counters.put(counter, new Integer(0));
+    }
+
+
+
     /** 
      * Updated timestamp
      */
