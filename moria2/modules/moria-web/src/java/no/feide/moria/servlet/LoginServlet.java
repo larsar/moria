@@ -238,10 +238,9 @@ extends HttpServlet {
             showLoginPage(request, response, RequestUtil.ERROR_NO_CREDENTIALS);
             return;
         } catch (AuthorizationException e) {
-            showLoginPage(request, response, RequestUtil.ERROR_AUTHORIZATION_FAILED); 
+            showLoginPage(request, response, RequestUtil.ERROR_AUTHORIZATION_FAILED);
             return;
         }
-        
 
         // Authentication is now complete.
 
@@ -289,6 +288,8 @@ extends HttpServlet {
             serviceProperties = MoriaController.getServiceProperties(loginTicketId);
             request.setAttribute(RequestUtil.ATTR_SEC_LEVEL, "" + MoriaController.getSecLevel(loginTicketId));
 
+            // TODO: Move error handling into doGet instead, where
+            // MoriaControllException is ignored.
         } catch (UnknownTicketException e) {
             errorType = RequestUtil.ERROR_UNKNOWN_TICKET;
         } catch (IllegalInputException e) {
@@ -326,7 +327,7 @@ extends HttpServlet {
             if (selectedOrg == null || selectedOrg.equals(""))
                 if (serviceProperties != null)
                     selectedOrg = (String) serviceProperties.get(RequestUtil.CONFIG_HOME);
-                
+
         }
         request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, selectedOrg);
 
@@ -340,7 +341,7 @@ extends HttpServlet {
             request.setAttribute(RequestUtil.ATTR_CLIENT_NAME, serviceProperties.get(RequestUtil.CONFIG_DISPLAY_NAME));
             request.setAttribute(RequestUtil.ATTR_CLIENT_URL, serviceProperties.get(RequestUtil.CONFIG_URL));
         }
-        
+
         // Link to the faq
         request.setAttribute("faqlink", config.get(RequestUtil.FAQ_LINK));
 
