@@ -31,6 +31,8 @@ import java.util.Vector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.TreeMap;
+import java.util.Properties;
 
 /**
  * This class is a toolkit for the servlets and it's main functionality is to retrieve
@@ -40,6 +42,9 @@ import java.util.Enumeration;
  * @version $Revision$
  */
 public abstract class RequestUtil extends HttpServlet {
+
+    /** Prefix for the institution names configuration. */
+    private static final String CONFIG_ORG_PREFIX = "org_";
 
     /**
      * Generate a resource bundle. The language of the resource bundle is selected
@@ -168,7 +173,6 @@ public abstract class RequestUtil extends HttpServlet {
             throw new IllegalArgumentException("cookies cannot be null");
         }
 
-
         String value = null;
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
@@ -270,5 +274,53 @@ public abstract class RequestUtil extends HttpServlet {
         }
 
         return (String[]) sortedLangs.toArray(new String[sortedLangs.size()]);
+    }
+
+    /**
+     * Reads institution names from the servlet config and generates a TreeMap with the result.
+     *
+     * @param config   the web modules configuration
+     * @param language the language to generate institution names on
+     * @return         a TreeMap of institution names with full name as key and id as value object
+     */
+    static TreeMap organizationNames(final Properties config, final String language) {
+        /* Validate parameters */
+        if (config == null) {
+            throw new IllegalArgumentException("config cannot be null.");
+        }
+        if (language == null || language.equals("")) {
+            throw new IllegalArgumentException("language must be a non-empty string.");
+        }
+
+        String orgNames = config.getProperty(CONFIG_ORG_PREFIX + language);
+        if (orgNames == null) {
+            throw new IllegalStateException("No organization names in config.");
+        }
+
+        StringTokenizer tokenizer = new StringTokenizer(orgNames, ",");
+        TreeMap names = new TreeMap();
+
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken();
+            int index = token.indexOf(":");
+
+            /* Abort if there is no separator in token */
+            if (index == -1) {
+                // TODO: Log
+                throw new IllegalStateException("Institution name config has wrong format.");
+            }
+
+            String shortName = token.substring(0, index);
+            String longName = token.substring(index + 1, token.length());
+
+            /* Abort if there is more than one separator in one token */
+            if (shortName.indexOf(":") != -1 || longName.indexOf(":") != -1) {
+                throw new IllegalStateException("Institution name config has wrong format.");
+            }
+
+            names.put(longName, shortName);
+        }
+
+        return names;
     }
 }
