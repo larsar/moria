@@ -89,9 +89,6 @@ public class LoginServlet extends MoriaServlet {
     /** Local pointer to session store. */
     private SessionStore sessionStore;
     
-    /** Flag if the user should be displayed a complete list of attributes. */
-    private boolean showAllAttributes = false;
-
     /** Default language */
     private static String defaultLang;
 
@@ -280,26 +277,15 @@ public class LoginServlet extends MoriaServlet {
             context.put("expl_data", context.get("expl_data_"+secLevel));
 
             /* Detailed list of attributes */
-            if (showAllAttributes) {
-                Vector attrNames = new Vector();
+			if (request.getParameter("showAttrs") != null) {
+              	Vector attrNames = new Vector();
                 HashMap attributes = session.getWebService().getAttributes();
                 for (Iterator it = attributes.keySet().iterator(); it.hasNext();) {
                     attrNames.add(context.get("ldap_"+it.next()));
                 }
                 context.put("attrNames", attrNames);
-
-                /* Link to page with detailed attribute list. */
-                if (context.get("attrs_hide") != null)
-                    context.put("showHideLink", "<A href=\""+loginURL+"?id="+sessionID+"\">"+context.get("attrs_hide")+"</A>");
-                else 
-                    context.put("showHideLink", "");
-            }
-            else if (context.get("attrs_show") != null) {
-                context.put("showHideLink", "<A href=\""+loginURL+"?id="+sessionID+"&showAttrs=yes\">"+context.get("attrs_show")+"</A>");
-            }
-            else 
-                context.put("showHideLink", "");
-        }
+			}
+         }
         else 
             /* If no sessionID then remove loginURL */
             context.remove("loginURL");
@@ -328,10 +314,6 @@ public class LoginServlet extends MoriaServlet {
         String id = request.getParameter("id");
         log.fine("SessionID: "+id);
 
-        if (request.getParameter("showAttrs") != null)
-            showAllAttributes = request.getParameter("showAttrs").equals("yes");
-        else 
-            showAllAttributes = false;
 
 
 
