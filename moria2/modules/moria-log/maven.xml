@@ -2,6 +2,8 @@
 
 <!-- $Id$ -->
 
+<!-- Module: moria-log -->
+
 <project
   xmlns:j="jelly:core"
   xmlns:m="jelly:maven"
@@ -10,7 +12,7 @@
 
   <postGoal
      name="test:prepare-filesystem">
-    <mkdir dir="${maven.build.dir}/logs"/>
+    <mkdir dir="${maven.build.dir}/test-logs"/>
   </postGoal>
 
   <goal
