@@ -1,6 +1,8 @@
-maven.log
 velocity.log
+maven.log
+target
 .classpath
 .project
-target
-*~
+moria-web.ipr
+moria-web.iws
+build.properties
