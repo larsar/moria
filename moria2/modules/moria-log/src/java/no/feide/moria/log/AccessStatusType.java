@@ -36,6 +36,12 @@ public final class AccessStatusType implements Serializable {
      */
     private final String name;
 
+    /** Ordinal of next status type to be created. */
+    private static int nextOrdinal = 0;
+
+    /** Assigns an ordinal to this status type. */
+    private final int ordinal = nextOrdinal++;
+
     /**
      * Default private constructor.
      *
@@ -72,8 +78,7 @@ public final class AccessStatusType implements Serializable {
     /**
      * Access log type used to indicate that the service requests illegal attributes.
      */
-    public static final AccessStatusType ACCESS_DENIED_INITIATE_AUTH = new AccessStatusType(
-            "ACCESS DENIED INITIATE AUTH");
+    public static final AccessStatusType ACCESS_DENIED_INITIATE_AUTH = new AccessStatusType("ACCESS DENIED INITIATE AUTH");
 
     /**
      * Access log type used to indicate that the service requests illegal attributes.
@@ -89,6 +94,21 @@ public final class AccessStatusType implements Serializable {
     /**
      * Access log type used to indicate that the service requests illegal proxy authentication.
      */
-    public static final AccessStatusType ACCESS_DENIED_PROXY_AUTH = new AccessStatusType(
-            "ACCESS DENIED PROXY AUTH");
+    public static final AccessStatusType ACCESS_DENIED_PROXY_AUTH = new AccessStatusType("ACCESS DENIED PROXY AUTH");
+
+    /**
+     * Static array that hold all objects. Used by readResolve() to
+     * return correct object after de-serialization.
+     */
+    private static final AccessStatusType[] TYPES = {BAD_USER_CREDENTIALS, BAD_SERVICE_CREDENTIALS, OPERATIONS_NOT_PERMITTED,
+            ACCESS_DENIED_INITIATE_AUTH, ACCESS_DENIED_DIRECT_AUTH, ACCESS_DENIED_VERIFY_USER_EXISTENCE, ACCESS_DENIED_PROXY_AUTH};
+
+    /**
+     * Needed for serialization to work.
+     *
+     * @return the local classloader representation of the object.
+     */
+    Object readResolve() {
+        return TYPES[ordinal];
+    }
 }
