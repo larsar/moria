@@ -38,36 +38,50 @@
        ignoreFailures="false"/>
   </goal>
 
-  <goal
-     name="project:clean"
-     description="Cleans all sub-projects">
-
-    <m:reactor
-       basedir="${basedir}"
-       postProcessing="false"
-       includes="**/${pattern}/**/project.xml"
-       excludes="project.xml"
-       goals="clean"
-       banner="Building"
-       ignoreFailures="false"/>
-
-    <attainGoal name="clean"/>
+  <goal name="project:clean"
+        description="Clean all sub-projects">
+    <m:reactor basedir="${basedir}"
+               postProcessing="false"
+               includes="**/${pattern}/**/project.xml"
+               excludes="project.xml"
+               goals="clean:clean"
+               banner="Cleaning"
+               ignoreFailures="false"/>
   </goal>
 
-  <goal
-     name="project:site-generate"
-     description="Deploy the complete site, including all modules">
-
-    <m:reactor
-       basedir="${basedir}"
-       postProcessing="false"
-       includes="**/${pattern}/**/project.xml"
-       excludes="project.xml"
-       goals="site:generate"
-       banner="Deploying site"
-       ignoreFailures="false"/>
-
+  <goal name="project:site-generate"
+        description="Generate the complete site, including all modules">
+    <m:reactor basedir="${basedir}"
+               postProcessing="false"
+               includes="**/${pattern}/**/project.xml"
+               excludes="project.xml"
+               goals="site:generate"
+               banner="Generating site"
+               ignoreFailures="false"/>
     <attainGoal name="site:generate"/>
+ 
+    <!--
+      Dirty hack to gather generated sites from all subprojects...
+    -->
+    <copy todir="target/docs/moria-am" failonerror="false">
+      <fileset dir="modules/moria-am/target/docs"/>
+    </copy>
+    <copy todir="target/docs/moria-ctrl" failonerror="false">
+      <fileset dir="modules/moria-ctrl/target/docs"/>
+    </copy>
+    <copy todir="target/docs/moria-dm" failonerror="false">
+      <fileset dir="modules/moria-dm/target/docs"/>
+    </copy>
+    <copy todir="target/docs/moria-log" failonerror="false">
+      <fileset dir="modules/moria-log/target/docs"/>
+    </copy>
+    <copy todir="target/docs/moria-sm" failonerror="false">
+      <fileset dir="modules/moria-sm/target/docs"/>
+    </copy>
+    <copy todir="target/docs/moria-web" failonerror="false">
+      <fileset dir="modules/moria-web/target/docs"/>
+    </copy>
+
   </goal>
 
   <goal
