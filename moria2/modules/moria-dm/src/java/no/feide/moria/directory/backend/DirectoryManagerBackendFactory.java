@@ -4,7 +4,7 @@
  */
 package no.feide.moria.directory.backend;
 
-import java.util.Properties;
+import org.jdom.Element;
 
 /**
  * The interface to the backend factory.
@@ -18,7 +18,7 @@ public interface DirectoryManagerBackendFactory {
      *            The backend configuration. See details for the actual backend
      *            implementation used.
      */
-    public void setConfig(Properties config);
+    public void setConfig(Element config);
 
 
     /**
