@@ -21,17 +21,6 @@ public class SessionStore {
     private Hashtable sessions = new Hashtable();
    
     
-    /**
-     * Private constructor. Does nothing.
-     */
-    /*
-    private SessionStore()
-    throws SessionException {
-        log.finer("SessionStore()");
-    }
-    */
-
-
     /** 
      * Returns a pointer to the SessionStore singelton object.
      * @return SessionStore
@@ -79,19 +68,21 @@ public class SessionStore {
      * Creates a new session, with an attribute request.
      * @param attributes The list of requested attribute names, possibly
      *                   <code>null</code>.
-     * @param url The resource URL, where the user should be redirected
-     *            once authentication is complete. May be
-     *            <code>null</code>.
+     * @param prefix The prefix, used to build the <code>verifySession</code>
+     *               return value. May be <code>null</code>.
+     * @param postfix The postfix, used to build the
+     *                <code>verifySession</code> return value.
+     *                May be <code>null</code>.
      * @param client Identifies the client service initiating the session.
      *               May be <code>null</code>.
      * @return A new session.
      */
-    public Session createSession(String[] attributes, String url, Principal client)
+    public Session createSession(String[] attributes, String prefix, String postfix, Principal client)
     throws SessionException {
-        log.finer("createSession(String[], String, Principal)");
+        log.finer("createSession(String[], String, String, Principal)");
 
         String sessionID = generateSessionID();
-        Session session = new Session(sessionID, attributes, url, client);
+        Session session = new Session(sessionID, attributes, prefix, postfix, client);
         sessions.put(sessionID, session);
         return session;
     }
@@ -158,21 +149,23 @@ public class SessionStore {
      * @param sessionID The (second-round) session ID.
      * @return The resource return URL, which may be an empty string
      *         if not set. <code>null</code> if not authenticated.
+     * @return The concatenated string <code>[prefix][id][postfix]</code>
+     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
+     *         parameter strings given to the constructor. Returns
+     *         <code>null</code> if the session ID was not recognized, or
+     *         did not belong to an authenticated session.
      */
-    // Should not be here. Belongs in Session
     public String verifySession(String sessionID)
     throws SessionException {
         log.finer("verifySession(String)");
         
         // Look up session.
         Session session = (Session)sessions.get(sessionID);
-        if (session == null) {
+        if ( (session == null) || !session.isAuthenticated() ) {
             log.warning("No such session: "+sessionID);
             return null;
 	}
-	if (session.getReturnURL() == null)
-	    return "";
-	return session.getReturnURL();
+	return session.getPrefixPostfixCompound();
     }
 
 

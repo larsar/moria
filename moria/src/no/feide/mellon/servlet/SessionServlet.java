@@ -37,7 +37,8 @@ extends HttpServlet {
         
         try {       
 	    // Verify request query.
-	    if ( (request.getParameter("url") == null) && (request.getParameter("id") == null) ) {
+	    if ( (request.getParameter("url") == null) &&
+                 (request.getParameter("id") == null) ) {
 	        log.severe("Neither URL or ID included in request query: "+request.getQueryString());
 		throw new ServletException("Neither URL or ID included in request query: "+request.getQueryString());
 	    }
@@ -49,8 +50,10 @@ extends HttpServlet {
             if (request.getParameter("id") == null) { 
                 
                 // First round; create a new Moria session and get the session
-                // descriptor. Also, request the user attributes.
-                SessionDescriptor session = moria.requestSession(new String[] {"cn", "uid"}, request.getParameter("url"));
+                // descriptor. Also, request the user attributes. Note that
+                // we map the URL parameter to the prefix, and omit the
+                // postfix.
+                SessionDescriptor session = moria.requestSession(new String[] {"cn", "uid"}, request.getParameter("url"), null);
 
                 // Redirect to the session URL and include the session ID.
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  // Shouldn't this be SC_FOUND?
@@ -62,9 +65,9 @@ extends HttpServlet {
                 
                 // Second round; verify the Moria session.
 		String id = request.getParameter("id");
-		String url = moria.verifySession(id);
+		String compound = moria.verifySession(id);
 
-                if (url == null) {
+                if (compound == null) {
                     // Some user-friendly HTML should go here...
                     log.severe("Session does not exist: "+id);
                     throw new ServletException("Session does not exist: "+id);
@@ -83,10 +86,13 @@ extends HttpServlet {
                 }
                 log.info(buffer.toString());
                 
-		// Redirect to the original resource URL.
+		// Redirect to the original resource URL. Note that this
+                // will add the second-round session ID to the original URL
+                // parameter which means your web server better be ready to
+                // handle the compound...
 		response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  // Shouldn't this be SC_FOUND?
-		response.setHeader("Location", url);
-		log.info("Redirect to resource: "+url);
+		response.setHeader("Location", compound);
+		log.info("Redirect to resource: "+compound);
 	    }
         
         } catch (Exception e) {

@@ -83,22 +83,25 @@ implements AuthenticationIF, ServiceLifecycle {
      * @param attributes The requested user attributes, to be returned from
      *                   <code>verifySession()</code> once authentication is
      *                   complete. <code>null</code> value allowed.
-     * @param url The resource URL, where the user will be redirected once
-     *            authentication is complete. May be <code>null</code>.
+     * @param prefix The prefix, used to build the <code>verifySession</code>
+     *               return value. May be <code>null</code>.
+     * @param postfix The postfix, used to build the
+     *                <code>verifySession</code> return value. May be
+     *                <code>null</code>.
      * @return A new session descriptor, or <code>null</code> if a new session
                could not be established.
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught.
      */
-    public SessionDescriptor requestSession(String[] attributes, String url)
+    public SessionDescriptor requestSession(String[] attributes, String prefix, String postfix)
     throws RemoteException {
-        log.finer("requestSession(String[], String)");
+        log.finer("requestSession(String[], String, String)");
         
         try {
             // Create a new session.
 	    Principal p = ctx.getUserPrincipal();
 	    log.fine("Client service requesting session: "+p);
-            Session session = SessionStore.getInstance().createSession(attributes, url, p);
+            Session session = SessionStore.getInstance().createSession(attributes, prefix, postfix, p);
             if (session == null) {
                 log.warning("Unable to create session");
                 return null;
@@ -113,21 +116,42 @@ implements AuthenticationIF, ServiceLifecycle {
 
 
     /**
-     * Request a new Moria session, without asking for a set of user attributes.
-     * Actually a simple wrapper for <code>requestSession(String[], String)</code>
-     * with an empty (<code>null</code>) attribute request array.
-     * @param url The resource URL, where the user will be redirected once
-     *            authentication is complete. May be <code>null</code>.
+     * Request a new Moria session, without asking for a set of user
+     * attributes. Actually a simple wrapper for
+     * <code>requestSession(String[], String)</code> with an empty
+     * (<code>null</code>) attribute request array.
+     * @param prefix The prefix, used to build the <code>verifySession</code>
+     *               return value.
+     * @param postfix The postfix, used to build the
+     *                <code>verifySession</code> return value.
      * @return A new session descriptor, or <code>null</code> if a new session
                could not be established.
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught.
      */
-    public SessionDescriptor requestSession(String url)
+    public SessionDescriptor requestSession(String prefix, String postfix)
     throws RemoteException {
-        log.finer("requestSession(String)");
+        log.finer("requestSession(String, String)");
 
-	return requestSession(null, url);
+	return requestSession(null, prefix, postfix);
+    }
+    
+    
+    /**
+     * Request a new Moria session, without asking for a set of user
+     * attributes or prefix/postfix. Actually a simple wrapper for
+     * <code>requestSession(String[], String)</code> with empty
+     * (<code>null</code>) attribute request array and prefix/postfix.
+     * @return A new session descriptor, or <code>null</code> if a new session
+               could not be established.
+     * @throws RemoteException If a SessionException or a
+     *                         BackendException is caught.
+     */
+    public SessionDescriptor requestSession()
+    throws RemoteException {
+        log.finer("requestSession()");
+
+	return requestSession(null, null, null);
     }
     
     
@@ -135,7 +159,9 @@ implements AuthenticationIF, ServiceLifecycle {
      * Verify a Moria session; that is, check that exists and has been
      * through authentication.
      * @param id The session ID.
-     * @return The resource return URL, or <code>null</code> if not set.
+     * @return The concatenated string <code>[prefix][id][postfix]</code>
+     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
+     *         parameter strings given to <code>requestSession</code>.
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught. Also thrown if
      *                         the current client's identity (as found in

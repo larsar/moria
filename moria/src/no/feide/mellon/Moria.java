@@ -93,18 +93,22 @@ public class Moria {
     
     /**
      * Wrapper for same JAX-RPC stub of same name.
-     * @param attributes
-     * @param url
-     * @return
+     * @param attributes The names of requested attributes, to be returned
+     *                   later throught <code>getAttributes</code>.
+     * @param prefix The prefix, used to build the <code>verifySession</code>
+     *               return value.
+     * @param postfix The postfix, used to build the
+     *                <code>verifySession</code> return value.
+     * @return A Moria session descriptor.
      * @throws MoriaException If a RemoteException is caught.
      */
-    public SessionDescriptor requestSession(String[] attributes, String url) 
+    public SessionDescriptor requestSession(String[] attributes, String prefix, String postfix) 
     throws MoriaException {
-        log.finer("requestSession(String[], String)");
+        log.finer("requestSession(String[], String, String)");
         
 	AuthenticationIF service = (AuthenticationIF)stub;
         try {
-            return service.requestSession(attributes, url);
+            return service.requestSession(attributes, prefix, postfix);
         } catch (RemoteException e) {
             log.severe("RemoteException caught and re-thrown as MoriaException");
             throw new MoriaException("RemoteException caught", e);
@@ -135,7 +139,9 @@ public class Moria {
     /**
      * Wrapper for same JAX-RPC stub of same name.
      * @param id
-     * @return
+     * @return The concatenated string <code>[prefix][id][postfix]</code>
+     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
+     *         parameter strings given to <code>requestSession</code>.
      * @throws MoriaException If a RemoteException is caught.
      */
     public String verifySession(String id)

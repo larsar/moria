@@ -17,8 +17,11 @@ public class Session {
     /** Used to store the current redirect URL for this session. */
     private String redirectURL;
 
-    /** Holds the original resource URL, if any. */
-    private String resourceURL;
+    /** Holds the prefix value sent by the resource. */
+    private String prefix;
+    
+    /** Holds the postfix value sent by the resource. */
+    private String postfix;
        
     /** The object's current unique session ID. */
     private String sessionID;
@@ -47,16 +50,21 @@ public class Session {
      * @param sessionID The session's ID.
      * @param attributes The attributes requested for this session.
      *                   <code>null</code> allowed.
-     * @param url The resource URL, where the user should be redirected
-     *            once authentication is complete. May be <code>null</code>.
+     * @param prefix The prefix, a value stored in the session and used to
+     *               build the <code>SessionStore.verifySession</code> return
+     *               value. May be <code>null</code>.
+     * @param postfix The postfix, a value stored in the session and used to
+     *                build the <code>SessionStore.verifySession</code> return
+     *                value. May be <code>null</code>.
      * @param client The client service identifier.
      */
-    protected Session(String sessionID, String[] attributes, String url, Principal client) {
+    protected Session(String sessionID, String[] attributes, String prefix, String postfix, Principal client) {
         log.finer("Session(String, String[], String)");
         
         this.sessionID = sessionID;
         this.request = attributes;
-	this.resourceURL = url;
+	this.prefix = prefix;
+        this.postfix = postfix;
 	this.client = client;
         redirectURL = prefs.get("LoginURL", null);
     }
@@ -138,11 +146,19 @@ public class Session {
     
 
     /**
-     * Returns the original resource return URL.
-     * @return The resource URL, or <code>null</code> if not set.
+     * Returns the concatenated prefix/id/postfix string.
+     * @return The concatenated string <code>[prefix][id][postfix]</code>
+     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
+     *         parameter strings given to the constructor.
      */
-    public String getReturnURL() {
-	return resourceURL;
+    public String getPrefixPostfixCompound() {
+        String retval = "";
+        if (prefix != null)
+            retval = retval + prefix;
+        retval = retval + sessionID;
+        if (postfix != null)
+            retval = retval + postfix;
+	return retval;
     }
 
     
