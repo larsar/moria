@@ -54,6 +54,16 @@
   <message name="getAttributesOut">
     <part name="result" type="tns:ArrayOfAttribute"/>
   </message>
+  
+  <message name="authenticateUserIn">
+    <part name="id" type="xsd:string"/>
+    <part name="username" type="xsd:string"/>
+    <part name="password" type="xsd:string"/>
+  </message>
+  
+  <message name="authenticateUserOut">
+    <part name="result" type="xsd:boolean"/>
+  </message>
 
   <message name="requestSessionIn">
     <part name="attributes" type="tns:ArrayOfstring"/>
@@ -72,6 +82,11 @@
       <input message="tns:getAttributesIn"/>
       <output message="tns:getAttributesOut"/>
     </operation>
+    
+    <operation name="authenticateUser" parameterOrder="id username password">
+      <input message="tns:authenticateUserIn"/>
+      <output message="tns:authenticateUserOut"/>
+    </operation>    
 
     <operation name="requestSession" parameterOrder="attributes prefix postfix denySSO">
       <input message="tns:requestSessionIn"/>
@@ -85,6 +100,20 @@
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/>
 
     <operation name="getAttributes">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </output>
+      <soap:operation soapAction=""/>
+    </operation>
+    
+     <operation name="authenticateUser">
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
