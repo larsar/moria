@@ -49,7 +49,7 @@ import java.util.Properties;
 public class MoriaController {
 
     /**
-     * The single instance of the data store
+     * The single instance of the data store.
      */
     private static MoriaStore store;
 
@@ -59,42 +59,42 @@ public class MoriaController {
     private static ConfigurationManager configManager;
 
     /**
-     * The single instance of the authorization manager
+     * The single instance of the authorization manager.
      */
     private static AuthorizationManager authzManager;
 
     /**
-     * The single instance of the directory manager
+     * The single instance of the directory manager.
      */
     private static DirectoryManager directoryManager;
 
     /**
-     * Flag set to true if the controller has been initialized
+     * Flag set to true if the controller has been initialized.
      */
     private static Boolean isInitialized = new Boolean(false);
 
     /**
-     * Flag set to true if the controller and all modules are ready
+     * Flag set to true if the controller and all modules are ready.
      */
     private static boolean ready = false;
 
     /**
-     * Flag set to true if the authorization manager is ready
+     * Flag set to true if the authorization manager is ready.
      */
     private static boolean amReady = false;
 
     /**
-     * Flag set to true if the directory manager is ready
+     * Flag set to true if the directory manager is ready.
      */
     private static boolean dmReady = false;
 
     /**
-     * Flag set to true if the store manager is ready
+     * Flag set to true if the store manager is ready.
      */
     private static boolean smReady = false;
 
     /**
-     * The servlet context for the servlets using the controller
+     * The servlet context for the servlets using the controller.
      */
     private static ServletContext servletContext;
 
@@ -192,6 +192,8 @@ public class MoriaController {
      * @param password
      * @return
      * @throws UnknownTicketException
+     * @throws InoperableStateException
+     * @throws IllegalInputException
      */
     public static boolean attemptLogin(final String loginTicket, final String ssoTicket, final String userId,
                                        final String password)

@@ -60,10 +60,10 @@ import java.util.TimerTask;
  * @version $Revision$
  * @see no.feide.moria.controller.MoriaController
  */
-public class ConfigurationManager {
+public final class ConfigurationManager {
 
     /** For logging events that does not throw exceptions to the layer above. */
-    private MessageLogger messageLogger = new MessageLogger(ConfigurationManager.class);
+    private final MessageLogger messageLogger = new MessageLogger(ConfigurationManager.class);
 
     /**
      * Name of the Store module, used in configuration properties.
@@ -83,7 +83,7 @@ public class ConfigurationManager {
     /**
      * Name of the Configuration module, used in configuration properties.
      */
-    public static final String MODULE_CM = "base";
+    private static final String MODULE_CM = "base";
 
     /**
      * Name of the Web module, used in configuration properties.
@@ -91,29 +91,29 @@ public class ConfigurationManager {
     public static final String MODULE_WEB = "web";
 
     /**
-     * Attribute name for timer delay
+     * Attribute name for timer delay.
      */
     private static final String TIMER_DELAY = "fileListenerIntervalSeconds";
 
     /**
-     * Attribute name prefix for file name properties
+     * Attribute name prefix for file name properties.
      */
     private static final String PROPS_PREFIX = "no.feide.moria.configuration.";
 
     /**
-     * List of the modules that have configuration to watch
+     * List of the modules that have configuration to watch.
      */
     private static final String[] NEEDS_LISTENER = new String[]{MODULE_SM, MODULE_DM, MODULE_AM, MODULE_WEB};
 
     /**
-     * Timer for the configuration files
+     * Timer for the configuration files.
      */
-    private Timer timer = new Timer(true);
+    private final Timer timer = new Timer(true);
 
     /**
-     * Storage for all timers
+     * Storage for all timers.
      */
-    private HashMap timerEntries = new HashMap();
+    private final HashMap timerEntries = new HashMap();
 
     /**
      * Constructor. The constructor reads the ConfigurationManagers properties from file
@@ -125,9 +125,9 @@ public class ConfigurationManager {
     public ConfigurationManager() throws ConfigurationManagerException {
 
         /* Read configuration manager properties file */
-        Properties cmProps = new Properties();
-        String cmPropsFile = System.getProperty(PROPS_PREFIX + MODULE_CM);
-        String filePrefix = new File(cmPropsFile).getParent() + System.getProperty("file.separator");
+        final Properties cmProps;
+        final String cmPropsFile = System.getProperty(PROPS_PREFIX + MODULE_CM);
+        final String filePrefix = new File(cmPropsFile).getParent() + System.getProperty("file.separator");
 
         if (cmPropsFile == null || cmPropsFile.equals("")) {
             throw new BaseConfigException("System property '" + PROPS_PREFIX + MODULE_CM + "' must be a non-empty string.");
@@ -143,8 +143,8 @@ public class ConfigurationManager {
         }
 
         /* Timer delay */
-        int timerDelay = 0;
-        String timerDelayStr = cmProps.getProperty(PROPS_PREFIX + TIMER_DELAY);
+        final int timerDelay;
+        final String timerDelayStr = cmProps.getProperty(PROPS_PREFIX + TIMER_DELAY);
         if (timerDelayStr == null || timerDelayStr.equals("")) {
             throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties cannot be a null value.");
         }
@@ -155,7 +155,7 @@ public class ConfigurationManager {
 
         /* Create listener for every module config file */
         for (int i = 0; i < NEEDS_LISTENER.length; i++) {
-            String module = NEEDS_LISTENER[i];
+            final String module = NEEDS_LISTENER[i];
             String fileName = cmProps.getProperty(PROPS_PREFIX + module);
 
             /* Prefix to full path if file path is relative */
@@ -176,9 +176,9 @@ public class ConfigurationManager {
      * Remove all file listeners.
      */
     public void stop() {
-        HashMap timers = new HashMap(timerEntries);
+        final HashMap timers = new HashMap(timerEntries);
         for (Iterator it = timers.keySet().iterator(); it.hasNext();) {
-            String entry = (String) it.next();
+            final String entry = (String) it.next();
             removeFileChangeListener(entry);
         }
     }
@@ -202,9 +202,9 @@ public class ConfigurationManager {
      * @throws FileNotFoundException if no file is found
      * @throws IOException           if something goes wrong during file read
      */
-    private Properties readProperties(final String fileURI) throws FileNotFoundException, IOException {
-        Properties props = new Properties();
-        File file = null;
+    private static Properties readProperties(final String fileURI) throws FileNotFoundException, IOException {
+        final Properties props = new Properties();
+        final File file;
 
         /* Validate parameter */
         if (fileURI == null || fileURI.equals("")) {
@@ -230,9 +230,9 @@ public class ConfigurationManager {
     private void addFileChangeListener(final String fileName, final String module, final int intervalSec)
             throws FileNotFoundException {
         removeFileChangeListener(fileName);
-        long delay = intervalSec * 1000;
+        final long delay = intervalSec * 1000;
 
-        FileListenerTask task = new FileListenerTask(fileName, module);
+        final FileListenerTask task = new FileListenerTask(fileName, module);
         timerEntries.put(fileName, task);
         timer.schedule(task, delay, delay);
     }
@@ -243,7 +243,7 @@ public class ConfigurationManager {
      * @param fileName the file name to stop monitoring
      */
     private void removeFileChangeListener(final String fileName) {
-        FileListenerTask task = (FileListenerTask) timerEntries.remove(fileName);
+        final FileListenerTask task = (FileListenerTask) timerEntries.remove(fileName);
         if (task != null) {
             task.cancel();
         }
@@ -257,7 +257,7 @@ public class ConfigurationManager {
      * @see no.feide.moria.controller.MoriaController#setConfig
      */
     private void fileChangeEvent(final String module, final File configurationFile) {
-        Properties props = null;
+        Properties props;
 
         try {
 
@@ -294,13 +294,13 @@ public class ConfigurationManager {
      * @return a <code>File</code> object referenced by the fileURI
      * @throws FileNotFoundException if the fileURI cannot be resolved to a readable file
      */
-    private File fileForURI(final String fileURI) throws FileNotFoundException {
+    private static File fileForURI(final String fileURI) throws FileNotFoundException {
 
         if (fileURI == null || fileURI.equals("")) {
             throw new FileNotFoundException("File reference cannot be null.");
         }
 
-        File file = new File(fileURI);
+        final File file = new File(fileURI);
         return file;
     }
 
@@ -309,20 +309,20 @@ public class ConfigurationManager {
      * is created for every file to watch. The work is done by the run() method which
      * is called by the timer.
      */
-    class FileListenerTask extends TimerTask {
+    final class FileListenerTask extends TimerTask {
 
         /**
-         * The module that the configuration file belongs to
+         * The module that the configuration file belongs to.
          */
-        private String module;
+        private final String module;
 
         /**
-         * The file object representation of the file that is beeing watched
+         * The file object representation of the file that is beeing watched.
          */
-        private File monitoredFile;
+        private final File monitoredFile;
 
         /**
-         * Last modification of the watched file
+         * Last modification of the watched file.
          */
         private long lastModified;
 
@@ -347,7 +347,7 @@ public class ConfigurationManager {
          * @see ConfigurationManager#fileChangeEvent(String, File)
          */
         public final void run() {
-            long lastModified = monitoredFile.lastModified();
+            final long lastModified = monitoredFile.lastModified();
             if (lastModified != this.lastModified) {
                 this.lastModified = lastModified;
                 fileChangeEvent(this.module, this.monitoredFile);

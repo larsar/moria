@@ -21,6 +21,8 @@
 package no.feide.moria.controller;
 
 /**
+ * Used to signal that a ticket does not exist in the store.
+ * 
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */

@@ -21,17 +21,20 @@
 package no.feide.moria.controller;
 
 /**
+ * Used to signal that the controller has received illegal input. Instead of
+ * throwing IllegalArgumentException the controller only uses checked exceptions.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class IllegalInputException extends Exception {
+public final class IllegalInputException extends Exception {
 
     /**
      * Basic constructor.
      *
      * @param message Exception message.
      */
-    public IllegalInputException(String message) {
+    public IllegalInputException(final String message) {
         super(message);
     }
 }

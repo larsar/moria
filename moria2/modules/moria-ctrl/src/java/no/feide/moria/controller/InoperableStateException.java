@@ -21,6 +21,8 @@
 package no.feide.moria.controller;
 
 /**
+ * Used to signal that the controller is out of order.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
@@ -31,6 +33,6 @@ public class InoperableStateException extends Exception{
      *
      * @param message Exception message.
      */
-    public InoperableStateException(String message) {
+    public InoperableStateException(final String message) {
         super(message);
     }}

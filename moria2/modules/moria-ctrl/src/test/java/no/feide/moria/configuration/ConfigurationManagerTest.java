@@ -43,10 +43,11 @@ public class ConfigurationManagerTest extends TestCase {
 
     /**
      * Test creation of a <code>ConfigurationManager</code> object.
+     *
      * @throws ConfigurationManagerException should not be thrown
      */
     public void testCreateConfigurationManager() throws ConfigurationManagerException {
-        ConfigurationManager confMan = null;
+        ConfigurationManager confMan;
 
         /* No base config property */
         System.setProperty(configBaseProperty, "");
@@ -56,11 +57,11 @@ public class ConfigurationManagerTest extends TestCase {
         } catch (BaseConfigException success) {
         }
         System.setProperty(configBaseProperty, "");
-         try {
-             new ConfigurationManager();
-             fail("BaseConfigException should be raised, system property is empty string");
-         } catch (BaseConfigException success) {
-         }
+        try {
+            new ConfigurationManager();
+            fail("BaseConfigException should be raised, system property is empty string");
+        } catch (BaseConfigException success) {
+        }
 
         /* Wrong reference to manager config */
         try {
@@ -87,7 +88,8 @@ public class ConfigurationManagerTest extends TestCase {
 
         /* Invalid file content */
         try {
-            System.setProperty(configBaseProperty, getClass().getResource("/cm-test-invalid.properties").getPath());
+            System.setProperty("no.feide.moria.configuration.base",
+                    System.getProperty("no.feide.moria.configuration.test.dir") + "/moria-base-invalid.properties");
             new ConfigurationManager();
             fail("ConfigurationManagerException should be raised, invalid content of property file");
         } catch (ConfigurationManagerException success) {
@@ -95,13 +97,15 @@ public class ConfigurationManagerTest extends TestCase {
 
         /* Empty file */
         try {
-            System.setProperty(configBaseProperty, getClass().getResource("/cm-test-empty.properties").getPath());
-             new ConfigurationManager();
+            System.setProperty("no.feide.moria.configuration.base",
+                    System.getProperty("no.feide.moria.configuration.test.dir") + "/empty");
+            new ConfigurationManager();
             fail("ConfigurationManagerException should be raised, empty property file");
         } catch (ConfigurationManagerException success) {
         }
 
-        System.setProperty(configBaseProperty, getClass().getResource("/cm-test-valid.properties").getPath());
+        System.setProperty("no.feide.moria.configuration.base",
+                System.getProperty("no.feide.moria.configuration.test.dir") + "/moria-base-valid.properties");
         confMan = new ConfigurationManager();
         assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
     }
@@ -112,7 +116,8 @@ public class ConfigurationManagerTest extends TestCase {
      * @see ConfigurationManager#stop()
      */
     public void testStop() throws ConfigurationManagerException {
-        System.setProperty(configBaseProperty, getClass().getResource("/cm-test-valid.properties").getPath());
+        System.setProperty("no.feide.moria.configuration.base",
+                System.getProperty("no.feide.moria.configuration.test.dir") + "/moria-base-valid.properties");
         ConfigurationManager confMan = new ConfigurationManager();
         assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
         confMan.stop();

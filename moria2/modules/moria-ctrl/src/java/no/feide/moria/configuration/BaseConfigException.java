@@ -31,7 +31,7 @@ public class BaseConfigException extends RuntimeException {
      *
      * @param message Exception message.
      */
-    public BaseConfigException(String message) {
+    public BaseConfigException(final String message) {
         super(message);
     }
 }
