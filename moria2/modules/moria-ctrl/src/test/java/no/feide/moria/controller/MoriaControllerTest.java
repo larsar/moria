@@ -28,12 +28,16 @@ import junit.framework.TestSuite;
 import java.util.HashMap;
 
 import no.feide.moria.store.InvalidTicketException;
+import no.feide.moria.store.UnknownTicketException;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
 public class MoriaControllerTest extends TestCase {
+
+    String validPrefix, validPostfix, validPrincipal;
+    String[] validAttrs;
 
     /**
      * Initiate all tests.
@@ -49,6 +53,11 @@ public class MoriaControllerTest extends TestCase {
         /* Property needed by the RandomId class */
         if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
             System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+
+        validPrefix = "http://moria.sf.net/";
+        validPostfix = "&foo=bar";
+        validPrincipal = "test";
+        validAttrs = new String[]{"attr1", "attr2"};
     }
 
     /**
@@ -64,58 +73,46 @@ public class MoriaControllerTest extends TestCase {
      * Thest the initiateMoriaAuthentication method.
      *
      * @throws AuthorizationException
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      * @see MoriaController#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean, java.lang.String)
      */
-    public void testInitiateMoriaAuthentication() throws AuthorizationException, MoriaControllerException {
-        String validPrefix = "http://moria.sf.net/";
-        String validPostfix = "&foo=bar";
-        String validPrincipal = "test";
-        String[] validAttrs = new String[]{"attr1", "attr2"};
+    public void testInitiateMoriaAuthentication() throws AuthorizationException, IllegalInputException {
 
-        /* Controller not initialized */
-        MoriaController.stop();
-        try {
-            MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
-            fail("IllegalStateException should be raised, controller not initialized.");
-        } catch (IllegalStateException success) {
-        }
-
-        MoriaController.init();
+        controllerInitialization();
 
         /* Illegal paramenters */
         try {
             MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, null);
-            fail("MoriaControllerException should be raised, principal is null");
-        } catch (MoriaControllerException success) {
+            fail("IllegalInputException should be raised, principal is null");
+        } catch (IllegalInputException success) {
         }
         try {
             MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, "");
-            fail("MoriaControllerException should be raised, principal is an empty string");
-        } catch (MoriaControllerException success) {
+            fail("IllegalInputException should be raised, principal is an empty string");
+        } catch (IllegalInputException success) {
         }
 
         try {
             MoriaController.initiateAuthentication(null, validPrefix, validPostfix, false, validPrincipal);
-            fail("MoriaControllerException should be raised, attributes is null");
-        } catch (MoriaControllerException success) {
+            fail("IllegalInputException should be raised, attributes is null");
+        } catch (IllegalInputException success) {
         }
 
         try {
             MoriaController.initiateAuthentication(validAttrs, null, validPostfix, false, validPrincipal);
-            fail("MoriaControllerException should be raised, prefix is null");
-        } catch (MoriaControllerException success) {
+            fail("IllegalInputException should be raised, prefix is null");
+        } catch (IllegalInputException success) {
         }
         try {
             MoriaController.initiateAuthentication(validAttrs, "", validPostfix, false, validPrincipal);
-            fail("MoriaControllerException should be raised, prefix is an empty string");
-        } catch (MoriaControllerException success) {
+            fail("IllegalInputException should be raised, prefix is an empty string");
+        } catch (IllegalInputException success) {
         }
 
         try {
             MoriaController.initiateAuthentication(validAttrs, validPrefix, null, false, validPrincipal);
-            fail("MoriaControllerException should be raised, postfix is null");
-        } catch (MoriaControllerException success) {
+            fail("IllegalInputException should be raised, postfix is null");
+        } catch (IllegalInputException success) {
         }
 
         /* Illegal attribute request */
@@ -129,8 +126,8 @@ public class MoriaControllerTest extends TestCase {
         /* Illegal URL */
         try {
             MoriaController.initiateAuthentication(validAttrs, "foobar", validPostfix, false, validPrincipal);
-            fail("MoriaControllerException should be raised, illegal URL (no protocol).");
-        } catch (MoriaControllerException success) {
+            fail("IllegalInputException should be raised, illegal URL (no protocol).");
+        } catch (IllegalInputException success) {
         }
 
         /* Legal use */
@@ -153,30 +150,21 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Test the validateLoginTicket method.
      *
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      * @throws AuthorizationException
      * @see MoriaController#validateLoginTicket(java.lang.String)
      */
-    public void testValidateLoginTicket() throws MoriaControllerException, AuthorizationException {
-        /* Controller not initialized */
-        MoriaController.stop();
-        try {
-            MoriaController.validateLoginTicket("foobar");
-            fail("IllegalStateException should be raised, controller not initialized.");
-        } catch (IllegalStateException success) {
-        }
+    public void testValidateLoginTicket() throws IllegalInputException, AuthorizationException {
+        controllerInitialization();
 
-
-        /* Invalid parameters */
-        MoriaController.init();
         try {
             MoriaController.validateLoginTicket(null);
-            fail("MoriaControllerException should be raised, ticket is null.");
+            fail("IllegalInputException should be raised, ticket is null.");
         } catch (IllegalArgumentException success) {
         }
         try {
             MoriaController.validateLoginTicket("");
-            fail("MoriaControllerException should be raised, ticket is empty string.");
+            fail("IllegalInputException should be raised, ticket is empty string.");
         } catch (IllegalArgumentException success) {
         }
 
@@ -221,16 +209,17 @@ public class MoriaControllerTest extends TestCase {
         assertTrue("URL should be accepted", MoriaController.isLegalURL("http://moria.sf.net/index.html?foo=bar&bar=foo"));
     }
 
-    public void testGetClientProperties() throws MoriaControllerException, AuthorizationException, InvalidTicketException {
-        /* Controller not initialized */
-        MoriaController.stop();
-        try {
-            MoriaController.validateLoginTicket("foobar");
-            fail("IllegalStateException should be raised, controller not initialized.");
-        } catch (IllegalStateException success) {
-        }
+    /**
+     * Test getServiceProperties method.
+     *
+     * @throws IllegalInputException
+     * @throws AuthorizationException
+     * @throws InvalidTicketException
+     * @see MoriaController#getServiceProperties(java.lang.String)
+     */
 
-        MoriaController.init();
+    public void testGetServiceProperties() throws IllegalInputException, AuthorizationException, InvalidTicketException {
+        controllerInitialization();
         /* Invalid arguments */
         try {
             MoriaController.getServiceProperties(null);
@@ -243,18 +232,79 @@ public class MoriaControllerTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        String validPrefix = "http://moria.sf.net/";
-        String validPostfix = "&foo=bar";
-        String validPrincipal = "test";
-        String[] validAttrs = new String[]{"attr1", "attr2"};
-
-
-        // Create login attempt
         String ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
         assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
-        // Get properties for loginticket
         HashMap properties = MoriaController.getServiceProperties(ticket);
-        // Check service name for properties
         assertEquals("Principal differs", validPrincipal, properties.get("name"));
     }
+
+    public void testGetSecLevel() throws IllegalInputException, AuthorizationException, UnknownTicketException {
+        controllerInitialization();
+
+        /* Invalid arguments */
+        try {
+            MoriaController.getSecLevel(null);
+            fail("IllegalArgumentException should be raised, null value");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            MoriaController.getSecLevel("");
+            fail("IllegalArgumentException should be raised, empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Invalid ticket */
+        try {
+            //TODO: This returns null, but should maybe throw an IllegalTicketException?
+            MoriaController.getSecLevel("doesNotExist");
+            fail("InvalidTicketException should be raised");
+        } catch (UnknownTicketException success) {
+        }
+
+        /* Seclevel 0 */
+        String[] attributes = new String[]{"attr2"};
+        String ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
+        assertEquals(0, MoriaController.getSecLevel(ticket));
+
+        /* Seclevel 1 */
+        attributes = new String[]{"attr1"};
+        ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
+        assertEquals(1, MoriaController.getSecLevel(ticket));
+        attributes = new String[]{"attr1", "attr2"};
+        ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
+        assertEquals(1, MoriaController.getSecLevel(ticket));
+
+        /* Seclevel 2*/
+        attributes = new String[]{"attr3"};
+        ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
+        assertEquals(2, MoriaController.getSecLevel(ticket));
+        attributes = new String[]{"attr3", "attr2"};
+        ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
+        assertEquals(2, MoriaController.getSecLevel(ticket));
+        attributes = new String[]{"attr1", "attr3"};
+        ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
+        assertEquals(2, MoriaController.getSecLevel(ticket));
+        attributes = new String[]{"attr1", "attr3", "attr2"};
+        ticket = MoriaController.initiateAuthentication(attributes, validPrefix, validPostfix, false, validPrincipal);
+        assertEquals(2, MoriaController.getSecLevel(ticket));
+
+        /* Should be able to call this multiple times without exception */
+        MoriaController.getSecLevel(ticket);
+    }
+
+    /**
+     * Verify that the controller initialization checks works and then initates the conftroller.
+     */
+    private void controllerInitialization() {
+        /* Controller not initialized */
+        MoriaController.stop();
+        try {
+            MoriaController.validateLoginTicket("foobar");
+            fail("IllegalStateException should be raised, controller not initialized.");
+        } catch (IllegalStateException success) {
+        }
+
+        MoriaController.init();
+    }
+
 }
