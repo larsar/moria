@@ -9,12 +9,15 @@ extends Exception {
 
     /**
      * Constructor.
-     * @param message The exception message.
+     * @param message
+     *            The exception message.
+     * @param cause
+     *            The cause (if any).
      */
-    public DirectoryManagerException(String message) {
+    public DirectoryManagerException(String message, Throwable cause) {
 
-        super(message);
-        
+        super(message, cause);
+
     }
 
 }
