@@ -22,7 +22,6 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -358,7 +357,7 @@ public class LoginServlet extends MoriaServlet {
                             stats.incStatsCounter(wsID, "loginSSO");
                             session.setCachedAttributes(cachedAttributes);
                             sessionStore.deleteSession(existingSession);
-                            stats.decStatsCounter(wsID, "activeSessions");
+ //                           stats.decStatsCounter(wsID, "activeSessions");
                             stats.decreaseCounter("sessionsSSOActive");
                             session.unlock(existingSession.getUser());
                             redirectToWebService(response, session);
