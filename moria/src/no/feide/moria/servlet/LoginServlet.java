@@ -452,8 +452,10 @@ public class LoginServlet extends VelocityServlet {
         else 
             showAllAttributes = false;
 
+
+
+        /* Try to use SSO */
         Session existingSession = null; 
-        /* Try to use SSO. */
         HttpSession httpSession = 
             ((HttpServletRequest)request).getSession(true);
             
@@ -474,7 +476,6 @@ public class LoginServlet extends VelocityServlet {
         try {
             Session session = sessionStore.getSession(id);
 
-            sessionStore.renameSession(session); 
             httpSession.setAttribute("moriaID", session.getID());
 
             
