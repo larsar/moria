@@ -11,6 +11,8 @@
 
   <shortDescription>Moria distributed data store</shortDescription>
 
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-sm</siteDirectory>
+
   <dependencies>
 
     <dependency>
