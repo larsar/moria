@@ -168,6 +168,7 @@ public class Session {
         
         // Authentication failed. Check if the session should be invalidated.
         log.fine("Authentication failed");
+        user = null;
         failedLogins++;
         try {
             Integer maxFailures = Integer.decode(Configuration.getProperty("no.feide.moria.MaxFailedLogins", "3"));
