@@ -273,6 +273,14 @@ public final class RequestUtil {
      * Link to pictures from the information service.
      */
     public static final String PIC_LINK = PATH_PREFIX + "piclink";
+    
+    /**
+     * TODO
+     */
+    public static final String RESOURCE_MAIL = PATH_PREFIX + "resource.mail";
+    public static final String RESOURCE_DATE = PATH_PREFIX + "resource.date";
+    public static final String RESOURCE_LINK = PATH_PREFIX + "resource.link";
+
 
     /**
      * Name of property from authorization module giving the default language
@@ -331,7 +339,7 @@ public final class RequestUtil {
      * Parameter in request object: Deny SSO.
      */
     public static final String PARAM_DENYSSO = "denySSO";
-
+    
     /**
      * Base URL attribute in request object. Used to fill in the URL to the
      * authentication web page. <br>
