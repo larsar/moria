@@ -341,12 +341,12 @@ public class InformationServlet extends HttpServlet {
             final String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO), request.getCookies());
             final boolean denySSO;
             if (denySSOChoice == null || denySSOChoice.equals("false") || denySSOChoice.equals("")) {
-                // Deny SSO.
+                // Allow SSO.
                 request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(false));
                 denySSO = false;
 
             } else {
-                // Allow SSO.
+                // Deny SSO.
                 request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(true));
                 denySSO = true;
             }
