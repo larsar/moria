@@ -19,7 +19,6 @@ package no.feide.moria.authorization;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.logging.Logger;
 
 /**
  * Represents a web service. A web service has a name, id, url and attributes.
@@ -27,12 +26,6 @@ import java.util.logging.Logger;
  * allowed and denied attributes.
  */
 class AuthorizationClient {
-
-    // TODO: Change logger
-    /**
-     * Used for logging.
-     */
-    private static Logger log = Logger.getLogger(AuthorizationClient.class.toString());
 
     /**
      * Cached hashCode
@@ -95,29 +88,61 @@ class AuthorizationClient {
      */
     AuthorizationClient(String name, String displayName, String url, String language, String home, HashSet affiliation, HashSet operations, HashMap attributes) {
 
-        if (name == null || name.equals(""))
-            throw new IllegalArgumentException("Name must be a non empty string.");
+        if (name == null || name.equals("")) {
+            String message = "Name must be a non empty string.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
-        if (displayName == null || displayName.equals(""))
-            throw new IllegalArgumentException("displayName must be a non empty string.");
+        if (displayName == null || displayName.equals("")) {
+            String message = "displayName must be a non empty string.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
-        if (url == null || url.equals(""))
-            throw new IllegalArgumentException("URL must be a non empty string.");
+        if (url == null || url.equals("")) {
+            String message = "URL must be a non empty string.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
-        if (language == null || language.equals(""))
-            throw new IllegalArgumentException("Language must be a non empty string.");
+        if (language == null || language.equals("")) {
+            String message = "Language must be a non empty string.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
-        if (home == null || home.equals(""))
-            throw new IllegalArgumentException("Home must be a non empty string.");
+        if (home == null || home.equals("")) {
+            String message = "Home must be a non empty string.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
-        if (affiliation == null)
-            throw new IllegalArgumentException("Affiliation cannot be null.");
+        if (affiliation == null) {
+            String message = "Affiliation cannot be null.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
-        if (operations == null)
-            throw new IllegalArgumentException("Operations cannot be null.");
+        if (operations == null) {
+            String message = "Operations cannot be null.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
-        if (attributes == null)
-            throw new IllegalArgumentException("Attribtues cannot be null.");
+        if (attributes == null) {
+            String message = "Attribtues cannot be null.";
+            // TODO Log
+            // MessageLogger.logWarning(message);
+            throw new IllegalArgumentException(message);
+        }
 
         this.name = name;
         this.displayName = displayName;
@@ -135,19 +160,22 @@ class AuthorizationClient {
      *
      * @param requestedAttributes Names of all requested attributes.
      */
-    public boolean allowAccessTo(String requestedAttributes[]) {
+    boolean allowAccessTo(String requestedAttributes[]) {
         boolean allow = true;
 
-        if (requestedAttributes == null)
+        if (requestedAttributes == null) {
+            // TODO: Log
             throw new IllegalArgumentException("RequestedAttributes cannot be null");
+        }
 
-        if (requestedAttributes.length == 0)
-            throw new IllegalArgumentException("RequestedAttributes cannot be empty");
+        if (requestedAttributes.length == 0) {
+            return true;
+        }
 
         for (int i = 0; i < requestedAttributes.length; i++) {
             if (!attributes.containsKey(requestedAttributes[i])) {
                 // TODO: Access log
-                log.warning("Service '" + name + "' can access attributes" + attributes.keySet() + " only, not [" + requestedAttributes[i] + ']');
+                // log.warning("Service '" + name + "' can access attributes" + attributes.keySet() + " only, not [" + requestedAttributes[i] + ']');
                 allow = false;
                 break;
             }
@@ -162,7 +190,7 @@ class AuthorizationClient {
      *
      * @param requestedAttributes The names of all requested attributes
      */
-    public boolean allowSSOForAttributes(String requestedAttributes[]) {
+    boolean allowSSOForAttributes(String requestedAttributes[]) {
         boolean allow = true;
         for (int i = 0; i < requestedAttributes.length; i++) {
             String attrName = requestedAttributes[i];
@@ -182,7 +210,7 @@ class AuthorizationClient {
      * @return True if the supplied organization name is affiliated with the
      *         client
      */
-    public boolean hasAffiliation(String organization) {
+    boolean hasAffiliation(String organization) {
         if (organization == null || organization.equals(""))
             throw new IllegalArgumentException("Organization must be a non empty string");
         return affiliation.contains(organization);
@@ -195,18 +223,22 @@ class AuthorizationClient {
      * @param requestedOperations A string array of operation names
      * @return True if all operations are allowed, else false.
      */
-    public boolean allowOperations(String[] requestedOperations) {
+    boolean allowOperations(String[] requestedOperations) {
 
-        if (requestedOperations == null)
+        if (requestedOperations == null) {
+            // TODO: Log
             throw new IllegalArgumentException("RequestedOperations cannot be null");
+        }
 
-        if (requestedOperations.length == 0)
+        if (requestedOperations.length == 0) {
+            // TODO: Log
             throw new IllegalArgumentException("RequestedOperations cannot be empty");
+        }
 
         for (int i = 0; i < requestedOperations.length; i++) {
             if (!operations.contains(requestedOperations[i])) {
                 // TODO: Access log
-                log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
+                // log.warning("Service '" + name + "' can perform operations" + operations + " only, not [" + requestedOperations[i] + ']');
                 return false;
             }
         }
