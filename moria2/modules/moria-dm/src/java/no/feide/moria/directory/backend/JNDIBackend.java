@@ -109,7 +109,7 @@ implements DirectoryManagerBackend {
      *             If <code>reference</code> is <code>null</code>, or an
      *             empty array.
      */
-    public void open(IndexedReference[] references) throws BackendException {
+    public void open(IndexedReference[] references) {
 
         // Sanity check.
         if ((references == null) || (references.length == 0))
