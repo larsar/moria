@@ -80,7 +80,8 @@ public class LoginServlet extends VelocityServlet {
     /** Timer for the session time out service. */
     Timer sessionTimer = new Timer(true);
 
-    
+    private Template velocityTemplate;
+    private HashMap bundles = new HashMap();;
 
     /**
      * Some basic initialization.
@@ -137,6 +138,14 @@ public class LoginServlet extends VelocityServlet {
 
         p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH,  path);
         p.setProperty("runtime.log", System.getProperty("no.feide.moria.VelocityLog"));
+        
+        try {
+            velocityTemplate = getTemplate("login.vtl");
+        }
+        catch (Exception e) {
+            log.severe("Template not found.");
+        }
+        readBundles();
 
         return p;
     }
@@ -194,6 +203,16 @@ public class LoginServlet extends VelocityServlet {
     }
 
 
+    private void readBundles() {
+        String[] langs = new String[] {"no", "nb", "nn", "en", "bogous"};
+        String bundleName = "login";
+
+        for (int i = 0; i < langs.length; i++) {
+            Locale loc = new Locale(langs[i]);
+            bundles.put(loc, ResourceBundle.getBundle(bundleName, loc));        }
+            
+    }
+        
 
     /**
      *  Creates a Template based on the login tamplate file. If an
@@ -226,7 +245,8 @@ public class LoginServlet extends VelocityServlet {
 
         /* Find fallback resource bundle. */
         try {
-            fallback = ResourceBundle.getBundle(bundleName, new Locale("bogus"));
+            //fallback = ResourceBundle.getBundle(bundleName, new Locale("bogus"));
+            fallback = (ResourceBundle) bundles.get(new Locale("bogous"));
         }
         catch (MissingResourceException e) {
             /* No fallback */
@@ -250,8 +270,8 @@ public class LoginServlet extends VelocityServlet {
             }
             
             locale = new Locale(lang);
-            bundle = ResourceBundle.getBundle(bundleName, locale);
-
+            //bundle = ResourceBundle.getBundle(bundleName, locale);
+            bundle = (ResourceBundle) bundles.get(locale);
             /* Abort search if a bundle (not fallback) is found */
             if (bundle != fallback) 
                 break;
@@ -266,8 +286,8 @@ public class LoginServlet extends VelocityServlet {
 
         /* Should never happen, but just in case. */
         if (bundle == null)
-            bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
-       
+            //bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
+            bundle = (ResourceBundle) bundles.get(new Locale("no"));
 
         String wsName = null;
         String wsURL  = null;
@@ -347,6 +367,7 @@ public class LoginServlet extends VelocityServlet {
 
         
         return getTemplate("login.vtl");
+        // return velocityTemplate;
     }
 
 
