@@ -62,28 +62,26 @@ $deniedSessionsAuthN
 
 <tr>
 <th>&nbsp;</th>
-<th class="thstat" colspan="2">Sessions</th>
-<th class="thstat" colspan="1">Removed</th>
-<th class="thstat" colspan="3">Authentications</th>
+<th class="thstat" colspan="3">Sessions</th>
 <th class="thstat" colspan="3">Timeout</th>
+<th class="thstat" colspan="3">Authentications</th>
 <th class="thstat" colspan="2">Not created</th>
 </tr>
 
 <tr>
 <th class="thstat">Client</th>
 
-<th class="thstat">Active</th>
 <th class="thstat">Created</th>
-
+<th class="thstat">Active</th>
 <th class="thstat">Logout</th>
-
-<th class="thstat">Sucsessful</th>
-<th class="thstat">Failed</th>
-<th class="thstat">SSO</th> 
 
 <th class="thstat">User</th>
 <th class="thstat">SSO</th>
 <th class="thstat">Mellon</th>
+
+<th class="thstat">Sucsessful</th>
+<th class="thstat">Failed</th>
+<th class="thstat">SSO</th> 
 
 <th class="thstat">Invalid URL</th>
 <th class="thstat">Attributes</th>
@@ -93,18 +91,18 @@ $deniedSessionsAuthN
 <tr>
 <td>$wsName</td>
 
-<td class="tdstat">$wsStats.get($wsName).get("activeSessions")</td>
 <td class="tdstat">$wsStats.get($wsName).get("createdSessions")</td>
+<td class="tdstat">$wsStats.get($wsName).get("activeSessions")</td>
 
 <td class="tdstat">$wsStats.get($wsName).get("logout")</td>
-
-<td class="tdstat">$wsStats.get($wsName).get("loginSuccessful")</td>
-<td class="tdstat">$wsStats.get($wsName).get("loginFailed")</td>
-<td class="tdstat">$wsStats.get($wsName).get("loginSSO")</td>
 
 <td class="tdstat">$wsStats.get($wsName).get("timeoutUser")</td>
 <td class="tdstat">$wsStats.get($wsName).get("timeoutSSO")</td>
 <td class="tdstat">$wsStats.get($wsName).get("timeoutMellon")</td>
+
+<td class="tdstat">$wsStats.get($wsName).get("loginSuccessful")</td>
+<td class="tdstat">$wsStats.get($wsName).get("loginFailed")</td>
+<td class="tdstat">$wsStats.get($wsName).get("loginSSO")</td>
 
 <td class="tdstat">$wsStats.get($wsName).get("sessionDeniedURL")</td>
 <td class="tdstat">$wsStats.get($wsName).get("sessionDeniedAuthZ")</td>
