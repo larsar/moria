@@ -2,48 +2,30 @@
 
 <!-- $Id$ -->
 
+<!DOCTYPE project [
+	  <!ENTITY % locator-entities SYSTEM "file:locator.ent">
+	  %locator-entities;
+	  ]>
+
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Directory manager</name>
   <id>moria-dm</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
-  <package>no.feide.moria.directorymanager</package>
+  <package>no.feide.moria.directory</package>
 
-  <shortDescription>This is the directory manager for Moria</shortDescription>
+  <shortDescription>This is the Moria Directory manager</shortDescription>
 
-  <description>This is the directory manager for Moria, handling
+  <description>This is the directory manager of Moria, handling
     communication with external directories (LDAP) and indexing of
     users.</description>
 
   <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-dm</siteDirectory>
 
   <dependencies>
-    <dependency>
-      <groupId>moria</groupId>
-      <artifactId>moria-log</artifactId>
-      <version>1.0-b1-SNAPSHOT</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.0b10</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.8</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
+    &dep-jdom;
+    &dep-moria-log;
+    &dep-log4j;
   </dependencies>
 
 </project>
