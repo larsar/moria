@@ -9,6 +9,22 @@
    xmlns:m="jelly:maven"
    xmlns:u="jelly:util"
    default="project:install">
+   
+  <!-- 
+       A number of filename fixes for Windows users.
+  -->
+  <preGoal name="build:start">
+    <tempfile property="windowsFixFile"
+              destDir="${maven.build.dir}/.."/>
+    <echo message="log4j.configuration=${log4j.configuration.raw}"
+          file="${windowsFixFile}"
+          level="verbose"/>
+    <replace file="${windowsFixFile}"
+						 replaceFilterFile="${maven.build.dir}/../windows.properties"/>
+    <property file="${windowsFixFile}"/>
+    <delete file="${windowsFixFile}"
+            deleteonexit="true"/>  
+  </preGoal>
 
   <postGoal
      name="test:prepare-filesystem">
