@@ -1,0 +1,8 @@
+Development setup for Eclipse, using Maven
+
+1) Check out moria from CVS
+2) For each module in the modules directory, run 'maven eclipse'
+3) Set MAVEN_REPO variable in Eclipse (global) and point it to 
+   Mavens repository
+4) Import each module as a project in Eclipse
+5) Enable CVS for each project
