@@ -271,57 +271,79 @@ public class RequestUtilTest extends TestCase {
     /**
      * Test the organizationNames method.
      *
-     * @see RequestUtil#organizationNames(java.util.Properties, java.lang.String)
+     * @see RequestUtil#parseConfig(java.util.Properties, java.lang.String, java.lang.String)
      * @throws IOException
      */
-    public void testOrganizationNames() throws IOException {
+    public void testParseConfig() throws IOException {
         Properties props = new Properties();
         props.load(this.getClass().getResourceAsStream("/web-test-valid.properties"));
 
         /* Illegal parameters */
         try {
-            RequestUtil.organizationNames(null, "en");
+            RequestUtil.parseConfig(null, "org", "en");
             fail("IllegalArgumentException should be raised, config is null");
         } catch (IllegalArgumentException success) {
         }
         try {
-            RequestUtil.organizationNames(props, null);
+            RequestUtil.parseConfig(props, "org", null);
             fail("IllegalArgumentException should be raised, language is null");
         } catch (IllegalArgumentException success) {
         }
         try {
-            RequestUtil.organizationNames(props, "");
+            RequestUtil.parseConfig(props, "org", "");
             fail("IllegalArgumentException should be raised, language is empty string");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.parseConfig(props, null, "en");
+            fail("IllegalArgumentException should be raised, element is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.parseConfig(props, "", "en");
+            fail("IllegalArgumentException should be raised, element is empty string");
         } catch (IllegalArgumentException success) {
         }
 
         /* No config */
         try {
-            RequestUtil.organizationNames(new Properties(), "en");
+            RequestUtil.parseConfig(new Properties(), "org", "en");
             fail("IllegalStateException should be raised, empty config.");
         } catch (IllegalStateException success) {
         }
 
+        /* Invalid element */
+        try {
+            RequestUtil.parseConfig(new Properties(), "invalid", "en");
+            fail("IllegalStateException should be raised, nonexisting element.");
+        } catch (IllegalStateException success) {
+        }
+
+        /* Invalid element */
+        try {
+            RequestUtil.parseConfig(new Properties(), "org", "invalid");
+            fail("IllegalStateException should be raised, nonexisting language.");
+        } catch (IllegalStateException success) {
+        }
 
         TreeMap expected = new TreeMap();
         TreeMap actual;
         expected.put("University of Oslo", "uio.no");
         expected.put("UNINETT", "uninett.no");
 
-
         /* Correct syntax */
-        actual = RequestUtil.organizationNames(props, "en");
+        actual = RequestUtil.parseConfig(props, "org", "en");
         Assert.assertTrue("TreeMaps doesn't match. Might be mismatch between config file and test code.", expected.equals(actual));
 
         /* Wrong syntax "," */
         props.load(this.getClass().getResourceAsStream("/web-test-invalid.properties"));
         try {
-            RequestUtil.organizationNames(props, "en");
+            RequestUtil.parseConfig(props, "org", "en");
             fail("Should raise IllegalStateException, config separation error ':'");
         } catch (IllegalStateException success) {
         }
         try {
-            RequestUtil.organizationNames(props, "en2");
+            RequestUtil.parseConfig(props, "org", "en2");
             fail("Should raise IllegalStateException, config separation error ','");
         } catch (IllegalStateException success) {
         }
