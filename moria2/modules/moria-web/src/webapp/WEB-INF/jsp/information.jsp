@@ -61,10 +61,18 @@
     <br/>    
       
      <p>
-     <b><center><%= bundle.getString("user_info") %> </b>
+     <b><center><%= bundle.getString("user_info") %> 
+     <br/><%=bundle.getString("user_info2") %></b>
      </p>
+     <% for (int mcnt = 1; mcnt >= 0; mcnt--) { %>
      <!-- Show table with attributes, values and relevance -->
-        <p><table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
+        <%if (mcnt == 0) {%>
+		<br><br><b><center>
+     	<%=bundle.getString("user_table")%>
+     	<%}%>
+        </b>
+        <p>
+        <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
        	<th> <%= bundle.getString("tc_value") %> </th>
        	<th> <%= bundle.getString("tc_relevance") %> </th></tr>
 		<% 
@@ -75,6 +83,7 @@
           String description = (String) tabledata.get(i+1);
           String userstring = (String) tabledata.get(i+2);
           String relevance = (String) tabledata.get(i+3);
+          boolean doprint = false;
           if (userstring == null || userstring.equals("")) {	
 		    if (relevance.equals("fd_mandatory")) {
                 userstring = "<FONT COLOR=\"#ff0000\">" + bundle.getString("m_missing") + " " + userorg + "</FONT>";
@@ -83,7 +92,14 @@
                 userstring = bundle.getString("o_missing")+ " "  + userorg;
             }
           }
+          if (relevance.equals("fd_mandatory") && (mcnt == 1)) {
+          doprint = true;
+          }
+          if (!relevance.equals("fd_mandatory") && (mcnt == 0)) {
+          doprint = true;
+          }
           relevance = bundle.getString(relevance);
+          
           if (userstring.equals("p_yes")) {
             userstring = "";
             if (picarr != null) {
@@ -92,15 +108,17 @@
 			  }
 			}
          }
+         if (doprint) {
 		%>
           <tr>
             <td align=left><A HREF="<%= link %>" TARGET="_blank"> <%= description %></A></td>
             <td align=center><%= userstring %></td>
             <td align=center><%= relevance %></td>
           </tr>
-        <% } %>        
+        <% } } %>        
         </table></center>
     </p>
+    <% } /* endfor (int mandatory...) */ %>
 
 <%} %>
     
