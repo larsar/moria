@@ -361,7 +361,7 @@ public class MoriaCacheStoreTest extends TestCase {
         try {
             userData = store.getUserData(ssoTicketId, null);
             fail("NonExistentTicketException should be raised, ticket is invalid.");
-        } catch (NonExistentTicketException success){
+        } catch (NonExistentTicketException success) {
         }
     }
 
@@ -494,7 +494,7 @@ public class MoriaCacheStoreTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
         try {
-        	HashMap test = null;
+            HashMap test = null;
             store.setTransientAttributes("bar", test);
             fail("IllegalArgumentException should be raised, transientAttributes is null");
         } catch (IllegalArgumentException success) {
