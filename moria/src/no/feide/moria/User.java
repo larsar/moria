@@ -263,10 +263,16 @@ public class User {
             Attribute oldAttr = null;
             for (int i=0; i<attributes.length; i++) {
                 oldAttr = oldAttrs.get(attributes[i]);
-                Vector newValues = new Vector();
-                for (int j=0; j<oldAttr.size(); j++)
-                    newValues.add(new String((String)oldAttr.get(j)));
-                newAttrs.put(attributes[i], newValues);
+                
+                // Did we get an attribute back at all?
+                if (oldAttr != null) {
+                    Vector newValues = new Vector();
+                    for (int j=0; j<oldAttr.size(); j++)
+                        newValues.add(new String((String)oldAttr.get(j)));
+                    newAttrs.put(attributes[i], newValues);
+                } else
+                    log.fine("Requested attribute "+attributes[i]+" not found");
+                
             }
             return newAttrs;
         }
