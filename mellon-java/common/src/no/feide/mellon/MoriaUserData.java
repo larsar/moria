@@ -23,8 +23,6 @@ import java.util.Vector;
 import java.util.Iterator;
 
 
-import no.feide.moria.service.Attribute;
-
 /**
  * @author Lars Preben S. Arnesen
  *
@@ -42,18 +40,18 @@ public class MoriaUserData {
 	 * internal data structure.
 	 * @param moriaUserData
 	 */
-	public MoriaUserData(Attribute[] moriaUserData) {
+	public MoriaUserData(MoriaUserAttribute[] attributes) {
 		
-		if (moriaUserData == null)
+		if (attributes == null)
 			return;
 		
-		HashMap userData = new HashMap(moriaUserData.length);
-		for (int i=0; i<moriaUserData.length; i++) {
-			String[] oldVals = moriaUserData[i].getValues();
+		HashMap userData = new HashMap(attributes.length);
+		for (int i=0; i<attributes.length; i++) {
+			String[] oldVals = attributes[i].getValues();
 			Vector newVals = new Vector(oldVals.length);
 			for (int j=0; j<oldVals.length; j++)
 				newVals.add(oldVals[j]);
-			userData.put(moriaUserData[i].getName(), newVals);
+			userData.put(attributes[i].getName(), newVals);
 		}
 		this.userData = userData;
 	}
@@ -74,14 +72,14 @@ public class MoriaUserData {
 	 * attribute has a single value. If it is a multi value attribute, only the
 	 * first element is returned.
 	 * @param attributeName Name of the attribute that contains the value.
-	 * @return 
+	 * @return The attribute
 	 */
-	public Object getSingleValueAttribute(String attributeName) {
+	public String getSingleValueAttribute(String attributeName) {
 		Vector values = (Vector) userData.get(attributeName);
 		if (values == null)
 			return null;
 		
-		return values.elementAt(0);
+		return (String) values.elementAt(0);
 	}
 	
 	
@@ -92,8 +90,9 @@ public class MoriaUserData {
 	 * @param attributeName
 	 * @return The Vector with all values for a attribtue.
 	 */
-	public Vector getMultiValueAttribute(String attributeName) {
-		return (Vector) userData.get(attributeName);
+	public String[] getMultiValueAttribute(String attributeName) {
+		Vector attributes = (Vector) userData.get(attributeName);
+		return (String[]) attributes.toArray(new String[attributes.size()]);
 	}
 
 	
@@ -116,6 +115,15 @@ public class MoriaUserData {
 				return true;
 		}
 		return false;
+	}
+	
+	
+	/**
+	 * Return all user data.
+	 * @return HashMap with all attributes.
+	 */
+	public HashMap getUserData() {
+		return userData;
 	}
 	
 	

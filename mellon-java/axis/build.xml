@@ -1,0 +1,54 @@
+<project name="Mellon Axis"
+         default="build"
+         basedir=".">
+
+  <!-- User's properties override project defaults. -->
+  <property file="${user.home}/build.properties"/>
+  <property file="build.properties"/>
+
+  <!-- Targets to build the Mellon API. -->
+  <target name="prepare"
+          description="Mellon API: Prepare build directory">
+ 
+    <mkdir dir="build"/>
+    <mkdir dir="dist"/>
+  </target>
+
+  <target name="build"
+          description="Mellon demo: Compile source"
+          depends="prepare">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build"
+           includes="no/feide/mellon/axis/*,no/feide/mellon/axis/example/*">
+      <classpath>
+        <fileset dir="${axis_lib}" includes="*.jar"/>
+        <fileset file="${axis_stubs}"/>
+        <fileset dir="../common/dist" includes="*.jar"/>
+      </classpath>
+    </javac>
+      
+      <jar destfile="dist/moriaAxis.jar" basedir="build"/>
+  </target>
+
+
+
+  <target name="javadoc"
+          description="Mellon API: Generate JavaDoc">
+    <javadoc sourcepath="."
+             destdir="build/javadoc"
+             packagenames="no.feide.mellon,no.feide.mellon.filter"
+             source="1.4"> 
+      <classpath>
+        <fileset file="${axis_lib}"/>
+      </classpath>
+    </javadoc>
+  </target>
+
+
+  <target name="clean"
+          description="Mellon API: Clean up">
+    <delete dir="build"/>
+    <delete dir="dist"/>
+  </target>
+</project>

@@ -33,7 +33,7 @@ import javax.xml.rpc.ServiceException;
 
 import no.feide.login.moria.Authentication.AuthenticationIFBindingStub;
 import no.feide.login.moria.Authentication.AuthenticationLocator;
-import no.feide.mellon.MoriaUserData;
+import no.feide.mellon.jaxrpc.MoriaUserData;
 
 
 /**

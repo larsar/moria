@@ -19,9 +19,6 @@ package no.feide.mellon.axis.example;
 import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
 
-import no.feide.login.moria.Authentication.Attribute;
-import no.feide.login.moria.Authentication.AuthenticationIFBindingStub;
-import no.feide.login.moria.Authentication.AuthenticationLocator;
 import no.feide.mellon.MoriaUserData;
 
 
@@ -49,6 +46,9 @@ import no.feide.mellon.MoriaUserData;
  * When running this program after the authentication, all user data will be
  * displayed on the console.
  */
+
+import no.feide.mellon.axis.MoriaAxisConnector;
+
 public class AxisExample {
 
 	/**
@@ -65,9 +65,13 @@ public class AxisExample {
 	 */
 	public static void main(String[] args) throws RemoteException, ServiceException {
 
+		MoriaAxisConnector moria = new MoriaAxisConnector();
+		moria.connect("demo", "demo");
+		
 		/* No arguments = no session ID = create a new Moria session */
 		if (args.length == 0) {
-			String sessionID = getSessionID();
+			String loginURL = moria.requestSession(new String[] { "eduPersonAffiliation", "eduPersonOrgDN" },
+			                                        "http://localhost?sessionID=", "",false);
 
 			System.out.println("You now have successfully created a Moria session. To complete this test,");
 			System.out.println("paste the URL below into a browser and complete the authentication.");
@@ -75,72 +79,15 @@ public class AxisExample {
 			System.out.println("a location that does not exist. Cut the sessionID from the browser");
 			System.out.println("and run the test program with the sessionID as parameter.");
 			System.out.println("");
-			System.out.println("Go to: " + sessionID);
+			System.out.println("Go to: " + loginURL);
 		}
 
 		/* A session ID is supplied, fetch the user data from Moria. */
 		else if (args.length == 1) {
-			MoriaUserData userData = getUserData(args[0]);
+			MoriaUserData userData = new MoriaUserData(moria.getAttributes(args[0]));
 			
 			/* Print some test data */
 			userData.debugPrintUserData();
 		}
-	}
-
-	/**
-	 * Request an authentication session from Moria and returns the session ID.
-	 * The parameters to Moria are hard coded. In a "real" application this
-	 * probably should be read from properties.
-	 * 
-	 * @return SessionID The sessionID supplied from Moria.
-	 * @throws ServiceException
-	 * @throws RemoteException
-	 */
-	private static String getSessionID() throws ServiceException, RemoteException {
-		AuthenticationIFBindingStub stub = getStub();
-		return stub.requestSession(new String[] { "eduPersonAffiliation", "eduPersonOrgDN" },
-			"http://localhost?sessionID=", "",false);
-	}
-
-	
-	/**
-	 * Retrieves the user data from an authenticated Moria session. The user
-	 * data is converted from an array of attribute objects to a more
-	 * convenient user data object. After retrieving the data everything is
-	 * written to standard out.
-	 * 
-	 * @param sessionID
-	 * @return moriaUserData
-	 * @throws RemoteException
-	 * @throws ServiceException
-	 */
-	private static MoriaUserData getUserData(String sessionID)
-		throws RemoteException, ServiceException {
-		Attribute[] attributes;
-		attributes = getStub().getAttributes(sessionID);
-		return new MoriaUserData(attributes);
-	}
-
-	
-	/**
-	 * Return an instance of the Moria stub. The stub is the local instance of
-	 * the Moria service. Since Moria requires authentication of all services
-	 * that uses Moria, a username/password has to be sent along with the
-	 * requests. In this example the username/password is hard coded, but in
-	 * "real" application it should be read from properties.
-	 * 
-	 * @return stub The stub for the Moria web service.
-	 * @throws ServiceException
-	 */
-	private static AuthenticationIFBindingStub getStub() throws ServiceException {
-		AuthenticationIFBindingStub stub;
-		AuthenticationLocator authnLocator = new AuthenticationLocator();
-		stub = (AuthenticationIFBindingStub) authnLocator.getAuthenticationIFPort();
-
-		/* Set the username password, should be read from properties. */
-		stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, "demo");
-		stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, "demo");
-
-		return stub;
 	}
 }

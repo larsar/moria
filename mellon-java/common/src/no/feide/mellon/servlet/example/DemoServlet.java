@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package no.feide.mellon.servlet;
+package no.feide.mellon.servlet.example;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,13 +30,13 @@ import javax.servlet.http.HttpSession;
 
 /**
  * A simple servlet to be used to demonstrate the use of the
- * AuthenticationFilter.
+ * MoriaAuthenticationFilter.
  */
 public class DemoServlet extends HttpServlet {
     
     /**
      * A get request only results in the generation of a simple HTML
-     * page. If the AuthenticationFilter has been used to filter all
+     * page. If the MoriaAuthenticationFilter has been used to filter all
      * requests to this servlet, the user has been authenticated by
      * the FEIDE login service (Moria).
      */
@@ -72,7 +72,7 @@ public class DemoServlet extends HttpServlet {
          * This should not happen. */
         if (userData == null) {
             out.println("<H1>NOT authenticated!</H1>");
-            out.println("The user has not been authenticated. The AuthenticationFilter is probably disabled. This should not happen if the filter is configured correct.");
+            out.println("The user has not been authenticated. The MoriaAuthenticationFilter is probably disabled. This should not happen if the filter is configured correct.");
             return;
         }
 

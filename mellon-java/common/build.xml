@@ -1,0 +1,101 @@
+<project name="Mellon common"
+         default="build"
+         basedir=".">
+
+  <!-- User's properties override project defaults. -->
+  <property file="${user.home}/build.properties"/>
+  <property file="build.properties"/>
+
+  <!-- Targets to build the Mellon API. -->
+  <target name="prepare"
+          description="Mellon API: Prepare build directory">
+ 
+    <mkdir dir="build/filter"/>
+    <mkdir dir="build/demo/WEB-INF/classes"/>
+    <copy todir="build/demo/WEB-INF/lib" file="${axis_stubs}"/>
+    <mkdir dir="dist"/>
+    
+    <mkdir dir="build/demo"/>
+    <mkdir dir="dist"/>
+    <delete file="build/demo/WEB-INF/web.xml"/>
+    <delete file="build/demo/WEB-INF/classes/mellon.properties"/>
+    <copy file="conf/web.xml" toFile="build/demo/WEB-INF/web.xml"/>
+    <echo message="Using config: ${mellon_config}"/>
+    <copy file="${mellon_config}"
+          toFile="build/demo/WEB-INF/classes/mellon.properties"/>
+    
+    
+  </target>
+
+  <target name="build"
+   	      description="Build all"
+   	      depends="filter"/>
+  
+
+  <target name="servlet"
+          description="Mellon demo: Compile source"
+          depends="filter">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build/demo/WEB-INF/classes"
+           includes="no/feide/mellon/servlet/example/*">
+      <classpath>
+        <fileset dir="${axis_lib}" includes="*.jar"/>
+        <fileset dir="dist" includes="*.jar"/>
+        <fileset file="${axis_stubs}"/>
+        <fileset file="${servlet_jar}"/>
+      </classpath>
+    </javac>
+      
+    <delete file="dist/feide-mellon-demo.war"/>
+    <copy todir="build/demo/WEB-INF/lib">
+      <fileset dir="dist" includes="**/feide-mellon*.jar"/>
+      <fileset dir="dist" includes="*.jar"/>
+      <fileset file="${soap_connector}"/>
+      <fileset dir="${axis_lib}" includes="*.jar"/>
+    </copy>      
+      
+      <jar destfile="dist/feide-mellon-demo.war" basedir="build/demo"/>
+  </target>
+
+ <target name="filter"
+          description="Mellon demo: Compile source"
+          depends="prepare">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build/filter"
+           includes="no/feide/mellon/servlet/MoriaAuthenticationFilter.java">
+      <classpath>
+        <fileset dir="${axis_lib}" includes="*.jar"/>
+        <fileset file="${axis_stubs}"/>
+        <fileset file="${servlet_jar}"/>
+      </classpath>
+    </javac>
+    <jar destfile="dist/moriaAuthenticationFilter.jar" basedir="build/filter"/>
+    </target>
+
+
+   
+
+  <target name="javadoc"
+          description="Mellon API: Generate JavaDoc">
+    <javadoc sourcepath="."
+             destdir="build/javadoc"
+             packagenames="no.feide.mellon,no.feide.mellon.servlet"
+             source="1.4"> 
+      <classpath>
+         <fileset dir="${include_libs}">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset file="${servlet_jar}"/>
+      </classpath>
+    </javadoc>
+  </target>
+
+
+  <target name="clean"
+          description="Mellon API: Clean up">
+    <delete dir="build"/>
+    <delete dir="dist"/>
+  </target>
+</project>

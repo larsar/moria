@@ -15,11 +15,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package no.feide.mellon.filter;
+package no.feide.mellon.servlet;
 
 import java.io.IOException;
-import java.util.HashMap;
-
+import java.rmi.RemoteException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -29,9 +28,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.rpc.ServiceException;
 
-import no.feide.mellon.Moria;
-import no.feide.mellon.MoriaException;
+import no.feide.mellon.MoriaConnector;
+import no.feide.mellon.MoriaUserData;
+
 
 
 /**
@@ -40,7 +41,7 @@ import no.feide.mellon.MoriaException;
  */
 
 
-public class AuthenticationFilter implements Filter {
+public class MoriaAuthenticationFilter implements Filter {
   
     private FilterConfig config = null;
 
@@ -72,17 +73,45 @@ public class AuthenticationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
 
-        /* The API for Moria (the FEIDE authentication service). */
-        Moria moria;
-
-        try {
-            moria = Moria.getInstance();
-        }
-        
-        catch (MoriaException e) {
-            throw new ServletException(e);
-        }
-
+    	/* The API for Moria (the FEIDE authentication service). */
+    	MoriaConnector moria;
+    	
+    	String connectorClass = System.getProperty("no.feide.mellon.connector");
+    	if (connectorClass == null) {
+    		System.err.println("No connector specified.");
+    		return;
+    	}
+    	
+    	try {
+    		System.out.println("FOOOBAR: "+connectorClass);
+			moria = (MoriaConnector)Class.forName(connectorClass).newInstance();
+		} 
+    	catch (InstantiationException e1) {
+			System.err.println("Error instantiating connector.");
+			e1.printStackTrace();
+			return;
+		} 
+    	catch (IllegalAccessException e1) {
+			System.err.println("Error instantiating connector.");
+			e1.printStackTrace();
+			return;
+		} 
+    	catch (ClassNotFoundException e1) {
+			System.err.println("Error instantiating connector.");
+			e1.printStackTrace();
+			return;
+		}
+    	
+    	try {
+			moria.connect("demo", "demo");
+    	}
+    	
+    	catch (ServiceException e) {
+    		e.printStackTrace();
+    		throw new ServletException(e);
+    	}
+            
+            
         /* The HttpSession is used for user tracking so that the user
          * don't have to authenticate more than once per "surfing
          * session".*/
@@ -120,7 +149,7 @@ public class AuthenticationFilter implements Filter {
                      redirectURL = moria.requestSession(System.getProperty("no.feide.mellon.requestedAttributes").split(","), backToMellonURL, "", false);
                 }
                 
-                catch (MoriaException e) {
+                catch (RemoteException e) {
                     throw new ServletException(e);
                 }
                 
@@ -146,17 +175,17 @@ public class AuthenticationFilter implements Filter {
            the user).*/
         else {
 
-            HashMap attributes;
+            MoriaUserData userData;
 
             /* Fetch user attributes from Moria. */
             try {
-                attributes = moria.getAttributes(moriaID);
+                userData = new MoriaUserData(moria.getAttributes(moriaID));
             }
 
             /* The user has NOT been authenticated. This should never
              * be the case since only authenticated users are
              * redirected from the login service. */
-            catch (MoriaException e) {
+            catch (RemoteException e) {
                 ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_FORBIDDEN);  
                 return;
             }
@@ -164,7 +193,7 @@ public class AuthenticationFilter implements Filter {
 
             /* We got user data. Store it in the HttpSession for later
                authentication. The user is authenticated, let him pass. */
-            httpSession.setAttribute("userData", attributes);
+            httpSession.setAttribute("userData", userData.getUserData());
             chain.doFilter(request, response);
 
         }

@@ -14,13 +14,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 package no.feide.mellon;
 
 /**
- * This interface is 
  * @author Lars Preben S. Arnesen
  *
  */
-public interface MoriaInterface {
+public class MoriaUserAttribute {
+
+	/** My name. */
+	private String name = new String();
+    
+	/** My values. */
+	private String[] values =  {};
+    
+    
+	/**
+	 * Sets the name.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+    
+    
+	/**
+	 * Returns the name.
+	 */
+	public String getName() {
+		return name;
+	}
+    
+    
+	/**
+	 * Sets the value array.
+	 */
+	public void setValues(String[] values) {
+		this.values = values;
+	}
+    
+    
+	/**
+	 * Gets the value array.
+	 */
+	public String[] getValues() {
+		return values;
+	}
 
 }

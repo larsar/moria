@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package no.feide.mellon;
+package no.feide.mellon.jaxrpc;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 
 import javax.xml.rpc.Stub;
 
+import no.feide.mellon.MoriaConnector;
+import no.feide.mellon.MoriaConnector;
 import no.feide.moria.service.Attribute;
 import no.feide.moria.service.AuthenticationIF;
 import no.feide.moria.service.Authentication_Impl;
@@ -32,7 +34,7 @@ import no.feide.moria.service.Authentication_Impl;
  * Represents the interface to Moria, hiding the internals of the
  * Mellon-Moria communication.
  */
-public class Moria {
+public class Moria extends MoriaConnector {
     
     /** Used for logging. */
     private static Logger log = Logger.getLogger(Moria.class.toString());
@@ -52,10 +54,10 @@ public class Moria {
                 
         // Create service proxy and set credentials.
         stub = (Stub)(new Authentication_Impl().getAuthenticationIFPort());
-	    String s = System.getProperty("no.feide.mellon.serviceUsername");
-	    log.config("no.feide.mellon.serviceUsername="+s);
+	    String s = System.getProperty("no.feide.mellon.jaxrpc.serviceUsername");
+	    log.config("no.feide.mellon.jaxrpc.serviceUsername="+s);
         stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, s);
-        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, System.getProperty("no.feide.mellon.servicePassword"));
+        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, System.getProperty("no.feide.mellon.jaxrpc.servicePassword"));
 	    AuthenticationIF service = (AuthenticationIF)stub;
     }
 
