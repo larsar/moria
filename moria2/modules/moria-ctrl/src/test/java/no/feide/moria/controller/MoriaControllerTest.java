@@ -48,8 +48,12 @@ public class MoriaControllerTest extends TestCase {
 
     public void setUp() {
         /* Property needed by the RandomId class */
-        if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
-            System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+        if (System.getProperty("no.feide.moria.store.nodeid") == null)
+            System.setProperty("no.feide.moria.store.nodeid", "no1");
+
+        if (System.getProperty("no.feide.moria.configuration.base") == null)
+             System.setProperty("no.feide.moria.configuration.base",
+                     System.getProperty("no.feide.moria.configuration.test.dir")+"/moria-base-valid.properties");
 
         validPrefix = "http://moria.sf.net/";
         validPostfix = "&foo=bar";
@@ -134,7 +138,7 @@ public class MoriaControllerTest extends TestCase {
         assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
 
         ticket = MoriaController.initiateAuthentication(new String[]{}, validPrefix, validPostfix, false, validPrincipal);
-        // assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+        assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
     }
 
     public void testAttemptLogin() {
@@ -195,13 +199,13 @@ public class MoriaControllerTest extends TestCase {
         /* Invalid arguments */
         try {
             MoriaController.getServiceProperties(null);
-            fail("IllegalArgumentException should be raised, null value");
-        } catch (IllegalArgumentException success) {
+            fail("IllegalInputException should be raised, null value");
+        } catch (IllegalInputException success) {
         }
         try {
             MoriaController.getServiceProperties("");
-            fail("IllegalArgumentException should be raised, empty string");
-        } catch (IllegalArgumentException success) {
+            fail("IllegalInputException should be raised, empty string");
+        } catch (IllegalInputException success) {
         }
 
         String ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
