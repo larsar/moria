@@ -669,7 +669,7 @@ public final class MoriaController {
             throw new InoperableStateException(STORE_DOWN);
         }
 
-        // Log successful authentication initiation, and return the ticket ID.
+        // Log successful authentication initialization, and return the ticket ID.
         accessLogger.logService(AccessStatusType.SUCCESSFUL_AUTH_INIT, servicePrincipal, null, loginTicketId);
                 
         return loginTicketId;
