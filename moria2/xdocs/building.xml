@@ -25,13 +25,65 @@ $Id$
   <properties>
     <title>Building</title>
     <author email="lars.preben.arnesen@conduct.no">Lars Preben S. Arnesen</author>
+    <author email="b.o.smievoll@conduct.no">Bjørn Ola Smievoll</author>
   </properties>
 
   <body>
-
     <section name="Maven">
-      We use Maven...
-      <br/><b>TODO: Bjørn Ola</b>
+      <subsection name="Introduction">
+	<p>
+	  The build tool used for Moria is Maven.  Instructions on how
+	  to install and use Maven can be found at Maven's official <a
+	  href="http://maven.apache.org/">web site</a>.
+	</p>
+	<p>
+	  Moria has been divided into several modules.  Each such
+	  module is configured as a separate Maven project.  Common
+	  Maven goals as java:compile, test, site:generate and jar can
+	  therefore be run in each separate module.
+	</p>
+	<p>
+	  To minimize the effort needed to maintain the build
+	  configuration and reduce the risks of inconsistencies
+	  between the modules Moria make use of Maven's built in
+	  support for property and POM inheritance.  Read more about
+	  this in the Maven <a
+	  href="http://maven.apache.org/reference/user-guide.html">user
+	  guide</a>.
+	</p>
+      </subsection>
+      <subsection name="Dependencies">
+	<p>
+	  Moria is dependent on a number of java packages, which again
+	  may depend on other packages.  To manage the handling of the
+	  many different jar files, Moria makes use of the fact the
+	  POM is a xml document and defines all dependencies as
+	  entities in an external document
+	  called <em>dependencies.ent</em>.  Details surrounding this
+	  setup can be found in the Maven <a
+	  href="http://wiki.codehaus.org/maven/EnsureProjectConsistencyWithEntities">Wiki</a>.
+	</p>
+	<p>
+	  Most of Moria's dependencies are found in Mavens default
+	  repository at <a
+	  href="http://www.ibiblio.org/maven/">iBiblio</a>.  Other are
+	  found in <a href="http://moria.sourceforge.net/maven/">our
+	  own</a> repository at Sourceforge.
+	</p>
+      </subsection>
+      <subsection name="Special goals">
+	<p>
+	  Some of the modules and the main project has spesial goals
+	  defined their respective maven.xml files.  These goals are
+	  documented where they are defined, but it can be mentioned
+	  that the root project file contains goals for building,
+	  deployment and site generation of the complete project.
+	  These goals use the reactor directly and not the
+	  multiproject plugin (this is primarily due to leagacy
+	  reasons). All locally defined goals use a <em>project:</em>
+	  prefix.
+	</p>
+      </subsection>
     </section>
   </body>
 </document>
