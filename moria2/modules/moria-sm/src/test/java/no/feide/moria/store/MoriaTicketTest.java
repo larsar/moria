@@ -5,16 +5,16 @@
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * $Id$
  */
 
@@ -26,7 +26,7 @@ import junit.framework.TestSuite;
 
 /**
  * Test class for MoriaTicket
- * 
+ *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
@@ -91,7 +91,7 @@ public class MoriaTicketTest extends TestCase {
         try {
             MoriaTicket ticket = new MoriaTicket(id1, -1, principal1, 5);
             fail("An InvalidTicketException should have been thrown");
-        } catch (InvalidTicketException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         /* Test for illegal principal */
@@ -100,7 +100,7 @@ public class MoriaTicketTest extends TestCase {
             fail("An IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
-        
+
         try {
             MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.SSO_TICKET, principal1, 5);
             fail("An IllegalArgumentException should have been thrown");
@@ -123,7 +123,7 @@ public class MoriaTicketTest extends TestCase {
     /**
      * Tests the overriden equal() method of MoriaTicket. Equality is based
      * soley on the id field of the object.
-     * 
+     *
      * @throws InvalidTicketException thrown by MoriaTicket constructors
      */
     public void testEquality() throws InvalidTicketException {
@@ -147,7 +147,7 @@ public class MoriaTicketTest extends TestCase {
 
     /**
      * Test if the values given in the constructor are returned correctly.
-     * 
+     *
      * @throws IllegalArgumentException
      * @throws InvalidTicketException
      */
