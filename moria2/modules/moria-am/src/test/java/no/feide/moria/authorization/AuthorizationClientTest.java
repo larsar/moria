@@ -195,7 +195,7 @@ public class AuthorizationClientTest extends TestCase {
         assertEquals("Subsystems differs", subsys, client.getSubsystems());
         assertEquals("Attributes differs", attrs, client.getAttributes());
 
-        Properties properties = client.getProperties();
+        HashMap properties = client.getProperties();
         assertNotNull("Properties should not be null", properties);
         assertEquals("Number of elements is incorrect", 5, properties.size());
         assertEquals("Display name differs", "display", properties.get("displayName"));

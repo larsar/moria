@@ -80,7 +80,7 @@ class AuthorizationClient {
      */
     private HashMap attributes = new HashMap();
 
-    private Properties properties = new Properties();
+    private HashMap properties = new HashMap();
 
     /**
      * Constructor
@@ -424,7 +424,7 @@ class AuthorizationClient {
      *
      * @return the properties for this object
      */
-    public Properties getProperties() {
+    public HashMap getProperties() {
         return properties;
     }
 }
