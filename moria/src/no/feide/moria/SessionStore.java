@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.util.logging.Logger;
-import org.doomdark.uuid.UUIDGenerator;
+import no.feide.moria.utils.RandomID;
 import no.feide.moria.authorization.WebService;
 import no.feide.moria.stats.StatsStore;
 
@@ -114,7 +114,26 @@ public class SessionStore {
                     log.severe("Unable to create unique session ID");
                     throw new SessionException("Unable to create unique session ID");
                 }          
-                generated = UUIDGenerator.getInstance().generateRandomBasedUUID().toString();
+
+                generated = RandomID.generateID(256);
+                
+                /* '+' in session ID means trouble. Remove it. */
+                int plusPos = generated.indexOf("+");
+                int plusCounter = 0;
+                while (plusPos != -1) {
+                    plusCounter++;
+
+                    /* Should never happen, but just in case. We don't
+                     * want to be stuck inside an endless loop. */
+                    if (plusCounter > 20) {
+                        log.severe("Endless loop while removing '+' from sessionID.");
+                        break;
+                    }
+
+                    generated = generated.substring(0, plusPos)+"L"+generated.substring(plusPos+1, generated.length());
+                    plusPos = generated.indexOf("+");
+                }
+
             } while (sessions.containsKey(generated));
         }
 
