@@ -30,6 +30,16 @@ import java.util.Properties;
 public interface MoriaStore {
 
     /**
+     * Set the configuration of the store.
+     *
+     * @param properties
+     *          object containing the necessary attributes for store configuration
+     * @throws IllegalArgumentException
+     *          if properties is null
+     */
+    void setConfig(Properties properties);
+
+    /**
      * Creates an authentication attempt based on a service request.
      *
      * @param requestAttributes
@@ -46,10 +56,11 @@ public interface MoriaStore {
      * @return a login ticket identifying the authentication attempt
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if any of the arguments are null, and if responseURLPrefix and servicePrincipal are zero length
      */
-    String createAuthnAttempt(final String[] requestAttributes, final String responseURLPrefix,
-            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
-            throws MoriaStoreException;
+    String createAuthnAttempt(final String[] requestAttributes, final String responseURLPrefix, final String responseURLPostfix,
+            final boolean forceInteractiveAuthentication, final String servicePrincipal) throws MoriaStoreException;
 
     /**
      * Gets the authentication attempt assosiated with the ticket given as argument. Should return
@@ -62,11 +73,15 @@ public interface MoriaStore {
      * @return the MoriaAuthnAttempt assosiated with the ticket
      * @throws InvalidTicketException
      *          if the incoming ticket is not a login ticket
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if loginTicketId is null or zero length
      */
     MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException,
-            MoriaStoreException;
+            NonExistentTicketException, MoriaStoreException;
 
     /**
      * Creates a new CachedUserData object in the underlying store and assosiates it with a SSO
@@ -77,6 +92,8 @@ public interface MoriaStore {
      * @return the SSO ticket that identifies the cached user data
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if attributes is null
      */
     String cacheUserData(final HashMap attributes) throws MoriaStoreException;
 
@@ -90,10 +107,15 @@ public interface MoriaStore {
      * @throws InvalidTicketException
      *          thrown if the incoming ticket is not of the correct type or
      *          has an invalid principal
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if ticketId is null or zero length
      */
-    CachedUserData getUserData(final String ticketId) throws InvalidTicketException, MoriaStoreException;
+    CachedUserData getUserData(final String ticketId) throws InvalidTicketException, NonExistentTicketException,
+            MoriaStoreException;
 
     /**
      * Creates a service ticket that the service will use when requesting user attributes after a
@@ -104,11 +126,15 @@ public interface MoriaStore {
      * @return a service ticket assosiated with the authentication attempt object
      * @throws InvalidTicketException
      *          thrown if the argument ticket is not a login-ticket
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if loginTicketId is null or zero length
      */
-    String createServiceTicket(final String loginTicketId)
-            throws InvalidTicketException, MoriaStoreException;
+    String createServiceTicket(final String loginTicketId) throws InvalidTicketException, NonExistentTicketException,
+            MoriaStoreException;
 
     /**
      * Create a new ticket granting ticket, using a sso ticket.
@@ -121,11 +147,15 @@ public interface MoriaStore {
      *          authentication
      * @throws InvalidTicketException
      *          thrown if the argument ticket is not a SSO-ticket or has an invalid principal
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if any of the arguments are null or zero length
      */
-    String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal)
-            throws InvalidTicketException, MoriaStoreException;
+    String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal) throws InvalidTicketException,
+            NonExistentTicketException, MoriaStoreException;
 
     /**
      * Create a new proxy ticket from a TGT and assosiate the new ticket with the same user data as
@@ -140,11 +170,15 @@ public interface MoriaStore {
      * @return proxy ticket that may be used by the requesting service
      * @throws InvalidTicketException
      *          thrown if the incoming ticket is not a TGT or has an invalid principal
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if any of the arguments are null or zero length
      */
     String createProxyTicket(final String tgTicketId, final String servicePrincipal, final String targetServicePrincipal)
-            throws InvalidTicketException, MoriaStoreException;
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**
      * Provide transient attributes to be added to and stored with authentication attempt.
@@ -156,26 +190,29 @@ public interface MoriaStore {
      *          the attributes to store with the AuthAttempt
      * @throws InvalidTicketException
      *          thrown if ticket is found invalid
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
      * @throws MoriaStoreException
      *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if loginTicketId is null or zero length, or transientAttributes is null
      */
-    void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes)
-            throws InvalidTicketException, MoriaStoreException;
-
-    /**
-     * Set the configuration of the store.
-     *
-     * @param properties
-     *          object containing the necessary attributes for store configuration
-     */
-    void setConfig(Properties properties);
+    void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes) throws InvalidTicketException,
+            NonExistentTicketException, MoriaStoreException;
 
     /**
      * Removes a ssoTicket from the store.
      *
-     * @param ssoTicketId the ticketId of the ticket to remove
-     * @throws InvalidTicketException if the ticket does not exist
-     * @throws MoriaStoreException if the operation fails
+     * @param ssoTicketId
+     *          the ticketId of the ticket to remove
+     * @throws InvalidTicketException
+     *          if the ticket does not exist
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
+     * @throws MoriaStoreException
+     *          if the operation fails
+     * @throws IllegalArgumentException
+     *          if ssoTicketId is null or zero length
      */
-    void removeSSOTicket(final String ssoTicketId) throws InvalidTicketException, MoriaStoreException;
+    void removeSSOTicket(final String ssoTicketId) throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 }
