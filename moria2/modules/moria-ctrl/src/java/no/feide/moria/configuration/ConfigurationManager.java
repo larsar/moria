@@ -34,25 +34,33 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * ConfigurationManager watches configuration files and reloads them when the are changed. The constructor requires the
- * <code>no.feide.moria.configuration.cm</code> property to be set, and the property has to point to the configuration
- * file for the ConfigurationManager module. The file can be referenced by either full file path or as a resource in the
- * classpath.<br/> <br/> The configuration file has to contain properties that points to the other modules properties
- * files. These files kan be referenced by either full file path or as a resource in the classpath. The
- * <code>no.feide.moria.configuration.fileListenerIntervalSeconds</code> attribute specifies the interval between each
- * file poll. <br/>
- * <p/>
+ * ConfigurationManager watches configuration files and reloads them when the
+ * are changed. The constructor requires the
+ * <code>no.feide.moria.configuration.cm</code> property to be set, and the
+ * property has to point to the configuration file for the ConfigurationManager
+ * module. The file can be referenced by either full file path or as a resource
+ * in the classpath. <br/><br/>The configuration file has to contain properties
+ * that points to the other modules properties files. These files kan be
+ * referenced by either full file path or as a resource in the classpath. The
+ * <code>no.feide.moria.configuration.fileListenerIntervalSeconds</code>
+ * attribute specifies the interval between each file poll. <br/><p/>
+ * 
  * <pre>
- * # Example content for ConfigurationManager properties
- * no.feide.moria.configuration.fileListenerIntervalSeconds=1
- * no.feide.moria.configuration.sm=/sm-test-valid.properties
- * no.feide.moria.configuration.dm=/dm-test-valid.properties
- * no.feide.moria.configuration.am=/am-data.xml
+ * 
+ *  
+ *   
+ *    # Example content for ConfigurationManager properties
+ *    no.feide.moria.configuration.fileListenerIntervalSeconds=1
+ *    no.feide.moria.configuration.sm=/sm-test-valid.properties
+ *    no.feide.moria.configuration.dm=/dm-test-valid.properties
+ *    no.feide.moria.configuration.am=/am-data.xml
+ *    
+ *   
+ *  
  * </pre>
- * <p/>
- * When a configuration file is changed the content is read into a properties object which is sent to the
- * MoriaController.
- *
+ * 
+ * <p/>When a configuration file is changed the content is read into a
+ * properties object which is sent to the MoriaController.
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  * @see no.feide.moria.controller.MoriaController
@@ -102,7 +110,7 @@ public final class ConfigurationManager {
     /**
      * List of the modules that have configuration to watch.
      */
-    private static final String[] NEEDS_LISTENER = new String[]{MODULE_SM, MODULE_DM, MODULE_AM, MODULE_WEB};
+    private static final String[] NEEDS_LISTENER = new String[] {MODULE_SM, MODULE_DM, MODULE_AM, MODULE_WEB};
 
     /**
      * Timer for the configuration files.
@@ -114,47 +122,41 @@ public final class ConfigurationManager {
      */
     private final HashMap timerEntries = new HashMap();
 
+
     /**
-     * Constructor. The constructor reads the ConfigurationManagers properties from file (set by System.properties) and
-     * starts file listeners for all modules configuration files.
-     *
-     * @throws ConfigurationManagerException if there are any problems with the configuration file
+     * Constructor. The constructor reads the ConfigurationManagers properties
+     * from file (set by <code>System.properties</code>) and starts file
+     * listeners for all modules' configuration files.
+     * @throws BaseConfigException
+     *             If the system property pointing to the base configuration
+     *             file is not a non-empty string.
+     * @throws ConfigurationManagerException
+     *             If there are any problems with the configuration file.
      */
     public ConfigurationManager() throws ConfigurationManagerException {
 
         /* Read configuration manager properties file */
         final Properties cmProps;
         final String cmPropsFile = System.getProperty(PROPS_PREFIX + MODULE_CM);
+        if (cmPropsFile == null || cmPropsFile.equals(""))
+            throw new BaseConfigException("System property '" + PROPS_PREFIX + MODULE_CM + "' must be a non-empty string");
         final String filePrefix = new File(cmPropsFile).getParent() + System.getProperty("file.separator");
-
-        if (cmPropsFile == null || cmPropsFile.equals("")) {
-            throw new BaseConfigException(
-                    "System property '" + PROPS_PREFIX + MODULE_CM + "' must be a non-empty string.");
-        }
 
         /* Read configuration manager's properties file */
         try {
             cmProps = readProperties(cmPropsFile);
         } catch (FileNotFoundException e) {
-            throw new ConfigurationManagerException(
-                    "Configuration manager's configuration file not found: " + cmPropsFile);
+            throw new ConfigurationManagerException("Configuration manager's configuration file not found: " + cmPropsFile);
         } catch (IOException e) {
-            throw new ConfigurationManagerException(
-                    "IOException while loading configuration managers properties file: " + cmPropsFile, e);
+            throw new ConfigurationManagerException("IOException while loading configuration managers properties file: " + cmPropsFile, e);
         }
 
         /* Timer delay */
         final int timerDelay;
         final String timerDelayStr = cmProps.getProperty(PROPS_PREFIX + TIMER_DELAY);
-        if (timerDelayStr == null || timerDelayStr.equals("")) {
-            throw new ConfigurationManagerException(
-                    "'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties cannot be a null value.");
-        }
+        if (timerDelayStr == null || timerDelayStr.equals("")) { throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties cannot be a null value."); }
         timerDelay = new Integer(timerDelayStr).intValue();
-        if (timerDelay < 1) {
-            throw new ConfigurationManagerException(
-                    "'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties must be >= 1.");
-        }
+        if (timerDelay < 1) { throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties must be >= 1."); }
 
         /* Create listener for every module config file */
         for (int i = 0; i < NEEDS_LISTENER.length; i++) {
@@ -175,51 +177,59 @@ public final class ConfigurationManager {
         }
     }
 
+
     /**
      * Remove all file listeners.
      */
     public void stop() {
+
         final HashMap timers = new HashMap(timerEntries);
         for (Iterator it = timers.keySet().iterator(); it.hasNext();) {
             final String entry = (String) it.next();
             removeFileChangeListener(entry);
         }
-        
+
         timer.cancel();
     }
+
 
     /**
      * @see java.lang.Object#destroy()
      */
     public void destroy() {
+
         stop();
     }
 
+
     /**
      * Number of active file listeners. Basicly needed for testing.
-     *
      * @return the number of active file listeners
      */
     int numFileListeners() {
+
         return timerEntries.size();
     }
 
+
     /**
-     * Read properties from file. The fileURI can be absolute path to file or relative to the classpath. If the fieleURI
-     * does not resolve to a readeble file, a <code>ConfigurationManagerException</code> is thrown.
-     *
-     * @param fileURI the reference to the properties file
+     * Read properties from file. The fileURI can be absolute path to file or
+     * relative to the classpath. If the fieleURI does not resolve to a readeble
+     * file, a <code>ConfigurationManagerException</code> is thrown.
+     * @param fileURI
+     *            the reference to the properties file
      * @return properties from the file
-     * @throws IOException if something goes wrong during file read
+     * @throws IOException
+     *             if something goes wrong during file read
      */
-    private static Properties readProperties(final String fileURI) throws IOException {
+    private static Properties readProperties(final String fileURI)
+    throws IOException {
+
         final Properties props = new Properties();
         final File file;
 
         /* Validate parameter */
-        if (fileURI == null || fileURI.equals("")) {
-            throw new IllegalArgumentException("URI to properties file must be a non-empty string.");
-        }
+        if (fileURI == null || fileURI.equals("")) { throw new IllegalArgumentException("URI to properties file must be a non-empty string."); }
 
         /* Read properties file */
         file = fileForURI(fileURI);
@@ -228,17 +238,23 @@ public final class ConfigurationManager {
         return props;
     }
 
+
     /**
-     * Monitor a file. A new file listener is started for the modules properties file. If the file cannot be read, a
-     * <code>FileNotFoundException</code> is thrown.
-     *
-     * @param fileName    full path or relative (classpath) path to the properties file
-     * @param module      the module the configuration file belongs to
-     * @param intervalSec polling period in seconds
-     * @throws FileNotFoundException if the file is not found
+     * Monitor a file. A new file listener is started for the modules properties
+     * file. If the file cannot be read, a <code>FileNotFoundException</code>
+     * is thrown.
+     * @param fileName
+     *            full path or relative (classpath) path to the properties file
+     * @param module
+     *            the module the configuration file belongs to
+     * @param intervalSec
+     *            polling period in seconds
+     * @throws FileNotFoundException
+     *             if the file is not found
      */
     private void addFileChangeListener(final String fileName, final String module, final int intervalSec)
-            throws FileNotFoundException {
+    throws FileNotFoundException {
+
         removeFileChangeListener(fileName);
         final long delay = intervalSec * 1000;
 
@@ -247,26 +263,31 @@ public final class ConfigurationManager {
         timer.schedule(task, delay, delay);
     }
 
+
     /**
      * Stop monitoring of file.
-     *
-     * @param fileName the file name to stop monitoring
+     * @param fileName
+     *            the file name to stop monitoring
      */
     private void removeFileChangeListener(final String fileName) {
+
         final FileListenerTask task = (FileListenerTask) timerEntries.remove(fileName);
         if (task != null) {
             task.cancel();
         }
     }
 
+
     /**
      * Send changed configuration to <code>MoriaController</code>.
-     *
-     * @param module            the module the configuration file belongs to
-     * @param configurationFile a <code>File</code> object representing the changed file
+     * @param module
+     *            the module the configuration file belongs to
+     * @param configurationFile
+     *            a <code>File</code> object representing the changed file
      * @see no.feide.moria.controller.MoriaController#setConfig
      */
     private void fileChangeEvent(final String module, final File configurationFile) {
+
         Properties props;
 
         try {
@@ -282,12 +303,10 @@ public final class ConfigurationManager {
 
         } catch (FileNotFoundException e) {
             props = null;
-            messageLogger.logCritical("Watched file disappeared from the file system, fileChangeEvent cancelled. File: "
-                                      + configurationFile.getAbsolutePath());
+            messageLogger.logCritical("Watched file disappeared from the file system, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
         } catch (IOException e) {
             props = null;
-            messageLogger.logCritical("IOException during reading of authorization database, fileChangeEvent cancelled. File: "
-                                      + configurationFile.getAbsolutePath());
+            messageLogger.logCritical("IOException during reading of authorization database, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
         }
 
         if (props != null) {
@@ -297,28 +316,32 @@ public final class ConfigurationManager {
         }
     }
 
+
     /**
      * Resolves a fileURI to a <code>File</code> object.
-     *
-     * @param fileURI reference to the file (full path or relative within the classpath)
+     * @param fileURI
+     *            reference to the file (full path or relative within the
+     *            classpath)
      * @return a <code>File</code> object referenced by the fileURI
-     * @throws FileNotFoundException if the fileURI cannot be resolved to a readable file
+     * @throws FileNotFoundException
+     *             if the fileURI cannot be resolved to a readable file
      */
-    private static File fileForURI(final String fileURI) throws FileNotFoundException {
+    private static File fileForURI(final String fileURI)
+    throws FileNotFoundException {
 
-        if (fileURI == null || fileURI.equals("")) {
-            throw new FileNotFoundException("File reference cannot be null.");
-        }
+        if (fileURI == null || fileURI.equals("")) { throw new FileNotFoundException("File reference cannot be null."); }
 
         final File file = new File(fileURI);
         return file;
     }
 
     /**
-     * This class is used to monitor the configuration files. An instance of this class is created for every file to
-     * watch. The work is done by the run() method which is called by the timer.
+     * This class is used to monitor the configuration files. An instance of
+     * this class is created for every file to watch. The work is done by the
+     * run() method which is called by the timer.
      */
-    final class FileListenerTask extends TimerTask {
+    final class FileListenerTask
+    extends TimerTask {
 
         /**
          * The module that the configuration file belongs to.
@@ -335,14 +358,19 @@ public final class ConfigurationManager {
          */
         private long lastModified;
 
+
         /**
          * Constructor.
-         *
-         * @param fileURI the URI for the file to watch
-         * @param module  the module the file belongs to
-         * @throws FileNotFoundException if the file does not exist
+         * @param fileURI
+         *            the URI for the file to watch
+         * @param module
+         *            the module the file belongs to
+         * @throws FileNotFoundException
+         *             if the file does not exist
          */
-        public FileListenerTask(final String fileURI, final String module) throws FileNotFoundException {
+        public FileListenerTask(final String fileURI, final String module)
+        throws FileNotFoundException {
+
             monitoredFile = fileForURI(fileURI);
             fileChangeEvent(module, monitoredFile);
             this.lastModified = 0;
@@ -350,12 +378,14 @@ public final class ConfigurationManager {
             this.lastModified = monitoredFile.lastModified();
         }
 
+
         /**
-         * Called by the timer. If the file has changed the fileChangeEvent() is called.
-         *
+         * Called by the timer. If the file has changed the fileChangeEvent() is
+         * called.
          * @see ConfigurationManager#fileChangeEvent(String, File)
          */
         public void run() {
+
             final long lastModified = monitoredFile.lastModified();
             if (lastModified != this.lastModified) {
                 this.lastModified = lastModified;
