@@ -4,25 +4,38 @@
 
 <!-- Module: moria-am -->
 
-<project
-   xmlns:j="jelly:core"
-   xmlns:m="jelly:maven"
-   xmlns:u="jelly:util"
-   default="project:install">
+<project xmlns:j="jelly:core"
+         xmlns:m="jelly:maven"
+         xmlns:u="jelly:util"
+         default="project:install">
+   
+  <!-- 
+       A number of filename fixes for Windows users.
+  -->
+  <preGoal name="build:start">
+  <tempfile property="windowsFixFile"
+              destDir="${maven.build.dir}/.."/>
+    <echo message="log4j.configuration=${log4j.configuration.raw}"
+          file="${windowsFixFile}"
+          level="verbose"/>
+    <replace file="${windowsFixFile}"
+						 replaceFilterFile="${maven.build.dir}/../windows.properties"/>
+    <property file="${windowsFixFile}"/>
+    <delete file="${windowsFixFile}"
+            deleteonexit="true"/>
+  </preGoal>
+  
 
-  <postGoal
-     name="test:prepare-filesystem">
+  <postGoal name="test:prepare-filesystem">
     <mkdir dir="${maven.build.dir}/test-logs"/>
   </postGoal>
 
-  <goal
-     name="project:install"
-     prereqs="jar:install"
-     description="Build and install jar in local repository"/>
+  <goal name="project:install"
+        prereqs="jar:install"
+        description="Build and install jar in local repository"/>
   
-  <goal
-     name="project:deploy"
-     prereqs="jar:deploy"
-     description="Build and deploy jar to remote repository"/>
+  <goal name="project:deploy"
+        prereqs="jar:deploy"
+        description="Build and deploy jar to remote repository"/>
 
 </project>
