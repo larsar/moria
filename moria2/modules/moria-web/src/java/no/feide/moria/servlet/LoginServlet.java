@@ -20,27 +20,27 @@
 
 package no.feide.moria.servlet;
 
-import no.feide.moria.controller.IllegalInputException;
-import no.feide.moria.controller.InoperableStateException;
-import no.feide.moria.controller.MoriaController;
-import no.feide.moria.controller.UnknownTicketException;
-import no.feide.moria.controller.AuthenticationException;
-import no.feide.moria.controller.DirectoryUnavailableException;
-import no.feide.moria.controller.MoriaControllerException;
-import no.feide.moria.log.MessageLogger;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Cookie;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Map;
+
+import no.feide.moria.controller.AuthenticationException;
+import no.feide.moria.controller.DirectoryUnavailableException;
+import no.feide.moria.controller.IllegalInputException;
+import no.feide.moria.controller.InoperableStateException;
+import no.feide.moria.controller.MoriaController;
+import no.feide.moria.controller.MoriaControllerException;
+import no.feide.moria.controller.UnknownTicketException;
+import no.feide.moria.log.MessageLogger;
 
 /**
  * Use this servlet to bootstrap the system. Set &lt;load-on-startup&gt;1&lt;/load-on-startup&gt; in web.xml.
@@ -52,21 +52,6 @@ public final class LoginServlet extends HttpServlet {
 
     /** Logger. */
     private final MessageLogger messageLogger = new MessageLogger(LoginServlet.class);
-
-    /**
-     * Intitiates the controller.
-     *
-     * @throws UnavailableException if the controller could not be initialized
-     */
-    public void init() throws UnavailableException {
-        try {
-            MoriaController.initController(getServletContext());
-        } catch (Exception e) {
-            final String message = "Controller initialization failed";
-            messageLogger.logCritical(message, e);
-            throw new UnavailableException(message + ": " + e.getMessage());
-        }
-    }
 
     /**
      * Handles the GET requests. The GET request should contain a login ticket as parameter. A SSO ticket can also be
@@ -258,7 +243,7 @@ public final class LoginServlet extends HttpServlet {
         } catch (UnknownTicketException e) {
             errorType = RequestUtil.ERROR_UNKNOWN_TICKET;
         } catch (IllegalInputException e) {
-            errorType = RequestUtil.ERROR_NO_CREDENTIALS;
+            errorType = RequestUtil.ERROR_UNKNOWN_TICKET;
         } catch (InoperableStateException e) {
             errorType = RequestUtil.ERROR_MORIA_DOWN;
         }
