@@ -244,10 +244,9 @@ implements DirectoryManagerBackend {
                         if (rdn == null) {
 
                             // No user element found. Try to guess the RDN.
-                            log.logWarn("No subtree match for " + pattern + " on " + references[j]);
                             rdn = userCredentials.getUsername();
                             rdn = guessedAttribute + '=' + rdn.substring(0, rdn.indexOf('@'));
-                            log.logWarn("Guessing on RDN " + rdn);
+                            log.logWarn("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn);
 
                         }
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
@@ -263,14 +262,15 @@ implements DirectoryManagerBackend {
 
                         // Authentication failed, but we may have other
                         // references.
+                        log.logWarn("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j]);
                         continue;
 
                     }
 
                 } catch (ConfigurationException e) {
-                    throw new BackendException("Backend configuration problem", e);
+                    throw new BackendException("Backend configuration problem with " + references[j], e);
                 } catch (NamingException e) {
-                    throw new BackendException("Unable to access the backend", e);
+                    throw new BackendException("Unable to access the backend on " + references[j], e);
                 } finally {
 
                     // Close the LDAP connection.
@@ -279,7 +279,7 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logWarn("Unable to close the backend connection", e);
+                            log.logWarn("Unable to close the backend connection to " + references[j], e);
                         }
 
                 }
