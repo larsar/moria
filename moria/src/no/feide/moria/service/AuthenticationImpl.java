@@ -112,7 +112,8 @@ implements AuthenticationIF, ServiceLifecycle {
 
     /**
      * Request a new Moria session, asking for a set of user attributes at
-     * the same time.
+     * the same time. The web service asking for the session will be
+     * checked against the W3LS web service authorization data.
      * @param attributes The requested user attributes, to be returned from
      *                   <code>verifySession()</code> once authentication is
      *                   complete. <code>null</code> value allowed.
@@ -123,7 +124,9 @@ implements AuthenticationIF, ServiceLifecycle {
      *                <code>null</code>.
      * @return An URL to the authentication service.
      * @throws RemoteException If a SessionException or a
-     *                         BackendException is caught.
+     *                         BackendException is caught. Also thrown if the
+     *                         prefix/postfix doesn't combine into a valid
+     *                         URL, or if the 
      */
     public String requestSession(String[] attributes, String prefix, String postfix)
     throws RemoteException {
@@ -141,28 +144,32 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new RemoteException("Malformed URL: "+simulatedURL);
         }
 
-        // TODO: Change "foo" with real service identifier
-        WebService ws = AuthorizationData.getInstance().getWebService("foo");
+        // Look up service authorization data.
+        Principal p = ctx.getUserPrincipal();
+        String serviceName = null;
+        if (p != null)
+            serviceName = p.getName();
+	log.fine("Client service requesting session: "+serviceName);
+        WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         
         if (ws == null) {
-            log.warning("Unauthorized service access: "+"foo");
+            log.warning("Unauthorized service access: "+serviceName);
             throw new RemoteException("Web Service not authorized for use with Moria.");
         }
         
         else if (!ws.allowAccessToAttributes(attributes)) {
-            log.warning("Access to attributes denied: "+ws.getId()+" "+attributes);
+            log.warning("Access to attributes denied: "+serviceName+" "+attributes);
             throw new RemoteException("Access to attributes prohibited.");
         }
 
         try {
-	    Principal p = ctx.getUserPrincipal();
-	    log.fine("Client service requesting session: "+p);
             Session session = sessionStore.createSession(attributes, prefix, postfix, p);
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");
             throw new RemoteException("SessionException caught", e);
         }
+        
     }
 
 
