@@ -228,7 +228,7 @@ public final class MoriaController {
             try {
                 store = MoriaStoreFactory.createMoriaStore();
             } catch (MoriaStoreException e) {
-                messageLogger.logCritical("Store failed to start.", e);
+                messageLogger.logCritical("Store failed to start", e);
                 throw new InoperableStateException("Moria cannot start, the store is unavailable.");
             }
 
@@ -421,33 +421,36 @@ public final class MoriaController {
      *         <code>MoriaController.SSO_TICKET</code> and
      *         <code>MoiraController.LOGIN_TICKET</code>
      * @throws UnknownTicketException
-     *             if the login ticket is invalid or does not exist
+     *             If the login ticket is invalid or does not exist.
      * @throws InoperableStateException
-     *             if the controller is not ready to be used
+     *             If the controller is not ready to be used, or the store
+     *             cannot be accessed.
      * @throws IllegalInputException
-     *             if one or more of <code>loginTicketId</code>,
-     *             <code>userId</code> and <code>password</code> are null or
-     *             empty.
+     *             If any of <code>loginTicketId</code>,<code>userId</code>,
+     *             or <code>password</code> are <code>null</code> or an
+     *             empty string.
      * @throws AuthenticationException
-     *             if the authentication failed due to bad credentials
+     *             If the authentication failed due to wrong credentials.
      * @throws DirectoryUnavailableException
-     *             if the directory of the user's home organization is
-     *             unavailable
+     *             If the directory of the user's home organization is
+     *             unavailable.
      */
     public static Map attemptLogin(final String loginTicketId, final String ssoTicketId, final String userId, final String password)
     throws UnknownTicketException, InoperableStateException,
     IllegalInputException, AuthenticationException,
     DirectoryUnavailableException {
 
-        /* Check controller status */
-        if (!ready) { throw new InoperableStateException(NOT_READY); }
+        // Sanity checks.
+        if (!ready)
+            throw new InoperableStateException(NOT_READY);
+        if (loginTicketId == null || loginTicketId.equals(""))
+            throw new IllegalInputException("Login ticket ID must be a non-empty string");
+        if (userId == null || userId.equals(""))
+            throw new IllegalInputException("User ID must be a non-empty string");
+        if (password == null || password.equals(""))
+            throw new IllegalInputException("Password must be a non-empty string");
 
-        /* Validate arguments */
-        if (loginTicketId == null || loginTicketId.equals("")) { throw new IllegalInputException("loginTicketId must be a non-empty string."); }
-        if (userId == null || userId.equals("")) { throw new IllegalInputException("userId must be a non-empty string."); }
-        if (password == null || password.equals("")) { throw new IllegalInputException("password must be a non-empty string."); }
-
-        /* Find authentication attempt */
+        // Look up authentication attempt from the store.
         final MoriaAuthnAttempt authnAttempt;
         try {
             authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
@@ -466,7 +469,8 @@ public final class MoriaController {
 
         // TODO: Must be done for directNonInteractiveAuthentication. Should be
         // extracted to a method.
-        /* Parse requestedAttributes and extract special attributes */
+
+        // Parse requested attributes and extract special attributes.
         final String[] requestedAttributes = authnAttempt.getRequestedAttributes();
         final HashSet parsedRequestAttributes = new HashSet();
         boolean appendTGT = false;
@@ -478,12 +482,12 @@ public final class MoriaController {
             }
         }
 
-        /* Resolve list of cached + requested attributes */
+        // Resolve list of cached and requested attributes.
         final HashSet cachableAttributes = authzManager.getCachableAttributes();
         final HashSet retrieveAttributes = new HashSet(cachableAttributes);
         retrieveAttributes.addAll(parsedRequestAttributes);
 
-        /* Authenticate */
+        // Authentication.
         final HashMap fetchedAttributes;
         try {
             fetchedAttributes = directoryManager.authenticate(new Credentials(userId, password), (String[]) retrieveAttributes.toArray(new String[retrieveAttributes.size()]));
@@ -496,26 +500,24 @@ public final class MoriaController {
             throw new DirectoryUnavailableException();
         }
 
-        /* Remove existing SSO ticket */
+        // Remove any existing SSO ticket.
         if (ssoTicketId != null && !ssoTicketId.equals("")) {
             try {
                 store.removeSSOTicket(ssoTicketId);
             } catch (NonExistentTicketException e) {
-                /* The ticket has probably already timed out. */
-                messageLogger.logDebug("NonExistentTicketException: SSO Ticket does not exist (this is normal)", ssoTicketId, e);
+                // The ticket has probably already timed out.
+                messageLogger.logDebug("SSO ticket does not exist - may have timed out", ssoTicketId, e);
             } catch (InvalidTicketException e) {
-                /*
-                 * This should not happen unless the ticket is not a SSO ticket.
-                 * Can't do much about it.
-                 */
-                messageLogger.logWarn("InvalidTicketException caught, wrong use of SSO Ticket", ssoTicketId, e);
+                // Using a non-SSO ticket for SSO.
+                messageLogger.logWarn("Using a non-SSO ticket for SSO", ssoTicketId, e);
             } catch (MoriaStoreException e) {
+                // Unable to access the store.
                 messageLogger.logCritical(CAUGHT_STORE, ssoTicketId, e);
                 throw new InoperableStateException(STORE_DOWN);
             }
         }
 
-        /* Cache attributes and get tickets */
+        // Cache attributes and get tickets.
         final String serviceTicketId;
         final String newSSOTicketId;
         final HashMap cacheAttributes = new HashMap();
@@ -1084,7 +1086,7 @@ public final class MoriaController {
     throws InoperableStateException {
 
         if (isInitialized.booleanValue()) {
-            messageLogger.logInfo("initController() has already been called, ignoring");
+            messageLogger.logDebug("Controller has already been initialized");
             return;
         }
 
@@ -1161,8 +1163,6 @@ public final class MoriaController {
     throws UnknownTicketException, InoperableStateException,
     IllegalInputException {
 
-        messageLogger.logCritical("Login ticket: " + loginTicketId);
-
         // Sanity checks.
         if (!ready)
             throw new InoperableStateException(NOT_READY);
@@ -1174,17 +1174,14 @@ public final class MoriaController {
         try {
             authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
         } catch (NonExistentTicketException e) {
-            messageLogger.logCritical("NonExistentTicketException");
             accessLogger.logUser(AccessStatusType.NONEXISTENT_LOGIN_TICKET, null, null, loginTicketId, null);
             messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
         } catch (InvalidTicketException e) {
-            messageLogger.logCritical("InvalidTicketException");
             accessLogger.logUser(AccessStatusType.INVALID_LOGIN_TICKET, null, null, loginTicketId, null);
             messageLogger.logWarn(CAUGHT_INVALID_TICKET, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
         } catch (MoriaStoreException e) {
-            messageLogger.logCritical("MoriaStoreException");
             messageLogger.logCritical(CAUGHT_STORE, e);
             throw new InoperableStateException(STORE_DOWN);
         }
@@ -1193,7 +1190,7 @@ public final class MoriaController {
         try {
             return authzManager.getServiceProperties(authnAttempt.getServicePrincipal());
         } catch (UnknownServicePrincipalException e) {
-            messageLogger.logWarn("Service '" + authnAttempt.getServicePrincipal() + "' is unknown", e);
+            messageLogger.logWarn("Service '" + authnAttempt.getServicePrincipal() + "' is unknown", loginTicketId, e);
             throw new UnknownTicketException("Ticket '" + loginTicketId + "' does not correspond to a known service");
         }
     }
