@@ -169,20 +169,14 @@ implements DirectoryManagerBackend {
         if (userCredentials == null)
             throw new IllegalArgumentException("Credentials cannot be NULL");
 
-        // Validate credentials.
-        String username = userCredentials.getUsername();
-        if ((username == null) || (username.length() == 0))
-            throw new AuthenticationFailedException("Username cannot be NULL or an empty string");
-        String password = userCredentials.getPassword();
-        if ((password == null) || (password.length() == 0))
-            throw new AuthenticationFailedException("Password cannot be NULL or an empty string");
-
         try {
 
             // TODO: Add support for more than one reference.
+            String currentReference = myReferences[0].getReferences()[0];
+            
             // Connect to server using the default environment.
             Hashtable env = new Hashtable(defaultEnv);
-            env.put(Context.PROVIDER_URL, myReferences[0].getReferences()[0]);
+            env.put(Context.PROVIDER_URL, currentReference);
             try {
                 ldap = new InitialLdapContext(env, null);
             } catch (CommunicationException e) {
@@ -192,8 +186,9 @@ implements DirectoryManagerBackend {
             // Skip search phase if the reference(s) are explicit.
             if (myReferences[0].isExplicitlyIndexed()) {
 
-                // Add the explicit reference; no search phase.
-                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, myReferences[0].getReferences()[0]);
+                // Add the explicit reference; no search phase, no RDN.
+                rdn = "";
+                ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, currentReference.substring(currentReference.lastIndexOf('/')+1));
 
             } else {
 
@@ -202,7 +197,7 @@ implements DirectoryManagerBackend {
                 // configuration.
                 ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
                 ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-                String pattern = "eduPersonPrincipalName=" + username;
+                String pattern = "eduPersonPrincipalName=" + userCredentials.getUsername();
                 rdn = ldapSearch(pattern);
                 if (rdn == null) {
 
@@ -219,7 +214,7 @@ implements DirectoryManagerBackend {
 
             // Authenticate.
             ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
-            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
             try {
                 ldap.reconnect(null);
                 return getAttributes(attributeRequest); // Success.
