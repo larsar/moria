@@ -4,7 +4,7 @@
 			language="java"
 			errorPage="/Error"
 			session="false" 
-			contentType="text/xml; charset=ISO-8859-1" 
+			contentType="text/html; charset=ISO-8859-1" 
 			pageEncoding="ISO-8859-1" %>
 
 <% String wsdlURL = request.getContextPath() + request.getAttribute("serviceName") + "?wsdl"; %>
