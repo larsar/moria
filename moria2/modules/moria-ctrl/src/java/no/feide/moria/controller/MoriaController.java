@@ -54,7 +54,7 @@ import no.feide.moria.store.NonExistentTicketException;
  * Intermediator for the sub modules of Moria. The controller is the only entry
  * point for accessing Moria. Basically, all work is done by the authorization
  * module, the distributed store, the directory manager and the logger. The
- * controller must be initiated from the servlets that are using it. This can be
+ * controller must be initialized from the servlets that are using it. This can be
  * done by calling the <code>initController</code> method.
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
