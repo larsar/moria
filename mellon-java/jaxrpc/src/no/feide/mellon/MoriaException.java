@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package jaxrpc.no.feide.mellon;
+package no.feide.mellon;
 
 /**
  * Used to signal an exception from the Moria interface.
