@@ -136,29 +136,44 @@ public class SessionStore {
     throws SessionException {
         log.finer("createSession(String[], String, String, Principal)");
 
-        String sessionID = generateSessionID();
-        Session session = new Session(sessionID, attributes, prefix, postfix, client, ws);
+        // Synchronized to avoid session ID collisions (unlikely, but possible).
         synchronized (sessions) {
+            String sessionID = generateSessionID();
+            Session session = new Session(sessionID, attributes, prefix, postfix, client, ws);
             sessions.put(sessionID, session);
+            return session;
         }
-
-        return session;
     }
 
 
     /**
      * Returns the session for a given session ID.
      * @param sessionID Current ID for the Moria session.
-     * @throws SessionException If the session wasn't found.
+     * @throws SessionException If the session wasn't found, or if the session
+     *                          has just timed out (but hasn't been garbage
+     *                          collected yet).
      */
     public Session getSession(String sessionID) 
     throws SessionException {
         log.finer("getSession(String)");
+        
+        // First check if the session exists.
         if (sessionID == null || !sessions.containsKey(sessionID)) {
             log.fine("No such session: "+sessionID);
             throw new NoSuchSessionException("No such session: "+sessionID);
-        } else
-            return (Session)sessions.get(sessionID);
+        } else {
+            
+            // Then check if the session exists, but has just timed out.
+            // TODO.
+            Session s = (Session)sessions.get(sessionID);
+            /*
+            if (!s.isValid(???)) {
+                log.fine("Session exists, but has timed out: "+sessionID);
+                throw new NoSuchSessionException("Session exists, but has timed out: "+sessionID);
+            }
+            */
+            return s;
+        }
     }
 
   
