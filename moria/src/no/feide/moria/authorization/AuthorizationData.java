@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Date;
+
+import java.io.File;
 
 import java.util.logging.Logger;
 
@@ -20,12 +23,65 @@ import java.util.logging.Logger;
  * configured web services. */
 public class AuthorizationData {
 
-    /** Used for logging. */
+    /** Used for logging */
     private static Logger log = Logger.getLogger(AuthorizationData.class.toString());
 
-    /** All configured web services.*/
+    /** All configured web services*/
     private Map webServices = Collections.synchronizedMap(new HashMap());
    
+    /** Timestamp for configuration file*/
+    private long fileTimestamp = 0;
+
+
+    
+    /**
+     * Regenerate the web service data structure if the xml
+     * configuration file has been changed since last update.
+     */
+    public void upToDate() {
+        log.finer("upToDate()");
+
+        String xmlFileName = System.getProperty("no.feide.moria.authorization.authConfigFile");
+        
+        
+        File file = new File(xmlFileName);
+
+        /* Only update if file has changed. */
+        if (file.lastModified() > fileTimestamp) {
+            log.info("Web service authorization file changed. Updating web service datastructure.");
+
+            double start = new Date().getTime(); // For timing
+
+            try{
+                Map newWebServices = webServicesFromXML(xmlFileName);
+                synchronized (webServices) {
+                    webServices = newWebServices;
+                }
+                log.info("Datastructure updated in "+(new Date().getTime()-start)+" ms");
+                fileTimestamp = file.lastModified();
+
+            }
+            catch (Exception e) {
+                log.severe("Unable to update authorization datastructure. \n"+e);
+                return;
+            }
+        }
+
+        else 
+            log.fine("Web service authorization file not modified. Datastructure not updated.");
+    }
+
+
+    
+    /**
+     * Get WebService for given id.
+     * @param id The web service identifier
+     */
+    public WebService getWebService(String id) {
+        log.finer("getWebService(String)");
+        return (WebService) webServices.get(id);
+    }
+
 
 
     /** 
@@ -36,8 +92,8 @@ public class AuthorizationData {
      * @return a synchronized Map with all WebService object (from
      * configuration file).
      */
-    private Map updateWebServices(String xmlFile) throws Exception{
-        log.finer("updateWebServices(String)");
+    private Map webServicesFromXML(String xmlFile) throws Exception{
+        log.finer("webServicesFromXML(String)");
 
         HashMap attributes = null;
         HashMap profiles = null;
@@ -243,15 +299,15 @@ public class AuthorizationData {
      * production.) 
      */
     public static void main (String[] args) throws Exception {
-
+        AuthorizationData wa = new AuthorizationData();        
+        
         /* At least file name is required. */
         if (args.length == 0) {
             usage();
             return;
         }
 
-        AuthorizationData wa = new AuthorizationData();        
-        Map allWS = wa.updateWebServices(args[0]);
+        Map allWS = wa.webServicesFromXML(args[0]);
         
         /* If web service id is specified, only display data for one
          * web service. */
