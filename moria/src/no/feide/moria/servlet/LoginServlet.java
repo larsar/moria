@@ -365,10 +365,10 @@ public class LoginServlet extends VelocityServlet {
      */
     private Template loginPage(HttpServletRequest request, HttpServletResponse response, Context context) throws ParseErrorException, ResourceNotFoundException, Exception {
 
-        log.finer("loginPage(HttpServletRequest, HttpServletResponse, Context");
+        log.info("loginPage(HttpServletRequest, HttpServletResponse, Context");
         /* Get session ID */
         String id = request.getParameter("id");
-        log.fine("SessionID: "+id);
+        log.info("SessionID: "+id);
 
         if (request.getParameter("showAttrs") != null)
             showAllAttributes = request.getParameter("showAttrs").equals("yes");
@@ -390,7 +390,7 @@ public class LoginServlet extends VelocityServlet {
         catch (NoSuchSessionException e) {
             /* If no old session exist, then SSO is impossible.
              * Continue with normal authentication. */
-            log.fine("Did not find SSO session: "+existingSessionID);
+            log.info("Did not find SSO session: "+existingSessionID);
             existingSession = null;
         }
 
@@ -402,7 +402,7 @@ public class LoginServlet extends VelocityServlet {
 
             
             if (existingSession != null) {
-                log.finer("Existing SSO session found.");
+                log.info("Existing SSO session found.");
 
                 /* Session has to be authenticated and locked to be
                    used in SSO. If not locked another web service is
