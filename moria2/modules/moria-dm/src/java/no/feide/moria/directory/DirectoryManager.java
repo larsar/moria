@@ -17,6 +17,7 @@ import java.util.Properties;
 import no.feide.moria.directory.backend.DirectoryManagerBackend;
 import no.feide.moria.directory.backend.DirectoryManagerBackendFactory;
 import no.feide.moria.directory.index.DirectoryManagerIndex;
+import no.feide.moria.log.MessageLogger;
 
 /**
  * The Directory Manager (DM) component. Responsible for all backend operations,
@@ -43,12 +44,11 @@ public class DirectoryManager {
 
         // Set up logging.
         // TODO: Make sure it works.
-        //MessageLogger messageLog = new
-        // MessageLogger(DirectoryManagerConfiguration.class);
+        MessageLogger messageLog = new MessageLogger(DirectoryManager.class);
 
         // TODO: Differ between critical and warning depending on existing
         // configuration.
-        //messageLog.logCritical(message);
+        messageLog.logCritical(message);
         throw new DirectoryManagerConfigurationException(message, cause);
 
     }
