@@ -22,8 +22,8 @@
   </target>
 
   <target name="all:build"
-          description="All: Build Mellon/Moria, no deployment"
-          depends="moria:build,mellon:build"/>
+          description="All: Build everything, no deployment"
+          depends="moria:build,mellon:build,test:build"/>
 
 
 
@@ -117,8 +117,7 @@
           depends="moria:wsdl"/>
 
   <target name="moria:deploy"
-          description="Moria: Deploy to Tomcat"
-          depends="moria:build">
+          description="Moria: Deploy to Tomcat">
     <deploy url="${jwsdp_manager_url}"
             username="${jwsdp_manager_username}"
             password="${jwsdp_manager_password}"
