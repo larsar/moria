@@ -43,6 +43,9 @@ extends TestCase {
     
     /** The Directory Manager instance. */
     private DirectoryManager dm;
+    
+    /** The dummy configuration file. */
+    private static final String goodConfiguration = "src/test/conf/DummyConfiguration.xml";
 
 
     /**
@@ -82,7 +85,7 @@ extends TestCase {
 
         // Set configuration properties.
         Properties config = new Properties();
-        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
 
         try {
             
@@ -109,7 +112,7 @@ extends TestCase {
 
         // Set configuration properties.
         Properties config = new Properties();
-        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
 
         try {
             
@@ -139,7 +142,7 @@ extends TestCase {
 
         // Set configuration properties.
         Properties config = new Properties();
-        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
 
         try {
             
