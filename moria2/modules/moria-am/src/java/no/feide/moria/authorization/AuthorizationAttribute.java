@@ -57,15 +57,6 @@ public class AuthorizationAttribute {
     private int secLevel = 2;
 
     /**
-     * Private constructor. Should not be called by any one.
-     */
-    private AuthorizationAttribute() {
-        // Constructor not allowed to be called without parameters
-        super();
-    }
-
-
-    /**
      * Constructor. Name of attribute must be a non-empty string. Security
      * level can be set to "LOW", "MEDIUM" or " "HIGH", it defaults to "HIGH".
      *
