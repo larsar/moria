@@ -38,26 +38,31 @@ import java.util.Properties;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class ClientServlet extends HttpServlet {
+public class ClientServlet
+extends HttpServlet {
 
     /**
      * Handles the GET requests.
-     *
-     * @param request  the HTTP request object
-     * @param response the HTTP response object
+     * @param request
+     *            The HTTP request object.
+     * @param response
+     *            The HTTP response object.
      * @throws java.io.IOException
+     *             If an input or output error is detected when the servlet
+     *             handles the GET request.
      * @throws javax.servlet.ServletException
+     *             if the request for the GET could not be handled.
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
-            throws IOException, ServletException {
+    throws IOException, ServletException {
 
-       // Do not have ticket
+        // Do not have ticket
         // - Contact dsssfsd
         String loginTicketId = request.getParameter("moriaID");
         if (loginTicketId != null) {
             try {
 
-                request.setAttribute("attributes", MoriaController.getUserAttributes(loginTicketId,"test"));
+                request.setAttribute("attributes", MoriaController.getUserAttributes(loginTicketId, "test"));
             } catch (MoriaControllerException e) {
                 request.setAttribute("error", e);
             }
@@ -65,13 +70,26 @@ public class ClientServlet extends HttpServlet {
         // Have ticket
         // - show
 
-            RequestDispatcher rd = getServletContext().getNamedDispatcher("Client.JSP");
-            rd.forward(request, response);
+        RequestDispatcher rd = getServletContext().getNamedDispatcher("Client.JSP");
+        rd.forward(request, response);
 
     }
 
+
+    /**
+     * Handles POST requests.
+     * @param request
+     *            The HTTP request object.
+     * @param response
+     *            The HTTP response object.
+     * @throws java.io.IOException
+     *             If an input or output error is detected when the servlet
+     *             handles the GET request.
+     * @throws javax.servlet.ServletException
+     *             if the request for the GET could not be handled.
+     */
     public final void doPost(final HttpServletRequest request, final HttpServletResponse response)
-            throws IOException, ServletException {
+    throws IOException, ServletException {
 
         String jspLocation = getServletContext().getInitParameter("jsp.location");
         String moriaID = null;
@@ -79,11 +97,7 @@ public class ClientServlet extends HttpServlet {
 
         try {
             MoriaController.initController(getServletContext());
-            moriaID = MoriaController.initiateAuthentication(request.getParameter("attributes").split(","),
-                    request.getParameter("urlPrefix"),
-                    request.getParameter("urlPostfix"),
-                    false,
-                    request.getParameter("principal"));
+            moriaID = MoriaController.initiateAuthentication(request.getParameter("attributes").split(","), request.getParameter("urlPrefix"), request.getParameter("urlPostfix"), false, request.getParameter("principal"));
         } catch (IllegalInputException e) {
             error = true;
             request.setAttribute("error", e);
