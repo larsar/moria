@@ -67,4 +67,15 @@ implements DirectoryManagerBackend {
 
     }
 
+
+    /**
+     * Pro-forma declaration of the <code>close()</code> method. Does nothing
+     * in this case.
+     */
+    public void close() {
+
+        // Does nothing.
+
+    }
+
 }

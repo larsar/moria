@@ -24,5 +24,11 @@ public interface DirectoryManagerBackend {
      */
     public UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
     throws BackendException;
+    
+    
+    /**
+     * Will close the current backend and release any resources.
+     */
+    public void close();
 
 }
