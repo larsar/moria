@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Enumeration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -155,7 +156,14 @@ public class StatsServlet extends VelocityServlet {
             /* Authorization data */
             context.put("numOfWebServices", ""+AuthorizationData.getInstance().numOfWebServices());
 
-         return getTemplate("stats.vtl");
+            /* Web Services */
+            HashMap wsStats = stats.getWsStats();
+            context.put("wsStats", wsStats);
+
+            /* Configuration */
+            context.put("properties", Configuration.getProperties());
+            
+            return getTemplate("stats.vtl");
         }
 
         catch( ParseErrorException e ) {
@@ -168,18 +176,16 @@ public class StatsServlet extends VelocityServlet {
             throw new ServletException(e);
         }
 
+        catch (ConfigurationException e) {
+            log.severe("Configuration exception. " +e);
+            throw new ServletException(e);
+        }
+
         catch( Exception e ) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             log.severe("Unspecified error during template parsing: \n" + stackTrace.toString());
             throw new ServletException(e);
         }
-        
-
-
     }
-
-
-
-
 }
