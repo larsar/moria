@@ -17,6 +17,7 @@
 
 package no.feide.moria;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -39,38 +40,47 @@ public class BackendIndex {
     /**
      * The lookup method.
      * @param username A username, on the form prefix@suffix.
-     * @return An LDAP URL, including search base (for example,
+     * @return One or more LDAP URLs, including search base (for example,
      *         <code>ldaps://my.ldap.server:636/ou=my,dc=search,dc=base</code>).
      *         Returns <code>null</code> if no match for the username.
      * @throws BackendException If the username doesn't include the '@'
-     *                          character, or if the property
-     *                                <code>no.feide.moria.backend.ldap</code>
-     *                                is not set.
+     *                          character. 
+     * @throws ConfigurationException If there is an error reading and parsing
+     *                                the index configuration.
      */
-    public static String lookup(String username)
-    throws BackendException {
+    public static String[] lookup(String username)
+    throws BackendException, ConfigurationException {
         log.finer("lookup(String)");
+        
+		ArrayList urls = new ArrayList();
         
         // Initialize the hash map, if we haven't already.
         synchronized (initialized) {
             if (!initialized.booleanValue()) {
+            	
                 // Create hashtable of domain names to LDAP URLs.
                 String domain, url;
                 for (int i=1; ; i++) {
-                    try {
-                        domain = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".domain");
-                        if (domain == null)
-                            break;  // No more mappings.
-                        url = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".url");
-                    } catch (ConfigurationException e) {
-                        log.severe("ConfigurationException caught and re-thrown as BackendException");
-                        throw new BackendException("ConfigurationException caught and re-thrown as BackendException");
+                    domain = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".domain");
+                    if (domain == null)
+                        break;  // No more domains.
+                    for (int j = 1; ; j++) {
+                    	url = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".url"+j);
+                    	if (url == null)
+                    		break;  // No more URLs for this domain.
+                    	urls.add(url);
+						log.config(domain+" mapped to "+url);
                     }
-                    if (url == null)
-                        break;  // More of a sanity check; possible syntax error in config file.
-                    urlMap.put(domain, url);
-                    log.config(domain+" mapped to "+url);
+                    
+                    // Sanity check.
+                    if (urls.size() == 0) {
+                    	log.config("Backend index is empty");
+                    	throw new ConfigurationException("Backend index is empty");
+                    }
+                    
+                    urlMap.put(domain, urls);
                 }
+                
             }
         }
         
@@ -81,12 +91,17 @@ public class BackendIndex {
             throw new BackendException("Illegal user identifier; missing @: "+domain);
         } 
         domain = domain.substring(domain.indexOf('@')+1);
-        String url = (String)urlMap.get(domain);
-        if (url == null) {
-        }
-        log.info("Matched domain "+domain+" to LDAP URL "+url);
+        urls = (ArrayList)urlMap.get(domain);
         
-        return url;        
+        // Sanity check.
+        if (urls == null) {
+        	log.config("No URLs for domain "+domain);
+        	throw new ConfigurationException("No URLs for domain "+domain);
+        }
+        
+        log.info("Matched domain "+domain+" to LDAP URLs "+urls.toString());
+        String[] urlArray = (String[])urls.toArray(new String[] {}); 
+        return urlArray;        
     }
     
 }
