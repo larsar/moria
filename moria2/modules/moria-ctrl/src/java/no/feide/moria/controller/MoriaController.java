@@ -33,6 +33,7 @@ import no.feide.moria.store.MoriaStoreException;
 import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
 import no.feide.moria.log.MessageLogger;
+import no.feide.moria.directory.DirectoryManager;
 
 import javax.servlet.ServletContext;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class MoriaController {
     /**
      * The single instance of the directory manager
      */
-    private static AuthorizationManager directoryManager;
+    private static DirectoryManager directoryManager;
 
     /**
      * Flag set to true if the controller has been initialized
@@ -89,11 +90,6 @@ public class MoriaController {
      * Flag set to true if the store manager is ready
      */
     private static boolean smReady = false;
-
-    /**
-     * Flag set to true if the web module is ready
-     */
-    private static boolean webReady = false;
 
     /**
      * The servlet context for the servlets using the controller
@@ -125,13 +121,6 @@ public class MoriaController {
                 // TODO: Log and throw exception
             }
 
-            // TODO: Should use value specified on the command line, in startup servlet or something
-            // like that
-            if (System.getProperty("no.feide.moria.configuration.base") == null)
-                System.setProperty("no.feide.moria.configuration.base", MoriaController.class.getResource("/cm-test-valid.properties").getPath());
-            if (System.getProperty("no.feide.moria.store.nodeid") == null)
-                System.setProperty("no.feide.moria.store.nodeid", "no1");
-
             /* Logging */
             accessLogger = new AccessLogger();
             messageLogger = new MessageLogger(MoriaController.class);
@@ -140,20 +129,23 @@ public class MoriaController {
             /* Authorization manager */
             authzManager = new AuthorizationManager();
 
+            directoryManager = new DirectoryManager();
+
             /* Configuration manager */
-            try {
-                configManager = new ConfigurationManager();
-            } catch (ConfigurationManagerException e) {
-                //TODO: Handle exeption properly, should probably throw new
-                // IllegalInputException
-                System.out.println("ConfigurationManagerException caught.");
-                e.printStackTrace();
-            }
-        }
+             try {
+                 configManager = new ConfigurationManager();
+             } catch (ConfigurationManagerException e) {
+                 //TODO: Handle exeption properly, should probably throw new
+                 // IllegalInputException
+                 System.out.println("ConfigurationManagerException caught.");
+                 e.printStackTrace();
+             }
+
+         }
     }
 
     /**
-     * Shut down the controller. All ready status fields are set to false;
+     * Shut down the controller. All ready status fields are set to false.
      */
     synchronized static void stop() {
         synchronized (isInitialized) {
@@ -385,7 +377,6 @@ public class MoriaController {
         } else if (module.equals(ConfigurationManager.MODULE_WEB)) {
             if (servletContext != null) {
                 servletContext.setAttribute("config", properties);
-                webReady = true;
             } else {
                 // TODO: Log event
                 // MessageLogger.logCritical("Servlet context not set. Config cannot be updated.");
@@ -393,7 +384,7 @@ public class MoriaController {
         }
 
         /* If all modules are ready, the controller is ready */
-        if (isInitialized.booleanValue() && amReady && dmReady && smReady && webReady) {
+        if (isInitialized.booleanValue() && amReady && dmReady && smReady) {
             ready = true;
         }
 
