@@ -58,7 +58,13 @@ public class MoriaControllerTest extends TestCase {
         MoriaController.init();
     }
 
-
+    /**
+     * Thest the initiateMoriaAuthentication method.
+     *
+     * @see MoriaController#initiateMoriaAuthentication(java.lang.String, java.lang.String[], java.lang.String, java.lang.String, boolean)
+     * @throws AuthorizationException
+     * @throws MoriaControllerException
+     */
     public void testInitiateMoriaAuthentication() throws AuthorizationException, MoriaControllerException {
         String validPrefix = "http://moria.sf.net/";
         String validPostfix = "&foo=bar";
@@ -140,11 +146,20 @@ public class MoriaControllerTest extends TestCase {
     }
 
     public void testAttemptLogin() {
+        // TODO: Implement
     }
 
     public void testAttemptSingleSignOn() {
+        // TODO: Implement
     }
 
+    /**
+     * Test the validateLoginTicket method.
+     *
+     * @see MoriaController#validateLoginTicket(java.lang.String)
+     * @throws MoriaControllerException
+     * @throws AuthorizationException
+     */
     public void testValidateLoginTicket() throws MoriaControllerException, AuthorizationException {
         /* Controller not initialized */
         MoriaController.stop();
@@ -175,8 +190,14 @@ public class MoriaControllerTest extends TestCase {
     }
 
     public void testGetUserAttributes() {
+        // TODO: Implement
     }
 
+    /**
+     * Test the isLegalURL method.
+     *
+     * @see MoriaController#isLegalURL(java.lang.String) 
+     */
     public void testisLegalURL() {
         // TODO: Test more illegal URL constructs
         MoriaController.init();
