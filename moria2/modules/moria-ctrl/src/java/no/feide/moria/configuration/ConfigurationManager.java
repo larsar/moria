@@ -158,8 +158,14 @@ public class ConfigurationManager {
             String module = NEEDS_LISTENER[i];
             String fileName = cmProps.getProperty(PROPS_PREFIX + module);
 
+            /* Prefix to full path if file path is relative */
+            if (!fileName.equals(new File(fileName).getAbsolutePath())) {
+                fileName = filePrefix + fileName;
+            }
+
+            /* Add file listener */
             try {
-                addFileChangeListener(filePrefix + fileName, module, timerDelay);
+                addFileChangeListener(fileName, module, timerDelay);
             } catch (FileNotFoundException e) {
                 throw new ConfigurationManagerException("Unable to watch file, file not found: " + fileName);
             }
