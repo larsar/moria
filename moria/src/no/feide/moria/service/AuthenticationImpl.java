@@ -40,7 +40,7 @@ implements AuthenticationIF, ServiceLifecycle {
     private SessionStore sessionStore;
       
     /** Timer for updating the web service authorization module. */
-    private Timer authTimer = new Timer();
+    private Timer authTimer = new Timer(true);
 
     
     /**
