@@ -44,7 +44,7 @@ import org.apache.axis.encoding.ser.VectorSerializerFactory;
 
 /**
  * This is a simple demonstration servlet, primarily intended as a code example
- * of how to access the Moria SOAP interface.<br>
+ * of how to access the Moria SOAP interface. <br>
  * <br>
  * This implementation uses Axis for its remote operations, for details on how
  * this is done, refer to the private methods

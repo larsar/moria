@@ -105,7 +105,7 @@ public final class RequestUtil {
 
     /**
      * Configuration property sub-string giving the abbreviations and names for
-     * all available languages, on the form
+     * all available languages. The property name is on the form
      * <code>PROP_LANGUAGE + "_" + PROP_COMMON</code>.<br>
      * <br>
      * The actual values are a comma separated list of elements on the form
@@ -129,8 +129,8 @@ public final class RequestUtil {
 
     /**
      * Configuration property giving the lifetime, in hours, for the cookie used
-     * to remember the user's previously selected organization (named by
-     * <code>PROP_COOKIE_ORG</code>).<em>This property is required.</em>
+     * to remember the user's previously selected organization.
+     * <em>This property is required.</em>
      * <br>
      * <br>
      * Current value is <code>PATH_PREFIX + "cookie.org.ttl"</code>.

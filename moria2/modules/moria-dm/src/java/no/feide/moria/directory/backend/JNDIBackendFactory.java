@@ -38,7 +38,7 @@ implements DirectoryManagerBackendFactory {
     private int backendTimeouts = 15;
 
     /**
-     * Should the backend use SSL? Default is <code>false</code>.
+     * Whether the backend should use SSL. Default is <code>false</code>.
      */
     private boolean useSSL = false;
 
