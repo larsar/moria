@@ -27,6 +27,8 @@
   <target name="axis:build"
           description="Mellon demo: Compile source"
           depends="axis:wscompile">
+    <echo message="Axis libraries: ${axis_libs}"/>
+    <echo message="Axis stubs: ${axis_stubs}"/>
     <javac srcdir="src"
            debug="true"
            destdir="build/connector"
@@ -66,25 +68,21 @@
     <exec executable="sed" output="Authentication.wsdl">
       <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! '${wsdl_file}'"/>
     </exec>
-  		  
     <axis-wsdl2java output="build/wsdl_src" 
                     testcase="false"  
                     verbose="true" 
                     url="workspace/mellon/axis/Authentication.wsdl"> 
       <mapping namespace="https://login.feide.no/moria" package="no.feide.moria"/> 
     </axis-wsdl2java> 
-    
     <javac srcdir="build/wsdl_src"
            debug="true"
            destdir="build/wsdl_build"
-           includes="no/feide/login/moria/Authentication/*">
+           includes="no/feide/login/moria/**">
       <classpath>
         <fileset dir="${axis_libs}" includes="*.jar"/>
       </classpath>
     </javac>
-    
-
-    <jar destfile="dist/feide-mellon-api.jar" basedir="build/wsdl_build"/>    
+    <jar destfile="dist/feide-mellon-api.jar" basedir="build/wsdl_build"/>
   </target>
   
 
