@@ -38,7 +38,7 @@ import javax.servlet.http.Cookie;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * This class is a toolkit for the servlets.Its main functionality is to
+ * This class is a toolkit for the servlets. Its main functionality is to
  * retrieve resource bundles.
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
