@@ -210,31 +210,24 @@ extends HttpServlet {
         request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(denySSO));
 
         /* Attempt login */
-        log.logCritical("Attempting login: " + loginTicketId + ", " + ssoTicketId + ", " + username + "@" + org + ", " + password);
         final Map tickets;
         final String redirectURL;
         try {
             tickets = MoriaController.attemptLogin(loginTicketId, ssoTicketId, username + "@" + org, password);
             redirectURL = MoriaController.getRedirectURL((String) tickets.get(MoriaController.SERVICE_TICKET));
-            log.logCritical("Redirect URL: " + redirectURL);
         } catch (AuthenticationException e) {
-            log.logCritical("AuthenticationException");
             showLoginPage(request, response, RequestUtil.ERROR_AUTHENTICATION_FAILED);
             return;
         } catch (UnknownTicketException e) {
-            log.logCritical("UnknownTicketException");
             showLoginPage(request, response, RequestUtil.ERROR_UNKNOWN_TICKET);
             return;
         } catch (DirectoryUnavailableException e) {
-            log.logCritical("DirectoryUnavailableException");
             showLoginPage(request, response, RequestUtil.ERROR_DIRECTORY_DOWN);
             return;
         } catch (InoperableStateException e) {
-            log.logCritical("InoperableStateException");
             showLoginPage(request, response, RequestUtil.ERROR_MORIA_DOWN);
             return;
         } catch (IllegalInputException e) {
-            log.logCritical("IllegalInputException");
             showLoginPage(request, response, RequestUtil.ERROR_NO_CREDENTIALS);
             return;
         }
@@ -246,18 +239,14 @@ extends HttpServlet {
         response.addCookie(orgCookie);
 
         if (!denySSO) {
-            log.logCritical("SSO cookie name: " + config.get(RequestUtil.PROP_COOKIE_SSO));
-            log.logCritical("SSO cookie value: " + tickets.get(MoriaController.SSO_TICKET));
-            log.logCritical("SSO cookie TTL: " + config.get(RequestUtil.PROP_COOKIE_SSO_TTL));
             final Cookie ssoTicketCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO), (String) tickets.get(MoriaController.SSO_TICKET), new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
             response.addCookie(ssoTicketCookie);
-            log.logCritical("SSO cookie stored");
         }
 
         /* Redirect back to web service */
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", redirectURL);
-        log.logCritical("Redirecting back to service at " + redirectURL);
+        log.logInfo("Redirecting back to service at " + redirectURL);
     }
 
 
