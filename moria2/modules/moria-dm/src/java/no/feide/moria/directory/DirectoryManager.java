@@ -7,6 +7,8 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Timer;
+
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
 import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
@@ -23,6 +25,8 @@ public class DirectoryManager {
 
     /** Internal representation of the index. */
     private DirectoryManagerIndex index;
+
+    private Timer indexUpdater;
 
     /** Internal representation of the backend factory. */
     private DirectoryManagerBackendFactory backendFactory;
@@ -68,20 +72,17 @@ public class DirectoryManager {
 
         }
 
-        // TODO: Move index updates to external TimerTask.
-        Constructor constructor = null;
-        try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream(currentConfiguration.getIndexFilename()));
-            index = (DirectoryManagerIndex) in.readObject();
-        } catch (IOException e) {
-            throw new DirectoryManagerConfigurationException("Unable to read index from file " + currentConfiguration.getIndexFilename(), e);
-        } catch (ClassNotFoundException e) {
-            throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
-        }
+        // Update the index; (re-)start the index updater.
+        if (indexUpdater == null)
+            indexUpdater = new Timer(true); // Daemon.
+        else
+            indexUpdater.cancel();
+        indexUpdater.scheduleAtFixedRate(new IndexUpdater(this, currentConfiguration.getIndexFilename()), 0, currentConfiguration.getIndexUpdateFrequency());
 
         // Set the backend factory class.
         // TODO: Initialize backend configuration update.
         // TODO: Gracefully handle switch between backend factories?
+        Constructor constructor = null;
         try {
 
             constructor = currentConfiguration.getBackendFactoryClass().getConstructor(null);
@@ -99,6 +100,35 @@ public class DirectoryManager {
 
 
     /**
+     * Update the internal index structure.
+     * @throws DirectoryManagerConfigurationException
+     *             If unable to read the index from file, or instantiate the
+     *             index object. Note that the exception is not thrown if a
+     *             previous index has been initialized; instead, an error
+     *             message is logged.
+     */
+    protected synchronized void updateIndex() {
+
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(currentConfiguration.getIndexFilename()));
+            DirectoryManagerIndex newIndex = (DirectoryManagerIndex) in.readObject();
+            index = newIndex;
+        } catch (IOException e) {
+            if (index == null)
+                throw new DirectoryManagerConfigurationException("Unable to read index from file " + currentConfiguration.getIndexFilename(), e);
+            else
+                log.logCritical("Unable to read index from file " + currentConfiguration.getIndexFilename(), e);
+        } catch (ClassNotFoundException e) {
+            if (index == null)
+                throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
+            else
+                log.logCritical("Unable to instantiate index object", e);
+        }
+
+    }
+
+
+    /**
      * Forwards an authentication attempt to the underlying backend.
      * @param userCredentials
      * @param attributeRequest
@@ -109,11 +139,13 @@ public class DirectoryManager {
      *         still indicates a successful authentication.
      * @throws BackendException
      *             Subclasses of <code>BackendException</code> is thrown if an
-     *             error is encountered when operating the backend, including if
-     *             the authentication fails.
+     *             error is encountered when operating the backend.
+     * @throws AuthenticationFailedException
+     *             If we managed to access the backend, and the authentication
+     *             failed. In other words, the user credentials are incorrect.
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws BackendException {
+    throws AuthenticationFailedException, BackendException {
 
         // Sanity check.
         if (currentConfiguration == null)
@@ -123,15 +155,37 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        // TODO: Use secondary lookup results as fallback.
         List references = index.lookup(userCredentials.getUsername());
-        if (references != null)
-            backend.open((String) references.get(0));
+        if (references != null) {
+            
+            // Found a reference. Now open it.
+            // TODO: Use secondary references as fallback.
+            backend.open((String)references.get(0));
+            
+        }
         else
             throw new AuthenticationFailedException("User " + userCredentials.getUsername() + " is unknown");
+        
+        // Authenticate the user.
         HashMap attributes = backend.authenticate(userCredentials, attributeRequest);
+        
         backend.close();
         return attributes;
+
+    }
+
+
+    /**
+     * Is the Directory Manager ready for use?
+     * @return <code>true</code> if the configuration has been set and the
+     *         index initialized, otherwise <code>false</code>.
+     */
+    public boolean ready() {
+
+        if ((currentConfiguration == null) || (index == null))
+            return false;
+        else
+            return true;
 
     }
 
