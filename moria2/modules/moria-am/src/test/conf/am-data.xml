@@ -8,9 +8,13 @@
     <Home>uio.no</Home>
     <Language>no</Language>
     <Affiliation>
-      <Organization name ="uninett.no"/>
-      <Organization name ="uio.no"/>
+      <Organization name ="testorg1.no"/>
+      <Organization name ="testorg2.no"/>
     </Affiliation>
+    <OrgsAllowed>
+      <Organization name ="testorg1.no" />
+      <Organization name ="testorg2.no" />
+    </OrgsAllowed>
     <Attributes>
       <Attribute name="attr1" sso="true" secLevel="0"/>
       <Attribute name="attr2" sso="true" secLevel="1"/>
