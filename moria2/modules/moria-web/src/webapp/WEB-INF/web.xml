@@ -41,15 +41,9 @@
   </servlet>
   
   <servlet>
-    <servlet-name>Demo</servlet-name>
-    <servlet-class>no.feide.moria.servlet.DemoServlet</servlet-class>
-    <load-on-startup>5</load-on-startup>
-  </servlet>
-
-  <servlet>
     <servlet-name>Status</servlet-name>
     <servlet-class>no.feide.moria.servlet.StatusServlet</servlet-class>
-    <load-on-startup>6</load-on-startup>
+    <load-on-startup>5</load-on-startup>
   </servlet>  
   
    <servlet>
@@ -121,12 +115,7 @@
     <servlet-name>Logout</servlet-name>
     <url-pattern>/Logout</url-pattern>
   </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>Demo</servlet-name>
-    <url-pattern>/Demo</url-pattern>
-  </servlet-mapping>
-  
+ 
   <servlet-mapping>
     <servlet-name>Status</servlet-name>
     <url-pattern>/Status</url-pattern>
