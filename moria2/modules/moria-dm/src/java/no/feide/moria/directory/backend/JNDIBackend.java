@@ -173,14 +173,13 @@ implements DirectoryManagerBackend {
      *         empty <code>HashMap</code>. Will also return an empty
      *         <code>HashMap</code> if <code>attributes</code> is
      *         <code>null</code> or an empty array.
-     * @throws AttributeReadException
+     * @throws BackendException
      *             If unable to read the attributes from the backend using
      *             <code>InitialDirContext.getAttributes(String, String[])</code>.
      * @see javax.naming.directory.InitialDirContext#getAttributes(java.lang.String,
      *      java.lang.String[])
      */
-    private HashMap getAttributes(String[] attributes)
-    throws AttributeReadException {
+    private HashMap getAttributes(String[] attributes) throws BackendException {
 
         // Sanity check.
         if ((attributes == null) || (attributes.length == 0))
@@ -191,7 +190,7 @@ implements DirectoryManagerBackend {
         try {
             oldAttrs = ldap.getAttributes(rdn, attributes);
         } catch (NamingException e) {
-            throw new AttributeReadException("Unable to read attributes", e);
+            throw new BackendException("Unable to read attributes", e);
         }
 
         // Translate retrieved attributes from Attributes to HashMap.
@@ -210,7 +209,7 @@ implements DirectoryManagerBackend {
                     try {
                         newValues.add(new String((String) oldAttr.get(j)));
                     } catch (NamingException e) {
-                        throw new AttributeReadException("Unable to read attribute value of " + oldAttr.getID(), e);
+                        throw new BackendException("Unable to read attribute value of " + oldAttr.getID(), e);
                     }
                 newAttrs.put(attributes[i], (String[]) newValues.toArray(new String[] {}));
 
@@ -252,14 +251,11 @@ implements DirectoryManagerBackend {
      * @return The element's relative DN, or <code>null</code> if none was
      *         found. <code>null</code> is also returned if the search pattern
      *         contains an illegal character or substring.
-     * @throws TimeoutException
-     *             If the backend connection timed out.
-     * @throws UnknownExceptio
-     *             If a <code>NamingException</code> occurs that we do not
-     *             know how to explicitly handle.
+     * @throws BackendException
+     *             If there was a problem accessing the backend. Typical causes
+     *             include timeouts.
      */
-    private String ldapSearch(final String pattern)
-    throws TimeoutException, UnknownException {
+    private String ldapSearch(final String pattern) throws BackendException {
 
         // Check pattern for illegal content.
         String[] illegals = {"*", "\2a"};
@@ -284,16 +280,16 @@ implements DirectoryManagerBackend {
             try {
                 entry = (SearchResult) results.next();
             } catch (NamingException e) {
-                throw new UnknownException(e);
+                throw new BackendException("Unexpected NamingException caught", e);
             }
             String rdn = entry.getName();
             log.logWarn("Matched " + pattern + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL) + " to element " + rdn);
             return rdn;
-            
+
         } catch (TimeLimitExceededException e) {
-            throw new TimeoutException("Connection timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
+            throw new BackendException("Connection timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
         } catch (NamingException e) {
-            throw new UnknownException(e);
+            throw new BackendException("Unexpected NamingException caught", e);
         }
 
     }
