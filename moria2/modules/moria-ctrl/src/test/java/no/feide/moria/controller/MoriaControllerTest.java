@@ -84,7 +84,7 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Verify that the controller initialization checks works and then initates the conftroller.
      */
-    private void controllerInitialization() throws IllegalInputException {
+    private void controllerInitialization() throws MoriaControllerException {
         /* Controller not initialized */
         MoriaController.stop();
         try {
@@ -453,8 +453,7 @@ public class MoriaControllerTest extends TestCase {
      * @see MoriaController#getServiceProperties(java.lang.String)
      */
 
-    public void testGetServiceProperties() throws IllegalInputException, AuthorizationException,
-                                                  UnknownTicketException, InoperableStateException {
+    public void testGetServiceProperties() throws MoriaControllerException {
         controllerInitialization();
         /* Invalid arguments */
         try {
@@ -475,8 +474,7 @@ public class MoriaControllerTest extends TestCase {
         assertEquals("Principal differs", validPrincipal, properties.get("name"));
     }
 
-    public void testGetSecLevel() throws IllegalInputException, AuthorizationException,
-                                         UnknownTicketException, InoperableStateException {
+    public void testGetSecLevel() throws MoriaControllerException {
         controllerInitialization();
 
         /* Invalid arguments */
@@ -530,8 +528,7 @@ public class MoriaControllerTest extends TestCase {
         MoriaController.getSecLevel(ticket);
     }
 
-    public void testDirectNonInteractiveAuthentication() throws IllegalInputException, InoperableStateException,
-                                                                AuthorizationException, AuthenticationException {
+    public void testDirectNonInteractiveAuthentication() throws MoriaControllerException {
         controllerInitialization();
 
         /* Invalid arguments */
@@ -773,6 +770,50 @@ public class MoriaControllerTest extends TestCase {
         Map actual = MoriaController.proxyAuthentication(new String[]{"attr1", "attr2"}, proxyTicket, "sub1");
         validateMaps(expected, actual);
     }
-    // TODO: Implement verifyUserExistence
+
+    public void testVerifyUserExistence() throws MoriaControllerException {
+        controllerInitialization();
+
+        /* Invalid arguments */
+        try {
+            MoriaController.verifyUserExistence(null, validPrincipal);
+            fail("IllegalInputException should be raised, userId is null.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.verifyUserExistence("", validPrincipal);
+            fail("IllegalInputException should be raised, userId an empty string.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.verifyUserExistence(validUsername, null);
+            fail("IllegalInputException should be raised, servicePrincipal is null.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.verifyUserExistence(validUsername, "");
+            fail("IllegalInputException should be raised, servicePrincipal an empty string.");
+        } catch (IllegalInputException success) {
+        }
+
+        /* Unauthorized request */
+        try {
+            MoriaController.verifyUserExistence(validUsername, "limited");
+            fail("AuthorizationException should be raised, service is not allowed to perform operation.");
+        } catch (AuthorizationException success) {
+        }
+        try {
+            MoriaController.verifyUserExistence(validUsername, "doesNotExist");
+            fail("AuthorizationException should be raised, non-existing service.");
+        } catch (AuthorizationException success) {
+        }
+
+        /* Normal use */
+        assertTrue("UserId should be valid: '" + validUsername + "'",
+                   MoriaController.verifyUserExistence(validUsername, validPrincipal));
+        assertFalse("UserId should not be valid: 'doesNotExist'",
+                   MoriaController.verifyUserExistence("doesNotExist", validPrincipal));
+
+    }
     // TODO: Implement invalidateSSOTicket
 }
