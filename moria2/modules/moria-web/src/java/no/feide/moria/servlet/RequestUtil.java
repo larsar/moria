@@ -44,6 +44,174 @@ import javax.servlet.http.Cookie;
 public final class RequestUtil {
 
     /**
+     * Prefix for properties in config
+     */
+    public static final String PATH_PREFIX = "no.feide.moria.web.";
+
+    /**
+     * Property name for: Config.
+     */
+    public static final String PROP_CONFIG = PATH_PREFIX + "config";
+    /**
+     * Property name for: Ticket ID.
+     */
+    public static final String PROP_TICKET_PARAM = PATH_PREFIX + "login.ticket_param";
+    /**
+     * Property name for: Organization.
+     */
+    public static final String PROP_ORG = PATH_PREFIX + "org";
+    /**
+     * Property name for: Default language.
+     */
+    public static final String PROP_DEFAULT_LANGUAGE = PATH_PREFIX + "login.default_language";
+    /**
+     * Property name for: Language.
+     */
+    public static final String PROP_LANGUAGE = PATH_PREFIX + "lang";
+    /**
+     * Property name for: URL prefix.
+     */
+    public static final String PROP_URL_PREFIX = PATH_PREFIX + "login.url_prefix";
+    /**
+     * Property name for: Common.
+     */
+    public static final String PROP_COMMON = "common";
+    /**
+     * Element in cookie: Organiszation.
+     */
+    public static final String PROP_COOKIE_ORG = PATH_PREFIX + "cookie.org.name";
+    /**
+     * Property name for: TTL of cookie.
+     */
+    public static final String PROP_COOKIE_ORG_TTL = PATH_PREFIX + "cookie.org.ttl";
+    /**
+     * Element in cookie: Language.
+     */
+    public static final String PROP_COOKIE_LANG = PATH_PREFIX + "cookie.lang.name";
+    /**
+     * Property name for: TTL of cookie.
+     */
+    public static final String PROP_COOKIE_LANG_TTL = PATH_PREFIX + "cookie.lang.ttl";
+    /**
+     * Element in cookie: SSO.
+     */
+    public static final String PROP_COOKIE_SSO = PATH_PREFIX + "cookie.sso.name";
+    /**
+     * Property name for: TTL of cookie.
+     */
+    public static final String PROP_COOKIE_SSO_TTL = PATH_PREFIX + "cookie.sso.ttl";
+
+    /**
+     * Bundle for the login page.
+     */
+    public static final String BUNDLE_LOGIN = "login";
+
+    /**
+     * From Authorization config: Language.
+     */
+    public static final String CONFIG_LANG = "lang";
+    /**
+     * From Authorization config: Home organization of service.
+     */
+    public static final String CONFIG_HOME = "home";
+    /**
+     * From Authorization config: Service name.
+     */
+    public static final String CONFIG_DISPLAY_NAME = "displayName";
+    /**
+     * From Authorization config: Service URL.
+     */
+    public static final String CONFIG_URL = "url";
+
+
+    /**
+     * Parameter in request object: Username.
+     */
+    public static final String PARAM_USERNAME = "username";
+    /**
+     * Parameter in request object: Password.
+     */
+    public static final String PARAM_PASSWORD = "password";
+    /**
+     * Parameter in request object: Organization.
+     */
+    public static final String PARAM_ORG = "org";
+    /**
+     * Parameter in request object: Language.
+     */
+    public static final String PARAM_LANG = "lang";
+
+    /**
+     * Attribute in request object: Base URL.
+     */
+    public static final String ATTR_BASE_URL = "baseURL";
+    /**
+     * Attribute in request object: Security level.
+     */
+    public static final String ATTR_SEC_LEVEL = "secLevel";
+    /**
+     * Attribute in request object: Error type.
+     */
+    public static final String ATTR_ERROR_TYPE = "errorType";
+    /**
+     * Attribute in request object: Available languages.
+     */
+    public static final String ATTR_LANGUAGES = "languages";
+    /**
+     * Attribute in request object:  Available organizations.
+     */
+    public static final String ATTR_ORGANIZATIONS = "organizations";
+    /**
+     * Attribute in request object: Preselected organization.
+     */
+    public static final String ATTR_SELECTED_ORG = "selectedOrg";
+    /**
+     * Attribute in request object: Preselected lanugage.
+     */
+    public static final String ATTR_SELECTED_LANG = "selectedLang";
+    /**
+     * Attribute in request object: Name of client/service.
+     */
+    public static final String ATTR_CLIENT_NAME = "clientName";
+    /**
+     * Attribute in request object: Link to associate with service name.
+     */
+    public static final String ATTR_CLIENT_URL = "clientURL";
+    /**
+     * Attribute in request object: Language bundle
+     */
+    public static final String ATTR_BUNDLE = "bundle";
+
+    /**
+     * Error type: No organization selected.
+     */
+    public static final String ERROR_NO_ORG = "noOrg";
+    /**
+     * Error type: Invalid organization selected.
+     */
+    public static final String ERROR_INVALID_ORG = "invalidOrg";
+    /**
+     * Error type: Authentication failed.
+     */
+    public static final String ERROR_AUTHENTICATION_FAILED = "authnFailed";
+    /**
+     * Error type: Unknown ticket.
+     */
+    public static final String ERROR_UNKNOWN_TICKET = "unknownTicket";
+    /**
+     * Error type: The directory is down.
+     */
+    public static final String ERROR_DIRECTORY_DOWN = "directoryDown";
+    /**
+     * Error type: Moria is unavailable.
+     */
+    public static final String ERROR_MORIA_DOWN = "moriaDown";
+    /**
+     * Error type: User must supply username and password.
+     */
+    public static final String ERROR_NO_CREDENTIALS = "noCredentials";
+
+    /**
      * Default private constructor.
      */
     private RequestUtil() {
@@ -55,14 +223,14 @@ public final class RequestUtil {
      *
      * @param bundleName       name of the bundle to retrieve, cannot be null
      * @param requestParamLang language specified as URL parameter, can be null
-     * @param cookies          cookies from the HTTP request, can be null
+     * @param langFromCookie   language specified as cookie
      * @param serviceLang      default language specified by service, can be null
      * @param browserLang      language requested by the users browser, can be null
      * @param moriaLang        default language for Moria, cannot be null
      * @return the requested bundle
      * @throws MissingResourceException if no bundle is found
      */
-    public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final Cookie[] cookies,
+    public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final String langFromCookie,
                                            final String serviceLang, final String browserLang, final String moriaLang) {
 
         /* Validate parameters. */
@@ -82,11 +250,8 @@ public final class RequestUtil {
         }
 
         /* Cookies. */
-        if (cookies != null) {
-            String cookieValue = getCookieValue("lang", cookies);
-            if (cookieValue != null) {
-                langSelections.add(cookieValue);
-            }
+        if (langFromCookie != null) {
+            langSelections.add(langFromCookie);
         }
 
         /* Service. */
