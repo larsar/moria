@@ -95,6 +95,8 @@ $ httpd \
                     <i>someAttribute</i> as well as the virtual (meaning it
                     doesn't exist physically in the actual user element)
                     attribute <i>tgt</i>, which is the ticket granting ticket.
+                    If this property is not set, no attributes are requested
+                    (effectively an empty array).
                     </p>
                     </li>
                     <li>
@@ -125,7 +127,8 @@ $ httpd \
                     <a href="config_authorization_manager.html#Authorization Manager">Authorization Manager</a>
                     referred to as a subservice) demo service. The example file
                     below will cause the demo servlet to request the attribute
-                    <i>anotherAttribute</i>.
+                    <i>anotherAttribute</i>. If this property is not set, no
+                    attributes are requested (effectively an empty array).
                     </p>
                     </li>
                     <li>
