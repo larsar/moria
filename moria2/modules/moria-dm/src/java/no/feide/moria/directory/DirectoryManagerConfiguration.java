@@ -3,7 +3,6 @@ package no.feide.moria.directory;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
 import no.feide.moria.log.MessageLogger;
@@ -29,6 +28,9 @@ public class DirectoryManagerConfiguration {
 
     /** Internal representation of the backend class. */
     private Class backendFactoryClass;
+
+    /** Internal representation of the backend configuration file structure. */
+    private Element backendConfiguration = null;
 
     /**
      * The required configuration file property, for external reference.
@@ -83,60 +85,30 @@ public class DirectoryManagerConfiguration {
             throw new DirectoryManagerConfigurationException("Unable to parse configuration file", e);
         }
         parseIndexConfig(rootElement);
-        parseBackendConfig(rootElement);
+        backendConfiguration = parseBackendConfig(rootElement);
 
     }
 
 
     /**
-     * Look up a given child element from a root element, and make sure the
-     * child element is unique (that is, there is one and only one existence).
-     * Used by <code>parseBackendConfig(Element)</code> and
-     * <code>parseIndexConfig(Element)</code> to make sure the configuration
-     * file is non-ambiguous.
-     * @param rootElement
-     *            The root element of the configuration, as parsed from file.
-     *            Cannot be <code>null</code>.
-     * @param name
-     *            The child element's name. Cannot be <code>null</code>.
-     * @return The child element itself, as per the
-     *         <code>org.jdom.Element.getChild(String)</code> method.
-     * @throws IllegalArgumentException
-     *             If <code>rootElement</code> or <code>name</code> is
-     *             <code>null</code>.
-     * @throws DirectoryManagerConfigurationException
-     *             If more than one child node with the given name was found.
-     * @see #parseBackendConfig(Element)
-     * @see #parseIndexConfig(Element)
-     * @see org.jdom.Element#getChild(java.lang.String)
+     * Get the backend configuration element.
+     * @return A copy of the backend configuration element, as per
+     *         <code>Element.clone()</code>.
+     * @see Element#clone()
      */
-    private Element getUniqueElement(final Element rootElement, final String name)
-    throws DirectoryManagerConfigurationException {
+    public Element getBackendElement() {
 
-        // Sanity checks.
-        if (rootElement == null)
-            throw new IllegalArgumentException("Root element cannot be NULL");
-        if (name == null)
-            throw new IllegalArgumentException("Element name cannot be NULL");
-
-        // Get any child elements matching the given name.
-        List elements = rootElement.getChildren(name);
-        if (elements.size() != 1) {
-
-            // The element was not unique.
-            throw new DirectoryManagerConfigurationException('\"' + name + "\" element not unique in configuration file");
-
-        }
-
-        // Return the element.
-        return rootElement.getChild(name);
+        return (Element) backendConfiguration.clone();
 
     }
 
 
     /**
      * Parse the subsection of the configuration file related to the index and
-     * update the configuration.
+     * update the configuration. <br>
+     * <br>
+     * If more than one <code>Index</code> element is found only the first is
+     * considered.
      * @param rootElement
      *            The root configuration element. Cannot be <code>null</code>.
      */
@@ -147,7 +119,7 @@ public class DirectoryManagerConfiguration {
             throw new IllegalArgumentException("Missing root element in configuration file");
 
         // Get the index element, with sanity checks.
-        final Element indexElement = getUniqueElement(rootElement, "Index");
+        final Element indexElement = rootElement.getChild("Index");
         HashMap indexConfig = new HashMap();
 
         // Get index filename, with sanity checks.
@@ -190,23 +162,32 @@ public class DirectoryManagerConfiguration {
 
 
     /**
-     * Parse the subsection of the configuration file related to the backend and
-     * update the configuration.
+     * Parse the subsection of the configuration file common to all backend
+     * implementations and update the configuration. <br>
+     * <br>
+     * This method will only consider the attribute <code>class</code> in the
+     * <code>Backend</code> element; further parsing of the element is left to
+     * the backend implementation. If more than one <code>Backend</code>
+     * element is found, only the first is considered.
      * @param rootElement
      *            The root configuration element. Cannot be <code>null</code>.
+     * @return The backend configuration element, as per
+     *         <code>Element.clone()</code>.
+     * @see Element#clone()
+     * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#setConfig(Element)
      */
-    private void parseBackendConfig(final Element rootElement) {
+    private Element parseBackendConfig(final Element rootElement) {
 
         // Sanity check.
         if (rootElement == null)
             throw new IllegalArgumentException("Missing root element in configuration file");
 
         // Get the backend element, with sanity checks.
-        final Element backendElement = getUniqueElement(rootElement, "Backend");
+        final Element backendElement = rootElement.getChild("Backend");
         HashMap backendConfig = new HashMap();
 
         // Get backend class, with sanity checks.
-        final Attribute a = getUniqueElement(backendElement, "Class").getAttribute("name");
+        final Attribute a = backendElement.getAttribute("class");
         if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
             throw new DirectoryManagerConfigurationException("Backend class not set in configuration file");
         try {
@@ -214,6 +195,8 @@ public class DirectoryManagerConfiguration {
         } catch (ClassNotFoundException e) {
             throw new DirectoryManagerConfigurationException("Backend factory class " + a.getValue() + " not found", e);
         }
+
+        return (Element) backendElement.clone();
 
     }
 
