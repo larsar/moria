@@ -62,7 +62,7 @@
   </message>
   
   <message name="authenticateUserOut">
-    <part name="result" type="xsd:boolean"/>
+    <part name="result" type="xsd:string"/>
   </message>
 
   <message name="requestSessionIn">
