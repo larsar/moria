@@ -59,6 +59,9 @@ final class AuthorizationAttribute {
      * @param name     Name of attribute.
      * @param allowSSO Allow use of SSO with this attribute.
      * @param secLevel The attribute's security level.
+     * @throws IllegalArgumentException
+     *             If <code>name</code> is <code>null</code> or 
+     *             an empty string, or <code>secLevel</code> is < 0.
      */
     AuthorizationAttribute(final String name, final boolean allowSSO, final int secLevel) {
 
