@@ -33,8 +33,8 @@
     <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
     <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
     <copy file="mellon/config/web.xml"      todir="build.mellon/WEB-INF"/>
-    <copy file="moria/config/preferences_dev.xml" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
-    <copy file="mellon/config/preferences_dev.xml" tofile="build.mellon/WEB-INF/classes/Mellon.xml"/>
+    <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
+    <copy file="${mellon_config}" tofile="build.mellon/WEB-INF/classes/Mellon.xml"/>
     <copy todir="build.moria/WEB-INF/lib">
       <fileset dir="moria/lib/">
 	<include name="**/*.jar"/>
@@ -66,14 +66,14 @@
           description="Copy Moria's preferences.xml to target directory"
 	  depends="all:prepare">
 	  <delete file="build.moria/WEB-INF/classes/Moria.xml"/>
-	  <copy file="moria/config/preferences.xml" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
+	  <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
   </target>
 
   <target name="mellon:prepare:prod"
           description="Copy Mellon's preferences.xml to target directory"
 	  depends="all:prepare">
 	  <delete file="build.mellon/WEB-INF/classes/Mellon.xml"/>
-	  <copy file="mellon/config/preferences.xml" tofile="build.mellon/WEB-INF/classes/Mellon.xml"/>
+	  <copy file="${mellon_config}" tofile="build.mellon/WEB-INF/classes/Mellon.xml"/>
   </target>
 
   <target name="all:redeploy"
