@@ -140,7 +140,7 @@ public final class ConfigurationManager {
         final String cmPropsFile = System.getProperty(PROPS_PREFIX + MODULE_CM);
         if (cmPropsFile == null || cmPropsFile.equals(""))
             throw new BaseConfigException("System property '" + PROPS_PREFIX + MODULE_CM + "' must be a non-empty string");
-        final String filePrefix = new File(cmPropsFile).getParent() + System.getProperty("file.separator");
+        final String filePrefix = new File(cmPropsFile).getParent() + File.separator;
 
         /* Read configuration manager's properties file */
         try {
