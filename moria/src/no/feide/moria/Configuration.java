@@ -56,6 +56,7 @@ public class Configuration {
         "no.feide.moria.SessionSSOTimeout",
         "no.feide.moria.AuthenticatedSessionTimeout",
         "no.feide.moria.defaultLanguage"
+        "no.feide.moria.backend.ldap.url"
     };
 
 
