@@ -72,8 +72,8 @@
   <target name="mellon:prepare:prod"
           description="Copy Mellon's preferences.xml to target directory"
 	  depends="all:prepare">
-	  <delete file="mellon.mellon/WEB-INF/classes/Mellon.xml"/>
-	  <copy file="mellon/config/preferences.xml" tofile="mellon.mellon/WEB-INF/classes/Mellon.xml"/>
+	  <delete file="build.mellon/WEB-INF/classes/Mellon.xml"/>
+	  <copy file="mellon/config/preferences.xml" tofile="build.mellon/WEB-INF/classes/Mellon.xml"/>
   </target>
 
   <target name="all:redeploy"
@@ -167,7 +167,7 @@
 
   <target name="mellon:generate-stubs"
           description="Generate Mellon-side stubs from WSDL"
-          depends="all:prepare,mellon:get-wsdl">
+          depends="all:prepare">
     <exec executable="${jwsdp_home}/bin/wscompile.sh">
       <arg line="-gen:client"/>
       <arg line="-d build.mellon/WEB-INF/classes"/>
