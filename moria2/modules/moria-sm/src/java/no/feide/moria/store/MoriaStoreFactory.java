@@ -20,7 +20,6 @@
 
 package no.feide.moria.store;
 
-import no.feide.moria.store.cache.MoriaCacheStore;
 
 /**
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
