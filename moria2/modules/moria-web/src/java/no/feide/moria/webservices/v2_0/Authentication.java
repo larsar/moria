@@ -79,7 +79,7 @@ public final class Authentication implements AuthenticationIF {
     /**
      * Initiates authentication.
      *
-     * The initial call done by services to start a login attempt.
+     * The initial call done by a service to start a login attempt.
      *
      * @param attributes
      *          The attributes the service wants returned on login
@@ -93,7 +93,7 @@ public final class Authentication implements AuthenticationIF {
      * @return The Moria url the client is to be redirected to.
      * @throws RemoteException
      *          If anything fails during the call.
-     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#initiateAuthentication(java.lang.String[],
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#initiateAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String, boolean)
      */
     public String initiateAuthentication(final String[] attributes, final String returnURLPrefix, final String returnURLPostfix,
@@ -147,7 +147,7 @@ public final class Authentication implements AuthenticationIF {
      * @return Array of attributes as requested.
      * @throws RemoteException
      *          If anything fails during the call.
-     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String)
      */
     public Attribute[] directNonInteractiveAuthentication(final String[] attributes, final String username, final String password)
@@ -190,7 +190,7 @@ public final class Authentication implements AuthenticationIF {
      * @return Array of attributes as requested in initiateAuthentication.
      * @throws RemoteException
      *          If anything fails during the call.
-     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#getUserAttributes(java.lang.String)
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#getUserAttributes(java.lang.String)
      */
     public Attribute[] getUserAttributes(final String serviceTicket) throws RemoteException {
 
@@ -221,10 +221,10 @@ public final class Authentication implements AuthenticationIF {
      *
      * @param username
      *          The username to be validated.
-     * @return true If the user is found.
+     * @return true if the user is found.
      * @throws RemoteException
      *          If anything fails during the call.
-     * @see no.feide.login.moria.v1_0.Authentication.AuthenticationIF#verifyUserExistence(java.lang.String)
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#verifyUserExistence(java.lang.String)
      */
     public boolean verifyUserExistence(final String username) throws RemoteException {
 
@@ -250,13 +250,14 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
-     * Utility method that converts a Map to an array of Attributes.
+     * Converts a Map to an array of Attributes.
+     * Utility method.
      *
      * @param map
-     *          the Map to be converted
+     *          The Map to be converted.
      * @param activeTicketId
-     *          optional variable for logging purposes
-     * @return array of attribute objects
+     *          Optional variable for logging purposes.
+     * @return Array of attribute objects.
      */
     private Attribute[] mapToAttributeArray(final Map map, final String activeTicketId) {
 

@@ -32,7 +32,7 @@ public interface AuthenticationIF extends Remote {
     /**
      * Initiates authentication.
      *
-     * The initial call done by services to start a login attempt.
+     * The initial call done by a service to start a login attempt.
      *
      * @param attributes
      *          The attributes the service wants returned on login
@@ -89,7 +89,7 @@ public interface AuthenticationIF extends Remote {
      *
      * @param username
      *          The username to be validated.
-     * @return true If the user is found.
+     * @return true if the user is found.
      * @throws RemoteException
      *          If anything fails during the call.
      */

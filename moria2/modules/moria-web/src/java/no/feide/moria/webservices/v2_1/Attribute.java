@@ -81,9 +81,9 @@ public final class Attribute implements Serializable {
     }
 
     /**
-     * Gets the String array containing the values of the attribute.
+     * Gets a String array containing the values of the attribute.
      *
-     * @return Returns the value array.
+     * @return The value array.
      */
     public String[] getValues() {
         return values;
@@ -92,42 +92,44 @@ public final class Attribute implements Serializable {
     /**
      * Sets the values for the attribute.
      *
-     * @param values the values to set.
+     * @param values The values to set.
      */
     public void setValues(final String[] values) {
         this.values = values;
     }
 
     /**
-     * Return type metadata object.
+     * Returns type metadata object.
      *
-     * @return the metadata
+     * @return The metadata
      */
     public static TypeDesc getTypeDesc() {
         return typeDesc;
     }
 
     /**
-     * Get Custom Serializer. Cut'n'paste code.
+     * Gets custom serializer.
      *
-     * @param mechType cut'n'paste. Haven't had time to look it up.
-     * @param javaType cut'n'paste. Haven't had time to look it up.
-     * @param xmlType cut'n'paste. Haven't had time to look it up.
-     * @return cut'n'paste. Haven't had time to look it up.
+     * @param mechType XML processing mechanism type.
+     * @param javaType Class of the Java type.
+     * @param xmlType Qualified name of the XML data type.
+     * @return A serializer for the specified XML processing mechanism type.
      */
     public static Serializer getSerializer(final String mechType, final Class javaType, final QName xmlType) {
         return new BeanSerializer(javaType, xmlType, typeDesc);
     }
 
     /**
-     * Get Custom Deserializer. Cut'n'paste Axis code.
+     * Gets custom Deserializer.
      *
-     * @param mechType cut'n'paste. Haven't had time to look it up.
-     * @param javaType cut'n'paste. Haven't had time to look it up.
-     * @param xmlType cut'n'paste. Haven't had time to look it up.
-     * @return cut'n'paste. Haven't had time to look it up.
+     * @param mechType XML processing mechanism type.
+     * @param javaType Class of the Java type.
+     * @param xmlType Qualified name of the XML data type.
+     * @return A deserializer for the specified XML processing mechanism type.
      */
     public static Deserializer getDeserializer(final String mechType, final Class javaType, final QName xmlType) {
         return new BeanDeserializer(javaType, xmlType, typeDesc);
     }
 }
+
+

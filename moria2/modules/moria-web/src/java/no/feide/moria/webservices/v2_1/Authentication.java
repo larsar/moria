@@ -70,13 +70,29 @@ public final class Authentication implements AuthenticationIF {
 
     /**
      * Default constructor.
-     * Initiates logger.
+     * Initializes the logger.
      */
     public Authentication() {
         messageLogger = new MessageLogger(Authentication.class);
     }
 
     /**
+     * Initiates authentication.
+     *
+     * The initial call done by a service to start a login attempt.
+     *
+     * @param attributes
+     *          The attributes the service wants returned on login
+     * @param returnURLPrefix
+     *          The prefix of the url the user is to be returned to
+     * @param returnURLPostfix
+     *          The optional postfix of the return url
+     * @param forceInteractiveAuthentication
+     *          Whether or not cookie based authentication (SSO Light)
+     *          should be allowed.
+     * @return The Moria url the client is to be redirected to.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#initiateAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String, boolean)
      */
@@ -115,6 +131,22 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Performs direct non-interactive authentication.
+     *
+     * A redirect- and html-less login method.  Only to be used in
+     * special cases where the client for some reason does not
+     * support the standard login procedure.  Inherently insecure as
+     * the service will have knowledge of the plaintext password.
+     *
+     * @param attributes
+     *          The attributes the service wants returned on login.
+     * @param username
+     *          The user name of the user to be authenticated.
+     * @param password
+     *          The password of the user to be authenticated.
+     * @return Array of attributes as requested.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String)
      */
@@ -148,6 +180,17 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Performs proxy authentication.
+     *
+     * Called by a subsystem to authenticate a user.
+     *
+     * @param attributes
+     *          The attributes the service wants returned on login.
+     * @param proxyTicket
+     *          The proxy ticket given to the calling system by its initiator.
+     * @return Array of attributes as requested.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#proxyAuthentication(java.lang.String[],
      *      java.lang.String)
      */
@@ -177,6 +220,22 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Gets a proxy ticket.
+     *
+     * A service may as part of the initial attribute request ask for
+     * a ticket granting ticket that later may be used in this call.
+     *
+     * The returned proxy ticket is to be handed over to the specified
+     * underlying system and may be used by that system only
+     * to authenticate the request.
+     *
+     * @param ticketGrantingTicket
+     *          A TGT that has been issued previously.
+     * @param proxyServicePrincipal
+     *          The service which the proxy ticket should be issued for.
+     * @return A proxy ticket.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#getProxyTicket(java.lang.String,
      *      java.lang.String)
      */
@@ -205,6 +264,16 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Gets user attributes.
+     *
+     * Called by the service when the user returns after a successful
+     * login.
+     *
+     * @param serviceTicket
+     *          The ticket included in the return request issued by the client.
+     * @return Array of attributes as requested in initiateAuthentication.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#getUserAttributes(java.lang.String)
      */
     public Attribute[] getUserAttributes(final String serviceTicket) throws RemoteException {
@@ -232,6 +301,13 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Gets public attributes for a given group.
+     *
+     * @param groupname
+     *          The name of the group.
+     * @return Array of public attributes.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#getGroupAttributes(java.lang.String)
      */
     public Attribute[] getGroupAttributes(final String groupname) throws RemoteException {
@@ -240,6 +316,13 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Verifies the existence of a given user in the underlying directories.
+     *
+     * @param username
+     *          The username to be validated.
+     * @return true if the user is found.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#verifyUserExistence(java.lang.String)
      */
     public boolean verifyUserExistence(final String username) throws RemoteException {
@@ -266,6 +349,13 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Verifies the existence of a given group in the underlying directories.
+     *
+     * @param groupname
+     *          The groupname to be validated.
+     * @Return True if the group exists.
+     * @throws RemoteException
+     *           If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#verifyGroupExistence(java.lang.String)
      */
     public boolean verifyGroupExistence(final String groupname) throws RemoteException {
@@ -274,6 +364,15 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
+     * Verifies that a given user is member of a specific group.
+     *
+     * @param username
+     *          The username to be validated.
+     * @param groupname
+     *          The name of the group that may contain the user.
+     * @return True if the user is a member of the group.
+     * @throws RemoteException
+     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#verifyUserMemberOfGroup(java.lang.String,
      *      java.lang.String)
      */
@@ -283,13 +382,14 @@ public final class Authentication implements AuthenticationIF {
     }
 
     /**
-     * Utility method that converts a Map to an array of Attributes.
+     * Converts a Map to an array of Attributes.
+     * Utility method.
      *
      * @param map
-     *          the Map to be converted
+     *          The Map to be converted.
      * @param activeTicketId
-     *          optional variable for logging purposes
-     * @return array of attribute objects
+     *          Optional variable for logging purposes.
+     * @return Array of attribute objects.
      */
     private Attribute[] mapToAttributeArray(final Map map, final String activeTicketId) {
 
