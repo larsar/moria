@@ -203,14 +203,18 @@ public class LoginServlet extends MoriaServlet {
      *  error message is supplied, the error message is displayed. If
      *  no sessionID is supplied the login login form is not displayed.
      */
-    private Template genLoginTemplate(HttpServletRequest request, HttpServletResponse response, Context context, Session session, String errorType) throws ParseErrorException, ResourceNotFoundException, MissingResourceException, Exception {
+    private Template genLoginTemplate(HttpServletRequest request, HttpServletResponse response, 
+									  Context context, Session session, String errorType) 
+    		throws ParseErrorException, ResourceNotFoundException, MissingResourceException, Exception {
 
         String sessionID = null;
         ResourceBundle bundle = null;
 		String selectedLanguage = null;
-		String wsDefaultLang = session.getWebService().getDefaultLang();
+		String wsDefaultLang = Configuration.getProperty("no.feide.moria.defaultLanguage"); 
  		
         if (session != null) {
+        	if (session.getWebService().getDefaultLang() != null)
+        		wsDefaultLang = session.getWebService().getDefaultLang();
         	sessionID = session.getID();
         }
         
@@ -258,7 +262,10 @@ public class LoginServlet extends MoriaServlet {
         if (orgShorts == null) 
             orgShorts = Configuration.getOrgShorts(defaultLang);
 
-        String[] sortedOrgNames = (String[]) orgShorts.keySet().toArray(new String[orgShorts.size()]);
+        if (orgShorts == null)
+        	log.severe("Unable to get organization names from configuration.");
+        
+        String[] sortedOrgNames = (String[]) orgShorts.keySet().toArray(new String[orgShorts.size()]); 
         Arrays.sort(sortedOrgNames);
 
         context.put("orgShorts", orgShorts);
