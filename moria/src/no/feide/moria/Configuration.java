@@ -194,8 +194,8 @@ public class Configuration {
                     orgShortList.put(lang, shortList);
                 }
                 
-                nameList.put(orgName, shortName);
-                shortList.put(shortName, orgName);
+                shortList.put(orgName, shortName);
+                nameList.put(shortName, orgName);
             }
         }
     }
@@ -308,6 +308,18 @@ public class Configuration {
      * @return A HashMap of all organization names for the requested language
      */
     public static HashMap getOrgNames(String language) {
+        return (HashMap) orgNameList.get(language);
+    }
+
+
+
+    /**
+     * Return all organization short names.
+     * @param lanugage Language for the organization names
+     * @return A HashMap of all organization short names for the
+     * requested language
+     */
+    public static HashMap getOrgShorts(String language) {
         return (HashMap) orgShortList.get(language);
     }
 
