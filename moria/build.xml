@@ -16,6 +16,18 @@
            classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
 
 
+  <target name="all:prepare" >
+     <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
+        <os family="windows"/>
+     </condition>
+     <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.sh">
+        <not>
+           <os family="windows"/>
+        </not>
+     </condition>
+  </target>
+
+
   <!-- Common Mellon/Moria targets. -->
   <target name="all:clean"
           description="All: Clean up everything"
@@ -30,7 +42,8 @@
 
   <!-- Targets to build/deploy Moria. -->
   <target name="moria:prepare"
-          description="Moria: Prepare build directory">
+          description="Moria: Prepare build directory"
+          depends="all:prepare">
     <mkdir dir="dist"/>
     <mkdir dir="build.moria/WEB-INF/classes/templates"/>
     <copy file="moria/jaxrpc-ri-runtime.xml"
@@ -61,7 +74,7 @@
         <include name="**/*.jar"/>
         <exclude name="servlet.jar"/>
       </fileset>
-    </copy>
+    </copy>  
   </target>
 
   <target name="moria:wsdl"
@@ -70,7 +83,7 @@
     <copy file="Authentication.wsdl"
           todir="build.moria/WEB-INF"/>
     <exec executable="sed" output="build.moria/WEB-INF/Authentication.wsdl">
-      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' Authentication.wsdl"/>
+      <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! Authentication.wsdl"/>
     </exec>
   </target>
 
@@ -95,7 +108,7 @@
   <target name="moria:wscompile"
           description="Moria: Generate JAX-RPC server ties"
           depends="moria:wsdl,moria:compile">
-    <exec executable="${jaxrpc_home}/bin/wscompile.sh">
+    <exec executable="${wscompile}">
       <arg line="-gen:server"/>
       <arg line="-d build.moria/WEB-INF/classes"/>
       <arg line="-model build.moria/WEB-INF/Authentication_model.xml"/>
@@ -156,7 +169,8 @@
 
   <!-- Targets to build the Mellon API. -->
   <target name="mellon:prepare"
-          description="Mellon API: Prepare build directory">
+          description="Mellon API: Prepare build directory"
+          depends="all:prepare">
     <mkdir dir="build.mellon/api"/>
     <mkdir dir="build.mellon/filter"/>
     <mkdir dir="build.mellon/demo/WEB-INF/classes"/>
@@ -176,7 +190,7 @@
   <target name="mellon:wscompile"
           description="Mellon API: Generate JAX-RPC client stubs"
           depends="moria:wsdl,mellon:prepare">
-    <exec executable="${jaxrpc_home}/bin/wscompile.sh">
+    <exec executable="${wscompile}">
       <arg line="-gen:client"/>
       <arg line="-d build.mellon/api"/>
       <arg line="-verbose"/>
