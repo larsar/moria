@@ -20,9 +20,9 @@ public interface DirectoryManagerBackend {
      *         can be retrieved from the backend following a successful
      *         authentication. Otherwise, an empty data structure.
      * @throws AuthenticationFailedException
-     *             If the authentication fails.
+     *             If the authentication fails. 
      */
     public UserAttributes authenticate(Credentials userCredentials, String[] attributeRequest)
-    throws AuthenticationFailedException;
+    throws BackendException;
 
 }
