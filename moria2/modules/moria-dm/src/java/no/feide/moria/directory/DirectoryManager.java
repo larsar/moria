@@ -255,7 +255,7 @@ public class DirectoryManager {
      */
     public HashMap authenticate(final String sessionTicket, final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException,
-    IllegalStateException, NullPointerException {
+    IllegalStateException {
 
         // Sanity checks.
         if (configuration == null)
