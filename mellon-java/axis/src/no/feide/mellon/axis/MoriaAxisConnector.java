@@ -28,9 +28,8 @@ public class MoriaAxisConnector extends MoriaConnector {
 	AuthenticationIFBindingStub stub = null;
 
 	
-	/**
-	 * @param username
-	 * @param password
+	/** 
+	 * @see no.feide.mellon.jaxrpc.MoriaConnector#connect(java.lang.String, java.lang.String)
 	 */
 	public void connect(String username, String password) throws ServiceException {
 		
@@ -42,17 +41,14 @@ public class MoriaAxisConnector extends MoriaConnector {
 		stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, password);
 	}
 
-	/** Request an authentication session from Moria. A URL is returned from 
-	 * Moria and the user should be redirectet there to perform the
-	 * authenticationø.
+	/** 
 	 * @see no.feide.mellon.jaxrpc.MoriaConnector#requestSession(java.lang.String[], java.lang.String, java.lang.String, boolean)
 	 */
 	public String requestSession(String[] attributes, String urlPrefix, String urlPostfix, boolean denySso) throws RemoteException {
 		return stub.requestSession(attributes, urlPrefix, urlPostfix, denySso);
 	}
 
-	/** Return attributes retrieved from Moria. The attributes are converted
-	 * from a SOAP specific class to a universal MoriaUserAttribute class.
+	/** 
 	 * @see no.feide.mellon.jaxrpc.MoriaConnector#getAttributes(java.lang.String)
 	 */
 	public MoriaUserAttribute[] getAttributes(String ticket) throws RemoteException {
