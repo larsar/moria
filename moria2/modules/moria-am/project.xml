@@ -13,9 +13,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>werken-xpath</groupId>
-      <artifactId>werken-xpath</artifactId>
-      <version>0.9.4</version>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.0b10</version>
       <type>jar</type>
       <properties>
       </properties>
