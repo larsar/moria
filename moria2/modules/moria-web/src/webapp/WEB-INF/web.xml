@@ -60,6 +60,21 @@
     <jsp-file>/WEB-INF/jsp/jsp-error.jsp</jsp-file>
   </servlet>
 
+  <servlet>
+    <servlet-name>Axis.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/axis.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
+    <servlet-name>Axis-Error.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/axis-error.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
+    <servlet-name>Axis-SOAP-Error.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/axis-soap-error.jsp</jsp-file>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>Login</servlet-name>
     <url-pattern>/Login</url-pattern>
