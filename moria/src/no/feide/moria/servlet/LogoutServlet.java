@@ -66,7 +66,7 @@ public class LogoutServlet extends MoriaServlet {
             ((HttpServletRequest)request).getSession(true);
 
         /* URL for redirecting the user back to */
-        String redirectUrl = (String) request.getParameter("redirect");
+        String redirectUrl = request.getParameter("redirect");
 
         String existingSessionID = (String) httpSession.getAttribute("moriaID");
 

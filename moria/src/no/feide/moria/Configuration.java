@@ -168,7 +168,7 @@ public class Configuration {
 
         for (Enumeration e = orgList.propertyNames(); e.hasMoreElements(); ) {
             String orgShort = (String) e.nextElement();
-            String orgName  = (String) orgList.getProperty(orgShort);
+            String orgName  = orgList.getProperty(orgShort);
                 
             int sep = orgShort.indexOf("_");
          
