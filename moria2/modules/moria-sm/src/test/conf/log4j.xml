@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <param name="Threshold" value="TRACE"/>
+    <param name="Target" value="System.out"/>
+
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
+  <category name="org.jboss.system">
+    <priority value="TRACE" class="org.jboss.logging.XLevel"/>
+  </category>
+  
+  <category name="org.jboss.cache">
+    <priority value="TRACE" class="org.jboss.logging.XLevel"/>
+  </category>
+
+  <category name="org.jboss.tm">
+    <priority value="TRACE" class="org.jboss.logging.XLevel"/>
+  </category>
+
+  <root>
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</log4j:configuration>
