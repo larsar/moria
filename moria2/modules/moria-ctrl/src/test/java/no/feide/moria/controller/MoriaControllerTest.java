@@ -38,7 +38,7 @@ import java.util.HashSet;
  */
 public final class MoriaControllerTest extends TestCase {
 
-    private String validPrefix, validPostfix, validPrincipal, validUsername, validPassword;
+    private String validPrefix, validPostfix, validPrincipal, validUsername, validUsername2, validPassword;
     private String[] validAttrs;
     private HashMap expectedAttrs;
 
@@ -67,6 +67,7 @@ public final class MoriaControllerTest extends TestCase {
         validPrincipal = "test";
         validAttrs = new String[]{"attr1", "attr2"};
         validUsername = "user@some.realm";
+        validUsername2 = "user@any.realm";
         validPassword = "password";
 
         expectedAttrs = new HashMap();
@@ -323,7 +324,15 @@ public final class MoriaControllerTest extends TestCase {
             fail("AuthenticationFailedException should be raised, wrong username");
         } catch (AuthenticationException success) {
         }
-
+        
+        /* Userorg test */
+        loginTicketId=MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        try {
+            MoriaController.attemptLogin(loginTicketId, null, validUsername2, validPassword);
+            fail("AuthorizationFailedException should be raised, userorg is not allowed");
+        }catch (AuthorizationException success) {
+        }
+        
         /* Normal use */
         loginTicketId =
         MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
@@ -391,12 +400,24 @@ public final class MoriaControllerTest extends TestCase {
         String newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, true,
                                                                          validPrincipal);
 
-          try {
-              MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
-              fail("UnknownTicketException should be raised, authentication attempt requires interactive authentication.");
-          } catch (UnknownTicketException success) {
-          }
-
+        try {
+            MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
+            fail("UnknownTicketException should be raised, authentication attempt requires interactive authentication.");
+        } catch (UnknownTicketException success) {
+        }
+        /* userorg */
+        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
+        newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, "limited");
+        try {
+            final String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
+            final Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, "limited");
+            fail("AuthorizationException should be raised. Userorg not allowed.");
+        } catch (AuthorizationException success) {
+            
+        }
+      
         /* Normal use */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                         validPrincipal);
@@ -665,6 +686,13 @@ public final class MoriaControllerTest extends TestCase {
             fail("AuthenticationException should be raised, wrong password.");
         } catch (AuthenticationException success) {
         }
+        
+        /* Userorg test */
+        try {
+            MoriaController.directNonInteractiveAuthentication(validAttrs, validUsername2, validPassword, validPrincipal);
+            fail("AuthorizationFailedException should be raised, userorg is not allowed");
+        }catch (AuthorizationException success) {
+        }
 
         /* Empty set of attributes */
         Map actualAttrs = MoriaController.directNonInteractiveAuthentication(new String[]{}, validUsername,
@@ -754,14 +782,15 @@ public final class MoriaControllerTest extends TestCase {
 
         /* Check attributes */
         validateMaps(expectedAttrs, resultAttrs);
-
+                
         /* Ticket should be removed after use */
         try {
             MoriaController.proxyAuthentication(new String[]{"attr1", "attr2"}, proxyTicket, "sub1");
             fail("UnknownTicketException should be raised, proxy ticket have been used.");
         } catch (UnknownTicketException success) {
         }
-    }
+       
+     }
 
     /**
      * Tests the getProxyTicket method.
@@ -890,10 +919,6 @@ public final class MoriaControllerTest extends TestCase {
         /* Normal use */
         assertTrue("UserId should be valid: '" + validUsername + "'",
                    MoriaController.verifyUserExistence(validUsername, validPrincipal));
-        //TODO fix this
-        //assertFalse("UserId should not be valid: 'doesNotExist'",
-        //            MoriaController.verifyUserExistence("doesNotExist", validPrincipal));
-
     }
 
     /**
@@ -971,4 +996,5 @@ public final class MoriaControllerTest extends TestCase {
         final String expectedURL = validPrefix+serviceTicket+validPostfix;
         assertEquals("Redirect URL differs.", expectedURL, actualURL);
     }
+   
 }
