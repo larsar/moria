@@ -3,6 +3,13 @@
 <attributefile>
 
 <attribute> 
+  <key>federationFeideSchemaVersion</key>
+  <resourcebundle>rb_federationFeideSchemaVersion</resourcebundle>  
+  <relevance>Mandatory</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#federationFeideSchemaVersion</link>
+</attribute>
+
+<attribute> 
   <key>mail</key>
   <resourcebundle>rb_mail</resourcebundle>
   <relevance>Mandatory</relevance>
@@ -94,12 +101,11 @@
 </attribute>
 
 <attribute> 
-  <key>federationFeideSchemaVersion</key>
-  <resourcebundle>rb_federationFeideSchemaVersion</resourcebundle>  
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#federationFeideSchemaVersion</link>
+  <key>jpegPhoto</key>
+  <resourcebundle>rb_jpegPhoto</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#jpegPhoto</link>
 </attribute>
-
 
 <attribute> 
   <key>l</key>
@@ -249,6 +255,13 @@
 </attribute>
 
 <attribute> 
+  <key>eduPersonScopedAffiliation</key>
+  <resourcebundle>rb_eduPersonScopedAffiliation</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonScopedAffiliation</link>
+</attribute>
+
+<attribute> 
   <key>eduOrgIdentityAuthNPolicyURI</key>
   <resourcebundle>rb_eduOrgIdentityAuthNPolicyURI</resourcebundle>
   <relevance>Optional</relevance>
@@ -295,20 +308,6 @@
   <resourcebundle>rb_eduPersonEntitlement</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonEntitlement</link>
-</attribute>
-
-<attribute> 
-  <key>eduPersonScopedAffiliation</key>
-  <resourcebundle>rb_eduPersonScopedAffiliation</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonScopedAffiliation</link>
-</attribute>
-
-<attribute> 
-  <key>jpegPhoto</key>
-  <resourcebundle>rb_jpegPhoto</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#jpegPhoto</link>
 </attribute>
 
 </attributefile>
