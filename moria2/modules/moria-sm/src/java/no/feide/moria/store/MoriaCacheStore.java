@@ -88,6 +88,7 @@ public final class MoriaCacheStore implements MoriaStore {
      */
     public MoriaCacheStore()
             throws MoriaStoreException {
+              
         isConfigured = new Boolean(false);
         messageLogger = new MessageLogger(no.feide.moria.store.MoriaCacheStore.class);
 
@@ -222,6 +223,7 @@ public final class MoriaCacheStore implements MoriaStore {
     public synchronized void stop() {
         synchronized (isConfigured) {
             store.stop();
+            store = null;  // Remove object reference for garbage collection.
             isConfigured = new Boolean(false);
         }
         messageLogger.logWarn("The cache has been stopped.");
