@@ -20,9 +20,11 @@
 package no.feide.moria.directory.backend;
 
 import java.io.File;
+import java.security.Provider;
 import java.security.Security;
 
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
+import no.feide.moria.log.MessageLogger;
 
 import org.jdom.Element;
 
@@ -31,6 +33,11 @@ import org.jdom.Element;
  */
 public class JNDIBackendFactory
 implements DirectoryManagerBackendFactory {
+    
+    /**
+     * The message logger.
+     */
+    private MessageLogger log = new MessageLogger(JNDIBackendFactory.class);
 
     /**
      * The number of seconds before a backend connection times out. Default is
@@ -144,13 +151,37 @@ implements DirectoryManagerBackendFactory {
                     throw new DirectoryManagerConfigurationException("Attribute \"filename\" not found in Truststore element");
                 if (!(new File(value).exists()))
                     throw new DirectoryManagerConfigurationException("Truststore file " + value + " does not exist");
+                
+                // DEBUG
+                Provider[] providers = Security.getProviders();
+                for (int i=0; i<providers.length; i++) {
+                    log.logInfo("PRE: " + providers[i].getName());
+                }
+                
+                // Explicitly set com.sun.net.ssl.internal.ssl.Provider...
+                com.sun.net.ssl.internal.ssl.Provider.install();
+                Security.insertProviderAt(new com.sun.net.ssl.internal.ssl.Provider(), 1);                
+                System.setProperty("java.protocol.handler.pkgs", "javax.net.ssl");
+                
+                // DEBUG
+                providers = Security.getProviders();
+                for (int i=0; i<providers.length; i++) {
+                    log.logInfo("POST: " + providers[i].getName());
+                }
+                
+                
+                // Get and set truststore filename.
+                log.logInfo("Truststore was " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG               
                 System.setProperty("javax.net.ssl.trustStore", value);
+                log.logInfo("Truststore is now " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+                log.logInfo("Truststore should be " + value);  // DEBUG
 
-                // Get truststore password.
+                // Get and set truststore password.
                 value = trustStoreElement.getAttributeValue("password");
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"password\" not found in Truststore element");
                 System.setProperty("javax.net.ssl.trustStorePassword", value);
+                log.logInfo("System: " + System.getProperties().toString());  // DEBUG
 
                 // Now we're ready to use SSL.
                 Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
