@@ -5,9 +5,7 @@ import junit.framework.TestSuite;
 import junit.framework.TestCase;
 import junit.framework.Assert;
 
-import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.Cookie;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
