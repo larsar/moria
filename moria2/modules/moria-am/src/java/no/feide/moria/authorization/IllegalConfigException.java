@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 FEIDE
+ * Copyright (c) 2004 UNINETT FAS
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -32,7 +32,6 @@ public class IllegalConfigException extends Exception {
      * @param message Exception message.
      */
     public IllegalConfigException(String message) {
-        super(message);  
+        super(message);
     }
-
 }
