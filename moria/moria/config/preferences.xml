@@ -14,7 +14,6 @@
             <entry key="Backend.LDAP.Port" value="1389"/>
             <entry key="Backend.LDAP.UIDAttribute" value="uid"/>
             <entry key="LoginURL" value="http://klungset.uninett.no:8080/feide-moria/Login"/>
-            <entry key="SessionURL" value="http://klungset.uninett.no:8080/feide-mellon/Session"/>
             <entry key="MaxFailedLogins" value="3"/>
           </map>
           <node name="servlet">
