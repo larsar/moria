@@ -83,7 +83,7 @@ public final class AccessLogger implements Serializable {
      */
     public void logUser(final AccessStatusType status, final String servicePrincipal, final String userId, final String userIpAddr,
             final String incomingTicketId, final String outgoingTicketId) {
-
+         // TODO: Remove userIpAddr, the controller does all the logging and does not know the IP address of the user
         /* Generate the log message and log it. */
         getLogger().warn(generateLogMessage(status, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId));
     }
