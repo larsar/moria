@@ -6,22 +6,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The serializable index. Used for offline generation of a new index.
+ * A serializable index implementation, used for offline generation of a new
+ * index.
  */
 public class SerializableIndex
 implements Serializable, DirectoryManagerIndex {
 
     /**
-     * Internal list of associaitons. Protected, for the benefit of
-     * <code>WriteableSerializableIndex</code>.
+     * Internal list of associations; that is, the mapping between logical ID
+     * realms (following the 'at' character) and search base references.
      */
-    protected HashMap associations = new HashMap();
-    
-    protected HashMap exceptions = new HashMap();
+    private HashMap associations = new HashMap();
+
+    /**
+     * Internal list of exceptions to the associations; that is, explicitly
+     * indexed logical IDs to full external references.
+     */
+    private HashMap exceptions = new HashMap();
 
 
     /**
+     * Checks whether two index instances are equal.
+     * @return <code>true</code> if two <code>SerializableIndex</code>
+     *         objects are equal, otherwise <code>false</code>. To instances
+     *         are equal if and only if their lists of associations and
+     *         exceptions are equal. These structures are compared using the
+     *         <code>AbstractMap.equals(Object)</code> method.
      * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.util.AbstractMap#equals(java.lang.Object)
      */
     public boolean equals(Object obj) {
 
@@ -33,7 +45,7 @@ implements Serializable, DirectoryManagerIndex {
         // Verify associations.
         if (!other.associations.equals(associations))
             return false;
-        
+
         // Verify exceptions.
         if (!other.exceptions.equals(exceptions))
             return false;
@@ -44,14 +56,20 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
-     * Look up an element from the index.
+     * Look up an element reference from the index based on its logical ID
+     * (typically username). <br>
+     * <br>
+     * Note that looking up in the association list requires the logical ID to
+     * be on the form <code>identificator-at-realm</code>, similar to an
+     * email address. This is <em>not</em> a requirement for looking up
+     * references in the exception list, and therefore the 'at' character is not
+     * required in the logical ID.
      * @param id
-     *            The identificator (on the form
-     *            <code>identificator@realm</code>) to lookup.
+     *            The logical identificator to look up.
      * @return A list of one or more references matching the given
      *         identificator, or <code>null</code> if no such reference was
      *         found.
-     * @see no.feide.moria.directory.index.DirectoryManagerIndex#lookup(java.lang.String)
+     * @see DirectoryManagerIndex#lookup(String)
      */
     public List lookup(final String id) {
 
@@ -59,13 +77,14 @@ implements Serializable, DirectoryManagerIndex {
         if (id == null)
             return null;
 
-        // Do we have an explicit match? That is, an exception from the association rule?
+        // Do we have an explicit match? That is, an exception from the
+        // association rule?
         if (exceptions.containsKey(id)) {
             LinkedList list = new LinkedList();
-            list.add((String)exceptions.get(id));
-            return (List)list;
+            list.add((String) exceptions.get(id));
+            return (List) list;
         }
-        
+
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
         if (i < 0)
@@ -74,19 +93,26 @@ implements Serializable, DirectoryManagerIndex {
         return (List) associations.get(realm);
 
     }
-    
-    
+
+
     /**
-     * Add a new realm-to-base association to the index. Should only be used to
-     * build a new index, not to update an existing index.
+     * Add a new realm-to-base association to the index. Any modification of the
+     * index will result in any existing association with the same realm to be
+     * appended with the new realm. <br>
+     * <br>
+     * Note that this method does <em>not</em> check for duplicate
+     * associations (associations between one realm and two identical bases).
      * @param realm
      *            The realm (typically user realm) related to this base. Cannot
      *            be <code>null</code>.
      * @param base
      *            The association. In practical use this will be an LDAP search
-     *            base on the form
+     *            base similar to
      *            <code>ldap://some.ldap.server:636/dc=search,dc=base</code>.
      *            Cannot be <code>null</code>.
+     * @throws IllegalArgumentException
+     *             If either <code>realm</code> or <code>base</code> is
+     *             <code>null</code>.
      */
     public void addAssociation(final String realm, final String base) {
 
@@ -117,16 +143,20 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
-     * Add a new search exception to this index. Should only be used to build a
-     * new index, not to update an existing index.
+     * Add a new search exception (exception to the basic rule of realm-to-base
+     * associations) to this index. Any modifications to an already existing
+     * exception will result in the old references being replaced.
      * @param id
      *            The identificator for this exception, typically a user ID.
      *            Cannot be <code>null</code>.
      * @param reference
-     *            The reference. In practical use this will be an LDAP search
-     *            base on the form
-     *            <code>ldap://some.ldap.server:636/dc=search,dc=base</code>.
+     *            The reference. In practical use this will be an LDAP element
+     *            reference similar to
+     *            <code>ldap://some.ldap.server:636/uid=id,dc=search,dc=base</code>.
      *            Cannot be <code>null</code>.
+     * @throws IllegalArgumentException
+     *             If either <code>id</code> or <code>reference</code> is
+     *             <code>null</code>.
      */
     public void addException(final String id, final String reference) {
 
@@ -139,17 +169,18 @@ implements Serializable, DirectoryManagerIndex {
         exceptions.put(id, reference);
 
     }
-    
-    
+
+
     /**
-     * Gives a string representation of the object.
-     * @return The object represented as a <code>String</code>; includes associations and exceptions.
+     * Gives a string representation of the object, for visual debugging.
+     * @return The object represented as a <code>String</code>; includes
+     *         separate lists of associations and exceptions.
      */
     public String toString() {
-        
+
         String s = "\tAssociations: " + associations.toString().replaceAll("], ", "\n\t               ");
         return s = s + "\tExceptions: " + exceptions.toString().replaceAll(", ", "\n\t             ");
-        
+
     }
 
 }
