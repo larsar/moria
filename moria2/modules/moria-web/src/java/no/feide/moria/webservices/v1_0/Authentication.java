@@ -242,6 +242,6 @@ public final class Authentication implements AuthenticationIF {
                 messageLogger.logInfo("Attribute key not String. Entry not added to Attribute[]", activeTicketId);
             }
         }
-        return (Attribute[]) attributeList.toArray();
+        return (Attribute[]) attributeList.toArray(new Attribute[] {});
     }
 }
