@@ -34,6 +34,8 @@ import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
 import no.feide.moria.log.MessageLogger;
 import no.feide.moria.directory.DirectoryManager;
+import no.feide.moria.directory.Credentials;
+import no.feide.moria.directory.backend.BackendException;
 
 import javax.servlet.ServletContext;
 import java.util.HashMap;
@@ -132,16 +134,16 @@ public class MoriaController {
             directoryManager = new DirectoryManager();
 
             /* Configuration manager */
-             try {
-                 configManager = new ConfigurationManager();
-             } catch (ConfigurationManagerException e) {
-                 //TODO: Handle exeption properly, should probably throw new
-                 // IllegalInputException
-                 System.out.println("ConfigurationManagerException caught.");
-                 e.printStackTrace();
-             }
+            try {
+                configManager = new ConfigurationManager();
+            } catch (ConfigurationManagerException e) {
+                //TODO: Handle exeption properly, should probably throw new
+                // IllegalInputException
+                System.out.println("ConfigurationManagerException caught.");
+                e.printStackTrace();
+            }
 
-         }
+        }
     }
 
     /**
@@ -195,6 +197,11 @@ public class MoriaController {
                                        final String password)
             throws UnknownTicketException, InoperableStateException, IllegalInputException {
         // TODO: Implement
+        try {
+            directoryManager.authenticate(new Credentials("foo", "bar"), new String[]{"attr1"});
+        } catch (BackendException e) {
+            //TODO: Implement
+        }
         return false;
     }
 
@@ -397,9 +404,18 @@ public class MoriaController {
      * @param sc the servletContext from the caller
      */
     public static void initController(ServletContext sc) {
+
+        /* Abort if called multiple times */
+        synchronized (isInitialized)
+        {
+            if (isInitialized.booleanValue()) {
+                return;
+            }
+        }
+
+        /* Store servlet context for web module configuration. */
         servletContext = sc;
         init();
-        // TODO: Finish implementation, the init() method will change
     }
 
     /**
@@ -520,11 +536,11 @@ public class MoriaController {
      * am: <code>true</code> if the <code>AuthorizationManager.setConfig</conde> method has been called, else <code>false</code>
      * moria: <code>true</code> all the above are true (the controller is ready to use)
      *
+     * @return
      * @see MoriaController#initController(javax.servlet.ServletContext)
      * @see DirectoryManager#setConfig(java.util.Properties)
      * @see MoriaStore#setConfig(java.util.Properties)
      * @see AuthorizationManager#setConfig(java.util.Properties)
-     * @return
      */
     public final static HashMap getStatus() {
         HashMap totalStatus = new HashMap();
