@@ -152,7 +152,8 @@ public class DirectoryManager {
             throw new DirectoryManagerConfigurationException("Index not initialized but file " + configuration.getIndexFilename() + " still marked as outdated");
 
         // Update existing index.
-        index = newIndex;
+        if (newIndex != null)
+            index = newIndex;
 
     }
 
