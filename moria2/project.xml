@@ -30,16 +30,16 @@
   <url>http://moria.sourceforge.net/</url>
 
   <issueTrackingUrl>http://sourceforge.net/tracker/?group_id=78969</issueTrackingUrl>
-  
+
   <siteAddress>login.sourceforge.net</siteAddress>
-  
+
   <siteDirectory>/home/groups/m/mo/moria/htdocs</siteDirectory>
-  
+
   <repository>
     <connection>scm:cvs:ext:@cvs.uninett.no:/cvs:feide-w3ls/sandbox/moria-ng</connection>
     <url>http://cvs.sourceforge.net/viewcvs.py/moria/moria/</url>
   </repository>
-  
+
   <mailingLists>
     <mailingList>
       <name>moria-devel</name>
@@ -55,7 +55,7 @@
       <archive>http://sourceforge.net/mailarchive/forum.php?forum_id=32939</archive>
     </mailingList>
   </mailingLists>
-    
+
   <developers>
     <developer>
       <name>Bjørn Ola Smievoll</name>
@@ -69,7 +69,7 @@
       <name>Cato Olsen</name>
       <id>cato</id>
       <email>cato.olsen@uninett.no</email>
-      <organization>Uninett A/S</organization>
+      <organization>UNINETT AS</organization>
       <role>Java Developer</role>
     </developer>
 
@@ -77,7 +77,7 @@
       <name>Lars Preben S. Arnesen</name>
       <id>larsar</id>
       <email>lars.preben.arnesen@conduct.no</email>
-      <organization>Conduct A/S</organization>
+      <organization>Conduct AS</organization>
       <role>Java Developer</role>
     </developer>
   </developers>
@@ -85,12 +85,12 @@
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>src/test/java</unitTestSourceDirectory>
-    
+
     <unitTest>
       <includes>
         <include>**/*Test.java</include>
       </includes>
     </unitTest>
-    
+
   </build>
 </project>
