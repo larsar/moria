@@ -6,8 +6,7 @@
 			session="false"
 			contentType="text/html; charset=ISO-8859-1"
 			pageEncoding="ISO-8859-1"
-			import="java.util.ResourceBundle, java.util.Properties, no.feide.moria.servlet.RequestUtil,
-			java.util.TreeMap, java.util.Iterator" %>
+			import="java.util.ResourceBundle, java.util.Properties, no.feide.moria.servlet.RequestUtil" %>
 
 <%
 Properties pconfig;
@@ -40,4 +39,14 @@ final ResourceBundle bundle = RequestUtil.getBundle(
 <%=bundle.getString("welcome")%>
 </h2>
 
+<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%">
+   <tr><td style="text-align:centre"><i><p><%=bundle.getString("info_legal1")%></p>
+   <p><%=bundle.getString("info_legal2")%></p>
+   <p><%=bundle.getString("info_legal3")%></p></i></td>
+   </tr>
+   </table>
+<p>
 <a href="<%=pconfig.get(RequestUtil.PROP_INFORMATION_URL_PREFIX)%>"><%=bundle.getString("login")%></a>
+</p>
+</body>
+</html>
