@@ -82,7 +82,7 @@ public class LogoutServlet extends MoriaServlet {
         /* Find and invalidate session */
         try {
             SessionStore sessionStore = SessionStore.getInstance();
-            Session session = sessionStore.getSession(existingSessionID);
+            Session session = sessionStore.getSessionSSO(existingSessionID);
             stats.incStatsCounter(session.getWebService().getId(), "logout");
             stats.decStatsCounter(session.getWebService().getId(), "activeSessions");
             sessionStore.deleteSession(session);

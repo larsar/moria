@@ -356,7 +356,7 @@ public class LoginServlet extends MoriaServlet {
         String existingSessionID = (String) httpSession.getAttribute("moriaID");
 
         try {
-            existingSession = sessionStore.getSession(existingSessionID);
+            existingSession = sessionStore.getSessionSSO(existingSessionID);
         }
 
         catch (NoSuchSessionException e) {
@@ -367,7 +367,7 @@ public class LoginServlet extends MoriaServlet {
         }
 
         try {
-            Session session = sessionStore.getSession(id);
+            Session session = sessionStore.getSessionLogin(id);
 
             httpSession.setAttribute("moriaID", session.getID());
 
@@ -444,7 +444,7 @@ public class LoginServlet extends MoriaServlet {
 
         /* Get session */
         try {
-            session = sessionStore.getSession(id);
+            session = sessionStore.getSessionLogin(id);
         }
         
         catch (NoSuchSessionException e) {
@@ -488,7 +488,7 @@ public class LoginServlet extends MoriaServlet {
                 /* If the user has exceeded the maximum login
                 attempts, the session is now gone. */
                 try {
-                    session = sessionStore.getSession(id);
+                    session = sessionStore.getSessionLogin(id);
                 }
                 catch (NoSuchSessionException e) {
                     return genLoginTemplate(request, response, context, null, MAXLOGIN);
