@@ -1,0 +1,241 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article>
+<artheader>
+  <title>The FEIDE C Client API</title>
+  <author>
+    <firstname>Øyvind</firstname>
+    <surname>Grønnesby</surname>
+  </author>
+</artheader>
+<section><title>Installation</title>
+  <para>
+    Unpack the downloaded .tar.gz file and enter the libfeide/src directory.
+    Here you will find the source code for all the components needed for the
+    library except for SSL, which needs to be dynamically linked.  Before
+    compiling you might want to edit the Makefile in this directory to fit
+    the machine you are running (currently it compiles with -DLINUX and
+    -DWITHOPENSSL, which perhaps should be changed).
+  </para>
+  <para>
+    Running
+    <command>make <filename class="archive">libfeide.a</filename></command>
+    will create the library you need for linking FEIDE functionality into
+    your applications.  You might want to copy it into
+    <filename class="directory">/usr/local/lib</filename> or a similar
+    directory.
+  </para>
+</section>
+<section><title>Data structures</title>
+  <para>
+    The library defines three structures, two of them are connected to
+    the <function>get_attributes</function> function.
+  </para>
+  <section><title>f_config</title>
+    <programlisting>
+typedef struct f_config {
+    char *userid;
+    char *passwd;
+    char *url;
+    char *error_str;
+    int   sso;
+} f_config;
+    </programlisting>
+    <para>
+      This structure contains "session" information for the library.  It is
+      used to set HTTP Basic Authentication information, the target URL for
+      authentication, whether to enable Single Sign-On (SSO) and to fetch
+      the error string from the lower gSOAP library.
+    </para>
+  </section>
+  <section><title>f_attr and f_attr_array</title>
+    <programlisting>
+typedef struct f_attr {
+    char *name;
+    char **values;
+    int size;
+} f_attr;
+    </programlisting>
+
+    <programlisting>
+typedef struct f_attr_array {
+    f_attr *attributes;
+    int size;
+} f_attr_array;
+    </programlisting>
+    <para>
+      These structures are interconnected and both only used with
+      <function>get_attributes</function>.
+      <userinput>f_attr_array</userinput> is a container structure for a
+      "dynamic" array of <userinput>f_attr</userinput> objects.
+    </para>
+  </section>
+</section>
+<section><title>The API</title>
+  <section><title>f_init</title>
+    <section><title>Synopsis</title>
+      <funcsynopsis>
+      <funcprototype>
+        <funcsynopsisinfo>#inclue "feide.h"</funcsynopsisinfo>
+        <funcdef>f_config *<function>f_init</function></funcdef>
+        <paramdef>char *<parameter>url</parameter></paramdef>
+        <paramdef>char *<parameter>userid</parameter></paramdef>
+        <paramdef>char *<parameter>passwd</parameter></paramdef>
+        <paramdef>int <parameter>sso</parameter></paramdef>
+      </funcprototype>
+      </funcsynopsis>
+    </section>
+    <section><title>Description</title>
+      <para>
+        <function>f_init</function> fills the f_config structure with its
+        needed memeber variables.
+        <parameter>url</parameter> is the URL for the Moria authentication
+        service.
+        <parameter>userid</parameter> is the username for the HTTP Basic
+        Authentication (if any) on the server hosting the Moria service.
+        <parameter>passwd</parameter> is the password for the same
+        authentication mechanism.
+        <parameter>sso</parameter> is a "boolean" to say whether the client
+        library should attempt to use Single Sign-On with the server.
+      </para>
+    </section>
+    <section><title>Return value</title>
+      <para>
+        Returns a pointer to a <userinput>f_config</userinput> structure
+	that is set with the arguments given to the function.
+        If there is no memory available to allocate for the structure it
+        will return <returnvalue>NULL</returnvalue>.
+      </para>
+    </section>
+  </section>
+
+  <section><title>f_request_session</title>
+    <section><title>Synopsis</title>
+      <funcsynopsis>
+      <funcprototype>
+        <funcsynopsisinfo>#include "feide.h"</funcsynopsisinfo>
+        <funcdef>int <function>f_request_session</function></funcdef>
+        <paramdef>f_config *<parameter>config</parameter></paramdef>
+        <paramdef>char *<parameter>attributes</parameter>[]</paramdef>
+        <paramdef>char *<parameter>uprefix</parameter></paramdef>
+        <paramdef>char *<parameter>upostfix</parameter></paramdef>
+        <paramdef>char **<parameter>url</parameter></paramdef>
+      </funcprototype>
+      </funcsynopsis>
+    </section>
+    <section><title>Description</title>
+      <para>
+        When a user requests a resource with access limited by Moria, this
+	will request Moria for a URL that it can redirect the user to for
+	authentication.
+	<parameter>config</parameter> is a pointer to a	structure initialised
+	with <function>f_init</function>.
+	<parameter>attributes</parameter> is a NULL-terminated array of
+	character strings that contains the different attributes the
+	client would like to receive about the user after he is
+	authenticated.
+	<parameter>uprefix</parameter> and <parameter>upostfix</parameter>
+	together with the session key from Moria makes the URL the user will
+	be redirected to by Moria after authentication.
+	<parameter>url</parameter> is the pointer to a character pointer that
+	will point to the URL with which to redirect after successful
+	execution.
+      </para>
+    </section>
+    <section><title>Return value</title>
+      <para>
+        <returnvalue>F_SESSION_OK</returnvalue> if everything went well, and
+        <parameter>url</parameter> pointer was filled with the URL.
+        <returnvalue>F_SESSION_DENIED</returnvalue> signals that we were not
+        accepted to the server because of failed HTTP Basic Authentication.
+        <returnvalue>F_SESSION_CERROR</returnvalue> signals that there was some
+        sort of client-side error.
+        <returnvalue>F_SESSION_SERROR</returnvalue> tells us that the server
+        signalled some sort of error.
+        In all error scenarios the <userinput>error_str</userinput> of the
+        <parameter>config</parameter> structure will be set.
+      </para>
+    </section>
+  </section>
+
+  <section><title>f_get_attributes</title>
+    <section><title>Synopsis</title>
+      <funcsynopsis>
+      <funcprototype>
+        <funcsynopsisinfo>#include "feide.h"</funcsynopsisinfo>
+        <funcdef>int <function>f_get_attributes</function></funcdef>
+        <paramdef>f_config *<parameter>config</parameter></paramdef>
+        <paramdef>char *<parameter>id</parameter></paramdef>
+        <paramdef>f_attr_array **<parameter>attributes</parameter></paramdef>
+      </funcprototype>
+      </funcsynopsis>
+    </section>
+    <section><title>Description</title>
+      <para>
+        When the use returns after authentication, he will carry a ticket
+	from Moria which can be used with this function to get the attributes
+	requested with <function>f_request_session</function>.
+	<parameter>config</parameter> is a pointer to the structure
+	initialised with <function>f_init</function>.
+	<parameter>id</parameter> a string containing the ticket the user
+	has from Moria.
+	<parameter>attributes</parameter> will be a container to the data
+	if running the function was successful.
+      </para>
+    </section>
+    <section><title>Return value</title>
+      <para>
+        It will return <returnvalue>F_ATTR_OK</returnvalue> if everything
+	went as it should.
+	<returnvalue>F_ATTR_DENIED</returnvalue> is when we were denied the
+	information we wanted.  <returnvalue>F_ATTR_ERROR</returnvalue>
+	when an error occurred.
+	In all cases <userinput>error_str</userinput> can be viewed just
+	as with <function>f_request_session</function>.
+     </para>
+    </section>
+  </section>
+
+  <section><title>f_free_attributes</title>
+    <section><title>Synopsis</title>
+      <funcsynopsis>
+      <funcprototype>
+        <funcsynopsisinfo>#include "feide.h"</funcsynopsisinfo>
+        <funcdef>void <function>f_free_attributes</function></funcdef>
+        <paramdef>f_attr_array *<parameter>a</parameter></paramdef>
+      </funcprototype>
+      </funcsynopsis>
+    </section>
+    <section><title>Description</title>
+      <para>
+        Frees the memory allocated to fill the f_attr_array pointers from
+	<function>f_get_attributes</function>.
+      </para>
+    </section>
+    <section><title>Return value</title>
+      <para>None.</para>
+    </section>
+  </section>
+
+  <section><title>f_end</title>
+    <section><title>Synopsis</title>
+      <funcsynopsis>
+      <funcprototype>
+        <funcsynopsisinfo>#include "feide.h"</funcsynopsisinfo>
+	<funcdef>void <function>f_end</function></funcdef>
+	<paramdef>f_config *<parameter>config</parameter></paramdef>
+      </funcprototype>
+      </funcsynopsis>
+    </section>
+    <section><title>Description</title>
+      <para>
+        Frees the memory allocated by <function>f_init</function>.
+      </para>
+    </section>
+    <section><title>Return value</title>
+      <para>None.</para>
+    </section>
+  </section>
+</section>
+</article>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="Authentication"
+             targetNamespace="https://login.feide.no/moria/Authentication"
+             xmlns:tns="https://login.feide.no/moria/Authentication"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+  <types>
+
+    <schema targetNamespace="https://login.feide.no/moria/Authentication"
+            xmlns:tns="https://login.feide.no/moria/Authentication"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+            xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/"
+            xmlns="http://www.w3.org/2001/XMLSchema">
+
+      <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+
+      <complexType name="ArrayOfAttribute">
+        <complexContent>
+          <restriction base="soap-enc:Array">
+            <attribute ref="soap-enc:arrayType" wsdl:arrayType="tns:Attribute[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+
+      <complexType name="Attribute">
+        <sequence>
+          <element name="name" type="string"/>
+          <element name="values" type="tns:ArrayOfstring"/>
+        </sequence>
+      </complexType>
+
+      <complexType name="ArrayOfstring">
+        <complexContent>
+          <restriction base="soap-enc:Array">
+            <attribute ref="soap-enc:arrayType" wsdl:arrayType="string[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+
+    </schema>
+
+  </types>
+
+  <message name="getAttributesIn">
+    <part name="sessionId" type="xsd:string"/>
+  </message>
+
+  <message name="getAttributesOut">
+    <part name="result" type="tns:ArrayOfAttribute"/>
+  </message>
+
+  <message name="requestSessionIn">
+    <part name="attributes" type="tns:ArrayOfstring"/>
+    <part name="prefix" type="xsd:string"/>
+    <part name="postfix" type="xsd:string"/>
+    <part name="denySSO" type="xsd:boolean"/>
+  </message>
+
+  <message name="requestSessionOut">
+    <part name="result" type="xsd:string"/>
+  </message>
+
+  <portType name="AuthenticationIF">
+
+    <operation name="getAttributes" parameterOrder="sessionId">
+      <input message="tns:getAttributesIn"/>
+      <output message="tns:getAttributesOut"/>
+    </operation>
+
+    <operation name="requestSession" parameterOrder="attributes prefix postfix denySSO">
+      <input message="tns:requestSessionIn"/>
+      <output message="tns:requestSessionOut"/>
+    </operation>
+
+  </portType>
+
+  <binding name="AuthenticationIFBinding" type="tns:AuthenticationIF">
+
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/>
+
+    <operation name="getAttributes">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </output>
+      <soap:operation soapAction=""/>
+    </operation>
+
+    <operation name="requestSession">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/Authentication"/>
+      </output>
+      <soap:operation soapAction=""/>
+    </operation>
+
+  </binding>
+
+  <service name="Authentication">
+    <port name="AuthenticationIFPort" binding="tns:AuthenticationIFBinding">
+      <soap:address location="https://login.feide.no/moria/Authentication?WSDL"/>
+    </port>
+  </service>
+
+</definitions>
+
+
