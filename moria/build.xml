@@ -99,6 +99,7 @@
           depends="moria:war">
     <delete file="dist/tmp-feide-moria.war"/>
     <exec executable="${jaxrpc_home}/bin/wsdeploy.sh">
+      <arg line="-keep"/>
       <arg line="-o"/>
       <arg line="dist/feide-moria.war"/>
       <arg line="dist/feide-moria-ws.war"/>
