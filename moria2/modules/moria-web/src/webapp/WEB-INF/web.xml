@@ -8,8 +8,8 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
    version="2.4">
 
-  <display-name>Moria</display-name>
   <description>Moria federated web authentication service</description>
+  <display-name>Moria</display-name>
 
   <context-param>
     <param-name>jsp.location</param-name>
@@ -32,8 +32,8 @@
   </servlet>
 
   <servlet>
-    <servlet-name>AxisServlet</servlet-name>
     <display-name>Moria Axis Servlet</display-name>
+    <servlet-name>AxisServlet</servlet-name>
     <servlet-class>no.feide.moria.servlet.SimpleAxisServlet</servlet-class>
   </servlet>
 
