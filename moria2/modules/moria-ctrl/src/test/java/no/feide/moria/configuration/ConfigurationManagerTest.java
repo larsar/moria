@@ -23,7 +23,6 @@ package no.feide.moria.configuration;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
-import no.feide.moria.configuration.BaseConfigException;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
