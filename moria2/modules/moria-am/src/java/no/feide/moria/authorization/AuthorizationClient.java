@@ -361,6 +361,7 @@ final class AuthorizationClient {
             result = 37 * result + language.hashCode();
             result = 37 * result + home.hashCode();
             result = 37 * result + affiliation.hashCode();
+            result = 37 * result + orgsAllowed.hashCode();
             result = 37 * result + operations.hashCode();
             result = 37 * result + subsystems.hashCode();
             result = 37 * result + attributes.hashCode();
