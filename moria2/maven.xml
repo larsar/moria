@@ -3,37 +3,85 @@
 <!-- $Id$ -->
 
 <project
-  xmlns:j="jelly:core"
-  xmlns:m="jelly:maven"
-  xmlns:u="jelly:util"
-  default="project:install">
+   xmlns:j="jelly:core"
+   xmlns:m="jelly:maven"
+   xmlns:u="jelly:util"
+   default="project:install">
 
   <goal
-    name="project:install"
-    description="Builds and installs all sub-projects">
+     name="project:install"
+     description="Builds and installs all sub-projects in local repository">
 
     <m:reactor
-      basedir="${basedir}"
-      postProcessing="false"
-      includes="**/${pattern}/**/project.xml"
-      excludes="project.xml"
-      goals="project:install"
-      banner="Building"
-      ignoreFailures="false"/>
+       basedir="${basedir}"
+       postProcessing="false"
+       includes="**/${pattern}/**/project.xml"
+       excludes="project.xml"
+       goals="project:install"
+       banner="Building"
+       ignoreFailures="false"/>
   </goal>
 
   <goal
-    name="project:clean"
-    description="Cleans all sub-projects">
+     name="project:deploy"
+     description="Builds and deploys all sub-projects to remote repository">
 
     <m:reactor
-      basedir="${basedir}"
-      postProcessing="false"
-      includes="**/${pattern}/**/project.xml"
-      excludes="project.xml"
-      goals="project:clean"
-      banner="Building"
-      ignoreFailures="false"/>
+       basedir="${basedir}"
+       postProcessing="false"
+       includes="**/${pattern}/**/project.xml"
+       excludes="project.xml"
+       goals="project:deploy"
+       banner="Building"
+       ignoreFailures="false"/>
   </goal>
-    
+
+  <goal
+     name="project:clean"
+     description="Cleans all sub-projects">
+
+    <m:reactor
+       basedir="${basedir}"
+       postProcessing="false"
+       includes="**/${pattern}/**/project.xml"
+       excludes="project.xml"
+       goals="clean"
+       banner="Building"
+       ignoreFailures="false"/>
+
+    <attainGoal name="clean"/>
+  </goal>
+
+  <goal
+     name="project:site-generate"
+     description="Deploy the complete site, including all modules">
+
+    <m:reactor
+       basedir="${basedir}"
+       postProcessing="false"
+       includes="**/${pattern}/**/project.xml"
+       excludes="project.xml"
+       goals="site:generate"
+       banner="Deploying site"
+       ignoreFailures="false"/>
+
+    <attainGoal name="site:generate"/>
+  </goal>
+
+  <goal
+     name="project:site-deploy"
+     description="Deploy the complete site, including all modules">
+
+    <m:reactor
+       basedir="${basedir}"
+       postProcessing="false"
+       includes="**/${pattern}/**/project.xml"
+       excludes="project.xml"
+       goals="site:deploy"
+       banner="Deploying site"
+       ignoreFailures="false"/>
+
+    <attainGoal name="site:deploy"/>
+  </goal>
+
 </project>
