@@ -1,5 +1,6 @@
 package no.feide.moria.directory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,18 +25,33 @@ import no.feide.moria.log.MessageLogger;
 public class DirectoryManager {
 
     /** Internal representation of the index. */
-    private DirectoryManagerIndex index;
+    private DirectoryManagerIndex index = null;
 
-    private Timer indexUpdater;
+    /** Periodically calls updateIndex(). */
+    private Timer indexUpdater = null;
+    
+    /** Timestamp of last index file read from file. */
+    private long indexTimeStamp = 0;
 
     /** Internal representation of the backend factory. */
-    private DirectoryManagerBackendFactory backendFactory;
+    private DirectoryManagerBackendFactory backendFactory = null;
 
     /** The message logger. */
     private final MessageLogger log = new MessageLogger(DirectoryManager.class);
 
     /** The current (valid) Directory Manager configuration. */
     private DirectoryManagerConfiguration currentConfiguration = null;
+    
+    
+    /**
+     * Destructor. Cancels the index updater task, if it has been initialized.
+     */
+    public void destroy() {
+       
+        if (indexUpdater != null)
+            indexUpdater.cancel();
+        
+    }
 
 
     /**
@@ -115,9 +131,24 @@ public class DirectoryManager {
     protected synchronized void updateIndex() {
 
         try {
+            
+            // Check if a new index file exists, with a newer timestamp than the one previously read.
+            File indexFile = new File(currentConfiguration.getIndexFilename());
+            if (!indexFile.isFile())
+                if (index == null)
+                    throw new DirectoryManagerConfigurationException("Index file "+currentConfiguration.getIndexFilename()+" does not exist");
+                else
+                    log.logCritical("Index file "+currentConfiguration.getIndexFilename()+" does not exist");
+                    
+            if (indexTimeStamp >= indexFile.lastModified())
+            	return;  // No update necessary.
+            indexTimeStamp = indexFile.lastModified();
+            
+            // Read the new index from file.
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(currentConfiguration.getIndexFilename()));
             DirectoryManagerIndex newIndex = (DirectoryManagerIndex) in.readObject();
             index = newIndex;
+            
         } catch (IOException e) {
             if (index == null)
                 throw new DirectoryManagerConfigurationException("Unable to read index from file " + currentConfiguration.getIndexFilename(), e);
