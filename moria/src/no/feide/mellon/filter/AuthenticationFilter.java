@@ -1,4 +1,4 @@
-package no.feide.mellon.servlet;
+package no.feide.mellon.filter;
 
 import java.io.*;
 import javax.servlet.*;
