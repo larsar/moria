@@ -8,7 +8,7 @@ import java.util.List;
  * The serializable index. Used for offline generation of a new index.
  */
 public class SerializableIndex
-implements Serializable {
+implements Serializable, DirectoryManagerIndex {
 
     /**
      * Internal list of associaitons. Protected, for the benefit of
@@ -22,8 +22,8 @@ implements Serializable {
      * @param realm
      *            The realm associated with this base. cannot be
      *            <code>null</code>.
-     * @return The bases associated with this realm, or <code>null</code> if no
-     *         such association was found.
+     * @return The bases associated with this realm, or <code>null</code> if
+     *         no such association was found.
      */
     public List getAssociation(final String realm) {
 
@@ -31,7 +31,7 @@ implements Serializable {
         if (realm == null)
             throw new IllegalArgumentException("Realm cannot be NULL");
 
-        return (List)associations.get(realm);
+        return (List) associations.get(realm);
 
     }
 
@@ -63,6 +63,29 @@ implements Serializable {
             return false;
 
         return true;
+
+    }
+
+
+    /**
+     * Look up an element from the index.
+     * @param id
+     *            The identificator (on the form
+     *            <code>identificator@realm</code>) to lookup.
+     * @return A list of one or more references matching the given
+     *         identificator, or <code>null</code> if no such reference was
+     *         found.
+     * @see no.feide.moria.directory.index.DirectoryManagerIndex#lookup(java.lang.String)
+     */
+    public List lookup(final String id) {
+
+        // Sanity check.
+        if (id == null)
+            return null;
+
+        // Extract the realm.
+        String realm = id.substring(id.lastIndexOf('@'));
+        return (List) associations.get(realm);
 
     }
 
