@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
 
 <ClientAuthorizationConfig>
-    
+
     <!-- TODO: Add list of cachable attributes -->
 
     <Client name="test">
@@ -21,6 +21,7 @@
         <Operations>
             <Operation name="LocalAuth"/>
             <Operation name="InteractiveAuth"/>
+            <Operation name="verifyUserExistence"/>
         </Operations>
         <Subsystems>
             <Subsystem name="sub1"/>
