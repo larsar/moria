@@ -43,6 +43,9 @@ extends TimerTask {
      *            directly to update its index. Cannot be <code>null</code>.
      * @param indexFilename
      *            The index filename. Cannot be <code>null</code>.
+     * @throws NullPointerException
+     *             If <code>dm</code> or <code>indexFilename</code> is
+     *             <code>null</code>.
      */
     public IndexUpdater(DirectoryManager dm, final String indexFilename) {
 
@@ -50,9 +53,9 @@ extends TimerTask {
 
         // Sanity checks.
         if (dm == null)
-            throw new IllegalArgumentException("Directory Manager cannot be NULL");
+            throw new NullPointerException("Directory Manager cannot be NULL");
         if (indexFilename == null)
-            throw new IllegalArgumentException("Index file name cannot be NULL");
+            throw new NullPointerException("Index file name cannot be NULL");
 
         // Set some local variables.
         owner = dm;
@@ -89,8 +92,6 @@ extends TimerTask {
      *         successfully read an index file, and the file has not been
      *         updated since (based on the file's timestamp on disk, as per the
      *         <code>File.lastModified()</code> method).
-     * @throws IllegalArgumentException
-     *             If <code>filename</code> is <code>null</code>.
      * @throws DirectoryManagerConfigurationException
      *             If the index file does not exist, or if unable to read from
      *             the file, or if unable to instantiate the index as a
@@ -99,10 +100,6 @@ extends TimerTask {
      * @see DirectoryManager#setConfig(Properties)
      */
     protected DirectoryManagerIndex readIndex() {
-
-        // Sanity check.
-        if (filename == null)
-            throw new IllegalArgumentException("Index filename cannot be NULL");
 
         // Check if the index file exists.
         File indexFile = new File(filename);
