@@ -55,6 +55,7 @@
       </fileset>
       <fileset dir="lib/">
 	<include name="**/*.jar"/>
+        <exclude name="servlet.jar"/>
       </fileset>
     </copy>  
   </target>
