@@ -53,7 +53,7 @@ public class BackendIndex {
         
         // Initialize the hash map, if we haven't already.
         synchronized (initialized) {
-            if (initialized.booleanValue()) {
+            if (!initialized.booleanValue()) {
                 // Create hashtable of domain names to LDAP URLs.
                 String domain, url;
                 for (int i=1; ; i++) {
@@ -82,6 +82,8 @@ public class BackendIndex {
         } 
         domain = domain.substring(domain.indexOf('@')+1);
         String url = (String)urlMap.get(domain);
+        if (url == null) {
+        }
         log.info("Matched domain "+domain+" to LDAP URL "+url);
         
         return url;        
