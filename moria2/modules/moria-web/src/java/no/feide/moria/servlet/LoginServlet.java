@@ -350,19 +350,21 @@ extends HttpServlet {
                 selectedOrg = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getCookies());
 
             // Can we get organization from service configuration?
-            if (selectedOrg == null || selectedOrg.equals(""))
+            if (selectedOrg == null || selectedOrg.equals("")) {
                 if (serviceProperties != null)
                     selectedOrg = (String) serviceProperties.get(RequestUtil.CONFIG_HOME);
+            }
 
         }
         request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, selectedOrg);
 
         // Did the user select a different language?
         request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
-        if (request.getParameter(RequestUtil.PARAM_LANG) != null)
+        if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
             response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG),
                     request.getParameter(RequestUtil.PARAM_LANG),
                     new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
+        }
 
         /* Service attributes */
         if (serviceProperties != null) {

@@ -821,9 +821,10 @@ public final class MoriaController {
 
             // Filter cached attributes; only those requested are to be
             // returned.
-            for (int i = 0; i < requestedAttributes.length; i++)
+            for (int i = 0; i < requestedAttributes.length; i++) {
                 if (cachedAttributes.containsKey(requestedAttributes[i]))
                     filteredAttributes.put(requestedAttributes[i], cachedAttributes.get(requestedAttributes[i]));
+            }
 
             // the service principal is unknown
         } catch (UnknownServicePrincipalException e) {

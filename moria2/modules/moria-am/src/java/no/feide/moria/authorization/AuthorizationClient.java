@@ -336,9 +336,10 @@ final class AuthorizationClient {
 
         // If all the requested subsystems are defined for this service, we're
         // allowing it.
-        for (int i = 0; i < requestedSubsystems.length; i++)
+        for (int i = 0; i < requestedSubsystems.length; i++) {
             if (!subsystems.contains(requestedSubsystems[i]))
                 return false; // Ouch! A requested subsystem wasn't defined!
+        }
         return true;
     }
 
@@ -494,8 +495,7 @@ final class AuthorizationClient {
      */
     HashSet getSubsystems() {
 
-        if (subsystems == null)
-            return null;
+        if (subsystems == null) { return null; }
         return new HashSet(subsystems);
     }
 

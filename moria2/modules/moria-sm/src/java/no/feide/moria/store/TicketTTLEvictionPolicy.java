@@ -85,7 +85,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     private static final String TTL_ATTRIBUTE_NAME = "timeToLive";
 
     /** Contains the different regions registered for this policy. */
-    private RegionValue regionValues[];
+    private RegionValue[] regionValues;
 
     /** The interval for the eviction threads to run. */
     private int wakeUpIntervalSeconds;

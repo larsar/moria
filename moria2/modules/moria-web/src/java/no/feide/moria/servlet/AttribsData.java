@@ -68,7 +68,7 @@ public class AttribsData implements Comparator {
     }
 
     /**
-     * Implements Comparator.equals -- not used.
+     * Implements Comparator.equals.
      *
      * @param ad Object to compare.
      * @return true if equal.
@@ -76,6 +76,15 @@ public class AttribsData implements Comparator {
     public final boolean equals(final Object ad) {
         AttribsData adata = (AttribsData) ad;
         return idx == adata.idx;
+    }
+
+    /**
+     * Generates a hashCode.
+     *
+     * @return The hashcode.
+     */
+    public final int hashCode() {
+        return idx;
     }
 
     /**

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.index;
@@ -31,7 +32,7 @@ public interface DirectoryManagerIndex {
      * @return One or more backend references , or <code>null</code> if no
      *         such reference was found.
      */
-    public IndexedReference[] getReferences(String id);
+    IndexedReference[] getReferences(String id);
 
 
     /**
@@ -41,6 +42,6 @@ public interface DirectoryManagerIndex {
      * @return The realm, or <code>null</code> if the realm could not be
      *         resolved.
      */
-    public String getRealm(String id);
+    String getRealm(String id);
 
 }

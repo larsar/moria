@@ -67,7 +67,7 @@ final class MoriaTicket implements Serializable {
      * @param userorg
      *          the userorg associated with this ticket. Can be null if unknown.
      */
-    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal, 
+    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal,
             final Long expiryTime, final MoriaStoreData data, final String userorg) {
         this(MoriaTicket.newId(), ticketType, servicePrincipal, expiryTime, data, userorg);
     }

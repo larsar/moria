@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory;
@@ -94,9 +95,9 @@ public class DirectoryManagerConfiguration {
         try {
             rootElement = (new SAXBuilder()).build(new File(configFile)).getRootElement();
         } catch (IOException e) {
-            throw new DirectoryManagerConfigurationException("Unable to read from configuration file \""+configFile+'\"', e);
+            throw new DirectoryManagerConfigurationException("Unable to read from configuration file \"" + configFile + '\"', e);
         } catch (JDOMException e) {
-            throw new DirectoryManagerConfigurationException("Unable to parse configuration file \""+configFile+'\"', e);
+            throw new DirectoryManagerConfigurationException("Unable to parse configuration file \"" + configFile + '\"', e);
         }
         parseIndexConfig(rootElement);
         backendConfiguration = parseBackendConfig(rootElement);
@@ -110,7 +111,7 @@ public class DirectoryManagerConfiguration {
      *         <code>Element.clone()</code>.
      * @see Element#clone()
      */
-    public Element getBackendElement() {
+    public final Element getBackendElement() {
 
         return (Element) backendConfiguration.clone();
 
@@ -164,7 +165,7 @@ public class DirectoryManagerConfiguration {
      * Gets the serialized index file name.
      * @return The index file name.
      */
-    public String getIndexFilename() {
+    public final String getIndexFilename() {
 
         return indexFilename;
 
@@ -175,7 +176,7 @@ public class DirectoryManagerConfiguration {
      * Gets the index update frequency.
      * @return The index update frequency, in milliseconds.
      */
-    public long getIndexUpdateFrequency() {
+    public final long getIndexUpdateFrequency() {
 
         return indexUpdateFrequency;
 
@@ -232,7 +233,7 @@ public class DirectoryManagerConfiguration {
      * Gets the backend factory class implementation.
      * @return The backend factory class.
      */
-    public Class getBackendFactoryClass() {
+    public final Class getBackendFactoryClass() {
 
         return backendFactoryClass;
 

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory;
@@ -66,7 +67,7 @@ public class Credentials {
      * Retrieves the username part of the credentials.
      * @return A newly allocated <code>String</code> containing the username.
      */
-    public String getUsername() {
+    public final String getUsername() {
 
         return new String(username);
 
@@ -77,7 +78,7 @@ public class Credentials {
      * Retrieves the password part of the credentials.
      * @return A newly allocated <code>String</code> containing the password.
      */
-    public String getPassword() {
+    public final String getPassword() {
 
         return new String(password);
 

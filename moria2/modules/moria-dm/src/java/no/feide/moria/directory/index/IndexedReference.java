@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.index;
@@ -44,7 +45,7 @@ public class IndexedReference {
      * @throws IllegalArgumentException
      *             If <code>references</code> is an an empty array.
      */
-    public IndexedReference(String[] references, boolean explicitReference) {
+    public IndexedReference(final String[] references, final boolean explicitReference) {
 
         super();
 
@@ -65,7 +66,7 @@ public class IndexedReference {
      * Gets the external references.
      * @return One or more external references.
      */
-    public String[] getReferences() {
+    public final String[] getReferences() {
 
         return (String[]) myReferences.clone();
 
@@ -78,7 +79,7 @@ public class IndexedReference {
      * @return <code>true</code> if this is a fully qualified external
      *         reference to an element, otherwise <code>false</code>.
      */
-    public boolean isExplicitlyIndexed() {
+    public final boolean isExplicitlyIndexed() {
 
         return explicit;
 

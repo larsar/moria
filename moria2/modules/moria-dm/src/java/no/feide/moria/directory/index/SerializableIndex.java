@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.index;
@@ -67,7 +68,7 @@ implements Serializable, DirectoryManagerIndex {
      * @see java.lang.Object#equals(java.lang.Object)
      * @see #toString()
      */
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
 
         // Check class.
         if (obj.getClass() != this.getClass())
@@ -153,7 +154,7 @@ implements Serializable, DirectoryManagerIndex {
      *         if no such realm could be found.
      * @see DirectoryManagerIndex#getRealm(String)
      */
-    public String getRealm(String id) {
+    public String getRealm(final String id) {
 
         // Do we have an exception matching this identifier with an explicit
         // realm?

@@ -35,8 +35,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 
-import no.feide.moria.log.MessageLogger;
-
 /**
  * This class is a toolkit for the servlets. Its main functionality is to
  * retrieve resource bundles.

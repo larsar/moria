@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2004 UNINETT FAS
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ */
 package no.feide.moria.directory.backend.tools;
 
 import java.io.IOException;
@@ -17,7 +35,19 @@ import javax.net.ssl.SSLSession;
  */
 public class StartTlsTester {
 
-    public static void main(String[] args) throws NamingException, IOException {
+    /**
+     * Main method. Reads the index file, writes the index object, and
+     * finally verifies that the generated and written contents match.
+     * @param args
+     *            <ol><li>truststore filename</li>
+     *            <li>truststore password</li>
+     *            <li>LDAP URL</li></ol>
+     * @throws NamingException
+     *             If there is an LDAP problem.
+     * @throws IOException
+     *             If unable to read from or write to truststore file.
+     */
+    public static void main(final String[] args) throws NamingException, IOException {
 
         // Show usage?
         if (args.length < 3) {
@@ -33,10 +63,10 @@ public class StartTlsTester {
 
         // Status.
         final String truststoreFilename = args[0];
-        System.out.println("Using truststore "+truststoreFilename);
+        System.out.println("Using truststore " + truststoreFilename);
         final String truststorePassword = args[1];
         final String url = args[2];
-        System.out.println("Connecting to "+url);
+        System.out.println("Connecting to " + url);
 
         // Setting global truststore properties.
         System.setProperty("javax.net.ssl.trustStore", truststoreFilename);

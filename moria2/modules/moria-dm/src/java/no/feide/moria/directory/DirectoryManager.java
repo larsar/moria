@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory;
@@ -61,7 +62,7 @@ public class DirectoryManager {
      * Destructor. Will call <code>stop()</code>.
      * @see DirectoryManager#stop()
      */
-    public void destroy() {
+    public final void destroy() {
 
         stop();
 
@@ -88,7 +89,7 @@ public class DirectoryManager {
      * @see DirectoryManagerConfiguration#DirectoryManagerConfiguration(Properties)
      * @see IndexUpdater#readIndex()
      */
-    public void setConfig(final Properties config) {
+    public final void setConfig(final Properties config) {
 
         // Update current configuration.
         try {
@@ -158,7 +159,7 @@ public class DirectoryManager {
      *             index has not been previously set.
      * @see IndexUpdater#run()
      */
-    protected synchronized void updateIndex(DirectoryManagerIndex newIndex) {
+    protected final synchronized void updateIndex(final DirectoryManagerIndex newIndex) {
 
         // Sanity check.
         if ((newIndex == null) && (index == null))
@@ -189,7 +190,7 @@ public class DirectoryManager {
      *             <code>setConfig(Properties)</code> first.
      * @see DirectoryManagerBackend#userExists(String)
      */
-    public boolean userExists(final String sessionTicket, final String username)
+    public final boolean userExists(final String sessionTicket, final String username)
     throws BackendException {
 
         // Sanity check.
@@ -253,7 +254,7 @@ public class DirectoryManager {
      * @see #setConfig(Properties)
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
-    public HashMap authenticate(final String sessionTicket, final Credentials userCredentials, final String[] attributeRequest)
+    public final HashMap authenticate(final String sessionTicket, final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException,
     IllegalStateException {
 
@@ -301,7 +302,7 @@ public class DirectoryManager {
      *         resolved.
      * @see DirectoryManagerIndex#getRealm(String)
      */
-    public String getRealm(final String username) {
+    public final String getRealm(final String username) {
 
         return index.getRealm(username);
 
@@ -314,7 +315,7 @@ public class DirectoryManager {
      * Will stop the index updater thread. Note that the Directory Manager may
      * be used after <code>stop()</code>, but this is discouraged.
      */
-    public void stop() {
+    public final void stop() {
 
         // Stop the index update timer, if it has been initialized.
         if (indexTimer != null)

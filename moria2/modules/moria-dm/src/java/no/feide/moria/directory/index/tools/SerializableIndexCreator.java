@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.index.tools;
@@ -58,7 +59,7 @@ public class SerializableIndexCreator {
      *             If unable to read the <code>SerializableIndex</code> object
      *             from file when verifying results.
      */
-    public static void main(String[] args)
+    public static void main(final String[] args)
     throws IOException, JDOMException, ClassNotFoundException {
 
         // Show usage.
@@ -96,7 +97,8 @@ public class SerializableIndexCreator {
         for (int i = 0; i < exceptions.size(); i++) {
 
             Element exception = (Element) exceptions.get(i);
-            generatedIndex.addException(exception.getAttributeValue("id"), exception.getAttributeValue("reference"), exception.getAttributeValue("realm"));
+            generatedIndex.addException(exception.getAttributeValue("id"), exception.getAttributeValue("reference"), 
+                    exception.getAttributeValue("realm"));
 
         }
 

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory;
@@ -39,7 +40,7 @@ extends RuntimeException {
      *            The exception message.
      * @see Exception#Exception(java.lang.String)
      */
-    public DirectoryManagerConfigurationException(String message) {
+    public DirectoryManagerConfigurationException(final String message) {
 
         super(message);
 
@@ -55,7 +56,7 @@ extends RuntimeException {
      *            The exception cause.
      * @see Exception#Exception(java.lang.String, java.lang.Throwable)
      */
-    public DirectoryManagerConfigurationException(String message, Throwable cause) {
+    public DirectoryManagerConfigurationException(final String message, final Throwable cause) {
 
         super(message, cause);
 
