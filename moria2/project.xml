@@ -5,45 +5,58 @@
 <project>
 
   <pomVersion>3</pomVersion>
-  <name>Moria Next Generation</name>
-  <id>moria-ng</id>
-  <groupId>moria-ng</groupId>
-  <currentVersion>0.1-SNAPSHOT</currentVersion>
+  <name>Moria Web Authentication Service</name>
+  <id>moria</id>
+  <groupId>moria</groupId>
   <organization>
-    <name>Uninett A/S</name>
+    <name>UNINETT FAS A/S</name>
     <url>http://www.feide.no/</url>
   </organization>
   <inceptionYear>2001</inceptionYear>
   <package>no.feide.moria</package>
 
-  <shortDescription>Next generation Moria implementation using
-  distributed ticket store</shortDescription>
+  <shortDescription>Moria is a federated web authentication
+  service.</shortDescription>
 
-  <!-- Gump integration -->
-  <gumpRepositoryId/>
+  <description>Moria is a federated html- and SOAP-based
+    authentication service, with multiple LDAP backend
+    datastores. Moria support both authentication and transfer of user
+    attributes. The development is being done by the The Norwegian
+    Research Network, UNINETT FAS A/S on behalf of the Ministry of
+    Research and Development.  The final product is to be used by a
+    large number of Norwegian educational institutions, but it's free
+    for anyone to use.</description>
 
-  <description/>
-  <url/>
-  <issueTrackingUrl/>
+  <url>http://moria.sourceforge.net/</url>
 
-  <siteAddress></siteAddress>
-
-  <siteDirectory/>
-  <distributionDirectory/>
-
+  <issueTrackingUrl>http://sourceforge.net/tracker/?group_id=78969</issueTrackingUrl>
+  
+  <siteAddress>login.sourceforge.net</siteAddress>
+  
+  <siteDirectory>/home/groups/m/mo/moria/htdocs</siteDirectory>
+  
   <repository>
-    <connection>
-      scm:cvs:ext:@cvs.uninett.no:/cvs:feide-w3ls/sandbox/moria-ng
-    </connection>
-    <url/>
+    <connection>scm:cvs:ext:@cvs.uninett.no:/cvs:feide-w3ls/sandbox/moria-ng</connection>
+    <url>http://cvs.sourceforge.net/viewcvs.py/moria/moria/</url>
   </repository>
+  
+  <mailingLists>
+    <mailingList>
+      <name>moria-devel</name>
+      <subscribe>http://lists.sourceforge.net/lists/listinfo/moria-devel</subscribe>
+      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/moria-devel</unsubscribe>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_id=32940</archive>
+    </mailingList>
 
-  <versions/>
-
-  <mailingLists/>
-
+    <mailingList>
+      <name>moria-cvs</name>
+      <subscribe>http://lists.sourceforge.net/lists/listinfo/moria-cvs</subscribe>
+      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/moria-cvs</unsubscribe>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_id=32939</archive>
+    </mailingList>
+  </mailingLists>
+    
   <developers>
-
     <developer>
       <name>Bjørn Ola Smievoll</name>
       <id>bos</id>
@@ -67,42 +80,17 @@
       <organization>Conduct A/S</organization>
       <role>Java Developer</role>
     </developer>
-
   </developers>
-
-  <dependencies/>
 
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>src/test/java</unitTestSourceDirectory>
-    <integrationUnitTestSourceDirectory/>
-
+    
     <unitTest>
       <includes>
         <include>**/*Test.java</include>
       </includes>
     </unitTest>
-              
-    <integrationUnitTest/>
-    <aspectSourceDirectory/>
-
-    <resources/>
+    
   </build>
-
-  <reports>
-    <report>maven-changes-plugin</report>
-    <report>maven-jdepend-plugin</report>
-    <report>maven-checkstyle-plugin</report>
-    <report>maven-pmd-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-clover-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-license-plugin</report>
-    <report>maven-linkcheck-plugin</report>
-    <report>maven-jxr-plugin</report>
-  </reports>
-
 </project>
