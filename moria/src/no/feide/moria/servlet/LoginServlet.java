@@ -292,16 +292,22 @@ public class LoginServlet extends VelocityServlet {
             context.put(key, value);
         }   
 
-        /* Get realm from cookie. */
-        Cookie[] cookies = request.getCookies();
-        context.put("preset_realm", "");
-        if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                if (cookies[i].getName().equals("realm")) {
-                    context.put("preset_realm", cookies[i].getValue());
+        /* Get realm from cookie or parameter. */
+        String realm = "";
+        realm = request.getParameter("realm");
+            
+        if (realm == null) {
+            realm = "";
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (int i = 0; i < cookies.length; i++) {
+                    if (cookies[i].getName().equals("realm")) {
+                        realm = cookies[i].getValue();
+                    }
                 }
             }
         }
+        context.put("preset_realm", realm);
 
         /* Set or reset error messages */
         if (errorType != null) {
