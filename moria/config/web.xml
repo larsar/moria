@@ -47,7 +47,7 @@
 
     <servlet-mapping>
         <servlet-name>Authentication</servlet-name>
-        <url-pattern>/Authentication</url-pattern>
+        <url-pattern>/v1_0/Authentication</url-pattern>
     </servlet-mapping>
 </web-app>
 
