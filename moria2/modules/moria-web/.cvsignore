@@ -1,0 +1,6 @@
+maven.log
+velocity.log
+.classpath
+.project
+target
+src/gen-java
