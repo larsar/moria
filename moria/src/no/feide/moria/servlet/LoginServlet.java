@@ -279,9 +279,9 @@ public class LoginServlet extends MoriaServlet {
             /* Detailed list of attributes */
 			if (request.getParameter("showAttrs") != null) {
               	Vector attrNames = new Vector();
-                HashMap attributes = session.getWebService().getAttributes();
-                for (Iterator it = attributes.keySet().iterator(); it.hasNext();) {
-                    attrNames.add(context.get("ldap_"+it.next()));
+                String[] attributes = session.getRequestedAttributes();
+                for (int i = 0; i < attributes.length; i++) {
+                    attrNames.add(context.get("ldap_"+attributes[i]));
                 }
                 context.put("attrNames", attrNames);
 			}
