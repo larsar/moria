@@ -7,7 +7,6 @@
 package no.feide.mellon.axis;
 
 import no.feide.mellon.MoriaConnector;
-import no.feide.mellon.MoriaConnector;
 import no.feide.mellon.MoriaUserAttribute;
 
 import java.rmi.RemoteException;
