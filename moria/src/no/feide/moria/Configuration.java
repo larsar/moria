@@ -19,8 +19,12 @@ package no.feide.moria;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.File;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Enumeration;
 
 
 /**
@@ -33,11 +37,28 @@ public class Configuration {
     
     /** Private property container. */
     private static Properties props = null;
+
+    /** Organization list, indexed on organization name */
+    private static HashMap orgNameList = new HashMap();
+    
+    /** Organization list, indexed on organization short */
+    private static HashMap orgShortList = new HashMap();
     
     /** Have we already initialized? */
     private static boolean initialized = false;  
     
     
+    private final static String[] notNullProperties = new String[] {
+        "no.feide.moria.SessionStoreInitMapSize",
+        "no.feide.moria.SessionStoreMapLoadFactor",
+        "no.feide.moria.AuthorizationTimerDelay",
+        "no.feide.moria.SessionTimeout",
+        "no.feide.moria.SessionSSOTimeout",
+        "no.feide.moria.AuthenticatedSessionTimeout",
+        "no.feide.moria.defaultLanguage"
+    };
+
+
     /**
      * Read the configuration properties from file. Will read the Moria
      * property file named in the system property
@@ -83,42 +104,80 @@ public class Configuration {
         log.config("Configuration file read, contents are:\n"+props.toString());
 
         // All Moria configuration sanity checks should go here.
-        String s = props.getProperty("no.feide.moria.SessionStoreInitMapSize");
-        if (s == null) {
-            log.severe("Missing required property: no.feide.moria.SessionStoreInitMapSize");
-            throw new ConfigurationException("Missing required property: no.feide.moria.SessionStoreInitMapSize");
+        for (int i = 0; i < notNullProperties.length; i++) {
+            checkPropertyNotNull(notNullProperties[i]);
         }
-        s = props.getProperty("no.feide.moria.SessionStoreMapLoadFactor");
-        if (s == null) {
-            log.severe("Missing required property: no.feide.moria.SessionStoreMapLoadFactor");
-            throw new ConfigurationException("Missing required property: no.feide.moria.SessionStoreMapLoadFactor");
+
+
+        // Read organization list
+        try {
+            Properties orgList = new Properties();
+            String filename = Configuration.getProperty("no.feide.moria.organizationNames");
+            orgList.load(new FileInputStream(new File(filename)));
+            updateOrgLists(orgList);
         }
-        s = props.getProperty("no.feide.moria.AuthorizationTimerDelay");
-        if (s == null) {
-            log.severe("Missed required property: no.feide.moria.AuthorizationTimerDelay");
-            throw new ConfigurationException("Missed required property: no.feide.moria.AuthorizationTimerDelay");
-        }
-        s = props.getProperty("no.feide.moria.SessionTimeout");
-        if (s == null) {
-            log.severe("Missed required property: no.feide.moria.SessionTimeout");
-            throw new ConfigurationException("Missed required property: no.feide.moria.SessionTimeout");
-        }
-        s = props.getProperty("no.feide.moria.SessionSSOTimeout");
-        if (s == null) {
-            log.severe("Missed required property: no.feide.moria.SessionSSOTimeout");
-            throw new ConfigurationException("Missed required property: no.feide.moria.SessionSSOTimeout");
-        }
-        s = Configuration.getProperty("no.feide.moria.AuthenticatedSessionTimeout");
-        if (s == null) {
-            log.severe("Missed required property: no.feide.moria.AuthenticatedSessionTimeout");
-            throw new ConfigurationException("Missed required property: no.feide.moria.AuthenticatedSessionTimeout");
+        
+        catch (FileNotFoundException e) {
+            log.severe("FileNotFoundException while reading organization list.");
+            throw new ConfigurationException("FileNotFoundException caught", e);
+        } catch (IOException e) {
+            log.severe("IOException during reading of organization list.");
+            throw new ConfigurationException("IOException caught", e);
         }
         
         // Done.
         initialized = true;
     }
+
+
+
+    private static void updateOrgLists(Properties orgList) {
+        String default_lang = "nb";
+
+        // Insert into two HashMaps (need lookup both ways)
+        for (Enumeration e = orgList.propertyNames(); e.hasMoreElements(); ) {
+            String orgShort = (String) e.nextElement();
+            String orgName  = (String) orgList.getProperty(orgShort);
+                
+            int sep = orgShort.indexOf("_");
+         
+            if (sep == -1) 
+                log.warning("No language for organization name: '"+orgShort+"'. Ignored.");
+
+            else {
+                String shortName = orgShort.substring(0,sep);
+                String lang = orgShort.substring(sep+1,orgShort.length());
+
+                HashMap nameList = (HashMap) orgNameList.get(lang);
+                HashMap shortList= (HashMap) orgShortList.get(lang);
+
+                if (nameList == null) {
+                    nameList = new HashMap();
+                    shortList = new HashMap();
+                    orgNameList.put(lang, nameList);
+                    orgShortList.put(lang, shortList);
+                }
+                
+                nameList.put(orgName, shortName);
+                shortList.put(shortName, orgName);
+            }
+        }
+    }
+
     
-    
+    /**
+     * Verify that a property is not null.
+     */
+    private static void checkPropertyNotNull(String propertyName) throws ConfigurationException {
+        String errorMessage;
+        if (getProperty(propertyName) == null) {
+            errorMessage = "Missed required property: "+propertyName;
+            log.severe(errorMessage);
+            throw new ConfigurationException(errorMessage);
+        }
+    }
+
+
     /**
      * Get a configuration property.
      * @param key The property key.
@@ -152,5 +211,25 @@ public class Configuration {
         
         init();
         return props.getProperty(key, value); 
+    }
+
+    public static String getOrgShort(String orgName, String language) {
+        String orgShort = (String) orgShortList.get(orgName+"_"+language);
+
+        if (orgShort == null)
+            log.warning("Orgnaization name does not exist: "+orgShort+" "+language);
+        return orgShort;
+    }
+
+    public static String getOrgName(String orgShort, String language) {
+        String orgName = (String) orgNameList.get(orgShort+"_"+language);
+
+        if (orgName == null)
+            log.warning("Orgnaization shortname does not exist: "+orgName+" "+language);
+        return orgName;
+    }
+
+    public static HashMap getOrgNames(String language) {
+        return (HashMap) orgShortList.get(language);
     }
 }
