@@ -29,6 +29,7 @@ $Id$
 
   <body>
 
+    <section name="Introduction">
       <p>
         Moria is software for providing authentication over HTTP using multiple directory backends.
         The software designed with a servlet frontend both to the service provider and the user;
@@ -41,7 +42,7 @@ $Id$
       <p>
         This document describes the configuration and setup of Moria from scratch.
       </p>
-
+    </section>
 
     <section name="Presentation">
       <p>
@@ -153,7 +154,7 @@ no.feide.moria.web.login.default_language=en
           performed outside of Moria so password and/or certificates must be configured in the server that performs the
           authentication.
         </p>
-        <p><b>TODO: Link to DTD</b></p>
+        <p><a href="authorization.dtd">DTD for the authorization configuration file</a></p>
         <p>
           A client element consists of the following:
           <ol>
