@@ -127,7 +127,7 @@ public class ConfigurationManager {
         /* Read configuration manager properties file */
         Properties cmProps = new Properties();
         String cmPropsFile = System.getProperty(PROPS_PREFIX + MODULE_CM);
-        String filePrefix = new File(cmPropsFile).getParent() + "/";
+        String filePrefix = new File(cmPropsFile).getParent() + System.getProperty("file.separator");
 
         if (cmPropsFile == null || cmPropsFile.equals("")) {
             throw new BaseConfigException("System property '" + PROPS_PREFIX + MODULE_CM + "' must be a non-empty string.");
@@ -277,7 +277,7 @@ public class ConfigurationManager {
         if (props != null) {
             MoriaController.setConfig(module, props);
         } else {
-            messageLogger.logCritical("Unable to create properties from file: "+configurationFile);
+            messageLogger.logCritical("Unable to create properties from file: " + configurationFile);
         }
     }
 
