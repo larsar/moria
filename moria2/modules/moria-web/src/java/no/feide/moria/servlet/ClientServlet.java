@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -65,26 +67,25 @@ extends HttpServlet {
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
-
+        
         // Do we have a ticket?
         String loginTicketId = request.getParameter("moriaID");
         if (loginTicketId != null) {
             try {
 
-                // No ticket. Add the requested user attributes to the request's
-                // "attributes" attribute, using "test" as our service's
-                // principal.
-                log.logCritical("Login ticket ID is " + loginTicketId);
-                log.logCritical("User attributes are " + MoriaController.getUserAttributes(loginTicketId, "test").toString());
-                request.setAttribute("attributes", MoriaController.getUserAttributes(loginTicketId, "test"));
+                // Ticket found. Use it to retrieve previously requested
+                // attributes.
+                final Map attributes = MoriaController.getUserAttributes(loginTicketId, "test");
+                log.logInfo("User attributes are " + attributes.toString());
+                request.setAttribute("attributes", attributes);
 
             } catch (MoriaControllerException e) {
+                log.logCritical("Exception caught reading attributes", e);
                 request.setAttribute("error", e);
             }
         }
 
         // Forward the GET request.
-        log.logCritical("Forwarding to request dispatcher for 'Client.JSP'");
         RequestDispatcher rd = getServletContext().getNamedDispatcher("Client.JSP");
         rd.forward(request, response);
 
@@ -105,6 +106,8 @@ extends HttpServlet {
      */
     public final void doPost(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
+        
+        log.logInfo("doPost");
 
         String jspLocation = getServletContext().getInitParameter("jsp.location");
         log.logCritical("jsp.location is '" + jspLocation + "'");
@@ -137,7 +140,6 @@ extends HttpServlet {
 
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
-            log.logCritical("Configuration: " + config.toString());
             String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
             log.logCritical("Redirect URL: " + redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
