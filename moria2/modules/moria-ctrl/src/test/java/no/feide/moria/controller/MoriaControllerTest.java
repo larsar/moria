@@ -26,10 +26,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
-
-import no.feide.moria.directory.backend.AuthenticationFailedException;
+import java.util.Map;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -406,13 +404,19 @@ public class MoriaControllerTest extends TestCase {
         /* Content */
         Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
 
-
         assertEquals("Expected and actual attributes length differs", expectedAttrs.size(), actualAttrs.size());
 
         Iterator it = expectedAttrs.keySet().iterator();
         while (it.hasNext()) {
             String key = (String) it.next();
             assertEquals("Attribute mismatch", expectedAttrs.get(key), actualAttrs.get(key));
+        }
+
+        /* Removal of authentication attempt */
+        try {
+            MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
+            fail("UnknownTicketException should be raised, tried to get attributes again.");
+        } catch (UnknownTicketException success) {
         }
 
     }
