@@ -6,11 +6,11 @@
          update="120"/>
   
 	<Backend class="no.feide.moria.directory.backend.DummyBackendFactory">
-		<User name="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base">
-			<Attribute name="someAttribute">
-				<Value>someValue</Value>
-			</Attribute>
-		</User>
+		<DummyUser name="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base">
+			<DummyAttribute name="someAttribute">
+				<DummyValue>someValue</DummyValue>
+			</DummyAttribute>
+		</DummyUser>
 	</Backend>
 
 </DirectoryManagerConfiguration>

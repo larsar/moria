@@ -42,19 +42,19 @@ implements DirectoryManagerBackend {
 
         // Parse any user elements.
         userMap = new HashMap();
-        final Iterator users = config.getChildren("User").iterator();
+        final Iterator users = config.getChildren("DummyUser").iterator();
         while (users.hasNext()) {
 
             // Parse any attribute elements.
             HashMap attributeMap = new HashMap();
             final Element user = (Element) users.next();
-            final Iterator attributes = user.getChildren("Attribute").iterator();
+            final Iterator attributes = user.getChildren("DummyAttribute").iterator();
             while (attributes.hasNext()) {
 
                 // Parse any value elements.
                 ArrayList valueList = new ArrayList();
                 final Element attribute = (Element) attributes.next();
-                final Iterator values = attribute.getChildren("Value").iterator();
+                final Iterator values = attribute.getChildren("DummyValue").iterator();
                 while (values.hasNext()) {
 
                     // Parse the attribute values.
