@@ -96,7 +96,8 @@ extends HttpServlet {
         RequestUtil.PROP_COOKIE_ORG_TTL,
         RequestUtil.PROP_COOKIE_SSO_TTL,
         RequestUtil.PROP_COOKIE_LANG_TTL,
-        RequestUtil.PROP_LOGIN_URL_PREFIX
+        RequestUtil.PROP_LOGIN_URL_PREFIX,
+        RequestUtil.FAQ_LINK
     };
 
 
