@@ -24,8 +24,7 @@ import java.util.logging.Logger;
 
 import javax.xml.rpc.Stub;
 
-import no.feide.mellon.MoriaConnector;
-import no.feide.mellon.MoriaConnector;
+
 import no.feide.moria.service.Attribute;
 import no.feide.moria.service.AuthenticationIF;
 import no.feide.moria.service.Authentication_Impl;
@@ -34,7 +33,7 @@ import no.feide.moria.service.Authentication_Impl;
  * Represents the interface to Moria, hiding the internals of the
  * Mellon-Moria communication.
  */
-public class Moria extends MoriaConnector {
+public class Moria {
     
     /** Used for logging. */
     private static Logger log = Logger.getLogger(Moria.class.toString());
@@ -68,7 +67,7 @@ public class Moria extends MoriaConnector {
      * @throws MoriaException If the singleton object couldn't be constructed.
      */
     public static Moria getInstance()
-    throws MoriaException {
+    throws Exception {
         log.finer("getInstance()");
         
         // Return singleton, creating it if necessary.
@@ -93,7 +92,7 @@ public class Moria extends MoriaConnector {
      * @throws MoriaException If a RemoteException is caught.
      */
     public String requestSession(String[] attributes, String prefix, String postfix, boolean denySso) 
-    throws MoriaException {
+    throws Exception {
         log.finer("requestSession(String[], String, String)");
         
 	    AuthenticationIF service = (AuthenticationIF)stub;
@@ -101,7 +100,7 @@ public class Moria extends MoriaConnector {
             return service.requestSession(attributes, prefix, postfix, denySso);
         } catch (RemoteException e) {
             log.severe("RemoteException caught and re-thrown as MoriaException");
-            throw new MoriaException("RemoteException caught", e);
+            throw new Exception("RemoteException caught", e);
         }
     }
     
@@ -120,7 +119,7 @@ public class Moria extends MoriaConnector {
      * @throws MoriaException If a RemoteException is caught.
      */
     public HashMap getAttributes(String id)
-    throws MoriaException {
+    throws Exception {
         log.finer("getAttributes(String)");
         
 	AuthenticationIF service = (AuthenticationIF)stub;
@@ -140,7 +139,7 @@ public class Moria extends MoriaConnector {
             
         } catch (RemoteException e) {
             log.severe("RemoteException caught and re-thrown as MoriaException");
-            throw new MoriaException("RemoteException caught", e);
+            throw new Exception("RemoteException caught", e);
         }
     }
 
