@@ -58,7 +58,7 @@ public class DirectoryManager {
      * Set the directory manager's configuration.
      * @param config
      */
-    public void setConfig(Properties config)
+    public static void setConfig(Properties config)
     throws DirectoryManagerConfigurationException {
 
         // Pass on to the configuration handler.
