@@ -34,6 +34,9 @@ public class MellonTest {
 	/** A valid URL postfix. */
 	private static final String urlPostfix = "";
 	
+	/** The test user name. */
+	private static final String username = "test@uninett.no";
+	
 
 	/**
 	 * The main (and only) method.
@@ -50,8 +53,11 @@ public class MellonTest {
 			stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, "demo");
 			System.err.println("Client authentication: demo/demo");
 	
-			// Request a new session.
+			// Check whether the user exists at all.
 			AuthenticationIF service = (AuthenticationIF)stub;
+			System.err.println("User "+username+" exists: "+service.userExists(username));
+			
+			// Request a new session.
 			String[] attributeRequest = {"eduPersonAffiliation", "eduPersonOrgDN"};
 			System.err.println("Session request:  {eduPersonAffiliation, eduPersonOrgDN}");
 	        String sessionID = service.requestSession(attributeRequest, urlPrefix, urlPostfix, false);
@@ -59,8 +65,8 @@ public class MellonTest {
 			System.err.println("Session established: "+sessionID);
 	        
 			// Authenticate.
-			System.err.println("User authentication: test@uninett.no/test");
-			sessionID = service.authenticateUser(sessionID, "test@uninett.no", "test");
+			System.err.println("User authentication: "+username);
+			sessionID = service.authenticateUser(sessionID, username, "test");
 			System.err.println("User authenticated: "+sessionID);
 	
 			// Get and display user attributes.
