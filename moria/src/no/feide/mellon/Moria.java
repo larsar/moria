@@ -103,23 +103,35 @@ public class Moria {
     
     /**
      * Returns user data from Moria. A remote procedure call is sent
-     * to Moria, requesting user data. If an empty array is
+     * to Moria, requesting user data. If an empty HashMap is
      * returned, the user has been authenticated but no more
      * information is available to the webservice. If the web service
      * has requested (and been authorized) user attributes, the
-     * array will contain the requested user data.
+     * HashMap will contain the requested user data.
      * @param id
      * @return The attributes requested when the session was established,
      *         or an empty set if no attributes were requested.
      * @throws MoriaException If a RemoteException is caught.
      */
-    public Attributes[] getAttributes(String id)
+    public HashMap getAttributes(String id)
     throws MoriaException {
         log.finer("getAttributes(String)");
         
 	AuthenticationIF service = (AuthenticationIF)stub;
         try {
-            return service.getAttributes(id);
+            
+            // Map from Attribute array to HashMap.
+            Attribute[] oldAttrs = service.getAttributes(id);
+            HashMap newAttrs = new HashMap(oldAttrs.length);
+            for (int i=0; i<oldAttrs.length; i++) {
+                String[] oldVals = oldAttrs[i].getValues();
+                Vector newVals = new Vector(oldVals.length);
+                for (int j=0; j<oldVals.length; j++)
+                    newVals.add(oldVals[j]);
+                newAttrs.put(oldAttrs[i].getName(), newVals);
+            }
+            return map;
+            
         } catch (RemoteException e) {
             log.severe("RemoteException caught and re-thrown as MoriaException");
             throw new MoriaException("RemoteException caught", e);
