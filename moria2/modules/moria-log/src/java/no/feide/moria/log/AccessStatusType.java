@@ -35,7 +35,7 @@ public final class AccessStatusType implements Serializable {
     private final String name;
 
     /**
-     * Defualt private constructor.
+     * Default private constructor.
      *
      * @param name
      *          The name of the status type. Used in the log
