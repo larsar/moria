@@ -222,10 +222,6 @@ public final class MoriaCacheStore implements MoriaStore {
         if (ticket.getTicketType().equals(MoriaTicketType.LOGIN_TICKET)) {
             validateTicket(ticket, MoriaTicketType.LOGIN_TICKET, null);
         } else {
-            /* Validate servicePrincipal. Can not be null for service tickets. */
-            if (servicePrincipal == null || servicePrincipal.equals("")) {
-                throw new IllegalArgumentException("servicePrincipal must be a non-empty string for service tickets.");
-            }
             validateTicket(ticket, MoriaTicketType.SERVICE_TICKET, servicePrincipal);
         }
 
