@@ -163,6 +163,30 @@ $ httpd \
                     </p>
                     </li>
                 </ul>
+                <p>
+                The following configuration properties for the Mellon Demo
+                are optional:
+                </p>
+                <ul>
+                    <li>
+                    <code>no.feide.mellon.demo.trustStore</code>
+                    <p>
+                    The filename of an optional truststore, used when Mellon
+                    uses a Moria instance with a certificate that cannot be
+                    trusted using the JVM's default truststore. If this
+                    parameter is not set, the JVM default truststore is used
+                    instead.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.mellon.demo.trustStorePassword</code>
+                    <p>
+                    The password used to access the optional Mellon truststore.
+                    Should be specified if a password protected custom
+                    truststore file is specified.
+                    </p>
+                    </li>
+                </ul>
             <p>     
             Example Mellon Demo configuration file, using a locally deployed
             Moria. Note that this example requires a suitably configured
@@ -197,7 +221,13 @@ no.feide.mellon.demo.slave.attributeRequest=eduPersonAffiliation
 no.feide.mellon.demo.slave.username=demo_subsystem
 
 # The password used to access Moria as a subservice.
-no.feide.mellon.demo.slave.password=demo_subsystem</source>
+no.feide.mellon.demo.slave.password=demo_subsystem
+
+# The truststore file.
+no.feide.mellon.demo.trustStore=/some/path/mellon.truststore
+
+# The truststore password.
+no.feide.mellon.demo.trustStorePassword=changeit</source>
 			</subsection>
         </section>
     </body>
