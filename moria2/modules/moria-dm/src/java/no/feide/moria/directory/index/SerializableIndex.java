@@ -153,15 +153,15 @@ implements Serializable, DirectoryManagerIndex {
      */
     public String getRealm(String id) {
 
-        // Do we have an exception matching this identificator, with an explicit
+        // Do we have an exception matching this identificator with an explicit
         // realm?
         if (realms.containsKey(id))
             return (String) realms.get(id);
 
-        // Do we have an association matching this identificator?
+        // Do we have any associations for this realm?
         int i = id.lastIndexOf('@');
         if ((i > 0) && (associations.containsKey(id.substring(i + 1))))
-            return (String) associations.get(id.substring(i + 1));
+            return id.substring(i + 1);
 
         // No exception/realm and no association.
         return null;
