@@ -141,7 +141,7 @@ public class StatsStore {
 
             stats.put(wsName, statsValues);
 
-            for (Iterator it2 = wsStats.keySet().iterator(); it2.hasNext(); ) {
+            for (Iterator it2 = statsValues.keySet().iterator(); it2.hasNext(); ) {
                 String counter = (String) it2.next();
                 Integer value = (Integer) statsValues.get(counter);
                 Integer sum = (Integer) totalStats.get(counter);
@@ -153,6 +153,8 @@ public class StatsStore {
                 
                 totalStats.put(counter, sum);
             }
+            
+            stats.put("All", totalStats);
             
         }        
         
