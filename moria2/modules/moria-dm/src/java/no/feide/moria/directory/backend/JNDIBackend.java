@@ -481,7 +481,7 @@ implements DirectoryManagerBackend {
         try {
             return new InitialLdapContext(env, null);
         } catch (NamingException e) {
-            throw new BackendException("Unable to connect to " + url);
+            throw new BackendException("Unable to connect to " + url, e);
         }
 
     }
