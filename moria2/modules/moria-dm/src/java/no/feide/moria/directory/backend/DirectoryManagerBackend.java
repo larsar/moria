@@ -15,7 +15,7 @@ public interface DirectoryManagerBackend {
      *            The user's credentials.
      * @param attributeRequest
      *            A list of requested attributes from the user object. May be
-     *            <code>null</code>, or an empty array.
+     *            <code>null</code>, or an empty array. Not case-sensitive.
      * @return The requested user attributes, if any are requested and if they
      *         can be retrieved from the backend following a successful
      *         authentication. Otherwise, an empty data structure.
