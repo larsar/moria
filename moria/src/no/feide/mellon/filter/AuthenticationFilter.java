@@ -79,13 +79,21 @@ public class AuthenticationFilter implements Filter {
                 HttpServletRequest httpRequest = (HttpServletRequest) request;
                 String redirectURL; 
 
+                /* Construct the URL that Moria should redirect the
+                 * user back to after authentication. */
+                String requestURL = httpRequest.getRequestURL().toString();
+                String backToMellonURL  = requestURL;
+
+                if (httpRequest.getQueryString() != null) 
+                    backToMellonURL += "?"+httpRequest.getQueryString()+"&moriaID=";
+                else
+                    backToMellonURL += "?moriaID=";
+
                 /* Establish contact with Moria and aquire a login
                  * session. The user should be redirected to this
                  * URL. */
                 try {
-                    // Should analyse URL so that ? isn't added if it
-                    // already exists.
-                    redirectURL = moria.requestSession(new String[] {"cn", "uid"}, httpRequest.getRequestURL().toString()+"?moriaID=", "");
+                    redirectURL = moria.requestSession(new String[] {"cn", "uid"}, backToMellonURL, "");
                 }
                 
                 catch (MoriaException e) {
