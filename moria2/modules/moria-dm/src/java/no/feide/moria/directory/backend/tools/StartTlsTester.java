@@ -33,7 +33,10 @@ import javax.net.ssl.SSLSession;
  * A simple tool to test TLS (StartTLS) behaviour against LDAP servers.
  * @author Cato Olsen
  */
-public class StartTlsTester {
+public final class StartTlsTester {
+
+    /** Default private constructor.  */
+    private StartTlsTester() { };
 
     /**
      * Main method. Reads the index file, writes the index object, and

@@ -39,11 +39,14 @@ import org.jdom.input.SAXBuilder;
  * then written to file (given by the second parameter) for use with the
  * Directory Manager.
  */
-public class SerializableIndexCreator {
+public final class SerializableIndexCreator {
 
     /** Internal representation of the index. */
     private static SerializableIndex generatedIndex = new SerializableIndex();
 
+
+    /** Default private constructor.  */
+    private SerializableIndexCreator() { };
 
     /**
      * Main method. Reads the index file, writes the index object, and
