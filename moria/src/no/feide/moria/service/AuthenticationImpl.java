@@ -201,6 +201,7 @@ implements AuthenticationIF, ServiceLifecycle {
             new URL(simulatedURL);
         } catch (MalformedURLException e) {
             log.warning(log_prefix+"DENIED, Invalid URL");
+            stats.createSessionAttempt(serviceName, "URL");
             throw new RemoteException("Malformed URL: "+simulatedURL);
         }
 
@@ -210,7 +211,7 @@ implements AuthenticationIF, ServiceLifecycle {
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
             log.warning(log_prefix+"DENIED, Unauthorized");
-            stats.createSessionAttempt(serviceName, "AUTHN");
+            stats.createSessionAttempt(null, "AUTHN");
             throw new RemoteException("Web Service not authorized for use with Moria");
         } else if (!ws.allowAccessToAttributes(attributes)) {
             log.warning(log_prefix+"DENIED, Authorization faliure");
