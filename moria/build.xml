@@ -112,10 +112,10 @@
           depends="moria:wsdeploy">
     <mkdir dir="dist/tmp"/>
     <exec executable="jar" dir="dist/tmp">
-      <arg line="-xf ../feide-moria.war WEB-INF/Authentication-GENERATED.wsdl"/>
+      <arg line="-xf ../feide-moria.war WEB-INF/Authentication.wsdl"/>
     </exec>
     <exec executable="sed" output="Authentication-GENERATED.wsdl">
-      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/Authentication-GENERATED.wsdl"/>
+      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/Authentication.wsdl"/>
     </exec>
     <delete dir="dist/tmp"/>
   </target>
