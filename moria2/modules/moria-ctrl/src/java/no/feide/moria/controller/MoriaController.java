@@ -378,25 +378,27 @@ public class MoriaController {
     }
 
     /**
-     * @param serviceTicket
+     * @param serviceTicketId
      * @param servicePrincipal
      * @return Map containing user attributes in strings or string arrays
      * @throws IllegalInputException
      */
-    public static Map getUserAttributes(final String serviceTicket, final String servicePrincipal)
-            throws IllegalInputException, UnknownTicketException, InoperableStateException {
-        // TODO: Implement
+    public static Map getUserAttributes(final String serviceTicketId, final String servicePrincipal)
+            throws IllegalInputException, UnknownTicketException, InoperableStateException, AuthorizationException {
         if (!ready) {
             throw new InoperableStateException("Controller is not ready");
         }
 
         /* Validate arguments */
+        if (serviceTicketId == null || serviceTicketId.equals("")) {
+            throw new IllegalInputException("serviceTicketId must be a non-empty string.");
+        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalInputException("servicePrincipal must be a non-empty string.");
+        }
 
         /* Get authnattempt */
-
-        /* Return attributes from authnattempt */
-
-        return null;
+        return store.getUserData(serviceTicketId, servicePrincipal);
     }
 
     /**
