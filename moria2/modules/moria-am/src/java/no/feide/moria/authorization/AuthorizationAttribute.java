@@ -36,10 +36,6 @@ public class AuthorizationAttribute {
      */
     private volatile int hashCode = 0;
 
-    /**
-     * Used for logging.
-     */
-    //private static Logger log = Logger.getLogger(AuthorizationAttribute.class.toString());
 
     /**
      * Name of attribute.
@@ -72,7 +68,7 @@ public class AuthorizationAttribute {
         }
 
         if (secLevel < 0) {
-            throw new IllegalArgumentException("SecLevel must be >= 0");
+            throw new IllegalArgumentException("SecLevel must be >= 0, was: "+secLevel);
         }
 
         this.secLevel = secLevel;
