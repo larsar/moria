@@ -26,7 +26,7 @@
 
   <target name="axis:build"
           description="Mellon demo: Compile source"
-          depends="axis:prepare">
+          depends="axis:wscompile">
     <javac srcdir="src"
            debug="true"
            destdir="build/connector"
