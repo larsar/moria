@@ -49,6 +49,9 @@ final class MoriaTicket implements Serializable {
 
     /** The data associated with this ticket. */
     private final MoriaStoreData data;
+    
+    /** The userorg associated with this ticket */
+    private String userorg;
 
     /**
      * Construct a new ticket with auto-generated ticket id.
@@ -61,9 +64,11 @@ final class MoriaTicket implements Serializable {
      *          the time when this ticket expires (in milliseconds since Epoch)
      * @param data
      *          the data object associated with this ticket. May be null
+     * @param userorg
+     *          the userorg associated with this ticket. Can be null if unknown.
      */
-    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal, final Long expiryTime, final MoriaStoreData data) {
-        this(MoriaTicket.newId(), ticketType, servicePrincipal, expiryTime, data);
+    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal, final Long expiryTime, final MoriaStoreData data, final String userorg) {
+        this(MoriaTicket.newId(), ticketType, servicePrincipal, expiryTime, data, userorg);
     }
 
     /**
@@ -79,9 +84,11 @@ final class MoriaTicket implements Serializable {
      *          the time when this ticket expires (in milliseconds since Epoch)
      * @param data
      *          the data object associated with this ticket. May be null
+     * @param userorg
+     *          the userorg associated with this ticket. Can be null if unknownn.
      */
     MoriaTicket(final String ticketId, final MoriaTicketType ticketType, final String servicePrincipal, final Long expiryTime,
-                final MoriaStoreData data) {
+                final MoriaStoreData data, final String userorg) {
 
         /* Sanity checks on inputs before assignment. */
         if (ticketId == null || ticketId.equals(""))
@@ -119,6 +126,7 @@ final class MoriaTicket implements Serializable {
         }
         /* The data object may be null so we just assign. */
         this.data = data;
+        this.userorg = userorg;
     }
 
     /**
@@ -224,4 +232,21 @@ final class MoriaTicket implements Serializable {
     static String newId() {
         return RandomId.newId();
     }
+    
+    /**
+     * Returns the userorg associated with this ticket, or null if none.
+     * @return the userorg
+     */
+    public String getUserorg() {
+        return userorg;
+    }
+    
+    /**
+     * Associates a userorg with this ticket.
+     * @param org the userorg
+     */
+    public void setUserorg(String org) {
+        userorg = org;
+    }
+    
 }

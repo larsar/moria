@@ -39,6 +39,7 @@ import org.jboss.cache.lock.TimeoutException;
 
 /**
  * Distributed store implementation using JBoss Cache.
+ *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
@@ -75,6 +76,11 @@ implements MoriaStore {
      */
     private static final String DATA_ATTRIBUTE = "MoriaData";
 
+    /**
+     * The common hashmap key for the userorg attribute 
+     */
+    private static final String USERORG_ATTRIBUTE = "Userorg";
+    
     /** The name of configuration file property. */
     private static final String CACHE_CONFIG_PROPERTY_NAME = "no.feide.moria.store.cachestoreconf";
 
@@ -248,7 +254,7 @@ implements MoriaStore {
         authnAttempt = new MoriaAuthnAttempt(requestedAttributes, responseURLPrefix, responseURLPostfix, forceInteractiveAuthentication, servicePrincipal);
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.LOGIN_TICKET)).longValue() + new Date().getTime());
-        ticket = new MoriaTicket(MoriaTicketType.LOGIN_TICKET, servicePrincipal, expiryTime, authnAttempt);
+        ticket = new MoriaTicket(MoriaTicketType.LOGIN_TICKET, servicePrincipal, expiryTime, authnAttempt, null);
 
         insertIntoStore(ticket);
 
@@ -321,16 +327,16 @@ implements MoriaStore {
     /**
      * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
      */
-    public String cacheUserData(final HashMap attributes)
+    public String cacheUserData(final HashMap attributes, final String userorg)
     throws MoriaStoreException {
 
         /* Validate argument. */
         if (attributes == null) { throw new IllegalArgumentException("attributes cannot be null"); }
 
         CachedUserData userData = new CachedUserData(attributes);
-        /* Create new SSO ticket with null-value servicePrincipal. */
+        /* Create new SSO ticket with null-value servicePrincipal */
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.SSO_TICKET)).longValue() + new Date().getTime());
-        MoriaTicket ssoTicket = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, expiryTime, userData);
+        MoriaTicket ssoTicket = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, expiryTime, userData, userorg);
         insertIntoStore(ssoTicket);
 
         return ssoTicket.getTicketId();
@@ -407,7 +413,7 @@ implements MoriaStore {
         }
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.SERVICE_TICKET)).longValue() + new Date().getTime());
-        MoriaTicket serviceTicket = new MoriaTicket(MoriaTicketType.SERVICE_TICKET, loginTicket.getServicePrincipal(), expiryTime, authnAttempt);
+        MoriaTicket serviceTicket = new MoriaTicket(MoriaTicketType.SERVICE_TICKET, loginTicket.getServicePrincipal(), expiryTime, authnAttempt, loginTicket.getUserorg());
         insertIntoStore(serviceTicket);
         /* Delete the now used login ticket. */
         removeFromStore(loginTicket);
@@ -451,7 +457,7 @@ implements MoriaStore {
         }
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.TICKET_GRANTING_TICKET)).longValue() + new Date().getTime());
-        MoriaTicket tgTicket = new MoriaTicket(MoriaTicketType.TICKET_GRANTING_TICKET, targetServicePrincipal, expiryTime, cachedUserData);
+        MoriaTicket tgTicket = new MoriaTicket(MoriaTicketType.TICKET_GRANTING_TICKET, targetServicePrincipal, expiryTime, cachedUserData, ssoTicket.getUserorg());
         insertIntoStore(tgTicket);
 
         return tgTicket.getTicketId();
@@ -495,7 +501,7 @@ implements MoriaStore {
         }
 
         final Long expiryTime = new Long(((Long) ticketTTLs.get(MoriaTicketType.PROXY_TICKET)).longValue() + new Date().getTime());
-        MoriaTicket proxyTicket = new MoriaTicket(MoriaTicketType.PROXY_TICKET, targetServicePrincipal, expiryTime, cachedUserData);
+        MoriaTicket proxyTicket = new MoriaTicket(MoriaTicketType.PROXY_TICKET, targetServicePrincipal, expiryTime, cachedUserData, tgTicket.getUserorg());
         insertIntoStore(proxyTicket);
 
         return proxyTicket.getTicketId();
@@ -608,6 +614,59 @@ implements MoriaStore {
         } else {
             throw new NonExistentTicketException(ssoTicketId);
         }
+    }
+
+    /**
+     * @see no.feide.moria.store.MoriaStore#getServicePrincipal(java.lang.String)
+     */
+
+    public String getTicketServicePrincipal(final String ticketId, MoriaTicketType ticketType)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+
+        /* Validate parameter. */
+        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
+
+        MoriaTicket ticket = getFromStore(ticketType, ticketId);
+
+        if (ticket == null) { throw new NonExistentTicketException(ticketId); }
+
+        /* Primarily to check timestamp. */
+        validateTicket(ticket, ticketType, null);
+
+        return ticket.getServicePrincipal();
+    }
+    
+    public void setTicketUserorg(final String ticketId, MoriaTicketType ticketType, String userorg)
+         throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+
+        /* Validate parameter. */
+        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
+
+        MoriaTicket ticket = getFromStore(ticketType, ticketId);
+
+        if (ticket == null) { throw new NonExistentTicketException(ticketId); }
+
+        /* Primarily to check timestamp. */
+        validateTicket(ticket, ticketType, null);
+
+        removeFromStore(ticket);
+        ticket.setUserorg(userorg);
+        insertIntoStore(ticket);
+    }
+
+    public String getTicketUserorg(final String ticketId, MoriaTicketType ticketType)
+       throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+        /* Validate parameter. */
+        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
+
+        MoriaTicket ticket = getFromStore(ticketType, ticketId);
+
+        if (ticket == null) { throw new NonExistentTicketException(ticketId); }
+
+        /* Primarily to check timestamp. */
+        validateTicket(ticket, ticketType, null);
+
+        return ticket.getUserorg();
     }
 
 
@@ -759,7 +818,11 @@ implements MoriaStore {
         }
 
         // Return the node.
-        return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node.get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE), (MoriaStoreData) node.get(DATA_ATTRIBUTE));
+        return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), 
+                               (String) node.get(PRINCIPAL_ATTRIBUTE), 
+                               (Long) node.get(TTL_ATTRIBUTE), 
+                               (MoriaStoreData) node.get(DATA_ATTRIBUTE), 
+                               (String) node.get(USERORG_ATTRIBUTE));
 
     }
 
@@ -787,6 +850,7 @@ implements MoriaStore {
         attributes.put(TTL_ATTRIBUTE, ticket.getExpiryTime());
         attributes.put(PRINCIPAL_ATTRIBUTE, ticket.getServicePrincipal());
         attributes.put(DATA_ATTRIBUTE, ticket.getData());
+        attributes.put(USERORG_ATTRIBUTE, ticket.getUserorg());
 
         try {
             store.put(fqn, attributes);

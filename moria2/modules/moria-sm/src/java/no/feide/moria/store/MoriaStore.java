@@ -24,6 +24,11 @@ import java.util.HashMap;
 import java.util.Properties;
 
 /**
+ * The store manager's main functionality is to handle tickets. The
+ * interface makes it possible to create tickets and store them and
+ * its associated data. The interface also has support for removal
+ * of expired tickets.
+ *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
@@ -100,13 +105,15 @@ public interface MoriaStore {
      *
      * @param attributes
      *          the attribute map to be cached
-     * @return the SSO ticket that identifies the cached user data
+     * @param userorg
+     *          the userorg that is to be associated with the ticket
+     * @return the SSO ticket that identifies the cached user data 
      * @throws MoriaStoreException
      *          thrown if the operation fails
      * @throws IllegalArgumentException
      *          if attributes is null
      */
-    String cacheUserData(final HashMap attributes)
+    String cacheUserData(final HashMap attributes, final String userorg)
             throws MoriaStoreException;
 
     /**
@@ -250,4 +257,59 @@ public interface MoriaStore {
      */
     void removeSSOTicket(final String ssoTicketId)
             throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
+    
+    /**
+     * Returns the service principal for the ticket
+     * 
+     * @param ticketId the ticket id
+     * @param ticketType the ticket type
+     * @return service principal
+     * @throws InvalidTicketException
+     *          if the ticket does not exist
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
+     * @throws MoriaStoreException
+     *          if the operation fails
+     * @throws IllegalArgumentException
+     *          if ssoTicketId is null or zero length
+     */
+    String getTicketServicePrincipal(final String ticketId, MoriaTicketType ticketType)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
+
+    /**
+     * @param ticketId the ticket id
+     * @param ticketType the ticket type
+     * @param userorg the userorg of the user creating the ticket
+     * @throws InvalidTicketException
+     *          if the ticket does not exist
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
+     * @throws MoriaStoreException
+     *          if the operation fails
+     * @throws IllegalArgumentException
+     *          if ssoTicketId is null or zero length
+     *
+     *
+     */
+    void setTicketUserorg(final String ticketId, MoriaTicketType ticketType, String userorg)
+           throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
+
+    /**
+     * @param ticketId the ticket id
+     * @param ticketType the ticket type
+     * @return the organization of the user creating the ticket, or null if not set
+     * @throws InvalidTicketException
+     *          if the ticket does not exist
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
+     * @throws MoriaStoreException
+     *          if the operation fails
+     * @throws IllegalArgumentException
+     *          if ssoTicketId is null or zero length
+     *
+     *
+     */
+    String getTicketUserorg(final String ticketId, MoriaTicketType ticketType)
+           throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
+
 }
