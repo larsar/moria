@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Single Sign On</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Single Sign On">
+			<p>
+			There are two ways to effectively attain SSO using Moria. This
+			section will describe both approaches.
+			</p>
+			<p>
+			For more information on which methods to use, please refer to the
+			<a href="howto_service_overview.html">Service Integration</a>
+			documentation.
+			</p>
+			<subsection name="Cookie-based SSO">
+				<p>
+				Given that a service is allowed to use SSO, each successful
+				authentication attempt will result in a SSO cookie being set by
+				Moria in the user's browser. This cookie will contain a unique
+				session ticket referring to the existing SSO session, which
+				will linger for a Moria-configured time following initial
+				authentication.
+				</p>
+				<p>
+				Thus, the next time the service (or any SSO-enabled service)
+				requests authentication, the user's SSO cookie will allow the
+				user to skip the login process. The service may override this
+				and insist on reauthentication if need be.
+				</p>
+			</subsection>
+			<subsection name="Ticket-based SSO">
+                <p>
+                Any service that is allowed to get ticket granting tickets (the
+                virtual user attribute <i>tgt</i>) can use this TGT to generate
+                proxy tickets and pass these on to any subservice. This approach
+                to SSO is useful for portals, for example. Note that Moria does
+                not offer a mechanism for transferring proxy tickets to
+                subservices. However, it is strongly suggested that this should
+                be done in a way as not to compromise security.
+                </p>
+                <p>
+                The subservice may then use the proxy ticket to verify the
+                earlier authentication, and to request necessary attributes on
+                its own behalf. Given, of course, that Moria allows the
+                subservice to read the requested attributes.
+                </p>
+			</subsection>
+		</section>
+	</body>
+</document>
