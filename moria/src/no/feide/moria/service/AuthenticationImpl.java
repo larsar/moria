@@ -17,6 +17,8 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import no.feide.moria.Configuration;
+import no.feide.moria.ConfigurationException;
 import no.feide.moria.Session;
 import no.feide.moria.SessionStore;
 import no.feide.moria.SessionException;
@@ -66,64 +68,46 @@ implements AuthenticationIF, ServiceLifecycle {
      *                          caught when reading the properties file. Also
      *                          thrown if the system property
      *                          <code>no.feide.moria.AuthorizationTimerDelay</code>
-     *                          is not set.
+     *                          is not set, or if there is a problem getting
+     *                          the session store instance.
      */
     public void init(Object context) 
     throws ServiceException {
 	log.finer("init(Object)");
 
 	ctx = (ServletEndpointContext)context;
-
+       
         try {
             
-            /* Read properties. */
-            if (System.getProperty("no.feide.moria.config.file") == null) {
-                log.config("no.feide.moria.config.file not set; default is \"/moria.properties\"");
-                System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
-            }
-            else {
-                log.config("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
-                System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
-            }
-            
-            /* Set local pointer to session store. */
             sessionStore = SessionStore.getInstance();
             
-        } catch (FileNotFoundException e) {
-            log.severe("FileNotFoundException caught and re-thrown as ServiceException");
-            throw new ServiceException("FileNotFoundException caught", e);
-        } catch (IOException e) {
-            log.severe("IOException caught and re-thrown as ServiceException");
-            throw new ServiceException("IOException caught", e);
+            int authDelay = new Integer(Configuration.getProperty("no.feide.moria.AuthorizationTimerDelay")).intValue()*1000; // Seconds to milliseconds
+            log.config("Starting authorization update service with delay= "+authDelay+"ms");
+            authTimer.scheduleAtFixedRate(new AuthorizationTask(), new Date(), authDelay);
+            
+            /* Sleep a short while. If not the authorization data will not
+               be updated in time to authorize the first authentication request. */
+            try { 
+                int initialSleep = new Integer(Configuration.getProperty("no.feide.moria.AuthorizationTimerInitThreadSleep")).intValue(); 
+                log.config("Sleep "+initialSleep+" seconds while reading auth. config.");
+                Thread.sleep(initialSleep*1000); 
+            } 
+            catch (InterruptedException e) { 
+                /* We didn't get any sleep. Don't care. If this is the
+                 * case, the first web service authorization request will
+                 * end in an exception. After that everythin will be all
+                 * right.
+                 */
+            }
+            
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as ServiceException");
+            throw new ServiceException("ConfigurationException caught", e);
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as ServiceException");
             throw new ServiceException("SessionException caught", e);
         }
 
-        /* Initialize authorization data timer, with sanity check. */
-        String s = System.getProperty("no.feide.moria.AuthorizationTimerDelay");
-        if (s == null) {
-            log.severe("Missed require system attribute: no.feide.moria.AuthorizationTimerDelay");
-            throw new ServiceException("Missed require system attribute: no.feide.moria.AuthorizationTimerDelay");
-        }
-        int authDelay = new Integer(s).intValue()*1000; // Seconds to milliseconds
-        log.config("Starting authorization update service with delay= "+authDelay+"ms");
-        authTimer.scheduleAtFixedRate(new AuthorizationTask(), new Date(), authDelay);
-
-        /* Sleep a short while. If not the authorization data will not
-           be updated in time to authorize the first authentication request. */
-        try { 
-            int initialSleep = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerInitThreadSleep")).intValue(); 
-            log.config("Sleep "+initialSleep+" seconds while reading auth. config.");
-            Thread.sleep(initialSleep*1000); 
-        } 
-        catch (InterruptedException e) { 
-            /* We didn't get any sleep. Don't care. If this is the
-             * case, the first web service authorization request will
-             * end in an exception. After that everythin will be all
-             * right.
-             */
-        }
     }
 
 
@@ -173,7 +157,8 @@ implements AuthenticationIF, ServiceLifecycle {
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught. Also thrown if the
      *                         prefix/postfix doesn't combine into a valid
-     *                         URL, or if the 
+     *                         URL, or if a <code>ConfigurationException<code>
+     *                         is caught.
      */
     public String requestSession(String[] attributes, String prefix, String postfix, boolean denySSO)
     throws RemoteException {
@@ -189,15 +174,14 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new RemoteException("Malformed URL: "+simulatedURL);
         }
 
-
         /* Look up service authorization data. */
         Principal p = ctx.getUserPrincipal();
         String serviceName = null;
         if (p != null)
             serviceName = p.getName();
 	log.fine("Client service requesting session: "+serviceName);
-        WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         
+        WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
             log.warning("Unauthorized service access: "+serviceName);
             throw new RemoteException("Web Service not authorized for use with Moria");
@@ -207,11 +191,14 @@ implements AuthenticationIF, ServiceLifecycle {
         }
 
         try {
-            Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);
+            Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);           
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");
             throw new RemoteException("SessionException caught", e);
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as RemoteException");
+            throw new RemoteException("ConfigurationException caught", e);
         }
         
     }
@@ -267,10 +254,11 @@ implements AuthenticationIF, ServiceLifecycle {
      *         postfix, where pre- and postfix were given as parameters to
      *         <code>requestSession</code>.
      * @throws RemoteException If an invalid session ID is used, or if a
-     *                         <code>SessionException</code> or a
-     *                         <code>BackendException</code> is caught. Also
-     *                         thrown if the current client's identity (as 
-     *                         found in the context) is different from the
+     *                         <code>SessionException</code>, a
+     *                         <code>BackendException</code> or a
+     *                         <code>ConfigurationException</code> is caught.
+     *                         Also thrown if the current client's identity
+     *                         (as found in the context) is different from the
      *                         identity of the client service originally
      *                         requesting the session.
      * @deprecated
@@ -300,6 +288,9 @@ implements AuthenticationIF, ServiceLifecycle {
          } catch (BackendException e) {
              log.severe("BackendException caught and re-thrown as RemoteException");
              throw new RemoteException("BackendException caught", e);
+         } catch (ConfigurationException e) {
+             log.severe("ConfigurationException caught and re-thrown as RemoteException");
+             throw new RemoteException("ConfigurationException caught", e);
          }
      }
 

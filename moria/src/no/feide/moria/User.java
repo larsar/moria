@@ -58,14 +58,21 @@ public class User {
     /**
      * Factory method.
      * @return A new instance of <code>User</code>.
-     * @throws BackendException If a new instance couldn't be created.
+     * @throws BackendException If a new instance couldn't be created, or
+     *                          if a <code>ConfigurationException</code> is
+     *                          caught.
      */
     public static User getInstance() 
     throws BackendException {
         log.finer("getInstance()");
         
-        if (!initialized)
-            init();
+        try {
+            if (!initialized)
+                init();
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as BackendException");
+            throw new BackendException("ConfigurationException caught", e);
+        }
         return new User();
     }
     
@@ -80,34 +87,36 @@ public class User {
      *                           <li>no.feide.moria.Backend.LDAP.Port
      *                           <li>no.feide.moria.Backend.LDAP.Base
      *                           <li>no.feide.moria.Backend.LDAP.UIDAttribute
-     *                          </ul>*
+     *                          </ul>
+     * @throws ConfigurationException If one of the required properties
+     *                                cannot be resolved.
      */
     private static void init()
-    throws BackendException {
+    throws BackendException, ConfigurationException {
         log.finer("init()");
         
         // Get and verify some properties.
-        String keyStore = System.getProperty("no.feide.moria.backend.ldap.keystore");
+        String keyStore = Configuration.getProperty("no.feide.moria.backend.ldap.keystore");
         if (keyStore != null) {
             log.config("Key store is "+keyStore);
             System.setProperty("javax.net.ssl.keyStore", keyStore);
         }
-        String keyStorePassword = System.getProperty("no.feide.moria.backend.ldap.keystorePassword");
+        String keyStorePassword = Configuration.getProperty("no.feide.moria.backend.ldap.keystorePassword");
         if (keyStorePassword != null)
                 System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword); 
-        String trustStore = System.getProperty("no.feide.moria.backend.ldap.trustStore");
+        String trustStore = Configuration.getProperty("no.feide.moria.backend.ldap.trustStore");
         if (trustStore != null) {
             log.config("Trust store is "+trustStore);
             System.setProperty("javax.net.ssl.trustStore", trustStore);
         }
-        String trustStorePassword = System.getProperty("no.feide.moria.backend.ldap.trustStorePassword");
+        String trustStorePassword = Configuration.getProperty("no.feide.moria.backend.ldap.trustStorePassword");
         if (trustStorePassword != null)
                 System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
-        usernameAttribute = System.getProperty("no.feide.moria.backend.ldap.usernameAttribute");
+        usernameAttribute = Configuration.getProperty("no.feide.moria.backend.ldap.usernameAttribute");
         if (usernameAttribute == null)
             throw new BackendException("Required property no.feide.moria.backend.ldap.usernameAttribute not set");
         log.config("User name attribute is "+usernameAttribute);
-	ldapURL = System.getProperty("no.feide.moria.backend.ldap.url");
+	ldapURL = Configuration.getProperty("no.feide.moria.backend.ldap.url");
 	if (ldapURL == null)
 	    throw new BackendException("Required property no.feide.moria.backend.ldap.url not set");
         log.config("LDAP URL is "+ldapURL);
@@ -126,8 +135,10 @@ public class User {
      * @return <code>false</code> if authentication was unsuccessful (bad
      *         or <code>null</code> username/password), otherwise
      *         <code>true</code>.
-     * @throws BackendException If a NamingException is thrown, or if the type
-     *                          of credentials is not supported.
+     * @throws BackendException If a NamingException is thrown, if the type
+     *                          of credentials is not supported, or if a
+     *                          <code>ConfigurationException</code> is
+     *                          caught.
      */
     public boolean authenticate(Credentials c)
     throws BackendException {
@@ -147,8 +158,13 @@ public class User {
         }
 
         // Do one-time JNDI initialization.
-        if (!initialized)
-            init();        
+        try {
+            if (!initialized)
+                init();
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as BackendException");
+            throw new BackendException("ConfigurationException caught", e);
+        }
         
         try {
             

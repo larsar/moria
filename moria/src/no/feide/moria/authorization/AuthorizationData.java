@@ -1,23 +1,22 @@
 package no.feide.moria.authorization;
 
-import org.apache.xerces.parsers.DOMParser;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import java.io.File;
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Date;
 import java.util.Vector;
-
-import java.io.File;
-
 import java.util.logging.Logger;
+import org.apache.xerces.parsers.DOMParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import no.feide.moria.Configuration;
+import no.feide.moria.ConfigurationException;
 
 
 /** 
@@ -63,13 +62,13 @@ public class AuthorizationData {
     /**
      * Regenerate the web service data structure if the xml
      * configuration file has been changed since last update.
+     * @throws ConfigurationException
      */
-    public void upToDate() {
+    public void upToDate()
+    throws ConfigurationException {
         log.finer("upToDate()");
 
-        String xmlFileName = System.getProperty("no.feide.moria.authorization.authConfigFile");
-        
-        
+        String xmlFileName = Configuration.getProperty("no.feide.moria.authorization.authConfigFile");
         File file = new File(xmlFileName);
 
         /* Only update if file has changed. */

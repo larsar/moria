@@ -38,30 +38,20 @@ extends TimerTask {
         
         sessionStore = SessionStore.getInstance();
        
-        // Sets some properties, with sanity checks.
-        String s = System.getProperty("no.feide.moria.SessionTimeout");
-        if (s == null) {
-            log.severe("no.feide.moria.SessionTimeout required, but not set");
-            throw new SessionException("no.feide.moria.SessionTimeout required, but not set");
+        // Sets some properties.
+        try {
+            
+            timeoutSec = new Integer(Configuration.getProperty("no.feide.moria.SessionTimeout")).intValue();
+            log.config("Session time out set to "+timeoutSec+" seconds.");
+            ssoTimeoutMin = new Integer(Configuration.getProperty("no.feide.moria.SessionSSOTimeout")).intValue();
+            log.config("Session SSO time out set to "+ssoTimeoutMin+" minutes.");
+            authTimeoutSec = new Integer(Configuration.getProperty("no.feide.moria.AuthenticatedSessionTimeout")).intValue();
+            log.config("Authenticated session time out set to "+authTimeoutSec+" seconds.");
+            
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as SessionException");
+            throw new SessionException("ConfigurationException caught", e);
         }
-        timeoutSec = new Integer(s).intValue(); 
-        s = System.getProperty("no.feide.moria.SessionSSOTimeout");
-        if (s == null) {
-            log.severe("no.feide.moria.SessionSSOTimeout required, but not set");
-            throw new SessionException("no.feide.moria.SessionSSOTimeout required, but not set");
-        }
-        ssoTimeoutMin = new Integer(s).intValue(); 
-        s = System.getProperty("no.feide.moria.AuthenticatedSessionTimeout");
-        if (s == null) {
-            log.severe("no.feide.moria.AuthenticatedSessionTimeout required, but not set");
-            throw new SessionException("no.feide.moria.AuthenticatedSessionTimeout required, but not set");
-        }
-        authTimeoutSec = new Integer(s).intValue();
-        
-        // Configuration logging.
-        log.config("Session time out set to "+timeoutSec+" seconds.");
-        log.config("Authenticated session time out set to "+authTimeoutSec+" seconds.");
-        log.config("Session SSO time out set to "+ssoTimeoutMin+" minutes.");
     }
      
     

@@ -153,7 +153,7 @@ public class Session {
         log.fine("Authentication failed");
         failedLogins++;
         try {
-            Integer maxFailures = Integer.decode(System.getProperty("no.feide.mellon.MaxFailedLogins", "3"));
+            Integer maxFailures = Integer.decode(Configuration.getProperty("no.feide.mellon.MaxFailedLogins", "3"));
             if (failedLogins == maxFailures.intValue()) {
                 // Remove ourselves from the session store.
                 log.fine("Invalidating session: "+sessionID);
@@ -162,7 +162,10 @@ public class Session {
             }
         } catch (NumberFormatException e) {
             log.severe("NumberFormatException caught and re-thrown as SessionException");
-            throw new SessionException(e);
+            throw new SessionException("NumberFormatException caught", e);
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as SessionException");
+            throw new SessionException("ConfigurationException caught", e);
         }
         return false;
     }
@@ -190,12 +193,15 @@ public class Session {
      *         string <code>[urlPrefix][id][urlPostfix]</code> is returned,
      *         where <code>[urlPrefix]</code> and <code>[urlPostfix]</code> are
      *         the parameter strings given to the constructor.
+     * @throws ConfigurationException If unable to resolve the property
+     *                                <code>no.feide.moria.LoginURL</code>.
      */
-    public String getRedirectURL() {
+    public String getRedirectURL()
+    throws ConfigurationException {
         
         String retval = "";
         if (user == null) {
-            retval = System.getProperty("no.feide.moria.LoginURL")+"?id="+sessionID;
+            retval = Configuration.getProperty("no.feide.moria.LoginURL")+"?id="+sessionID;
         } else {
             if (urlPrefix != null)
                 retval = retval + urlPrefix;

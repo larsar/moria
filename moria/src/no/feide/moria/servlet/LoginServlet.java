@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Cookie;
 
+import no.feide.moria.Configuration;
+import no.feide.moria.ConfigurationException;
 import no.feide.moria.Credentials;
 import no.feide.moria.SessionException;
 import no.feide.moria.NoSuchSessionException;
@@ -84,8 +86,8 @@ public class LoginServlet extends VelocityServlet {
 
     /**
      * Some basic initialization.
-     * @throws ServletException If a SessionException is caught when getting
-     *                          the the session store.
+     * @throws ServletException If a <code>SessionException</code> or a
+     *                          <code>ConfigurationException</code> is caught.
      */
     public void init()
     throws ServletException {
@@ -93,7 +95,7 @@ public class LoginServlet extends VelocityServlet {
         
         try {
             /* Initialize session timeout timer */
-            int sessionDelaySec = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
+            int sessionDelaySec = new Integer(Configuration.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
             log.config("Starting time out service. Repeat every "+sessionDelaySec+" seconds.");
             sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelaySec*1000);
         
@@ -101,7 +103,10 @@ public class LoginServlet extends VelocityServlet {
             sessionStore = SessionStore.getInstance();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as ServletException");
-            throw new ServletException("SessionException caught and re-thrown as ServletException", e);
+            throw new ServletException("SessionException caught", e);
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as ServletException");
+            throw new ServletException("ConfigurationException caught", e);
         }
     }
 
@@ -119,29 +124,39 @@ public class LoginServlet extends VelocityServlet {
     /**
      * Called by the VelocityServlet init(). Reads the template path
      * from Properties.
+     * @throws IOException If a <code>ConfigurationException</code> is
+     *                     caught.
      */
     protected Properties loadConfiguration(ServletConfig config )
-        throws IOException, FileNotFoundException {
+    throws IOException, FileNotFoundException {
         log.finer("loadConfiguration(ServletConfig)");
 
-        loginURL = System.getProperty("no.feide.moria.LoginURL");
+        try {
+            
+            loginURL = Configuration.getProperty("no.feide.moria.LoginURL");
 
-        Properties p = new Properties();
-        String path = System.getProperty("no.feide.moria.servlet.TemplateDir");
+            Properties p = new Properties();
+            String path = Configuration.getProperty("no.feide.moria.servlet.TemplateDir");
+            
 
-        p.setProperty("file.resource.loader.cache", "true");
-        p.setProperty("file.resource.loader.modificationCheckInterval","0");
+            p.setProperty("file.resource.loader.cache", "true");
+            p.setProperty("file.resource.loader.modificationCheckInterval","0");
 
-        /* If path is null, log it. */ 
-        if (path == null) {
-            log.severe("Path to Velocity templates not set.");
-            throw new FileNotFoundException("Template path not found.");
+            /* If path is null, log it. */ 
+            if (path == null) {
+                log.severe("Path to Velocity templates not set.");
+                throw new FileNotFoundException("Template path not found.");
+            }
+
+            p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH,  path);
+            p.setProperty("runtime.log", Configuration.getProperty("no.feide.moria.VelocityLog"));
+            
+            return p;
+            
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as IOException");
+            throw new IOException("ConfigurationException caught");
         }
-
-        p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH,  path);
-        p.setProperty("runtime.log", System.getProperty("no.feide.moria.VelocityLog"));
-
-        return p;
     }
 
 
@@ -540,7 +555,7 @@ public class LoginServlet extends VelocityServlet {
 
         /* Remember realm (cookie). */
         Cookie cookie = new Cookie("realm", realm);
-        int validDays = new Integer(System.getProperty("no.feide.moria.servlet.realmCookieValidDays")).intValue();
+        int validDays = new Integer(Configuration.getProperty("no.feide.moria.servlet.realmCookieValidDays")).intValue();
         cookie.setMaxAge(validDays*24*60*60); // Days to seconds
         cookie.setComment("Home institution");
         cookie.setVersion(1);
@@ -554,8 +569,11 @@ public class LoginServlet extends VelocityServlet {
     /**
      * Set response to 302 (redirect) and location header so that the
      * user is redirected back to the web service.
+     * @throws ConfigurationException If unable to get the session's redirect
+     *                                URL.
      */ 
-    private void redirectToWebService(HttpServletResponse response, Session session) {
+    private void redirectToWebService(HttpServletResponse response, Session session)
+    throws ConfigurationException {
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
         response.setHeader("Location", session.getRedirectURL());
         log.info("Redirect to Mellon: "+session.getRedirectURL());

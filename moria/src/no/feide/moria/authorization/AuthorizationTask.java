@@ -1,8 +1,9 @@
 package no.feide.moria.authorization;
 
 import java.util.TimerTask;
-import java.util.logging.Logger;    
-
+import java.util.logging.Logger;
+import no.feide.moria.Configuration;
+import no.feide.moria.ConfigurationException;
 
 /**
  * Represents a periodic task to manipulate the session store.
@@ -19,9 +20,15 @@ extends TimerTask {
     public void run() {
         log.finer("run()");
 
-        int timeout = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue()*60*1000; // Minutes to milliseconds
-
-        AuthorizationData.getInstance().upToDate();
+        try {
+            
+            int timeout = new Integer(Configuration.getProperty("no.feide.moria.SessionTimeout")).intValue()*60*1000; // Minutes to milliseconds
+            AuthorizationData.getInstance().upToDate();
+            
+        } catch (ConfigurationException e) {
+            log.warning("ConfigurationException caught, message is \""+e.getMessage()+'\"');
+        }
+        
     }    
     
 }

@@ -10,8 +10,6 @@ import java.util.Vector;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 import org.doomdark.uuid.UUIDGenerator;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import no.feide.moria.authorization.WebService;
 
 public class SessionStore {
@@ -47,42 +45,15 @@ public class SessionStore {
     throws SessionException {
         log.finer("SessionStore()");
 
-        // Read properties.
         try {
-            if (System.getProperty("no.feide.moria.config.file") == null) {
-                log.config("no.feide.moria.config.file not set; default is \"/moria.properties\"");
-                System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
-            }
-            else {
-                log.config("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
-                System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
-            }
-        } 
-        catch (FileNotFoundException e) {
-            log.severe("FileNotFoundException during system properties import");
-            throw new SessionException("FileNotFoundException during system properties import");
-        } 
-        catch (IOException e) {
-            log.severe("IOException during system properties import");
-            throw new SessionException("IOException during system properties import");
+            int initialSize = new Integer(Configuration.getProperty("no.feide.moria.SessionStoreInitMapSize")).intValue();
+            float loadFactor = new Float(Configuration.getProperty("no.feide.moria.SessionStoreMapLoadFactor")).floatValue();
+            sessions = Collections.synchronizedMap(new HashMap(initialSize, loadFactor));
+            log.config("Session register initialized. Initial size="+initialSize+" loadFactor="+loadFactor);
+        } catch (ConfigurationException e) {
+            log.severe("ConfigurationException caught and re-thrown as SessionException");
+            throw new SessionException("ConfigurationException caught and re-thrown as SessionException");
         }
-        
-        // Setting properties, with sanity checks.
-        String s = System.getProperty("no.feide.moria.SessionStoreInitMapSize");
-        if (s == null) {
-            log.severe("Missing required system property: no.feide.moria.SessionStoreInitMapSize");
-            throw new SessionException("Missing required system property: no.feide.moria.SessionStoreInitMapSize");
-        }
-        int initialSize = new Integer(s).intValue();
-        s = System.getProperty("no.feide.moria.SessionStoreMapLoadFactor");
-        if (s == null) {
-            log.severe("Missing required system property: no.feide.moria.SessionStoreMapLoadFactor");
-            throw new SessionException("Missing required system property: no.feide.moria.SessionStoreMapLoadFactor");
-        }
-        float loadFactor = new Float(s).floatValue();
-        
-        sessions = Collections.synchronizedMap(new HashMap(initialSize, loadFactor));
-        log.config("Session register initialized. Initial size="+initialSize+" loadFactor="+loadFactor);
     }
     
     
