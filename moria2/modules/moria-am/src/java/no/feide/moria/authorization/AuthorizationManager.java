@@ -38,17 +38,16 @@ import java.util.Properties;
  * The authorization data source is XML which is passed as a properties object
  * through the setConfig method. The config data must contain information about
  * every web service allowed to access Moria, and which attributes operations
- * and subsystems the service can access.
- * 
+ * and subsystems the service can access. <br>
+ * <br>
  * When a new set of data arrives the authorization manager parses it and
  * replaces the old dataset if the parsing was successful. The authorization
  * manager can then be used to answer authorization questions, most likely from
- * the Moria controller.
- * 
+ * the Moria controller. <br>
+ * <br>
  * When the controller receives a request it asks the authorization manager if
  * the web service is authorized to perform the request. Every request is
  * supplied with the service principal.
- * 
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
@@ -213,14 +212,22 @@ public final class AuthorizationManager {
     /**
      * Creates a AuthorizationClient object based on the supplied XML element.
      * @param element
-     *            The XML element representing the client service
-     * @return The object representing the client service
+     *            The XML element representing the client service.
+     * @return A new object representing the client service.
      * @throws IllegalConfigException
-     *             if the name attribute is not set for the given element
+     *             if the <i>name </i> attribute is not set for the given
+     *             element.
+     * @throws IllegalArgumentException
+     *             If <code>element</code> is <code>null</code>.
      */
     static AuthorizationClient parseClientElem(final Element element)
-    throws IllegalConfigException {
+    throws IllegalConfigException, IllegalArgumentException {
 
+        // Sanity check.
+        if (element == null)
+            throw new IllegalArgumentException("Client element cannot be null");
+
+        // Prepare some variables for later use.
         final String name;
         final String displayName;
         final String url;
@@ -231,26 +238,28 @@ public final class AuthorizationManager {
         HashSet subsys = null;
         final HashMap attrs;
 
-        if (element == null) { throw new IllegalArgumentException("Element cannot be null"); }
-
+        // Get and check name.
         name = element.getAttributeValue("name");
-        if (name == null || name.equals("")) { throw new IllegalConfigException("Name attribute must be a non empty string."); }
+        if (name == null || name.equals(""))
+            throw new IllegalConfigException("Name attribute must be a non empty string.");
 
+        // Get other content.
         displayName = getChildContent(element, "DisplayName");
         url = getChildContent(element, "URL");
         language = getChildContent(element, "Language");
         home = getChildContent(element, "Home");
-
         attrs = parseAttributesElem(element.getChild("Attributes"));
         oper = parseListElem(element.getChild("Operations"));
-        
-        // Parse subsystems element, if it exists.
-        Element child = element.getChild("SubSystems");
-        if (child != null)
-            subsys = parseListElem(child);
-        
         affil = parseListElem(element.getChild("Affiliation"));
 
+        // Parse subsystems element, if it exists.
+        Element child = element.getChild("Subsystems");
+        if (child != null)
+            subsys = parseListElem(child);
+        else
+            System.err.println("Subsystems is NULL!!!");
+
+        // Create and return client.
         return new AuthorizationClient(name, displayName, url, language, home, affil, oper, subsys, attrs);
     }
 

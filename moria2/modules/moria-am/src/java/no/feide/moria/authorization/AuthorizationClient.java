@@ -96,45 +96,66 @@ final class AuthorizationClient {
 
 
     /**
-     * Constructor.
+     * Constructor. Creates a new object describing a Moria service client, used
+     * for authorization purposes.
      * @param name
-     *            serviceID
+     *            serviceID The unique client ID assigned to this service.
+     *            Cannot be <code>null</code> or an empty string.
      * @param displayName
-     *            full name of service
+     *            Full name of the service, for display purposes. Cannot be
+     *            <code>null</code> or an empty string.
      * @param url
-     *            URL to the service main page
+     *            URL to the service main page, where information on the service
+     *            should be found. Cannot be <code>null</code> or an empty
+     *            string.
      * @param language
-     *            default language for the service
+     *            Default language for the service. Must match one of the
+     *            configured languages. Cannot be <code>null</code> or an
+     *            empty string.
      * @param home
-     *            service home organization
+     *            Service home organization. Must match one of the configured
+     *            organizations. Cannot be <code>null</code> or an empty
+     *            string.
      * @param affiliation
-     *            the organizations affiliated to the service
+     *            The organizations affiliated to the service. Cannot be
+     *            <code>null</code>.
      * @param operations
-     *            operations that the service can perform
+     *            Operations that the service can perform. Cannot be
+     *            <code>null</code>.
      * @param attributes
-     *            attributes the service can access
+     *            Attributes the service can access. Cannot be <code>null</code>.
      * @param subsystems
      *            Subsystems the service can create proxy tickets for. May be
      *            <code>null</code>.
+     * @throws IllegalArgumentException
+     *             If any of <code>name</code>,<code>displayName</code>,
+     *             <code>url</code>,<code>language</code>,
+     *             <code>home</code>,<code>affiliation</code>,
+     *             <code>operations</code>, or <code>attributes</code> are
+     *             <code>null</code> or an empty string (where applicable).
      */
-    AuthorizationClient(final String name, final String displayName, final String url, final String language, final String home, final HashSet affiliation, final HashSet operations, final HashSet subsystems, final HashMap attributes) {
+    AuthorizationClient(final String name, final String displayName, final String url, final String language, final String home, final HashSet affiliation, final HashSet operations, final HashSet subsystems, final HashMap attributes)
+    throws IllegalArgumentException {
 
-        if (name == null || name.equals("")) { throw new IllegalArgumentException("Name must be a non empty string."); }
+        // Sanity checks.
+        if (name == null || name.equals(""))
+            throw new IllegalArgumentException("Name must be a non-empty string.");
+        if (displayName == null || displayName.equals(""))
+            throw new IllegalArgumentException("Display name must be a non-empty string.");
+        if (url == null || url.equals(""))
+            throw new IllegalArgumentException("URL must be a non-empty string.");
+        if (language == null || language.equals(""))
+            throw new IllegalArgumentException("Language must be a non-empty string.");
+        if (home == null || home.equals(""))
+            throw new IllegalArgumentException("Home must be a non-empty string.");
+        if (affiliation == null)
+            throw new IllegalArgumentException("Affiliation cannot be null");
+        if (operations == null)
+            throw new IllegalArgumentException("Operations cannot be null");
+        if (attributes == null)
+            throw new IllegalArgumentException("Attributes cannot be null");
 
-        if (displayName == null || displayName.equals("")) { throw new IllegalArgumentException("displayName must be a non empty string."); }
-
-        if (url == null || url.equals("")) { throw new IllegalArgumentException("URL must be a non empty string."); }
-
-        if (language == null || language.equals("")) { throw new IllegalArgumentException("Language must be a non empty string."); }
-
-        if (home == null || home.equals("")) { throw new IllegalArgumentException("Home must be a non empty string."); }
-
-        if (affiliation == null) { throw new IllegalArgumentException("Affiliation cannot be null."); }
-
-        if (operations == null) { throw new IllegalArgumentException("Operations cannot be null."); }
-
-        if (attributes == null) { throw new IllegalArgumentException("Attribtues cannot be null."); }
-
+        // Assign.
         this.name = name;
         this.displayName = displayName;
         this.url = url;
