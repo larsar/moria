@@ -18,6 +18,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import no.feide.moria.Credentials;
 import no.feide.moria.SessionException;
@@ -27,6 +28,7 @@ import no.feide.moria.Session;
 import no.feide.moria.User;
 import no.feide.moria.BackendException;
 import no.feide.moria.SessionStoreTask;
+import no.feide.moria.authorization.AuthorizationTask;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -59,13 +61,18 @@ public class LoginServlet extends VelocityServlet {
     SessionStore sessionStore = SessionStore.getInstance();
     
     Timer sessionTimer = new Timer();
+    Timer authTimer = new Timer();
 
     public void init() {
-        // Initialize periodical session sessionStore checks.
-        int delay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
-        log.info("Starting time out service with delay= "+delay+"ms");
-        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), delay);
+        /* Initialize session timeout timer */
+        int sessionDelay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
+        log.info("Starting time out service with delay= "+sessionDelay+"ms");
+        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelay);
 
+        /* Initialize authorization data timer */
+        int authDelay = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerDelay")).intValue()*1000; // Seconds to milliseconds
+        log.info("Starting authorization update service with delay= "+authDelay+"ms");
+        authTimer.scheduleAtFixedRate(new AuthorizationTask(), new Date(), authDelay);
     }
 
 
@@ -81,8 +88,8 @@ public class LoginServlet extends VelocityServlet {
 
 
     /**
-     *   Called by the VelocityServlet init(). Reads the template path
-     *   from Properties.
+     * Called by the VelocityServlet init(). Reads the template path
+     * from Properties.
      */
     protected Properties loadConfiguration(ServletConfig config )
         throws IOException, FileNotFoundException {
@@ -128,14 +135,16 @@ public class LoginServlet extends VelocityServlet {
         
         log.finer("handleRequest(HttpServletRequest, HttpServletResponse, Context)");
 
+                HttpSession httpSession = 
+            ((HttpServletRequest)request).getSession(true);
 
 
         /* A GET should only return the login page. POST is used for
          * login attempts.*/ 
         try {
-            if (request.getMethod().equals("GET"))
+            if (request.getMethod().equals("GET")) 
                 return loginPage(request, response, context);
-            
+                        
             else if (request.getMethod().equals("POST"))
                 return attemptLogin(request, response, context);
 
@@ -178,17 +187,21 @@ public class LoginServlet extends VelocityServlet {
         String acceptLanguage = request.getHeader("Accept-Language");
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
-        // nn, no;q=0.80, nb;q=0.60, en-us;q=0.40, en;q=0.20
+
+        if (acceptLanguage == null || acceptLanguage.equals("")) 
+            acceptLanguage = "no";
 
         StringTokenizer tokenizer = new StringTokenizer(acceptLanguage, ",");
         Locale locale = null;
 
-        // Find fallback resource bundle.
+
+        
+        /* Find fallback resource bundle. */
         try {
             fallback = ResourceBundle.getBundle(bundleName, new Locale("bogus"));
         }
         catch (MissingResourceException e) {
-            // No fallback
+            /* No fallback */
         }            
 
         /* Parse Accept-Language and find matching resource bundle */
@@ -196,14 +209,14 @@ public class LoginServlet extends VelocityServlet {
             String lang = tokenizer.nextToken();
             int index;
 
-            // Languages are devided by ";"
+            /* Languages are devided by ";" */
             if ((index = lang.indexOf(";")) != -1) {
                 lang = lang.substring(0, index);
             }
 
             lang = lang.trim();
 
-            // Language and country is devided by "-" (optional)
+            /* Language and country is devided by "-" (optional) */
             if ((index = lang.indexOf("-")) != -1) {
                 lang = lang.substring(0, index);
             }
@@ -212,11 +225,11 @@ public class LoginServlet extends VelocityServlet {
             locale = new Locale(lang);
             bundle = ResourceBundle.getBundle(bundleName, locale);
 
-            // Abort search if a bundle (not fallback) is found
+            /* Abort search if a bundle (not fallback) is found */
             if (bundle != fallback) 
                 break;
 
-            // About search if the fallback bundle is actually requested
+            /* About search if the fallback bundle is actually requested */
             else if (bundle == fallback && locale.getLanguage().equals(Locale.getDefault().getLanguage()))
                 break;
 
@@ -224,12 +237,12 @@ public class LoginServlet extends VelocityServlet {
 
 
 
-        // Should never happen, but just in case.
+        /* Should never happen, but just in case. */
         if (bundle == null)
             bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
 
 
-        // Set template-variables from properties
+        /* Set template-variables from properties */
         for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
             String key = (String) e.nextElement();
             String value = bundle.getString(key);
@@ -244,7 +257,7 @@ public class LoginServlet extends VelocityServlet {
             context.put(key, value);
         }        
 
-        // Set or reset error messages
+        /* Set or reset error messages */
         if (errorType != null) {
             context.put("errorMessage", bundle.getString("error_"+errorType));
             context.put("errorDescription", bundle.getString("error_"+errorType+"_desc"));
@@ -256,7 +269,7 @@ public class LoginServlet extends VelocityServlet {
         }
 
 
-        // If no sessionID then remove loginURL
+        /* If no sessionID then remove loginURL */
         if (sessionID != null) 
             context.put("loginURL", loginURL+"?id="+sessionID);
         
@@ -289,6 +302,7 @@ public class LoginServlet extends VelocityServlet {
         try {
             
             Session session = sessionStore.getSession(id);
+           
             
             // Should also generate new sessionID
             // (SessionStore.confirmSession()) to avoid the web
@@ -388,11 +402,4 @@ public class LoginServlet extends VelocityServlet {
     
         return null; // Do not use template for redirect.
     }
-
-
-
-
-
-
-
 }
