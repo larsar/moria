@@ -40,10 +40,12 @@ public class StatsStore {
     /** Time when Moria was started */
     private Date started = null;
 
-
     /** Contains all Web Service statistics. */
     Map wsStats = null;
 
+    /** Number of failed attempts to create sesion (authentication of
+     * web service failed */
+    int deniedSessionsAuthentication = 0;
 
     /**
      * Constructor. 
@@ -111,7 +113,7 @@ public class StatsStore {
         int loginAttemptSuccess = 0;
         
         int createdSessions = 0;
-        int deniedSessionsAuthentication = 0;
+        int deniedSessionsURL = 0;
         int deniedSessionsAuthorization  = 0;
         
         int sessionsTimeoutSSO = 0;
@@ -124,19 +126,20 @@ public class StatsStore {
             WebServiceStats ws = (WebServiceStats) wsStats.get(it.next());
             
             createdSessions += ws.getSessionStats("created");
-            deniedSessionsAuthentication += ws.getSessionStats("deniedAuthentication");
             deniedSessionsAuthorization += ws.getSessionStats("deniedAuthorization");
             sessionsTimeoutSSO += ws.getSessionStats("timeoutSSO");
             sessionsTimeoutAUTH += ws.getSessionStats("timeoutAuth");
             sessionsTimeoutUSER += ws.getSessionStats("timeoutUser");
             loginAttemptFailed += ws.getSessionStats("authFailed");
             loginAttemptFailed += ws.getSessionStats("authSuccess");
+            deniedSessionsURL += ws.getSessionStats("deniedURL");
         }
 
+        stats.put("deniedSessionsAuthentication", ""+deniedSessionsAuthentication);
         stats.put("loginAttemptFailed", ""+loginAttemptFailed);
         stats.put("loginAttemptSuccess", ""+loginAttemptSuccess);
         stats.put("createdSessions", ""+createdSessions);
-        stats.put("deniedSessionsAuthentication", ""+deniedSessionsAuthentication);
+        stats.put("deniedSessionsURL", ""+deniedSessionsURL);
         stats.put("deniedSessionsAuthorization", ""+deniedSessionsAuthorization);
         stats.put("sessionsTimeoutSSO", ""+sessionsTimeoutSSO);
         stats.put("sessionsTimeoutAUTH", ""+sessionsTimeoutAUTH);
@@ -152,11 +155,20 @@ public class StatsStore {
     }
     
     public void createSessionAttempt(String wsName, String result) {
-        getWSStats(wsName).createSessionAttempt(result);
+        if (result.equals("AUTHN")) {
+            deniedSessionsAuthentication++;
+            System.out.println("AUTHN: "+deniedSessionsAuthentication);
+        }
+        else 
+            getWSStats(wsName).createSessionAttempt(result);
     }
 
     public void sessionTimeout(String wsName, String type) {
         getWSStats(wsName).sessionTimeout(type);
+    }
+
+    public HashMap getWsStats() {
+        return new HashMap(wsStats);
     }
 
 }
