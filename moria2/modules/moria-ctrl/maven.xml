@@ -38,7 +38,7 @@
          before deleting the temporary file.
     -->
     <tempfile property="project.test.generated.dir.file"
-              destDir="${project.test.generated.dir}"/>
+              destDir="${maven.build.dir}"/>
     <echo message="project.test.templates.dir.fixed=${project.test.templates.dir}"
           file="${project.test.generated.dir.file}"
           level="verbose"/>
@@ -46,7 +46,6 @@
              token="\"
              value="/"/>
     <property file="${project.test.generated.dir.file}"/>
-    <echo message="${project.test.templates.dir.fixed}"/>
     <delete file="${project.test.generated.dir.file}"
             deleteonexit="true"/>
          
