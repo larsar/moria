@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
+import javax.naming.AuthenticationException;
+import javax.naming.CommunicationException;
+import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -116,10 +119,17 @@ implements DirectoryManagerBackend {
      * @return <code>true</code> if the user can be looked up through JNDI,
      *         otherwise <code>false</code>.
      */
-    public boolean userExists(final String username) {
+    public boolean userExists(final String username)
+    throws BackendException {
+       
+        // Sanity check.
+        if ((username == null) || (username.length() == 0))
+            return false;
 
-        // TODO: Implement.
-        return false;
+        // TODO: Get eduPersonPrincipalName attribute name from
+        // configuration.
+        String pattern = "eduPersonPrincipalName=" + username;
+        return (ldapSearch(pattern) != null);
 
     }
 
@@ -141,7 +151,7 @@ implements DirectoryManagerBackend {
      *             If <code>userCredentials</code> is <code>null</code>.
      */
     public HashMap authenticate(Credentials userCredentials, String[] attributeRequest)
-    throws AuthenticationFailedException {
+    throws AuthenticationFailedException, BackendException {
 
         // Sanity check.
         if (userCredentials == null)
@@ -155,9 +165,57 @@ implements DirectoryManagerBackend {
         if ((password == null) || (password.length() == 0))
             throw new AuthenticationFailedException("Password cannot be NULL or an empty string");
 
-        // TODO: Implement.
+        try {
 
-        return null;
+            // Map user ID domain to LDAP URL and connect to server.
+            // TODO: Get eduPersonPrincipalName attribute name from
+            // configuration.
+            String pattern = "eduPersonPrincipalName=" + username;
+            Hashtable env = new Hashtable(defaultEnv);
+
+            // TODO: Add support for more than one reference?
+
+            env.put(Context.PROVIDER_URL, myReference);
+            try {
+                ldap = new InitialLdapContext(env, null);
+            } catch (CommunicationException e) {
+                throw new BackendException("Unable to connect to " + env.get(Context.PROVIDER_URL));
+            }
+
+            // Search for user element.
+            // TODO: Not to be done if reference is an explicit reference?
+            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
+            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
+            rdn = ldapSearch(pattern);
+            if (rdn == null) {
+
+                // No user element found. Try to guess the DN anyway.
+                log.logWarn("No subtree match for " + pattern + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL));
+                rdn = userCredentials.getUsername();
+                // TODO: Get uid attribute name from configuration.
+                rdn = "uid=" + rdn.substring(0, rdn.indexOf('@'));
+                log.logWarn("Guessing on RDN " + rdn);
+
+            }
+
+            // Authenticate.
+            ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
+            ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
+            ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+            try {
+                ldap.reconnect(null);
+                return getAttributes(attributeRequest); // Success.
+            } catch (AuthenticationException e) {
+                throw new AuthenticationFailedException("Failed to authenticate as " + rdn + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL));
+            }
+
+        } catch (ConfigurationException e) {
+            // TODO: Better exception handling.
+            throw new BackendException("ConfigurationException caught", e);
+        } catch (NamingException e) {
+            // TODO: Better exception handling.
+            throw new BackendException("NamingException caught", e);
+        }
 
     }
 
