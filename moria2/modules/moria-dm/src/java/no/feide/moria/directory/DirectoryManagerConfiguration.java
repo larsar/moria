@@ -1,11 +1,13 @@
 package no.feide.moria.directory;
 
-//import no.feide.moria.log.MessageLogger;
+//import no.feide.moria.log.log;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import no.feide.moria.directory.DirectoryManagerConfigurationException;
+import no.feide.moria.log.MessageLogger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -21,6 +23,9 @@ public class DirectoryManagerConfiguration {
 
     /** Internal representation of the backend class. */
     private static Class backendFactoryClass;
+    
+    /** The message logger. */
+    private static MessageLogger log = new MessageLogger(DirectoryManagerConfiguration.class);
 
     
     /**
@@ -31,13 +36,17 @@ public class DirectoryManagerConfiguration {
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
-        if (config == null)
-            DirectoryManager.error("Parameter cannot be NULL", null);
+        if (config == null) {
+            log.logCritical("Configuration properties cannot be NULL");
+            throw new DirectoryManagerConfigurationException("Configuration properties cannot be NULL");
+        }
 
         // Preparing to read configuration from file.
         String configFile = (String) config.get("directoryConfiguration");
-        if (configFile == null || configFile.equals(""))
-            DirectoryManager.error("Missing basic directory configuration (directoryConfiguration not set)", null);
+        if (configFile == null || configFile.equals("")) {
+            log.logCritical("Missing basic directory configuration (directoryConfiguration not set)");
+            throw new DirectoryManagerConfigurationException("Missing basic directory configuration (directoryConfiguration not set)");
+        }
 
         // Read index (not the index files themselves, mind you) and backend
         // configuration.
@@ -47,9 +56,11 @@ public class DirectoryManagerConfiguration {
             parseIndexConfig(rootElement);
             parseBackendConfig(rootElement);
         } catch (IOException e) {
-            DirectoryManager.error("Unable to read from configuration file", e);
+            log.logCritical("Unable to read from configuration file", e);
+            throw new DirectoryManagerConfigurationException("Unable to read from configuration file", e);
         } catch (JDOMException e) {
-            DirectoryManager.error("Unable to parse configuration file", e);
+            log.logCritical("Unable to parse configuration file", e);
+            throw new DirectoryManagerConfigurationException("Unable to parse configuration file", e);
         }
 
     }
@@ -72,8 +83,10 @@ public class DirectoryManagerConfiguration {
 
         // Get the element, with sanity checks.
         List elements = rootElement.getChildren(name);
-        if (elements.size() != 1)
-            DirectoryManager.error(name + " element not unique in configuration file", null);
+        if (elements.size() != 1) {
+            log.logCritical('\"'+name + " element not unique in configuration file");
+            throw new DirectoryManagerConfigurationException('\"'+name + "\" element not unique in configuration file");
+        }
         elements = null; // Cleanup.
 
         return rootElement.getChild(name);
@@ -95,8 +108,10 @@ public class DirectoryManagerConfiguration {
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
-        if (rootElement == null)
-            DirectoryManager.error("Missing root element in configuration file", null);
+        if (rootElement == null) {
+            log.logCritical("Missing root element in configuration file");
+            throw new DirectoryManagerConfigurationException("Missing root element in configuration file");
+        }
 
         // Get the index element, with sanity checks.
         Element indexElement = getUniqueElement(rootElement, "Index");
@@ -104,12 +119,15 @@ public class DirectoryManagerConfiguration {
 
         // Get index class, with sanity checks.
         Attribute a = getUniqueElement(indexElement, "Class").getAttribute("name");
-        if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
-            DirectoryManager.error("Index class not set in configuration file", null);
+        if ((a == null) || (a.getValue() == null) || (a.getValue() == "")) {
+            log.logCritical("Index class not set in configuration file");
+            throw new DirectoryManagerConfigurationException("Index class not set in configuration file");
+        }
         try {
             indexClass = Class.forName(a.getValue());
         } catch (ClassNotFoundException e) {
-            DirectoryManager.error("Index class " + a.getValue() + " not found", e);
+            log.logCritical("Index class " + a.getValue() + " not found", e);
+            throw new DirectoryManagerConfigurationException("Index class " + a.getValue() + " not found", e);
         }
 
     }
@@ -140,8 +158,10 @@ public class DirectoryManagerConfiguration {
     throws DirectoryManagerConfigurationException {
 
         // Sanity check.
-        if (rootElement == null)
-            DirectoryManager.error("Missing root element in configuration file", null);
+        if (rootElement == null) {
+            log.logCritical("Missing root element in configuration file");
+            throw new DirectoryManagerConfigurationException("Missing root element in configuration file");
+        }
 
         // Get the backend element, with sanity checks.
         Element backendElement = getUniqueElement(rootElement, "Backend");
@@ -149,12 +169,15 @@ public class DirectoryManagerConfiguration {
 
         // Get backend class, with sanity checks.
         Attribute a = getUniqueElement(backendElement, "Class").getAttribute("name");
-        if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
-            DirectoryManager.error("Backend class not set in configuration file", null);
+        if ((a == null) || (a.getValue() == null) || (a.getValue() == "")) {
+            log.logCritical("Backend class not set in configuration file");
+            throw new DirectoryManagerConfigurationException("Backend class not set in configuration file");
+        }
         try {
             backendFactoryClass = Class.forName(a.getValue());
         } catch (ClassNotFoundException e) {
-            DirectoryManager.error("Backend factory class " + a.getValue() + " not found", e);
+            log.logCritical("Backend factory class " + a.getValue() + " not found", e);
+            throw new DirectoryManagerConfigurationException("Backend factory class " + a.getValue() + " not found", e);
         }
 
     }
