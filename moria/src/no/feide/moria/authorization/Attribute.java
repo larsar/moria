@@ -37,12 +37,14 @@ public class Attribute {
         log.finer("Attribute(String, boolean, String)");
 
         /* Set security level */
-        if (secLevelStr == null) 
+        if (secLevelStr == null || secLevelStr.equals("")) {
+            log.warning("Attribute secLevel not set. Defaults to HIGH.");
             secLevelStr = "HIGH";
+        }
 
         if (!secLevels.containsKey(secLevelStr)) {
+            log.warning("Invalid attribute secLevel: \""+secLevelStr+"\" Set to default (HIGH).");
             secLevelStr = "HIGH";
-            log.warning("Invalid security level: \""+secLevelStr+"\" Set to default (HIGH).");
         }
 
 
