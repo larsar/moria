@@ -2,14 +2,24 @@ package no.feide.moria.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import java.net.URL;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.logging.*;
 import java.rmi.RemoteException;
+import java.net.MalformedURLException;
+
+import java.util.HashMap;
+import java.util.logging.Logger;
+
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
-import no.feide.moria.*;
+
+import no.feide.moria.Session;
+import no.feide.moria.SessionStore;
+import no.feide.moria.SessionException;
+import no.feide.moria.BackendException;
+import no.feide.moria.Credentials;
 import no.feide.moria.authorization.WebService;
 import no.feide.moria.authorization.AuthorizationData;
 
@@ -96,10 +106,19 @@ implements AuthenticationIF, ServiceLifecycle {
     throws RemoteException {
         log.finer("requestSession(String[], String, String)");
         
-        // TODO:
-        // Make a test URL from pre/post and check URL validity. Throw if not.
-        // Add a subclass to RemoteException to signal URL invalid?
+        /* Check if prefix and postfix, together with a possible
+         * session ID, is a valid URL. */
+        String simulatedURL = prefix+"MORIAID"+postfix;
+        try {
+            new URL(simulatedURL);
+        }
 
+        catch (MalformedURLException e) {
+            log.severe("Unvalid URL: "+simulatedURL);
+            throw new RemoteException("Malformed URL: "+simulatedURL);
+        }
+
+        // TODO: Change "foo" with real service identifier
         WebService ws = AuthorizationData.getInstance().getWebService("foo");
         
         if (ws == null) {
