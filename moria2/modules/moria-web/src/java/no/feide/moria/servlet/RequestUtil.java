@@ -46,14 +46,19 @@ import no.feide.moria.log.MessageLogger;
 public final class RequestUtil {
 
     /**
-     * Prefix for properties in config.
-     */   
+     * Prefix for all web module properties. <br>
+     * <br>
+     * Current value is <code>"no.feide.moria.web."</code>.
+     */
     private static final String PATH_PREFIX = "no.feide.moria.web.";
-    
+
     /**
-     * Property name for: Config.
+     * Property name for web module configuration. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "config"</code>.
      */
     public static final String PROP_CONFIG = PATH_PREFIX + "config";
+
     /**
      * Configuration property giving the name of the URL parameter containing
      * the Moria ticket ID. <em>This property is required.</em><br>
@@ -74,7 +79,7 @@ public final class RequestUtil {
      * <br>
      * Current value is <code>PATH_PREFIX + "login.default_language"</code>.
      */
-    
+
     public static final String PROP_LOGIN_DEFAULT_LANGUAGE = PATH_PREFIX + "login.default_language";
 
     /**
@@ -95,7 +100,7 @@ public final class RequestUtil {
      * <em>This property is required.</em><br>
      * <br>
      * Current value is <code>PATH_PREFIX + "information.url_prefix"</code>.
-     */    
+     */
     public static final String PROP_INFORMATION_URL_PREFIX = PATH_PREFIX + "information.url_prefix";
 
     /**
@@ -200,25 +205,26 @@ public final class RequestUtil {
     public static final String BUNDLE_LOGIN = "login";
 
     /**
-     * Configuration property for the InformationServlet feideattribs xml file path
+     * Configuration property for the InformationServlet feideattribs xml file
+     * path
      */
     public static final String PROP_INFORMATION_FEIDEATTRIBS_XML = PATH_PREFIX + "information.feideattribs_xml";
-     
+
     /**
      * Bundle for the information servlet.
      */
     public static final String BUNDLE_INFORMATIONSERVLET = "feideattribs";
-    
+
     /**
      * Bundle for the information page about the information servlet.
      */
     public static final String BUNDLE_INFOABOUT = "infoabout";
-    
+
     /**
      * Bundle for the faq page
      */
     public static final String BUNDLE_FAQ = "faq";
-    
+
     /**
      * Bundle for the error page
      */
@@ -228,7 +234,7 @@ public final class RequestUtil {
      * Legal name for an organization, used by Information Servlet
      */
     public static final String EDU_ORG_LEGAL_NAME = "eduOrgLegalName";
-    
+
     /**
      * Link to faq, shown on the login page
      */
@@ -393,6 +399,64 @@ public final class RequestUtil {
 
     /** Used for logging. */
     private static final MessageLogger log = new MessageLogger(LoginServlet.class);
+
+    /**
+     * Used to build the QName for mapping remote Attribute type to local type.
+     * <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.attributeNamespaceURI"</code>.
+     */
+    public static final String PROP_DEMO_ATTRIBUTE_NAMESPACE_URI = PATH_PREFIX + "demo.attributeNamespaceURI";
+
+    /**
+     * The service endpoint. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.serviceEndpoint"</code>.
+     */
+    public static final String PROP_DEMO_SERVICE_ENDPOINT = PATH_PREFIX + "demo.serviceEndpoint";
+
+    /**
+     * A comma-separated list of attributes requested by the main service. <br>
+     * <br>
+     * Current value is
+     * <code>PATH_PREFIX + "demo.master.attributeRequest"</code>.
+     */
+    public static final String PROP_DEMO_MASTER_ATTRIBUTE_REQUEST = PATH_PREFIX + "demo.master.attributeRequest";
+
+    /**
+     * The username used by DemoServlet to access Moria2 as a main service. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.master.username"</code>.
+     */
+    public static final String PROP_DEMO_MASTER_USERNAME = PATH_PREFIX + "demo.master.username";
+
+    /**
+     * The password used by DemoServlet to access Moria2 as a main service. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.master.password"</code>.
+     */
+    public static final String PROP_DEMO_MASTER_PASSWORD = PATH_PREFIX + "demo.master.password";
+
+    /**
+     * A comma-separated list of attributes requested by the subservice. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.slave.attributeRequest"</code>.
+     */
+    public static final String PROP_DEMO_SLAVE_ATTRIBUTE_REQUEST = PATH_PREFIX + "demo.slave.attributeRequest";
+
+    /**
+     * The username used to access Moria2 as a subservice. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.slave.username"</code>.
+     */
+    public static final String PROP_DEMO_SLAVE_USERNAME = PATH_PREFIX + "demo.slave.username";
+
+    /**
+     * The password used to access Moria2 as a subservice. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.slave.password"</code>.
+     */
+    public static final String PROP_DEMO_SLAVE_PASSWORD = PATH_PREFIX + "demo.slave.password";
 
 
     /**
