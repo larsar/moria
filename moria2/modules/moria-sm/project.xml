@@ -5,7 +5,7 @@
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria NextGen ticket store</name>
-  <id>moria-store</id>
+  <id>moria-sm</id>
 
   <shortDescription>This is the new distributed ticket store for
   Moria, based on JBoss Cache</shortDescription>
