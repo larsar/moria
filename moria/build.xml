@@ -1,4 +1,4 @@
-<project name="W3LS (Moria)"
+<project name="Moria"
          default="build"
          basedir=".">
 
