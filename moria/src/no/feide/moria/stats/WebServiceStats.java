@@ -28,29 +28,54 @@ import java.util.logging.Logger;
  */
 public class WebServiceStats {
     
-    Date firstUsed = null;
-    Date lastUsed  = null;
+    /** Timestamp - first use of web service */
+    private Date firstUsed = null;
 
-    int loginAttemptFailed  = 0;
-    int loginAttemptSuccess = 0;
-    int loginAttemptSSO     = 0;
+    /** Timestamp - last use of web service */
+    private Date lastUsed  = null;
 
-    int createdSessions     = 0;
-    int deniedSessionsAuthorization  = 0;
-    int deniedSessionsURL   = 0;
+    /** Number of failed (wrong username/password) login attempts */
+    private int loginAttemptFailed  = 0;
 
-    int sessionsTimeoutSSO  = 0;
-    int sessionsTimeoutAUTH = 0;
-    int sessionsTimeoutUSER = 0;
+    /** Number of successful login attempts */
+    private int loginAttemptSuccess = 0;
+
+    /** Number of login with SSO */
+    private int loginAttemptSSO     = 0;
+
+    /** Total number of created sessions */
+    private int createdSessions     = 0;
+    
+    /** Number of times a web service has been denied session due to
+     * unauthorized request for user attributes */
+    private int deniedSessionsAuthorization  = 0;
+
+    /** Number of times a web service has been denied session due to
+     * invalid return URL (redirect back to web service after login) */
+    private int deniedSessionsURL   = 0;
+
+    /** Number of sessions that has timed out (Single Sign On) */
+    private int sessionsTimeoutSSO  = 0;
+
+    /** Number of sessions that has timed out (web service didn't
+     * fetch user attributes in time) */
+    private int sessionsTimeoutAUTH = 0;
+
+    /** Number of sessions that has timed out (user didn't supply
+     * username/password in time */
+    private int sessionsTimeoutUSER = 0;
 
     /** Used for logging. */
     private static Logger log = Logger.getLogger(WebServiceStats.class.toString());
 
-    /** Name of web service */
+    /** Name/ID of web service */
     private String name;
     
+
+
     /**
-     * Constructor. 
+     * Constructor. Updates timestamps and sets the web service name.
+     * @param name The web service Name/ID
      */
     public WebServiceStats(String name) {
         log.finer("WebServiceStats()");
@@ -59,8 +84,16 @@ public class WebServiceStats {
         lastUsed  = firstUsed;
     }
 
+
+    
+    /**
+     * Returns a HashMap of all statistical data.
+     * @return The HashMap with all statistical data
+     */
     public HashMap getStats() {
         HashMap stats = new HashMap();
+        
+        // TODO: Only integers are expected to be in the HashMap (StatsServlet)
         // stats.put("firstUsed", new Integer(firstUsed));
         // stats.put("lastUsed", new Integer(lastUsed));
         stats.put("loginAttemptFailed", new Integer(loginAttemptFailed));
@@ -78,6 +111,12 @@ public class WebServiceStats {
     }
     
 
+
+    /**
+     * Log a login attempt.
+     * @param result The result of the login attempt: "SUCCESS",
+     * "FAILED" or "SSO"
+     */
     protected void loginAttempt(String result) {
         timeStamp();
 
@@ -94,6 +133,12 @@ public class WebServiceStats {
             log.warning("Illegal result status: "+result);
     }
     
+
+
+    /**
+     * Log a "create session" attempt.
+     * @param result The result of the attempt: "SUCCESS", "URL", "AUTHO"
+     */
     protected void createSessionAttempt(String type) {
         timeStamp();
         
@@ -108,6 +153,12 @@ public class WebServiceStats {
             
     }
 
+
+
+    /**
+     * Log when a session times out.
+     * @param result Type of TIMEOUT: "SSO", "AUTH", "USER"
+     */
     protected void sessionTimeout(String type) {
         timeStamp();
 
@@ -126,6 +177,11 @@ public class WebServiceStats {
         
     }
 
+    
+    
+    /** 
+     * Updated timestamp
+     */
     private void timeStamp() {
         lastUsed = new Date();
     }
