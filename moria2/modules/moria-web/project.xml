@@ -122,27 +122,27 @@
       <version>1.0-b1-SNAPSHOT</version>
       <type>jar</type>
       <properties>
-	<war.bundle>true</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
-<!--
+    <!--
     <dependency>
-      <groupId>moria</groupId>
-      <artifactId>moria-dm</artifactId>
-      <version>1.0-b1-SNAPSHOT</version>
-      <type>jar</type>
-      <properties>
-	<war.bundle>true</war.bundle>
-      </properties>
+    <groupId>moria</groupId>
+    <artifactId>moria-dm</artifactId>
+    <version>1.0-b1-SNAPSHOT</version>
+    <type>jar</type>
+    <properties>
+    <war.bundle>true</war.bundle>
+    </properties>
     </dependency>
--->
+    -->
     <dependency>
       <groupId>moria</groupId>
       <artifactId>moria-ctrl</artifactId>
       <version>1.0-b1-SNAPSHOT</version>
       <type>jar</type>
       <properties>
-	<war.bundle>true</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
 
@@ -152,7 +152,7 @@
       <version>1.0-b1-SNAPSHOT</version>
       <type>jar</type>
       <properties>
-	<war.bundle>true</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
 
@@ -162,7 +162,7 @@
       <version>1.0-b1-SNAPSHOT</version>
       <type>jar</type>
       <properties>
-	<war.bundle>true</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
 
@@ -177,12 +177,22 @@
           <include>*.properties</include>
         </includes>
       </resource>
-      <resource>
-        <directory>${basedir}/src/bundles</directory>
-        <includes>
-          <include>*.properties</include>
-        </includes>
-      </resource>
     </resources>
+    <unitTest>
+      <resources>
+        <resource>
+          <directory>src/test/bundles</directory>
+          <includes>
+            <include>*.properties</include>
+          </includes>
+        </resource>
+        <resource>
+          <directory>src/test/conf</directory>
+          <includes>
+            <include>*.properties</include>
+          </includes>
+        </resource>
+      </resources>
+    </unitTest>
   </build>
 </project>
