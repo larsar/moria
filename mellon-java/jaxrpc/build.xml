@@ -96,6 +96,7 @@
           description="Mellon API: Clean up">
     <delete dir="build"/>
     <delete dir="dist"/>
+    <delete file="Authentication.wsdl"/>
   </target>
     
 
