@@ -32,41 +32,53 @@ import java.util.HashMap;
  */
 public final class MoriaAuthnAttempt implements Serializable {
 
-    /** The inital attributes requested by the initiating service */
+    /**
+     * The inital attributes requested by the initiating service
+     */
     private final String[] requestedAttributes;
 
-    /** The initial part of the url the user is to be redirected to */
+    /**
+     * The initial part of the url the user is to be redirected to
+     */
     private final String returnURLPrefix;
 
-    /** The final part of the url the user is to be redirected to */
+    /**
+     * The final part of the url the user is to be redirected to
+     */
     private final String returnURLPostfix;
 
-    /** Wheter or not SSO is to be used when user arrives at login servlet */
+    /**
+     * Wheter or not SSO is to be used when user arrives at login servlet
+     */
     private final boolean forceInterativeAuthentication;
 
-    /** Transient attributes returned from a directory that is not to be cached */
+    /**
+     * Transient attributes returned from a directory that is not to be cached
+     */
     private HashMap transientAttributes;
+
+    /**
+     * Principal for the client that requests the authentication attempt
+     */
+    private String servicePrincipal;
 
     /**
      * Construct an instance. Usually based on data given in an initial request
      * by a remote service.
      *
-     * @param requestedAttributes
-     *            the attributes the remote service requires
-     * @param returnURLPrefix
-     *            the initial part of the url the user is to be redirected to
-     * @param returnURLPostfix
-     *            the final part of the url the user is to be redirected to.
-     *            May be null
-     * @param forceInteractiveAuthentication
-     *            wheter or not SSO is to be used
+     * @param requestedAttributes            the attributes the remote service requires
+     * @param returnURLPrefix                the initial part of the url the user is to be redirected to
+     * @param returnURLPostfix               the final part of the url the user is to be redirected to.
+     *                                       May be null
+     * @param forceInteractiveAuthentication wheter or not SSO is to be used
      */
     public MoriaAuthnAttempt(final String[] requestedAttributes, final String returnURLPrefix, final String returnURLPostfix,
-            final boolean forceInteractiveAuthentication) {
+                             final boolean forceInteractiveAuthentication, String servicePrincipal) {
         this.requestedAttributes = requestedAttributes;
         this.returnURLPrefix = returnURLPrefix;
         this.returnURLPostfix = returnURLPostfix;
         this.forceInterativeAuthentication = forceInteractiveAuthentication;
+        this.servicePrincipal = servicePrincipal;
     }
 
     /**
@@ -91,8 +103,7 @@ public final class MoriaAuthnAttempt implements Serializable {
      * Set the user data that have been retrived from a directory for this
      * authentication attempt.
      *
-     * @param transientAttributes
-     *            the short-lived user attributes
+     * @param transientAttributes the short-lived user attributes
      */
     void setTransientAttributes(HashMap transientAttributes) {
         this.transientAttributes = transientAttributes;
@@ -116,6 +127,15 @@ public final class MoriaAuthnAttempt implements Serializable {
         return returnURLPostfix;
     }
 
+    /**
+     * Get the servicePrincipal
+     *
+     * @return the return url postfix
+     */
+    public String getServicePrincipal() {
+        return servicePrincipal;
+    }
+
     /* TODO: Check spelling */
 
     /**
@@ -126,4 +146,7 @@ public final class MoriaAuthnAttempt implements Serializable {
     public boolean isForceInterativeAuthentication() {
         return forceInterativeAuthentication;
     }
+
+    // TODO: Finish implementation, with testing
+
 }

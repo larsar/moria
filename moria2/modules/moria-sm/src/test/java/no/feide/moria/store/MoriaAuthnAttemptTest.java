@@ -47,13 +47,14 @@ public class MoriaAuthnAttemptTest extends TestCase {
         String[] attributes = { "foo", "bar" };
         String prefix = "http://example.org/?MoriaId=";
         String postfix = "";
+        String servicePrincipal = "servicePrincipal";
         boolean forceAuthn = false;
         HashMap transientAttributes = new HashMap();
 
         transientAttributes.put("foo", new String[]{"bar"});
         transientAttributes.put("bar", new String[]{"foo"});
 
-        MoriaAuthnAttempt authnAttempt = new MoriaAuthnAttempt(attributes, prefix, postfix, forceAuthn);
+        MoriaAuthnAttempt authnAttempt = new MoriaAuthnAttempt(attributes, prefix, postfix, forceAuthn, servicePrincipal);
         assertNotNull("Object creation failed", authnAttempt);
 
         authnAttempt.setTransientAttributes(transientAttributes);
@@ -64,6 +65,7 @@ public class MoriaAuthnAttemptTest extends TestCase {
         assertEquals("URL postfix does not match", postfix, authnAttempt.getReturnURLPostfix());
         assertEquals("Force authentication does not match", forceAuthn, authnAttempt.isForceInterativeAuthentication());
         assertEquals("Transient attributes does not match", transientAttributes, authnAttempt.getTransientAttributes());
+        assertEquals("Principal does not match", servicePrincipal, authnAttempt.getServicePrincipal());
     }
 
     /**

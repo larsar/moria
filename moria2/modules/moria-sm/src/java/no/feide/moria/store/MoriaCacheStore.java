@@ -88,7 +88,7 @@ public class MoriaCacheStore implements MoriaStore {
         ticket = new MoriaTicket(MoriaTicket.LOGIN_TICKET, servicePrincipal, loginTicketTTL);
 
         authnAttempt = new MoriaAuthnAttempt(requestedAttributes, responseURLPrefix, responseURLPostfix,
-                forceInteractiveAuthentication);
+                forceInteractiveAuthentication, servicePrincipal);
         insertIntoStore(ticket, authnAttempt, null);
 
         return ticket.getTicketId();
