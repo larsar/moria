@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import no.feide.moria.directory.backend.AuthenticationFailedException;
-import no.feide.moria.directory.backend.BackendException;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -92,6 +91,12 @@ extends TestCase {
             
             // Test successful authentication.
             dm.setConfig(config);
+            while (!dm.ready())
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    // Ignored.
+                }
             HashMap attributes = dm.authenticate(goodCredentials, new String[] {});
             
             // Verify attributes.
@@ -119,6 +124,12 @@ extends TestCase {
             
             // Test successful authentication.
             dm.setConfig(config);
+            while (!dm.ready())
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    // Ignored.
+                }            
             HashMap attributes = dm.authenticate(goodCredentials, goodRequest);
             
             // Verify attributes.
@@ -149,6 +160,12 @@ extends TestCase {
             
             // Test unsuccessful authentication.
             dm.setConfig(config);
+            while (!dm.ready())
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    // Ignored.
+                }            
             HashMap attributes = null;
             attributes = dm.authenticate(badCredentials, new String[] {});
             Assert.assertNull("Attributes were returned", attributes);
@@ -156,9 +173,6 @@ extends TestCase {
             
         } catch (AuthenticationFailedException e) {
             // Expected.
-        } catch (DirectoryManagerException e) {
-            e.printStackTrace();
-            Assert.fail("Unexpected DirectoryManagerException");
         }
 
     }
@@ -179,9 +193,9 @@ extends TestCase {
 
         } catch (DirectoryManagerConfigurationException e) {
             // Expected.
-        } catch (BackendException e) {
+        } catch (AuthenticationFailedException e) {
             e.printStackTrace();
-            Assert.fail("Unexpected BackendException");
+            Assert.fail("Unexpected AuthenticationFailedException");
         }
 
     }
@@ -199,13 +213,19 @@ extends TestCase {
         try {
             
             // Test bogus config.
-            dm.setConfig(config);
-            Assert.fail("Managed to set up bad configuration");
-         
+            dm.setConfig(config);   
+            while (!dm.ready())
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    // Ignored.
+                    System.err.println("xxs");
+                }
+            Assert.fail("Managed to set up bad configuration");                
             
         } catch (DirectoryManagerConfigurationException e) {
             // Expected.
-        }
+        }            
         
     }
     

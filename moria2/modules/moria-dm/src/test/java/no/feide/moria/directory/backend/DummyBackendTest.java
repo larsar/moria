@@ -80,8 +80,6 @@ extends TestCase {
                 // Expected.
             } catch (IllegalArgumentException e) {
                 // Expected.
-            } catch (BackendException e) {
-                Assert.fail("Unexpected BackendException");
             }
 
     }
@@ -98,8 +96,6 @@ extends TestCase {
                 backend.authenticate(goodCredentials, noRequests[i]);
             } catch (AuthenticationFailedException e) {
                 Assert.fail("Authentication failed (AuthenticationFailedException)");
-            } catch (BackendException e) {
-                Assert.fail("Unexpected BackendException");
             }
 
     }
@@ -117,8 +113,6 @@ extends TestCase {
             attributes = backend.authenticate(goodCredentials, badRequest);
         } catch (AuthenticationFailedException e) {
             Assert.fail("Authentication failed (AuthenticationFailedException)");
-        } catch (BackendException e) {
-            Assert.fail("Unexpected BackendException");
         }
         Assert.assertNotNull("No attributes returned", attributes);
         Assert.assertEquals("Non-existing attributes returned after authentication", 0, attributes.size());
@@ -136,8 +130,6 @@ extends TestCase {
             attributes = backend.authenticate(goodCredentials, goodRequest);
         } catch (AuthenticationFailedException e) {
             Assert.fail("Authentication failed (AuthenticationFailedException)");
-        } catch (BackendException e) {
-            Assert.fail("Unexpected BackendException");
         }
         HashMap goodAttributes = new HashMap();
         goodAttributes.put(goodRequest[0], goodValues);
