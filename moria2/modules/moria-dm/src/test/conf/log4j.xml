@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- $Id$ -->
+
+<log4j:configuration
+   xmlns:log4j="http://jakarta.apache.org/log4j/"
+   debug="false">
+
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.out"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="ACCESS" class="org.apache.log4j.FileAppender">
+    <param name="File" value="target/logs/test-access.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%d] %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="MESSAGE" class="org.apache.log4j.FileAppender">
+    <param name="File" value="target/logs/test-message.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
+  <category name="no.feide.moria.log.AccessLogger" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="ACCESS"/>
+  </category>
+
+  <category name="no.feide.moria" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="MESSAGE"/>
+  </category>
+
+  <root>
+    <priority value="DEBUG"/>
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</log4j:configuration>
