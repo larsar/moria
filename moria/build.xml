@@ -1,0 +1,198 @@
+<project name="W3LS (Mellon/Moria)"
+         default="all:rebuild"
+         basedir=".">
+
+  <property file="${user.home}/build.properties"/>
+  <property file="build.properties"/>
+
+  <taskdef name="deploy"
+           classname="org.apache.catalina.ant.DeployTask"
+           classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
+  <taskdef name="undeploy"
+           classname="org.apache.catalina.ant.UndeployTask"
+           classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
+
+
+
+  <target name="all:prepare"
+          description="Prepares Mellon/Moria target directories">
+    <mkdir dir="build.moria/WEB-INF/classes"/>
+    <mkdir dir="build.mellon/WEB-INF/classes"/>
+    <mkdir dir="dist"/>
+  </target>
+
+  <target name="all:clean"
+          description="Cleans Mellon/Moria target directories">
+    <delete dir="build.moria/WEB-INF/classes"/>
+    <delete dir="build.mellon/WEB-INF/classes"/>
+    <delete dir="build"/>
+    <delete dir="dist"/>
+    <delete file="FeideAuthentication.wsdl"/>
+  </target>
+
+  <target name="all:rebuild"
+          description="Build and redeploy Mellon/Moria"
+          depends="moria:rebuild,mellon:rebuild"/>
+
+
+
+  <target name="moria:compile"
+          description="Compile Moria source"
+          depends="all:prepare">
+    <javac srcdir="src"
+           destdir="build.moria/WEB-INF/classes"
+           classpath="${jwsdp_jars}:${moria_jars}"
+           includes="no/feide/moria/**"/>
+  </target>
+
+  <target name="moria:create-war"
+          description="Create Moria WAR file"
+          depends="all:prepare">
+    <delete file="dist/feide-moria.war"/>
+    <jar jarfile="dist/feide-moria.war">
+      <fileset dir="build.moria" includes="WEB-INF/**"/>
+    </jar>
+  </target>
+
+  <target name="moria:process-war"
+          description="Process Moria WAR file with wsdeploy">
+    <delete file="dist/tmp-feide-moria.war"/>
+    <exec executable="${jwsdp_home}/bin/wsdeploy.sh">
+      <arg line="-o"/>
+      <arg line="dist/tmp-feide-moria.war"/>
+      <arg line="dist/feide-moria.war"/>
+      <arg line="-verbose"/>
+    </exec>
+    <move file="dist/tmp-feide-moria.war" tofile="dist/feide-moria.war"/>
+  </target>
+
+  <target name="moria:deploy"
+          description="Deploy Moria to Tomcat">
+    <deploy url="${jwsdp_manager_url}"
+            username="${jwsdp_manager_username}"
+            password="${jwsdp_manager_password}"
+            path="/feide-moria"
+            war="file:dist/feide-moria.war"/>
+  </target>
+
+  <target name="moria:undeploy"
+          description="Undeploy Moria from Tomcat">
+     <undeploy url="${jwsdp_manager_url}"
+              username="${jwsdp_manager_username}"
+              password="${jwsdp_manager_password}"
+              path="/feide-moria"/>
+  </target>
+
+  <target name="moria:build"
+          description="Build and deploy Moria"
+          depends="moria:compile,moria:create-war,moria:process-war,moria:deploy"/>
+
+  <target name="moria:rebuild"
+          description="Build and redeploy Moria"
+          depends="moria:compile,moria:create-war,moria:process-war,moria:undeploy,moria:deploy"/>
+
+
+
+  <target name="mellon:generate-stubs"
+          description="Generate Mellon-side stubs from WSDL"
+          depends="all:prepare">
+    <exec executable="${jwsdp_home}/bin/wscompile.sh">
+      <arg line="-gen:client"/>
+      <arg line="-d build.mellon/WEB-INF/classes"/>
+      <arg line="build.mellon/config.xml"/>
+    </exec>
+  </target>
+
+  <target name="mellon:compile"
+          description="Compile Mellon source"
+          depends="all:prepare">
+    <javac srcdir="src"
+           destdir="build.mellon/WEB-INF/classes"
+           classpath="${jwsdp_jars}"
+           includes="no/feide/mellon/**"
+           excludes="no/feide/mellon/test/*"/>
+  </target>
+
+  <target name="mellon:create-war"
+          description="Create Mellon WAR file"
+          depends="all:prepare">
+    <delete file="dist/feide-mellon.war"/>
+    <jar jarfile="dist/feide-mellon.war">
+      <fileset dir="build.mellon" includes="WEB-INF/**"/>
+    </jar>
+  </target>
+
+  <target name="mellon:deploy"
+          description="Deploy Mellon to Tomcat">
+    <deploy url="${jwsdp_manager_url}"
+            username="${jwsdp_manager_username}"
+            password="${jwsdp_manager_password}"
+            path="/feide-mellon"
+            war="file:dist/feide-mellon.war"/>
+  </target>
+
+  <target name="mellon:undeploy"
+          description="Undeploy Mellon from Tomcat">
+     <undeploy url="${jwsdp_manager_url}"
+              username="${jwsdp_manager_username}"
+              password="${jwsdp_manager_password}"
+              path="/feide-mellon"/>
+  </target>
+
+  <target name="mellon:build"
+          description="Build and deploy Mellon"
+          depends="mellon:generate-stubs,mellon:compile,mellon:create-war,mellon:deploy"/>                                                                                                                                             
+
+  <target name="mellon:rebuild"
+          description="Build and redeploy Mellon"
+          depends="mellon:generate-stubs,mellon:compile,mellon:create-war,mellon:undeploy,mellon:deploy"/>
+
+
+  <!-- Old Mellon JAX-RPC test -->
+  <target name="mellon-test:prepare"
+          description="Prepare Mellon test target directory">
+    <mkdir dir="build"/>
+    <mkdir dir="dist"/>
+  </target>
+
+  <target name="mellon-test:generate-stubs"
+          description="Generate Mellon test client stubs"
+          depends="mellon-test:prepare">
+    <exec executable="${jwsdp_home}/bin/wscompile.sh">
+      <arg line="-gen:client"/>
+      <arg line="-d build"/>
+      <arg line="build.mellon/config.xml"/>
+    </exec>
+  </target>
+
+  <target name="mellon-test:compile"
+          description="Compile Mellon test"
+          depends="mellon-test:prepare">
+    <javac srcdir="src"
+           destdir="build"
+           classpath="${jwsdp_jars}"
+           includes="no/feide/mellon/test/**"/>
+  </target>
+
+  <target name="mellon-test:jar"
+          description="Create Mellon test JAR file"
+          depends="mellon-test:prepare">
+    <delete file="dist/AuthenticationServiceClient.jar"/>
+    <jar destfile="dist/AuthenticationServiceClient.jar"
+         basedir="build"
+         includes="no/feide/mellon/test/* no/feide/moria/service/*"/>
+  </target>
+
+  <target name="mellon-test:build"
+          description="Build Mellon test"
+          depends="mellon-test:generate-stubs,mellon-test:compile,mellon-test:jar"/>
+
+  <target name="mellon-test:run"
+          description="Run Mellon test">
+    <java fork="on" 
+          classpath="dist/AuthenticationServiceClient.jar:${jwsdp_jars}" 
+          classname="no.feide.mellon.test.AuthenticationServiceClient">
+    </java>
+  </target> 
+
+</project>
