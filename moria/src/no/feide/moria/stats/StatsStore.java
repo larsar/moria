@@ -44,9 +44,10 @@ public class StatsStore {
     /** Contains all Web Service statistics. */
     Map wsStats = null;
 
-    /** Number of failed attempts to create sesion (authentication of
-     * web service failed */
-    int deniedSessionsAuthN = 0;
+    /** Global counters */
+    private HashMap counters = new HashMap();
+
+
 
     /**
      * Constructor. 
@@ -55,6 +56,11 @@ public class StatsStore {
         log.finer("StatsStore()");
         started = new Date();
         wsStats = Collections.synchronizedMap(new HashMap());
+        Integer defCounter = new Integer(0);
+        counters.put("deniedSessionAuthN", defCounter);
+        counters.put("sessionsSSOLogout", defCounter);
+        counters.put("sessionsSSOTimeout", defCounter);
+        counters.put("sessionsSSOActive", defCounter);
     }
 
     
@@ -163,22 +169,82 @@ public class StatsStore {
         return stats;
     }
 
-    public void incDeniedSessionsAuthN() {
-        deniedSessionsAuthN++;
-    }
-    
-    public int getDeniedSessionsAuthN() {
-        return deniedSessionsAuthN;
+
+    /**
+     * Get global stats counters. 
+     * @return HashMap with Integer counters
+     */
+    public HashMap getCounters() {
+        return counters;
     }
 
 
+    /**
+     * Increase a counter by one.
+     * @param counter Name of the counter
+     */
+    public void increaseCounter(String counter) {
+        Integer value = (Integer) counters.get(counter);
+
+        if (value == null) {
+            log.info("Creating new counter: "+counter);
+            counters.put(counter, new Integer(1));
+        }
+
+        else
+            counters.put(counter, new Integer(value.intValue()+1));
+
+    }
+
+
+
+    /**
+     * Decrease a counter by one.
+     * @param counter Name of the counter
+     */
+    public void decreaseCounter(String counter) {
+        Integer value = (Integer) counters.get(counter);
+
+        if (value == null) {
+            log.warning("Decreasing counter that was not initiated.");
+            counters.put(counter, new Integer(-1));
+        }
+
+        else
+            counters.put(counter, new Integer(value.intValue()-1));
+    }
+
+
+
+    /**
+     * Wrapper for increasing a counter (by one) in a web service stats object.
+     * @param wsID Web Service ID
+     * @param counter Name of counter to increase by one
+     */
     public void incStatsCounter(String wsID, String counter) {
         getWSStats(wsID).increaseCounter(counter);
     }
 
+
+
+    /**
+     * Wrapper for decreasing a counter (by one)in a web service stats object.
+     * @param wsID Web Service ID
+     * @param counter Name of counter to decrease by one
+     */
     public void decStatsCounter(String wsID, String counter) {
         getWSStats(wsID).decreaseCounter(counter);
     }
-        
+
+
+
+    /**
+     * Wrapper for resetting a counter in a web service stats object.
+     * @param wsID Web Service ID
+     * @param counter Name of counter to be reset
+     */
+    public void resetStatsCounter(String wsID, String counter) {
+        getWSStats(wsID).resetCounter(counter);
+    }        
 
 }
