@@ -6,6 +6,17 @@ package no.feide.moria.directory;
  */
 public class DirectoryManagerException
 extends Exception {
+    
+    /**
+     * Constructor.
+     * @param message
+     *            The exception message.
+     */
+    public DirectoryManagerException(String message) {
+
+        super(message);
+
+    }
 
     /**
      * Constructor.
