@@ -348,14 +348,18 @@ public class AuthorizationData {
             
             /* Set WebService's affiliation. The organizations is ordered by a "order"-attribute. */
             Element affiliationList = (Element) wsElem.getElementsByTagName("Affiliation").item(0);
-			NodeList organizations = affiliationList.getElementsByTagName("Organization");
-            Vector affiliations = new Vector();
-            
-            for (int j = 0; j < organizations.getLength(); j++) {
-				affiliations.add(((Element) organizations.item(j)).getAttribute("name"));
+            if (affiliationList != null) {
+            	NodeList organizations = affiliationList.getElementsByTagName("Organization");
+            	Vector affiliations = new Vector();
+            	
+            	for (int j = 0; j < organizations.getLength(); j++) {
+            		affiliations.add(((Element) organizations.item(j)).getAttribute("name"));
+            	}
+            	ws.setAffiliations((String[]) affiliations.toArray(new String[affiliations.size()]));
             }
-            ws.setAffiliations((String[]) affiliations.toArray(new String[affiliations.size()]));
-                      
+            else 
+            	ws.setAffiliations(new String[]{});
+            
             /* Set WebService's attributes (allowed and denied) and
              * profiles */
             NodeList aaElems = wsElem.getElementsByTagName("AllowedAttributes");
