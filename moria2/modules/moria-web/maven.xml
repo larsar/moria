@@ -2,46 +2,18 @@
 
 <!-- $Id$ -->
 
-<project
-   xmlns:j="jelly:core"
-   xmlns:m="jelly:maven"
-   xmlns:u="jelly:util"
-   default="project:install">
-  
-  <preGoal
-     name="java:compile">
-    <j:if test="${context.getVariable('project.axis.generate') == 'true'}">
-      <path
-	 id="project.axis.compile.src.set"
-	 location="${project.axis.generated.src.dir}"/>
-      <m:addPath
-	 id="maven.compile.src.set"
-	 refid="project.axis.compile.src.set"/>
-      <attainGoal name="project:wsdl2java"/>
-    </j:if>
-  </preGoal>
-
-  <goal
-     name="project:wsdl2java"
-     description="Generate Java Axis skeletons and stubs">
-
-    <mkdir dir="${project.axis.generated.src.dir}"/>
-
-    <taskdef
-       name="axis-wsdl2java"
-       classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask">
-      <classpath refid="maven.dependency.classpath"/>
-    </taskdef>
-
-    <!-- Iterate over WSDL files. -->
-		<echo>project.wsdl.versions=${project.wsdl.versions}</echo>
-    <u:tokenize var="versionList" delim=",">${project.wsdl.versions}</u:tokenize>
-
-    <j:set var="wsdlName" value="Authentication.wsdl"/>
-    
-    <!-- A number of filename fixes for Windows users. -->
-    <tempfile property="windowsFixFile"
-              destDir="${maven.build.dir}"/>
+<project xmlns:j="jelly:core"
+   			 xmlns:m="jelly:maven"
+         xmlns:u="jelly:util"
+         default="project:install">
+   
+   
+  <!-- 
+       A number of filename fixes for Windows users.
+  -->
+  <preGoal name="build:start">
+  <tempfile property="windowsFixFile"
+              destDir="${maven.build.dir}/.."/>
     <echo message="project.wsdl.baseuri.fixed=${project.wsdl.baseuri}${line.separator}maven.build.dir.fixed=${maven.build.dir}"
           file="${windowsFixFile}"
           level="verbose"/>
@@ -50,43 +22,97 @@
     <property file="${windowsFixFile}"/>
     <delete file="${windowsFixFile}"
             deleteonexit="true"/>
+  </preGoal>
+  
+  
+  <!--
+  	   Compilation preparations if generating Axis skeletons and stubs.
+  -->
+  <preGoal
+     name="java:compile">
+    <j:if test="${context.getVariable('project.axis.generate') == 'true'}">
+      <path id="project.axis.compile.src.set"
+	          location="${project.axis.generated.src.dir}"/>
+      <m:addPath id="maven.compile.src.set"
+	               refid="project.axis.compile.src.set"/>
+      <attainGoal name="project:wsdl2java"/>
+    </j:if>
+  </preGoal>
+
+
+  <!--
+       Generate Java skeletons and stubs using Axis WSDL2Java.
+  -->
+  <goal name="project:wsdl2java"
+        description="Generate Java Axis skeletons and stubs">
+
+    <!-- Create output directory for WSDL2Java generated files. -->
+    <mkdir dir="${project.axis.generated.src.dir}"/>
+
+    <!-- Define the WSDL2Java task. -->
+    <taskdef name="axis-wsdl2java"
+             classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask">
+      <classpath refid="maven.dependency.classpath"/>
+    </taskdef>
 
     <!-- Iterate over each WSDL version listed. -->
-    <j:forEach var="version" items="${versionList}">
+    <u:tokenize var="versionList"
+                delim=",">
+    	${project.wsdl.versions}
+    </u:tokenize>
+    <j:set var="wsdlName"
+           value="Authentication.wsdl"/>
+    <j:forEach var="version"
+               items="${versionList}">
     
-      <j:set var="inFile" value="${project.wsdl.baseuri.fixed}/${version}/${wsdlName}"/>
-      <j:set var="outDir" value="${maven.build.dir.fixed}/axis/wsdl/${version}"/>
+      <!-- Set variables. -->
+      <j:set var="inFile"
+             value="${project.wsdl.baseuri.fixed}/${version}/${wsdlName}"/>
+      <j:set var="outDir"
+             value="${maven.build.dir.fixed}/axis/wsdl/${version}"/>
+      
+      <!-- Is the input WSDL file available? -->
       <u:available uri="${inFile}">
+      
+        <!-- Process WSDL file. -->
 				<echo>Processing: ${inFile}</echo>
-
 				<mkdir dir="${outDir}"/>
-				<get src="${inFile}" dest="${outDir}/${wsdlName}"/>
-
+				<get src="${inFile}"
+				     dest="${outDir}/${wsdlName}"/>
 				<replace file="${outDir}/${wsdlName}"
 	               token="REPLACE_WITH_ACTUAL_URL"
 	               value="${project.deploy.url.prefix}/${version}/Authentication"/>
 
-	      <!-- Generate skeletons for each wsdl -->
+	      <!-- Generate skeletons for each WSDL. -->
 				<axis-wsdl2java url="file://${outDir}/${wsdlName}"
 				                output="${project.axis.generated.src.dir}"
 	 	                    serverside="${project.axis.serverside}"
 		                    skeletondeploy="${project.axis.skeletondeploy}"
 		                    testcase="${project.axis.testcase}"
 		                    verbose="${project.axis.verbose}"/>
+		                    
       </u:available>
       
     </j:forEach>
     
   </goal>
 
-  <goal
-     name="project:install"
-     prereqs="war:install"
-     description="Build and install war in local repository"/>
 
-  <goal
-     name="project:deploy"
-     prereqs="war:deploy"
-     description="Build and deploy war to remote repository"/>
+  <!--
+       Build the module and install the resulting WAR file in the local
+       repository.
+  -->
+  <goal name="project:install"
+     	  prereqs="war:install"
+        description="Build and install war in local repository"/>
+
+  
+  <!--
+       Build the module and install the resulting WAR file in the remote
+       repository.
+  -->
+  <goal name="project:deploy"
+        prereqs="war:deploy"
+        description="Build and deploy war to remote repository"/>
 
 </project>
