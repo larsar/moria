@@ -15,8 +15,6 @@ import no.feide.moria.service.*;
  * Mellon-Moria communication.
  * @author Cato Olsen
  */
-// TODO:
-// Rewrite because of changes in AuthenticationImpl.java.
 public class Moria {
     
     /** Used for logging. */
@@ -30,37 +28,10 @@ public class Moria {
     
     
     /**
-     * Private constructor. Will read the <code>Preferences</code>
-     * file found in the location given by the system property
-     * <code>no.feide.mellon.config.file</code>. If the property is not
-     * set, the default filename is <code>/Mellon.xml</code>.
-     * @throws MoriaException If a FileNotFoundException, IOException or
-     *                        InvalidPreferencesFormatException is caught
-     *                        trying to read the preferences file.
+     * Private constructor. Will prepare SSL and JAX-RPC stub.
      */
-    private Moria() 
-    throws MoriaException {
+    private Moria() {
         log.finer("Moria()");
-        
-        // Read preferences.
-        try {
-            if (System.getProperty("no.feide.mellon.config.file") == null) {
-                log.fine("no.feide.mellon.config.file not set; default is \"/Mellon.xml\"");
-		Preferences.importPreferences(getClass().getResourceAsStream("/Mellon.xml"));
-            } else {
-                log.fine("no.feide.mellon.config.file set to \""+System.getProperty("no.feide.mellon.config.file")+'\"');
-		Preferences.importPreferences(getClass().getResourceAsStream(System.getProperty("no.feide.mellon.config.file")));      
-            }
-        } catch (FileNotFoundException e) {
-            log.severe("FileNotFoundException caught and re-thrown as MoriaException ");
-            throw new MoriaException("FileNotFoundException caught", e);
-        } catch (IOException e) {
-            log.severe("IOException caught and re-thrown as MoriaException");
-            throw new MoriaException("IOException caught", e);
-        } catch (InvalidPreferencesFormatException e) {
-            log.severe("InvalidPreferencesFormatException caught and re-thrown as MoriaException");
-            throw new MoriaException("InvalidPreferencesException caught", e);
-        }
         
         // Fix some properties.
         Preferences prefs = Preferences.userNodeForPackage(Moria.class);
@@ -72,7 +43,6 @@ public class Moria {
         stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, prefs.get("serviceUsername", null));
         stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, prefs.get("servicePassword", null));
 	AuthenticationIF service = (AuthenticationIF)stub;
-	
     }
 
     
@@ -130,6 +100,30 @@ public class Moria {
 	AuthenticationIF service = (AuthenticationIF)stub;
         try {
             return service.getAttributes(id);
+        } catch (RemoteException e) {
+            log.severe("RemoteException caught and re-thrown as MoriaException");
+            throw new MoriaException("RemoteException caught", e);
+        }
+    }
+    
+    
+    /**
+     * A nasty hack to get a session authenticated. Will disappear without
+     * notice.
+     * @param id Session ID of unauthenticated session.
+     * @param username
+     * @param password
+     * @return The URL combined of prefix, session ID and postfix. Session ID is
+     *         that of an authenticated session.
+     * @deprecated
+     */
+    public String authenticateUser(String id, String username, String password)
+    throws MoriaException {
+        log.finer("requestUserAuthentication(String, String, String)");
+        
+        AuthenticationIF service = (AuthenticationIF)stub;
+        try {
+            return service.requestUserAuthentication(id, username, password);
         } catch (RemoteException e) {
             log.severe("RemoteException caught and re-thrown as MoriaException");
             throw new MoriaException("RemoteException caught", e);

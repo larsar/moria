@@ -28,7 +28,7 @@ public class Session {
     private int failedLogins = 0;
 
     /** The user for this session, set after a successful authentication. */
-    private static User user;
+    private static User user = null;
     
     /** Used to read preferences. */
     private Preferences prefs = Preferences.userNodeForPackage(Session.class);
@@ -97,7 +97,7 @@ public class Session {
         log.fine("Authentication failed");
         failedLogins++;
         try {
-            Integer maxFailures = Integer.decode(Preferences.userNodeForPackage(Session.class).get("MaxFailedLogins", "3"));
+            Integer maxFailures = Integer.decode(prefs.get("MaxFailedLogins", "3"));
             if (failedLogins == maxFailures.intValue()) {
                 // Remove ourselves from the session store.
                 log.fine("Invalidating session: "+sessionID);
@@ -128,18 +128,27 @@ public class Session {
 
     /**
      * Returns the concatenated prefix/id/postfix string.
-     * @return The concatenated string <code>[urlPrefix][id][urlPostfix]</code>
-     *         where <code>[urlPrefix]</code> and <code>[urlPostfix]</code> are the
-     *         parameter strings given to the constructor.
+     * @return The URL to the authentication service, if the session has yet to
+     *         be authenticated. The session ID is appended to this URL as the
+     *         parameter "id". If the session is authenticated, the concatenated
+     *         string <code>[urlPrefix][id][urlPostfix]</code> is returned,
+     *         where <code>[urlPrefix]</code> and <code>[urlPostfix]</code> are
+     *         the parameter strings given to the constructor.
      */
     public String getRedirectURL() {
+        
         String retval = "";
-        if (urlPrefix != null)
-            retval = retval + urlPrefix;
-        retval = retval + sessionID;
-        if (urlPostfix != null)
-            retval = retval + urlPostfix;
-	return retval;
+        log.info("user = "+user);
+        if (user == null) {
+            retval = prefs.get("LoginURL", null)+"?id="+sessionID;
+        } else {
+            if (urlPrefix != null)
+                retval = retval + urlPrefix;
+            retval = retval + sessionID;
+            if (urlPostfix != null)
+                retval = retval + urlPostfix;
+        }
+        return retval;
     }
 
     

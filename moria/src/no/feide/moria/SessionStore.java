@@ -90,24 +90,18 @@ public class SessionStore {
 
     /**
      * Returns the session for a given session ID.
-     * @param sessionID Current ID for the Moria session, or <code>null</code>
-     *                  if the session either didn't exist, or the session ID
-     *                  also was <code>null</code>.
+     * @param sessionID Current ID for the Moria session.
+     * @throws SessionException If the session wasn't found.
      */
     public Session getSession(String sessionID) 
     throws SessionException {
         log.finer("getSession(String)");
         
-        // Sanity check.
-        if (sessionID == null)
-            return null;
-        
         if (!sessions.containsKey(sessionID)) {
-            log.fine("No such session: "+sessionID);
-            return null;
-        } else {
+            log.severe("No such session: "+sessionID);
+            throw new SessionException("No such session: "+sessionID);
+        } else
             return (Session)sessions.get(sessionID);
-        }
     }
 
   

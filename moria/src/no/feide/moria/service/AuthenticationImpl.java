@@ -30,7 +30,7 @@ implements AuthenticationIF, ServiceLifecycle {
     private ServletEndpointContext ctx;
     
     /** Session store. */
-    private SessionStore sessionStore;
+    private SessionStore sessionStore = SessionStore.getInstance();
       
 
 
@@ -102,7 +102,7 @@ implements AuthenticationIF, ServiceLifecycle {
      * @param postfix The postfix, used to build the
      *                <code>verifySession</code> return value. May be
      *                <code>null</code>.
-     * @return A new session descriptor.
+     * @return An URL to the authentication service.
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught.
      */
@@ -113,15 +113,11 @@ implements AuthenticationIF, ServiceLifecycle {
         // TODO:
         // Make a test URL from pre/post and check URL validity. Throw if not.
         // Add a subclass to RemoteException to signal URL invalid?
-        
-        System.out.println("FOO");
 
         try {
 	    Principal p = ctx.getUserPrincipal();
 	    log.fine("Client service requesting session: "+p);
-        System.out.println("FOO2");
             Session session = sessionStore.createSession(attributes, prefix, postfix, p);
-        System.out.println("FOO3");
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");
@@ -139,8 +135,7 @@ implements AuthenticationIF, ServiceLifecycle {
      *               return value.
      * @param postfix The postfix, used to build the
      *                <code>verifySession</code> return value.
-     * @return A new session descriptor, or <code>null</code> if a new session
-               could not be established.
+     * @return An URL to the authentication service.
      * @throws RemoteException If a SessionException or a
      *                         BackendException is caught.
      */
@@ -170,11 +165,11 @@ implements AuthenticationIF, ServiceLifecycle {
 
 	try {
 
-	    // Check the client identity.
-	    assertPrincipals(ctx.getUserPrincipal(), id);
+	    // Look up session and check the client identity.
+            Session session = sessionStore.getSession(id);
+	    assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
 
 	    // Return attributes.
-            Session session = sessionStore.getSession(id);
             HashMap result = session.getAttributes();
             sessionStore.deleteSession(session);
             return result;
@@ -191,10 +186,9 @@ implements AuthenticationIF, ServiceLifecycle {
      * @param id A valid (first-round) session ID.
      * @param username The username.
      * @param password The password.
-     * @return A new session descriptor, containing a new second-round session
-     *         ID, which from now on represents the authenticated session, and
-     *         the new session redirect URL. <code>null</code> if the user
-     *         was unable to successfully authenticate.
+     * @return An URL constructed from the combination of prefix, session ID and
+     *         postfix, where pre- and postfix were given as parameters to
+     *         <code>requestSession</code>.
      * @throws RemoteException If an invalid session ID is used, or if a
      *                         <code>SessionException</code> or a
      *                         <code>BackendException</code> is caught. Also
@@ -202,67 +196,59 @@ implements AuthenticationIF, ServiceLifecycle {
      *                         found in the context) is different from the
      *                         identity of the client service originally
      *                         requesting the session.
+     * @deprecated
      */
     // TODO:
     // For single-use, add attribute request and remove ID. Combines everything in AuthNServiceClient.
-//     public SessionDescriptor requestUserAuthentication(String id, String username, String password)
-//     throws RemoteException {
-//         log.finer("requestUserAuthentication(String, String, String)");
+    // Only included to support the example code!
+     public String requestUserAuthentication(String id, String username, String password)
+     throws RemoteException {
+         log.finer("requestUserAuthentication(String, String, String)");
 
-//         try {
+         try {
+             
+             // Look up session and check the client identity.
+             Session session = sessionStore.getSession(id);
+ 	     assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
 
-// 	    // Check the client identity.
-// 	    assertPrincipals(ctx.getUserPrincipal(), id);
+             // Authenticate through session.
+             if (session.authenticateUser(new Credentials(username, password)))
+                 return session.getRedirectURL();
+             else
+                 return null;
 
-//             // Look up session.
-//             Session session = sessionStore.getSession(id);
-//             if (session == null) {
-//                 log.severe("Invalid session ID: "+id);
-//                 throw new RemoteException("Invalid session ID: "+id);
-//             }
-            
-//             // Authenticate through session.
-//             if (session.authenticateUser(new Credentials(username, password)))
-//                 return session.getDescriptor();
-//             else
-//                 return null;
-
-//         } catch (SessionException e) {
-//             log.severe("SessionException caught and re-thrown as RemoteException");
-//             throw new RemoteException("SessionException caught", e);
-//         } catch (BackendException e) {
-//             log.severe("BackendException caught and re-thrown as RemoteException");
-//             throw new RemoteException("BackendException caught", e);
-//         }
-//     }
+         } catch (SessionException e) {
+             log.severe("SessionException caught and re-thrown as RemoteException");
+             throw new RemoteException("SessionException caught", e);
+         } catch (BackendException e) {
+             log.severe("BackendException caught and re-thrown as RemoteException");
+             throw new RemoteException("BackendException caught", e);
+         }
+     }
 
 
     /**
      * Utility method, used to check if a given client service principal
      * matches the principal stored in the session. <code>null</code> values
      * are allowed.
-     * @param p The current client principal.
-     * @param id The session ID.
+     * @param pCurrent The current client principal.
+     * @param pStored The principal stored in the session.
      * @throws SessionException If there's a problem getting the session from
      *                          the session sessionStore.
      * @throws RemoteException If the client principals didn't match.
      */
-    // TODO:
-    // Should take a session's principal (from a previous lookup) as the second par, not ID.
-    // As: assertPrincipals(p, session.getclientPrincip());
-    private static void assertPrincipals(Principal client, String id)
+    private static void assertPrincipals(Principal pCurrent, Principal pStored)
     throws SessionException, RemoteException {
 	log.finer("assertPrincipals(Principal, String)");
 
-	Principal p = SessionStore.getInstance().getSession(id).getClientPrincipal();
-	if (client == null) {
-	    if (p == null)
+	if (pCurrent == null) {
+	    if (pStored == null)
 		return;
 	}
-	else if (client.toString().equals(p.toString()))
+	else if (pCurrent.toString().equals(pStored.toString()))
 	    return;
 
-        log.severe("Client service identity mismatch; "+client+" != "+p);
+        log.severe("Client service identity mismatch; "+pCurrent+" != "+pStored);
 	throw new RemoteException("Client service identity mismatch");
     }
 
