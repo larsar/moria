@@ -35,6 +35,8 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 
+import no.feide.moria.authorization.WebService;
+
 
 /**
  * Represents a user in the backend. Used to authenticate users and retrieve
@@ -136,6 +138,7 @@ public class Backend {
     /**
      * Initializes the connection to the backend, and authenticates the user
      * using the supplied credentials.
+     * @param s The session using this particular instance of the backend.
      * @param c User's credentials. Only username/password type
      *          credentials are currently supported.
      * @return <code>false</code> if authentication was unsuccessful (bad
@@ -146,7 +149,7 @@ public class Backend {
      *                          <code>ConfigurationException</code> is
      *                          caught.
      */
-    public boolean authenticateUser(Credentials c)
+    public boolean authenticateUser(Session s, Credentials c)
     throws BackendException {
         log.finer("authenticate(Credentials c)");
         
@@ -220,8 +223,18 @@ public class Backend {
 	                return true;  // Success.
 	            } catch (AuthenticationException e) {
 	                log.fine("Failed to authenticate as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-	                if (urlIndex == urls.length) {
-	                	log.warning("No more URLs available for authentication");
+	                
+	                // Do we have any more URLs to try at all?
+					if (urlIndex == urls.length) {
+						log.warning("No more URLs available for authentication");
+						return false;
+					}
+					
+					// Is this service allowed to use multiple URLs for this particular user?
+					WebService ws = s.getWebService();
+	                if ( (!ws.allowsLocalAuth()) ||
+	                     (!ws.hasAffiliation(BackendIndex.getDomain(username))) ){
+	                	log.warning("More URLs available for authentication, but not allowed for "+ws.getName());
 	                	return false;
 	                }
 	            }

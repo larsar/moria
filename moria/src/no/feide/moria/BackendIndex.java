@@ -84,12 +84,7 @@ public class BackendIndex {
         }
         
         // Map user ID domain to LDAP URL using the username suffix.
-        String domain = username;
-        if (domain.indexOf('@') == -1) {
-            log.severe("Illegal user identifier; missing @: "+domain);
-            throw new BackendException("Illegal user identifier; missing @: "+domain);
-        } 
-        domain = domain.substring(domain.indexOf('@')+1);
+        String domain = getDomain(username);
         ArrayList urls = (ArrayList)urlMap.get(domain);
         
         // Sanity check.
@@ -101,6 +96,27 @@ public class BackendIndex {
         log.info("Matched domain "+domain+" to LDAP URLs "+urls.toString());
         String[] urlArray = (String[])urls.toArray(new String[] {}); 
         return urlArray;        
+    }
+    
+    
+    /**
+     * Utility method used to extract the domain from a username.
+     * @param username A complete username (on the form
+     *                 <code>name@domain</code>).
+     * @return The domain part of a complete username.
+     * @throws BackendException If the username does not include the '@'
+     *                          character.
+     */
+    public static String getDomain(String username)
+    throws BackendException {
+    	log.finer("getDomain(String)");
+    	
+		String domain = username;
+		if (domain.indexOf('@') == -1) {
+			log.severe("Illegal user identifier; missing @: "+domain);
+			throw new BackendException("Illegal user identifier; missing @: "+domain);
+		} 
+		return domain.substring(domain.indexOf('@')+1);
     }
     
 }
