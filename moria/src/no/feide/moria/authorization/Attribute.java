@@ -74,19 +74,47 @@ public class Attribute {
     }
 
 
+
+    /** 
+     * Constructor
+     * @param name Name of attribute
+     * @param sso  Allow use of SSO
+     * @param secLevel Sensitivity/security level of attribute
+     */
     protected Attribute(String name, boolean sso, int secLevel) {
         this.name = name;
         this.sso  = new Boolean(sso);
         this.secLevel = secLevel;
     }
     
-    /** Return security level */
+
+
+    /**
+     * Constructor
+     * @param name Name of attribute
+     */
+    public Attribute(String name) {
+        log.finer("Attribute(String)");
+
+        this.name = name;
+        this.sso = null;
+    }
+
+
+
+    /** 
+     * Return security level
+     */
     public int getSecLevel() {
         return secLevel;
     }
 
 
-    /** Initialize security level register. */
+
+    /** 
+     * Initialize security level register. 
+     * @return HashMap with seclevels
+     */
     private static HashMap initSecLevels() {
         HashMap secLevels = new HashMap();
         secLevels.put("HIGH", new Integer(3));
@@ -96,8 +124,11 @@ public class Attribute {
     }
 
 
+
     /**
      * Find the name for a given security level.
+     * @param level Security level
+     * @return Security level name
      */
     public static String secLevelName(int level) {
 
@@ -111,21 +142,11 @@ public class Attribute {
         return "UNKNOWN";
     }
 
-    /**
-     * Constructor
-     * @param name Attribute name
-     */
-    public Attribute(String name) {
-        log.finer("Attribute(String)");
-
-        this.name = name;
-        this.sso = null;
-    }
-
 
     
     /**
      * Get name of attribute.
+     * @return The attribute name
      */
     public String getName() {
         log.finer("getName()");
@@ -137,6 +158,7 @@ public class Attribute {
 
     /**
      * Is the attribute allowed in use with SSO?
+     * @return boolean value - allows SSO or not.
      */
     public boolean allowSso() {
         log.finer("allowSso()");
