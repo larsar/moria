@@ -16,17 +16,17 @@ function fokuser(){document.loginform.username.focus();}
 </head>
 <body onload="fokuser()">
 
-<table cellpadding="5" cellspacing="5" border="0" width="100%">
+<table summary="" cellpadding="5" cellspacing="5" border="0" width="100%">
   <tr valign="top">
     <td width="5%" rowspan="3">&nbsp;</td> 
     <td colspan="2">
-      <table cellspacing="0" cellpadding="0" border="0" width="100%">
+      <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%">
         <tr>
-          <td valign="middle">
-            <a href="http://www.feide.no/"><img src="http://folk.uio.no/tommae/feide/feidelogo.png" alt="feide-logo" border="0"/></a>
+          <td valign="middle">&nbsp;
+            <a href="http://www.feide.no/"><img src="element/feidelogo.png" alt="FEIDE-logo" border="0"/></a>
           </td>
           <td valign="middle">
-            <table cellspacing="0" cellpadding="0" border="0" >
+            <table summary="" cellspacing="0" cellpadding="0" border="0" >
               <tr>
                 <td valign="top">-&nbsp;</td>
                 <td><font size="-1"><b>$body_title</b></font></td>
@@ -42,10 +42,10 @@ function fokuser(){document.loginform.username.focus();}
 #if ($errorMessage)
   <tr>
    <td colspan="2">
-   <table cellpadding="0" cellspacing="0" border="0" width="100%">
+   <table summary="" cellpadding="0" cellspacing="0" border="0" width="100%">
     <tr>
     <td valign="top">
-    <img src="http://folk.uio.no/tommae/feide/varseltrekant.png" alt="feilmelding"/>
+    <img src="element/varseltrekant.png" alt="feilmelding"/>
     </td>
     <td valign="middle" width="99%">
     <b>$errorMessage</b><br/>
@@ -60,11 +60,11 @@ function fokuser(){document.loginform.username.focus();}
 #if ($loginURL)	  
   <tr valign="top"> 
     <td width="20%">
-      <table cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF">
+      <table summary="" cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF">
         <tr>
           <td>
             <form action="$loginURL" method="POST" name="loginform" autocomplete="off">
-              <table cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
+              <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
                 <tbody>
                   <tr>
                     <td align="left"><font size="">
@@ -88,17 +88,17 @@ function fokuser(){document.loginform.username.focus();}
 
     </td>
     <td width="70%">
-      <table cellspacing="3" cellpadding="3" border="0" >
+      <table summary="" cellspacing="3" cellpadding="3" border="0" >
       <tr valign="top">
-        <td><img src="http://folk.uio.no/tommae/feide/listepunkt.gif" alt="-"/></td>
+        <td><img src="element/listepunkt.gif" alt="-"/></td>
         <td>$expl_ws</td>
       </tr>
       <tr valign="top">
-        <td><img src="http://folk.uio.no/tommae/feide/listepunkt.gif" alt="-"/></td>
+        <td><img src="element/listepunkt.gif" alt="-"/></td>
         <td>$expl_user</td>
       </tr>
       <tr valign="top">
-        <td><img src="http://folk.uio.no/tommae/feide/listepunkt.gif" alt="-"/></td>
+        <td><img src="element/listepunkt.gif" alt="-"/></td>
         <td>$expl_data</td>
       </tr>
       <tr>
@@ -106,14 +106,10 @@ function fokuser(){document.loginform.username.focus();}
         <td><hr noshade="noshade" size="1"/></td>
       </tr>
       <tr valign="top">
-        <td></td>
+        <td>&nbsp;</td>
         <td>
-          <table cellpadding="0" cellspacing="0" width="100%">
-            <tr>
-              <td width="90%"><a href=$feide_url>$feide_url_label</a>&nbsp;<img src="http://folk.uio.no/tommae/feide/pil.gif" alt="pil" /></td>
-              <td width="10%"><a href="http://www.uninett.no"><img src="http://folk.uio.no/tommae/feide/uninett.png" alt="uninett-logo" align="right" border="0"/></a></td>
-            </tr>
-          </table>
+	  <a href="element/faq.html">$faq &nbsp;<img src="element/emblemS.png" border="0" alt="FEIDE FAQ" /></a>
+	</td>
       </tr>
     </table>
   </td>
