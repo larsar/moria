@@ -220,6 +220,8 @@ public class SessionStore {
         Vector invalidatedSessions = new Vector();
         Date start = new Date();
 
+        log.fine("Number of sessions: "+sessions.size());
+
         // Find all timedout sessions.
         synchronized (sessions) {
             for (Iterator iterator = sessions.keySet().iterator(); iterator.hasNext();) {
