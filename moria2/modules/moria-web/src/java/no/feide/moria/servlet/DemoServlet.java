@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
-import javax.xml.rpc.ServiceException;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -84,7 +82,7 @@ import org.apache.axis.encoding.ser.VectorSerializerFactory;
  * @see #getUserAttributes(String)
  * @see #PARAM_TICKET
  * @see #SERVICE_ENDPOINT
- * @see #ATTRIBUTE_REQUEST
+ * @see #MAIN_ATTRIBUTE_REQUEST
  * @see #CLIENT_USERNAME
  * @see #CLIENT_PASSWORD
  * @see #SERVICE_ENDPOINT
@@ -93,27 +91,35 @@ public class DemoServlet
 extends HttpServlet {
 
     // TODO: Read configuration from file to allow for flexible deployment.
-    
+
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(DemoServlet.class);
 
     /**
-     * The attribute request. <br>
+     * The initial (main system) attribute request. <br>
      * <br>
-     * Currently requesting <i>eduPersonOrgDN </i> and <i>eduPersonAffiliation
-     * </i>.
+     * Currently requesting <i>eduPersonOrgDN </i> and <i>tgt </i>, the special
+     * ticket granting ticket virtual attribute.
      */
-    private final String[] ATTRIBUTE_REQUEST = {"eduPersonOrgDN", "eduPersonAffiliation"};
-    //private final String[] ATTRIBUTE_REQUEST = {"eduPersonAffiliation"};
+    private final String[] MASTER_ATTRIBUTE_REQUEST = {"eduPersonOrgDN", "tgt"};
+
+    /**
+     * The second (faked subsystem) attribute request. <br>
+     * <br>
+     * Currently requesting <i>eduPersonAffiliation </i>.
+     */
+    private final String[] SLAVE_ATTRIBUTE_REQUEST = {"eduPersonAffiliation"};
 
     /**
      * The service endpoint. <br>
      * <br>
      * Current value is
-     * <code>"http://localhost:8080/moria/v1_0/Authentication"</code>.
+     * <code>"http://localhost:8080/moria/v2_0/Authentication"</code>.
      */
-    private final String SERVICE_ENDPOINT = "http://localhost:8080/moria/v1_0/Authentication";
-    //private final String SERVICE_ENDPOINT = "https://moria.uio.no/moria2/v2_0/Authentication";
+    private final String SERVICE_ENDPOINT = "http://localhost:8080/moria/v2_0/Authentication";
+
+    //private final String SERVICE_ENDPOINT =
+    // "https://moria.uio.no/moria2/v2_0/Authentication";
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -123,27 +129,42 @@ extends HttpServlet {
     private final String PARAM_TICKET = "ticket";
 
     /**
-     * The username used by this demo service when accessing Moria. <br>
+     * The username used by this demo service when accessing Moria as a service
+     * (not a subsystem). <br>
      * <br>
-     * Current value is <code>"test"</code>.
+     * Current value is <code>"demo_service"</code>.
      */
-    private final String CLIENT_USERNAME = "test";
-    //private final String CLIENT_USERNAME = "demo";
+    private final String MASTER_CLIENT_USERNAME = "demo_service";
 
     /**
-     * The password used by this demo service when accessing Moria. <br>
+     * The password used by this demo service when accessing Moria as a service
+     * (not a subsystem). <br>
      * <br>
-     * Current value is <code>"test"</code>.
+     * Current value is <code>"demo_service"</code>.
      */
-    private final String CLIENT_PASSWORD = "test";
-    //private final String CLIENT_PASSWORD = "demo";
+    private final String MASTER_CLIENT_PASSWORD = "demo_service";
+
+    /**
+     * The username used by this demo service when accessing Moria as a
+     * subsystem of another service. <br>
+     * <br>
+     * Current value is <code>"demo_subsystem"</code>.
+     */
+    private final String SLAVE_CLIENT_USERNAME = "demo_subsystem";
+
+    /**
+     * The password used by this demo service when accessing Moria as a
+     * subsystem of another service. <br>
+     * <br>
+     * Current value is <code>"demo_subsystem"</code>.
+     */
+    private final String SLAVE_CLIENT_PASSWORD = "demo_subsystem";
 
     /**
      * Used when mapping the remote <code>Attribute</code> type to the local
      * <code>Attribute</code> class.
      */
-    private final QName ATTRIBUTE_QNAME = new QName("https://login.feide.no/moria/v1_0/Authentication", "Attribute");
-    //private final QName ATTRIBUTE_QNAME = new QName("https://login.feide.no/moria/v2_0/Authentication", "Attribute");
+    private final QName ATTRIBUTE_QNAME = new QName("https://login.feide.no/moria/v2_0/Authentication", "Attribute");
 
 
     /**
@@ -163,52 +184,106 @@ extends HttpServlet {
      * @see javax.servlet.http.HttpServlet.doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
-    public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
+public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
 
         // Be sure to dump all exceptions.
         try {
-        
-	        // Do we have a ticket?
-	        String ticket = request.getParameter(PARAM_TICKET);
-	        if (ticket == null) {
-	
-	            // No ticket; redirect for authentication.
-	            String redirectURL = initiateAuthentication(ATTRIBUTE_REQUEST, request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
-	            response.sendRedirect(redirectURL);
-	
-	        } else {
-	
-	            // We have a ticket; get and display attributes.
-	            Attribute[] attributes = getUserAttributes(ticket);
-	            PrintWriter out = response.getWriter();
-	            out.println("<html><body>");
-	            out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
-	            for (int i = 0; i < attributes.length; i++) {
-	                String name = attributes[i].getName();
-	                out.println("<tr><td>" + name + "</td>");
-	                String[] values = attributes[i].getValues();
-	                for (int j = 0; j < values.length; j++) {
-	                    if (j > 0)
-	                        out.println("<tr><td></td>");
-	                    out.println("<td>" + values[j] + "</td></tr>");
-	                }
-	            }
-	            out.println("</table>");
-	            out.println("</html></body>");
-	
-	        }
-	        
-        } catch (ServiceException e) {
-            log.logCritical("ServiceException caught", e);
-            throw new ServletException(e);
+
+            // Do we have a ticket?
+            final String ticket = request.getParameter(PARAM_TICKET);
+            if (ticket == null) {
+
+                // No ticket; redirect for authentication.
+                String redirectURL = initiateAuthentication(MASTER_ATTRIBUTE_REQUEST, request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
+                response.sendRedirect(redirectURL);
+
+            } else {
+
+                // We have a ticket.
+                PrintWriter out = response.getWriter();
+                out.println("<html><head><title>Moria Demo Service</title></head><body>");
+                out.println("<h1 align=\"center\">Authentication successful</h1>");
+                out.println("<i>System '" + MASTER_CLIENT_USERNAME + "':</i>");
+                String ticketGrantingTicket = null; // For later use.
+
+                // Get and display attributes.
+                Attribute[] attributes = getUserAttributes(ticket);
+                out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
+                for (int i = 0; i < attributes.length; i++) {
+
+                    // Is this the ticket granting ticket?
+                    String name = attributes[i].getName();
+                    if (name.equals("tgt")) {
+
+                        // Just remember the ticket for later use.
+                        ticketGrantingTicket = attributes[i].getValues()[0];
+                        
+                    }
+
+                    else {
+
+                        // Show the actual attribute and its values.
+                        out.println("<tr><td>" + name + "</td>");
+                        String[] values = attributes[i].getValues();
+                        for (int j = 0; j < values.length; j++) {
+                            if (j > 0)
+                                out.println("<tr><td></td>");
+                            out.println("<td>" + values[j] + "</td></tr>");
+                        }
+
+                    }
+
+                }
+                out.println("</table>");
+                out.println("<p><b>Ticket granting ticket:</b> <tt>" + ticketGrantingTicket + "</tt></p>");
+
+                // Should we try to fake a subsystem using SSO?
+                out.println("<hr><i>Subsystem '" + SLAVE_CLIENT_USERNAME + "':</i>");
+                if (ticketGrantingTicket == null) {
+                    
+                    out.println("<p align=\"center\">No ticket granting ticket was retrieved.<br>SSO denied.</p>");
+                    
+                } else {
+
+                    // Now get a proxy ticket for your subsystem (we're actually
+                    // our own subsystem, to keep the code simple).
+                    final String proxyTicket = getProxyTicket(ticketGrantingTicket, "demo_subsystem");
+
+                    // We now have a proxy ticket; now let's fake our own
+                    // subsystem. Retrieve and display some attributes.
+                    attributes = proxyAuthentication(SLAVE_ATTRIBUTE_REQUEST, proxyTicket);
+                    log.logInfo("4");
+                    out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
+                    for (int i = 0; i < attributes.length; i++) {
+
+                        // Show the actual attribute and its values.
+                        String name = attributes[i].getName();
+                        out.println("<tr><td>" + name + "</td>");
+                        String[] values = attributes[i].getValues();
+                        for (int j = 0; j < values.length; j++) {
+                            if (j > 0)
+                                out.println("<tr><td></td>");
+                            out.println("<td>" + values[j] + "</td></tr>");
+                        }
+
+                    }
+                    out.println("</table>");
+                    out.println("<p><b>Proxy ticket:</b> <tt>" + proxyTicket + "</tt></p>");
+
+                }
+
+                // We're done!
+                out.println("</html></body>");
+
+            }
+
         } catch (RemoteException e) {
             log.logCritical("RemoteException caught", e);
             throw new ServletException(e);
         }
 
     }
-
 
     /**
      * Initiates an authentication session, hiding any Axis internals from the
@@ -231,8 +306,6 @@ extends HttpServlet {
      *            <code>false</code>.
      * @return An URL to the login page for Moria, to which the user should be
      *         redirected.
-     * @throws ServiceException
-     *             If unable to create the service call.
      * @throws MalformedURLException
      *             If the constant <code>SERVICE_ENDPOINT</code> contains an
      *             illegal URL.
@@ -241,13 +314,13 @@ extends HttpServlet {
      * @see #SERVICE_ENDPOINT
      */
     private String initiateAuthentication(final String[] attributeRequest, final String urlPrefix, final String urlPostfix, final boolean denySSO)
-    throws ServiceException, MalformedURLException, RemoteException {
+    throws MalformedURLException, RemoteException {
 
         // Preparing call.
         Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
-        call.setUsername(CLIENT_USERNAME);
-        call.setPassword(CLIENT_PASSWORD);
-        final Object[] parameters = {ATTRIBUTE_REQUEST, urlPrefix, urlPostfix, new Boolean(false)};
+        call.setUsername(MASTER_CLIENT_USERNAME);
+        call.setPassword(MASTER_CLIENT_PASSWORD);
+        final Object[] parameters = {MASTER_ATTRIBUTE_REQUEST, urlPrefix, urlPostfix, new Boolean(false)};
 
         // Performing call.
         return (String) call.invoke(new QName("initiateAuthentication"), parameters);
@@ -280,8 +353,8 @@ extends HttpServlet {
 
         // Prepare call.
         Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
-        call.setUsername(CLIENT_USERNAME);
-        call.setPassword(CLIENT_PASSWORD);
+        call.setUsername(MASTER_CLIENT_USERNAME);
+        call.setPassword(MASTER_CLIENT_PASSWORD);
         call.setReturnType(ATTRIBUTE_QNAME);
         VectorSerializerFactory serializer = new VectorSerializerFactory(Attribute.class, ATTRIBUTE_QNAME);
         VectorDeserializerFactory deserializer = new VectorDeserializerFactory(Attribute.class, ATTRIBUTE_QNAME);
@@ -290,10 +363,93 @@ extends HttpServlet {
         final Object[] parameters = {serviceTicket};
 
         // Perform the call.
-        Object attributes = call.invoke(new QName(SERVICE_ENDPOINT, "getUserAttributes"), parameters);
+        final Object returnedAttributes = call.invoke(new QName(SERVICE_ENDPOINT, "getUserAttributes"), parameters);
 
-        // Convert return attribute array.
-        return (Attribute[]) attributes;
+        // Convert and return.
+        return (Attribute[]) returnedAttributes;
 
     }
+
+
+    /**
+     * Get a proxy ticket, by supplying a previously retrieved ticket granting
+     * ticket for the given subsystem. This ticket may then be used by the
+     * subsystem to assume that authentication has taken place. <br>
+     * <br>
+     * @param ticketGrantingTicket
+     *            A legal ticket granting ticket previously retrieved by
+     *            requesting the special attribute <i>tgt </i> using
+     *            <code>initiateAuthentication(...)</code> and
+     *            <code>getUserAttributes(...)</code>.
+     * @param proxyServicePrincipal
+     *            The principal of the subsystem to create a proxy ticket for.
+     * @return A new proxy ticket, for use by the subsystem identified as
+     *         <code>proxyServicePrincipal</code>.
+     * @throws MalformedURLException
+     *             If the constant <code>SERVICE_ENDPOINT</code> contains an
+     *             illegal URL.
+     * @throws RemoteException
+     *             If an exception was thrown by the remote service.
+     * @see #initiateAuthentication(String[], String, String, boolean)
+     * @see #getUserAttributes(String)
+     */
+    private String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal)
+    throws MalformedURLException, RemoteException {
+
+        // Preparing call.
+        Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
+        call.setUsername(MASTER_CLIENT_USERNAME);
+        call.setPassword(MASTER_CLIENT_PASSWORD);
+        final Object[] parameters = {ticketGrantingTicket, proxyServicePrincipal};
+
+        // Performing call.
+        return (String) call.invoke(new QName("getProxyTicket"), parameters);
+
+    }
+
+
+    /**
+     * Use a proxy ticket retrieved by <code>getProxyTicket(...)</code> to
+     * verify that the user has been authenticated, and retrieve a number of
+     * attributes.
+     * @param attributes
+     *            The attributes requested as part of this proxy authentication.
+     * @param proxyTicket
+     *            The proxy ticket.
+     * @return An array of <code>Attribute</code> objects, containing the
+     *         resulting values of the original attribute request. Note that if
+     *         the requested attributes does not exist, or if the client service
+     *         is not authorized to read the attributes, they will not be
+     *         returned. May consequently return an empty array, but never
+     *         <code>null</code>.
+     * @throws MalformedURLException
+     *             If the URL given by <code>SERVICE_ENDPOINT + "?WSDL</code>
+     *             is illegal.
+     * @throws RemoteException
+     *             If the remote call failed for some reason.
+     * @see #getProxyTicket(String, String)
+     */
+    private Attribute[] proxyAuthentication(final String[] attributes, final String proxyTicket)
+    throws MalformedURLException, RemoteException {
+
+        // Prepare call.
+        Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
+        call.setUsername(SLAVE_CLIENT_USERNAME);
+        call.setPassword(SLAVE_CLIENT_PASSWORD);
+        call.setReturnType(ATTRIBUTE_QNAME);
+        VectorSerializerFactory serializer = new VectorSerializerFactory(Attribute.class, ATTRIBUTE_QNAME);
+        VectorDeserializerFactory deserializer = new VectorDeserializerFactory(Attribute.class, ATTRIBUTE_QNAME);
+        call.registerTypeMapping(Attribute.class, ATTRIBUTE_QNAME, serializer, deserializer);
+        call.addParameter("attributes", new QName("http://www.w3.org/2001/XMLSchema", "string[]"), String[].class, ParameterMode.IN);
+        call.addParameter("proxyTicket", new QName("http://www.w3.org/2001/XMLSchema", "string"), String.class, ParameterMode.IN);
+        final Object[] parameters = {SLAVE_ATTRIBUTE_REQUEST, proxyTicket};
+
+        // Perform the call.
+        final Object returnedAttributes = call.invoke(new QName(SERVICE_ENDPOINT, "proxyAuthentication"), parameters);
+
+        // Convert and return.
+        return (Attribute[]) returnedAttributes;
+
+    }
+
 }
