@@ -19,6 +19,15 @@
 
     <servlet>
         <servlet-name>
+	    Logout
+        </servlet-name>
+        <servlet-class>
+	    no.feide.moria.servlet.LogoutServlet
+        </servlet-class>
+    </servlet>   
+
+    <servlet>
+        <servlet-name>
 	    Stats
         </servlet-name>
         <servlet-class>
@@ -30,6 +39,12 @@
         <servlet-name>Stats</servlet-name>
         <url-pattern>/Stats</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Logout</servlet-name>
+        <url-pattern>/Logout</url-pattern>
+    </servlet-mapping>
+
 
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
