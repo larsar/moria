@@ -482,15 +482,12 @@ public final class MoriaController {
             }
         }
 
-        // Resolve list of cached and requested attributes.
-        final HashSet cachableAttributes = authzManager.getCachableAttributes();
-        final HashSet retrieveAttributes = new HashSet(cachableAttributes);
-        retrieveAttributes.addAll(parsedRequestAttributes);
+        messageLogger.logInfo("DEBUG: parsedRequestAttributes=" + parsedRequestAttributes);
 
-        // Authentication.
+        // Authenticate and read requested attributes.
         final HashMap fetchedAttributes;
         try {
-            fetchedAttributes = directoryManager.authenticate(new Credentials(userId, password), (String[]) retrieveAttributes.toArray(new String[retrieveAttributes.size()]));
+            fetchedAttributes = directoryManager.authenticate(new Credentials(userId, password), (String[]) parsedRequestAttributes.toArray(new String[parsedRequestAttributes.size()]));
         } catch (AuthenticationFailedException e) {
             accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, loginTicketId, null);
             messageLogger.logDebug("AuthenticationFailedException caught", loginTicketId, e);
@@ -522,11 +519,16 @@ public final class MoriaController {
         final String newSSOTicketId;
         final HashMap cacheAttributes = new HashMap();
         final HashMap authnAttemptAttrs = new HashMap();
-
+        final HashSet cachableAttributes = authzManager.getCachableAttributes();
         final Iterator it = cachableAttributes.iterator();
         while (it.hasNext()) {
             final String attrName = (String) it.next();
-            cacheAttributes.put(attrName, fetchedAttributes.get(attrName));
+
+            // Only cache an attribute if it's in the request and is cacheable.
+            if (parsedRequestAttributes.contains(attrName)) {
+                cacheAttributes.put(attrName, fetchedAttributes.get(attrName));
+            }
+
         }
 
         for (int i = 0; i < requestedAttributes.length; i++) {
