@@ -23,7 +23,7 @@ public class SessionStore {
     
     /** Contains all active session objects. Key is current session ID. */
     //private Hashtable sessions = new Hashtable();
-    Map sessions = Collections.synchronizedMap(new HashMap());
+    Map sessions = null;
     
     
     
@@ -51,7 +51,12 @@ public class SessionStore {
         catch (IOException e) {
             log.severe("IOException during system properties import.");
         }
-
+        
+        int initialSize = new Integer(System.getProperty("no.feide.moria.SessionStoreInitMapSize")).intValue();
+        float loadFactor = new Float(System.getProperty("no.feide.moria.SessionStoreMapLoadFactor")).floatValue();
+        
+        sessions = Collections.synchronizedMap(new HashMap(initialSize, loadFactor));
+        log.info("Session register initialized. Initial size="+initialSize+" loadFactor="+loadFactor);
 
     }
     
