@@ -70,8 +70,7 @@ public class AuthorizationAttribute {
 		}
 
 		if (secLevelStr == null || secLevelStr.equals("")) {
-			log.warning("Attribute secLevel not set. Defaults to HIGH.");
-			secLevelStr = "HIGH";
+			throw new IllegalArgumentException("SecLevel must be a non-empty string.");
 		}
 
 		if (!secLevels.containsKey(secLevelStr)) {

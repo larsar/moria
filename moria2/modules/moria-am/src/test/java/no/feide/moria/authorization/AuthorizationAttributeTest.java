@@ -61,17 +61,24 @@ public class AuthorizationAttributeTest extends TestCase {
 		attribute = new AuthorizationAttribute(name, true, medium);
 
 		// Verify values of variables set in constructor
-		Assert.assertEquals(name, attribute.getName());
-		Assert.assertTrue(attribute.getAllowSSO());
-		Assert.assertEquals(secMed, attribute.getSecLevel());
+		Assert.assertEquals("Name should be equal", name, attribute.getName());
+		Assert.assertTrue("Should allow SSO",attribute.getAllowSSO());
+		Assert.assertEquals("SecLevel should be 'medium'",secMed, attribute.getSecLevel());
 
-		// Invalid secLevel, should default to HIGH
-		attribute = new AuthorizationAttribute(name, true, null);
-		Assert.assertEquals(secHigh, attribute.getSecLevel());
-
-		attribute = new AuthorizationAttribute(name, true, "");
-		Assert.assertEquals(secHigh, attribute.getSecLevel());
-
+		// Invalid secLevel, should throw exception
+		try {
+			attribute = new AuthorizationAttribute(name, true, null);
+			fail("IllegalArgumentException should be raised.");
+		}
+		catch (IllegalArgumentException success) {}
+		
+		try {
+			attribute = new AuthorizationAttribute(name, true, "");
+			fail("IllegalArgumentException should be raised.");
+		}
+		catch (IllegalArgumentException success) {}
+		
+	
 		// No name
 		try {
 			attribute = new AuthorizationAttribute(null, true, medium);
