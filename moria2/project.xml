@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- $Id$ -->
 
@@ -34,8 +34,11 @@
 
   <siteDirectory>/home/groups/m/mo/moria/htdocs</siteDirectory>
 
+  <!-- 
+    Override maven.user in ~/build.properties if your local username differs from your CVS username.
+  -->
   <repository>
-    <connection>scm:cvs:ext:@cvs.uninett.no:/cvs:feide-w3ls/sandbox/moria-ng</connection>
+    <connection>scm:cvs:ext:${maven.user}@cvs.uninett.no:/cvs:feide-w3ls/sandbox/moria-ng</connection>
     <url>http://cvs.sourceforge.net/viewcvs.py/moria/moria/</url>
   </repository>
 
