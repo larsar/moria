@@ -32,9 +32,13 @@ public interface AuthenticationIF extends Remote {
     public String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix,
             boolean forceInteractiveAuthentication) throws RemoteException;
 
-    public String directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
+    public Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password) throws RemoteException;
+    
+    public Attribute[] proxyAuthentication(String[] attributes, String proxyTicket) throws RemoteException;
 
-    public Attribute[] getUserAttributes(String ticketId) throws RemoteException;
+    public String getProxyTicket(String ticketGrantingTicket, String servicePrincipal) throws RemoteException;
+
+    public Attribute[] getUserAttributes(String serviceTicket) throws RemoteException;
 
     public Attribute[] getGroupAttributes(String groupname) throws RemoteException;
 
