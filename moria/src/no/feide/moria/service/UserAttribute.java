@@ -2,6 +2,9 @@ package no.feide.moria.service;
 
 import java.util.Vector;
 
+// TODO:
+// Obsolete, to be removed.
+// Use a HashMap w/attribute values as Vector, attribute names as key.
 /**
  * Represents a basic user attribute (JAX-RPC friendly).
  * @author Cato Olsen

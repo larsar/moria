@@ -1,5 +1,8 @@
 package no.feide.moria.service;
 
+// TODO:
+// Obsolete.
+
 /**
  * Represents a Moria session as first returned to Mellon upon a session
  * request.

@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
-//import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.Stub;
 import no.feide.moria.service.*;
 
@@ -15,6 +14,8 @@ import no.feide.moria.service.*;
  * Mellon-Moria communication.
  * @author Cato Olsen
  */
+// TODO:
+// Rewrite because of changes in AuthenticationImpl.java.
 public class Moria {
     
     /** Used for logging. */
@@ -45,10 +46,9 @@ public class Moria {
             if (System.getProperty("no.feide.mellon.config.file") == null) {
                 log.fine("no.feide.mellon.config.file not set; default is \"/Mellon.xml\"");
 		Preferences.importPreferences(getClass().getResourceAsStream("/Mellon.xml"));
-            }
-            else {
+            } else {
                 log.fine("no.feide.mellon.config.file set to \""+System.getProperty("no.feide.mellon.config.file")+'\"');
-		Preferences.importPreferences(getClass().getResourceAsStream(System.getProperty("no.feide.mellon.config.file")));
+		Preferences.importPreferences(getClass().getResourceAsStream(System.getProperty("no.feide.mellon.config.file")));      
             }
         } catch (FileNotFoundException e) {
             log.severe("FileNotFoundException caught and re-thrown as MoriaException ");
@@ -158,4 +158,3 @@ public class Moria {
     }    
     
 }
-

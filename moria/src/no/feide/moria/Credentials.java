@@ -5,6 +5,8 @@ package no.feide.moria;
  * username/password type credentials are supported.
  * @author Cato Olsen
  */
+// TODO:
+// Add logging. Sanity checks here?
 public class Credentials {
     
     /** Type of credentials is undefined. */

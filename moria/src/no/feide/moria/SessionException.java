@@ -2,6 +2,8 @@ package no.feide.moria;
 
 import java.util.logging.Logger;
 
+// TODO:
+// Remove logging.
 public class SessionException extends Exception{
     
     /** Used for logging. */

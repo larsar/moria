@@ -221,6 +221,8 @@ public class User {
      * @see javax.naming.directory.InitialDirContext.getAttributes(String, String[])
      * @see javax.naming.directory.BasicAttributes
      */
+    // TODO:
+    // Should return a HashMap.
     public UserAttribute[] lookup(String[] attributes)
     throws BackendException {
         log.finer("lookup(String[])");

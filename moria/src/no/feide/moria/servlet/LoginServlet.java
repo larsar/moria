@@ -52,10 +52,8 @@ public class LoginServlet extends VelocityServlet {
     private static String AUTHFAILED = "auth";
     private static String UNKNOWN    = "unknown";
 
-    Preferences prefs = Preferences.userNodeForPackage(User.class);
+    Preferences prefs = Preferences.userNodeForPackage(LoginServlet.class);
     String loginURL = prefs.get("LoginURL", null);
-
-    String[] vtlVariables = new String[]{"header_title", "body_title"};
 
 
 
@@ -321,7 +319,7 @@ public class LoginServlet extends VelocityServlet {
             if (!session.authenticateUser(c)) {
                 log.info("Authentication failed");
 
-                if (getSession(id) == null) {
+                if (session == null) {
                     // Max login tries has been reached. Session is
                     // terminated.
                     return genLoginTemplate(request, response, context, null, MAXLOGIN);

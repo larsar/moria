@@ -81,6 +81,9 @@ public class SessionStore {
     throws SessionException {
         log.finer("createSession(String[], String, String, Principal)");
 
+        // TODO:
+        // Authorize client service; attribute request valid?
+        
         String sessionID = generateSessionID();
         Session session = new Session(sessionID, attributes, prefix, postfix, client);
         sessions.put(sessionID, session);
@@ -90,11 +93,17 @@ public class SessionStore {
 
     /**
      * Returns the session for a given session ID.
-     * @param sessionID Current ID for the Moria session.
+     * @param sessionID Current ID for the Moria session, or <code>null</code>
+     *                  if the session either didn't exist, or the session ID
+     *                  also was <code>null</code>.
      */
     public Session getSession(String sessionID) 
     throws SessionException {
         log.finer("getSession(String)");
+        
+        // Sanity check.
+        if (sessionID == null)
+            return null;
         
         if (!sessions.containsKey(sessionID)) {
             log.fine("No such session: "+sessionID);
@@ -107,12 +116,12 @@ public class SessionStore {
   
     /**
      * Removes a Moria session.
-     * @param sessionID The session's ID.
+     * @param session The session.
      */     
-    public void deleteSession(String sessionID) {
-        log.finer("deleteSession(String)");
+    public void deleteSession(Session session) {
+        log.finer("deleteSession(Session)");
         
-        sessions.remove(sessionID);
+        sessions.remove(session.getID());
     } 
     
     
@@ -120,75 +129,21 @@ public class SessionStore {
      * Confirms a Moria session, that is, gives it a new second-level session
      * ID after a successful authentication.
      * @param sessionID The old session ID.
-     * @return The new session ID.
      * @throws SessionExcepion If the old session ID cannot be found.
      */
-    protected String confirmSession(String sessionID)
+    protected void renameSession(Session session)
     throws SessionException {
         log.finer("renameSession(String)");
         
+        // Generate a new session ID.
+        String oldID = session.getID();
+        session.setID(generateSessionID());
+        
         // Remove old session.
-        Session session = (Session)sessions.get(sessionID);
-        if (session == null) {
-            log.severe("Session does not exist: "+sessionID);
-            throw new SessionException("Session does not exist: "+sessionID);
-        }
-        sessions.remove(sessionID);
-        
-        // Generate a new session ID and insert updated session.
-        String newID = generateSessionID();
-        session.setID(newID);
+        sessions.remove(oldID);
         sessions.put(newID, session);
+        
         log.fine("Session renamed to "+newID);
-        return newID;
-    }
-    
-    
-    /**
-     * Verify that a session has been through authentication.
-     * @param sessionID The (second-round) session ID.
-     * @return The resource return URL, which may be an empty string
-     *         if not set. <code>null</code> if not authenticated.
-     * @return The concatenated string <code>[prefix][id][postfix]</code>
-     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
-     *         parameter strings given to the constructor. Returns
-     *         <code>null</code> if the session ID was not recognized, or
-     *         did not belong to an authenticated session.
-     */
-    public String verifySession(String sessionID)
-    throws SessionException {
-        log.finer("verifySession(String)");
-        
-        // Look up session.
-        Session session = (Session)sessions.get(sessionID);
-        if ( (session == null) || !session.isAuthenticated() ) {
-            log.warning("No such session: "+sessionID);
-            return null;
-	}
-	return session.getPrefixPostfixCompound();
-    }
-
-
-    /**
-     * Return the attributes matching the request stored in the session.
-     * @param sessionID The (second-round) session ID.
-     * @return The previously requested attributes, or <code>null</code>
-     *         if the session doesn't exist.
-     */
-    // Should not be here. Belongs in Session
-    public UserAttribute[] getAttributes(String sessionID)
-    throws SessionException {
-        log.finer("verifySession(String)");
-        
-        // Look up session.
-        Session session = (Session)sessions.get(sessionID);
-        if (session == null) {
-            log.warning("No such session: "+sessionID);
-            return null;
-	}
-        return session.getAttributes();
     }
 
 }
-
-

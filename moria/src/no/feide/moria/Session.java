@@ -18,10 +18,10 @@ public class Session {
     private String redirectURL;
 
     /** Holds the prefix value sent by the resource. */
-    private String prefix;
+    private String urlPrefix;
     
     /** Holds the postfix value sent by the resource. */
-    private String postfix;
+    private String urlPostfix;
        
     /** The object's current unique session ID. */
     private String sessionID;
@@ -50,21 +50,23 @@ public class Session {
      * @param sessionID The session's ID.
      * @param attributes The attributes requested for this session.
      *                   <code>null</code> allowed.
-     * @param prefix The prefix, a value stored in the session and used to
+     * @param urlPrefix The prefix, a value stored in the session and used to
      *               build the <code>SessionStore.verifySession</code> return
      *               value. May be <code>null</code>.
-     * @param postfix The postfix, a value stored in the session and used to
+     * @param urlPostfix The postfix, a value stored in the session and used to
      *                build the <code>SessionStore.verifySession</code> return
      *                value. May be <code>null</code>.
      * @param client The client service identifier.
      */
-    protected Session(String sessionID, String[] attributes, String prefix, String postfix, Principal client) {
+    // TODO:
+    // redirectURL should be removed.
+    protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client) {
         log.finer("Session(String, String[], String)");
         
         this.sessionID = sessionID;
         this.request = attributes;
-	this.prefix = prefix;
-        this.postfix = postfix;
+	this.urlPrefix = urlPrefix;
+        this.urlPostfix = urlPostfix;
 	this.client = client;
         redirectURL = prefs.get("LoginURL", null);
     }
@@ -94,7 +96,7 @@ public class Session {
         user = User.authenticate(c);
         if (user != null) {
             // Update session ID and URL.
-            sessionID = SessionStore.getInstance().confirmSession(sessionID);
+            SessionStore.getInstance().renameSession(this);
             redirectURL = prefs.get("SessionURL", null);
             log.fine("Good authN; new session ID is "+sessionID+", new URL is "+redirectURL);
             return true;
@@ -108,7 +110,7 @@ public class Session {
             if (failedLogins == maxFailures.intValue()) {
                 // Remove ourselves from the session store.
                 log.fine("Invalidating session: "+sessionID);
-                SessionStore.getInstance().deleteSession(sessionID);
+                SessionStore.getInstance().deleteSession(this);
 		log.info("Max number of authN attempts ("+maxFailures+") reached");
             }
         } catch (NumberFormatException e) {
@@ -128,10 +130,7 @@ public class Session {
         log.finer("isAuthenticated()");
         
         // The user variable is only set after a successful authentication.
-        if (user == null)
-            return false;
-        else
-            return true;
+        return (user != null);
     }
        
        
@@ -139,6 +138,8 @@ public class Session {
      * Returns the session descriptor.
      * @return The session descriptor.
      */
+    // TODO:
+    // Obsolete - remove.
     public SessionDescriptor getDescriptor() {
         log.finer("getDescriptor()");
         return new SessionDescriptor(sessionID, redirectURL);
@@ -147,17 +148,19 @@ public class Session {
 
     /**
      * Returns the concatenated prefix/id/postfix string.
-     * @return The concatenated string <code>[prefix][id][postfix]</code>
-     *         where <code>[prefix]</code> and <code>[postfix]</code> are the
+     * @return The concatenated string <code>[urlPrefix][id][urlPostfix]</code>
+     *         where <code>[urlPrefix]</code> and <code>[urlPostfix]</code> are the
      *         parameter strings given to the constructor.
      */
+    // TODO:
+    // Change to getRedirectURL().
     public String getPrefixPostfixCompound() {
         String retval = "";
-        if (prefix != null)
-            retval = retval + prefix;
+        if (urlPrefix != null)
+            retval = retval + urlPrefix;
         retval = retval + sessionID;
-        if (postfix != null)
-            retval = retval + postfix;
+        if (urlPostfix != null)
+            retval = retval + urlPostfix;
 	return retval;
     }
 
@@ -171,6 +174,8 @@ public class Session {
      * @throws SessionException If a BackendException is caught, or if
      *                          the user has yet to be authenticated.
      */
+    // TODO:
+    // UserAttribute removed, replaced with HashMap containing Vectors (for values).
     public UserAttribute[] getAttributes()
     throws SessionException {
         log.finer("getAttributes()");
@@ -201,17 +206,9 @@ public class Session {
      * <code>SessionStore</code> internal name for this session, which may
      * cause inconsistency if used incorrectly.
      * @param sessionID The new session ID.
-     * @throws SessionException If the new session ID is not unique.
      */
-    protected void setID(String sessionID) 
-    throws SessionException {
+    protected void setID(String sessionID) {
         log.finer("setID(String)");
-        
-        // Check for uniqueness.
-        if (SessionStore.getInstance().getSession(sessionID) != null) {
-            log.severe("Session already exists: " + sessionID);
-            throw new SessionException("Session already exists: " + sessionID);
-        }
             
         this.sessionID = sessionID;
     }

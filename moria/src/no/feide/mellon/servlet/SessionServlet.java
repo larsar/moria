@@ -6,7 +6,6 @@ import java.util.Vector;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
-//import javax.xml.rpc.Stub;
 import no.feide.mellon.Moria;
 import no.feide.moria.service.SessionDescriptor;
 import no.feide.moria.service.UserAttribute;
