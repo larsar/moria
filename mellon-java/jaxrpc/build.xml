@@ -1,5 +1,5 @@
 <project name="Mellon JAX-RPC"
-         default="build"
+         default="jaxrpc:build"
          basedir=".">
 
   <!-- User's properties override project defaults. -->

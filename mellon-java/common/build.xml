@@ -1,5 +1,5 @@
 <project name="Mellon common"
-         default="build"
+         default="common:build"
          basedir=".">
 
   <!-- User's properties override project defaults. -->

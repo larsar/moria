@@ -1,5 +1,5 @@
 <project name="Mellon Axis"
-         default="build"
+         default="axis:build"
          basedir=".">
 
   <!-- User's properties override project defaults. -->
