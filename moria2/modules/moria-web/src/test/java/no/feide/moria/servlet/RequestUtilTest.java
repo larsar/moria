@@ -113,11 +113,10 @@ public class RequestUtilTest extends TestCase {
     /**
      * Test getBundle method.
      *
-     * @see RequestUtil#getBundle(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String) 
+     * @see RequestUtil#getBundle(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
     public void testGetBundle() {
         ResourceBundle bundle;
-        Cookie[] cookies;
 
         /* Illegal parameters */
         try {
@@ -159,11 +158,9 @@ public class RequestUtilTest extends TestCase {
         bundle = RequestUtil.getBundle("test", null, null, null, null, "nb");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("foo", "bar")};
         bundle = RequestUtil.getBundle("test", "", "bar", "", "", "nb");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("lang", "wrong")};
         bundle = RequestUtil.getBundle("test", "wrong", "wrong", "wrong", "wrong", "nb");
         checkBundle("nb", bundle);
 
@@ -172,11 +169,9 @@ public class RequestUtilTest extends TestCase {
         bundle = RequestUtil.getBundle("test", null, null, null, acceptLang, "wrong");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("foo", "bar")};
         bundle = RequestUtil.getBundle("test", "", "bar", "", acceptLang, "wrong");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("lang", "wrong")};
         bundle = RequestUtil.getBundle("test", "wrong", "wrong", "wrong", acceptLang, "en");
         checkBundle("nb", bundle);
 
@@ -184,16 +179,13 @@ public class RequestUtilTest extends TestCase {
         bundle = RequestUtil.getBundle("test", null, null, "nb", null, "wrong");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("foo", "bar")};
         bundle = RequestUtil.getBundle("test", "", "bar", "nb", "", "wrong");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("lang", "wrong")};
         bundle = RequestUtil.getBundle("test", "wrong", "wrong", "nb", "wrong", "wrong");
         checkBundle("nb", bundle);
 
         /* Cookie specified language */
-        cookies = new Cookie[]{new Cookie("lang", "nb")};
         bundle = RequestUtil.getBundle("test", null, "nb", null, null, "wrong");
         checkBundle("nb", bundle);
 
@@ -207,11 +199,9 @@ public class RequestUtilTest extends TestCase {
         bundle = RequestUtil.getBundle("test", "nb", null, null, null, "wrong");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("foo", "bar")};
         bundle = RequestUtil.getBundle("test", "nb", "bar", "", "", "wrong");
         checkBundle("nb", bundle);
 
-        cookies = new Cookie[]{new Cookie("lang", "wrong")};
         bundle = RequestUtil.getBundle("test", "nb", "wrong", "wrong", "wrong", "wrong");
         checkBundle("nb", bundle);
 
