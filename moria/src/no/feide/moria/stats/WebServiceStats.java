@@ -32,6 +32,7 @@ public class WebServiceStats {
 
     int loginAttemptFailed  = 0;
     int loginAttemptSuccess = 0;
+    int loginAttemptSSO = 0;
 
     int createdSessions = 0;
     int deniedSessionsAuthorization  = 0;
@@ -66,6 +67,9 @@ public class WebServiceStats {
 
         else if (result.equals("FAILED")) 
             loginAttemptFailed++;
+
+        else if (result.equals("SSO")) 
+            loginAttemptSSO++;
 
         else
             log.warning("Illegal result status: "+result);
@@ -131,8 +135,11 @@ public class WebServiceStats {
         else if (type.equals("timeoutUser"))
             return sessionsTimeoutUSER;
         
-        if (type.equals("authSuccess"))
+        else if (type.equals("authSuccess"))
             return loginAttemptSuccess;
+
+        else if (type.equals("authSSO"))
+            return loginAttemptSSO;
 
         else if (type.equals("authFailed"))
             return loginAttemptFailed;

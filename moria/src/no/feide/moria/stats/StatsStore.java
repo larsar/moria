@@ -111,7 +111,8 @@ public class StatsStore {
     public HashMap sessions() {
         int loginAttemptFailed  = 0;
         int loginAttemptSuccess = 0;
-        
+        int loginAttemptSSO = 0;
+
         int createdSessions = 0;
         int deniedSessionsURL = 0;
         int deniedSessionsAuthorization  = 0;
@@ -131,13 +132,15 @@ public class StatsStore {
             sessionsTimeoutAUTH += ws.getSessionStats("timeoutAuth");
             sessionsTimeoutUSER += ws.getSessionStats("timeoutUser");
             loginAttemptFailed += ws.getSessionStats("authFailed");
-            loginAttemptFailed += ws.getSessionStats("authSuccess");
+            loginAttemptSuccess += ws.getSessionStats("authSuccess");
+            loginAttemptSSO += ws.getSessionStats("authSSO");
             deniedSessionsURL += ws.getSessionStats("deniedURL");
         }
 
         stats.put("deniedSessionsAuthentication", ""+deniedSessionsAuthentication);
         stats.put("loginAttemptFailed", ""+loginAttemptFailed);
         stats.put("loginAttemptSuccess", ""+loginAttemptSuccess);
+        stats.put("loginAttemptSSO", ""+loginAttemptSSO);
         stats.put("createdSessions", ""+createdSessions);
         stats.put("deniedSessionsURL", ""+deniedSessionsURL);
         stats.put("deniedSessionsAuthorization", ""+deniedSessionsAuthorization);
