@@ -395,7 +395,9 @@ public class LoginServlet extends VelocityServlet {
         }
 
         try {
+            log.info("SessionID once more: "+id);
             Session session = sessionStore.getSession(id);
+            log.info("Fetched session object: "+session);
 
             sessionStore.renameSession(session); 
             httpSession.setAttribute("moriaID", session.getID());
