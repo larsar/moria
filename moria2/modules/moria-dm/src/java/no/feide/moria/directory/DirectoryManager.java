@@ -3,6 +3,7 @@ package no.feide.moria.directory;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
+import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
 import no.feide.moria.directory.backend.DirectoryManagerBackend;
 import no.feide.moria.directory.backend.DirectoryManagerBackendFactory;
@@ -114,7 +115,12 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        backend.open(index.lookup(userCredentials.getUsername()));
+        // TODO: Use secondary lookup results as fallback.
+        String reference = (String)index.lookup(userCredentials.getUsername()).get(0);
+        if (reference != null)
+            backend.open(reference);
+        else
+            throw new AuthenticationFailedException("User "+userCredentials.getUsername()+" is unknown");
         UserAttribute[] attributes = backend.authenticate(userCredentials, attributeRequest);
         backend.close();
         return attributes;
