@@ -28,7 +28,16 @@
   </dependencies>
 
   <build>
-    <resources>
-    </resources>
+    <unitTest>
+      <resources>
+	<resource>
+	  <directory>src/test/conf</directory>
+          <includes>
+            <include>**/*.xml</include>
+            <include>**/*.properties</include>
+          </includes>
+	</resource>
+      </resources>
+    </unitTest>
   </build>
 </project>
