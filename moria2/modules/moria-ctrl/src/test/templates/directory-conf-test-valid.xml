@@ -2,11 +2,23 @@
 
 <DirectoryManagerConfiguration>
 
-  <Index class="no.feide.moria.directory.index.SerializableIndex"
-         file="src/test/conf/DummyIndex.object"/>
-  
-  <Backend>
-    <Class name="no.feide.moria.directory.backend.DummyBackendFactory"/>
-  </Backend>
+	<Index file="src/test/conf/DummyIndex.object"
+           update="120"/>
+
+	<Backend class="no.feide.moria.directory.backend.DummyBackendFactory">
+	    <Dummy>
+			<User name="user@some.realm" password="password">
+				<Attribute name="attr1">
+					<Value>value1</Value>
+				</Attribute>
+				<Attribute name="attr2">
+					<Value>value2</Value>
+				</Attribute>
+				<Attribute name="attr3">
+					<Value>value3</Value>
+				</Attribute>
+			</User>
+		</Dummy>
+	</Backend>
 
 </DirectoryManagerConfiguration>
