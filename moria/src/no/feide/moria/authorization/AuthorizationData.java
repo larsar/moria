@@ -69,7 +69,10 @@ public class AuthorizationData {
 
         /* Only update if file has changed. */
         if (file.lastModified() > fileTimestamp) {
-            log.info("Web service authorization file changed. Updating web service datastructure.");
+            if (fileTimestamp == 0)
+                log.info("Generating web service datastructure.");
+            else
+                log.info("Web service authorization file changed. Updating web service datastructure.");
 
             double start = new Date().getTime(); // For timing
 
@@ -239,10 +242,7 @@ public class AuthorizationData {
             if (newProfiles) {
                 Profile profile = new Profile(profileElem.getAttribute("name"));
                 profiles.put(profile.getName(), profile);
-
                 profile.setAttributes(getAttributes(profileElem, existing));
-
-
             }
 
             /* Use pointers to existing profile objects. */
@@ -297,10 +297,15 @@ public class AuthorizationData {
             NodeList aaElems = wsElem.getElementsByTagName("AllowedAttributes");
             NodeList daElems = wsElem.getElementsByTagName("DeniedAttributes");
             NodeList profileElems = wsElem.getElementsByTagName("Profiles");
+            
+            if (aaElems.getLength() > 0) 
+                ws.setAllowedAttributes(getAttributes((Element) aaElems.item(0), attributes));
 
-            ws.setAllowedAttributes(getAttributes((Element) aaElems.item(0), attributes));
-            ws.setDeniedAttributes(getAttributes((Element) daElems.item(0), attributes));
-            ws.setProfiles(getProfiles((Element) profileElems.item(0), profiles, false));
+            if (daElems.getLength() > 0) 
+                ws.setDeniedAttributes(getAttributes((Element) daElems.item(0), attributes));
+
+            if (profileElems.getLength() > 0) 
+                ws.setProfiles(getProfiles((Element) profileElems.item(0), profiles, false));
 
         }
         return webServices;
