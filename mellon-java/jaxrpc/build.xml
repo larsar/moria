@@ -55,7 +55,7 @@
   <target name="compile"
           description="Mellon API: Compile source"
           depends="wscompile">
-    <javac srcdir="."
+    <javac srcdir="src"
            debug="true"
            destdir="build/api"
            includes="no/feide/mellon/*"
