@@ -43,9 +43,6 @@ import java.util.Properties;
  */
 public abstract class RequestUtil extends HttpServlet {
 
-    /** Prefix for the institution names configuration. */
-    private static final String CONFIG_ORG_PREFIX = "org_";
-
     /**
      * Generate a resource bundle. The language of the resource bundle is selected
      * from the following priority list: URL parameter, cookie, service config, browser setting, Moria default
@@ -283,21 +280,24 @@ public abstract class RequestUtil extends HttpServlet {
      * @param language the language to generate institution names on
      * @return         a TreeMap of institution names with full name as key and id as value object
      */
-    static TreeMap organizationNames(final Properties config, final String language) {
+    static TreeMap parseConfig(final Properties config, final String element, final String language) {
         /* Validate parameters */
         if (config == null) {
             throw new IllegalArgumentException("config cannot be null.");
+        }
+        if (element == null || element.equals("")) {
+            throw new IllegalArgumentException("element must be a non-empty string.");
         }
         if (language == null || language.equals("")) {
             throw new IllegalArgumentException("language must be a non-empty string.");
         }
 
-        String orgNames = config.getProperty(CONFIG_ORG_PREFIX + language);
-        if (orgNames == null) {
-            throw new IllegalStateException("No organization names in config.");
+        String value = config.getProperty(element + "_" + language);
+        if (value == null) {
+            throw new IllegalStateException("No elements of type '"+element+"' in config.");
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(orgNames, ",");
+        StringTokenizer tokenizer = new StringTokenizer(value, ",");
         TreeMap names = new TreeMap();
 
         while (tokenizer.hasMoreTokens()) {
@@ -307,7 +307,7 @@ public abstract class RequestUtil extends HttpServlet {
             /* Abort if there is no separator in token */
             if (index == -1) {
                 // TODO: Log
-                throw new IllegalStateException("Institution name config has wrong format.");
+                throw new IllegalStateException("Config has wrong format.");
             }
 
             String shortName = token.substring(0, index);
@@ -315,7 +315,8 @@ public abstract class RequestUtil extends HttpServlet {
 
             /* Abort if there is more than one separator in one token */
             if (shortName.indexOf(":") != -1 || longName.indexOf(":") != -1) {
-                throw new IllegalStateException("Institution name config has wrong format.");
+                // TODO: Log
+                throw new IllegalStateException("Config has wrong format.");
             }
 
             names.put(longName, shortName);
