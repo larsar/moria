@@ -88,10 +88,20 @@ public final class LogoutServlet extends HttpServlet {
                     + ssoCookieName);
         }
 
-        String cookieValue = RequestUtil.getCookieValue(ssoCookieName, request.getCookies());
+        Cookie[] cookies = request.getCookies();
+        String cookieValue = null;
+
+        if (cookies != null) {
+            cookieValue = RequestUtil.getCookieValue(ssoCookieName, cookies);
+        } else {
+            showPage(request, response);
+        }
+
+        if (cookieValue == null) {
+            showPage(request, response);
+        }
 
         /* Invalidate ticket. */
-
         boolean controllerFailed = false;
 
         try {
@@ -111,8 +121,8 @@ public final class LogoutServlet extends HttpServlet {
                 requestDispatcher.forward(request, response);
             } catch (Exception e) {
                 messageLogger.logCritical("Dispatch to JSP-Error.JSP failed", cookieValue, e);
-                /* If everything fails there's not much to do but return. */
             }
+            /* If everything fails there's not much to do but return. */
             return;
         }
 
@@ -138,18 +148,7 @@ public final class LogoutServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
             response.addHeader("Location", url);
         } else {
-            /* Resource bundle. */
-            ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), request.getCookies(), null,
-                    request.getHeader("Accept-Language"), "en");
-            request.setAttribute("bundle", bundle);
-
-            RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("Logout.JSP");
-
-            try {
-                requestDispatcher.forward(request, response);
-            } catch (Exception e) {
-                messageLogger.logCritical("Dispatch to Logout.JSP failed", cookieValue, e);
-            }
+            showPage(request, response);
         }
     }
 
@@ -163,5 +162,28 @@ public final class LogoutServlet extends HttpServlet {
      */
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
         doGet(request, response);
+    }
+
+    /**
+     * Dispatches request to JSP.
+     *
+     * @param request
+     *          the HTTP request object
+     * @param response
+     *          the HTTP response object
+     */
+    private void showPage(final HttpServletRequest request, final HttpServletResponse response) {
+        /* Resource bundle. */
+        ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), request.getCookies(), null,
+                request.getHeader("Accept-Language"), "en");
+        request.setAttribute("bundle", bundle);
+
+        RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("Logout.JSP");
+
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (Exception e) {
+            messageLogger.logCritical("Dispatch to Logout.JSP failed", e);
+        }
     }
 }
