@@ -47,18 +47,23 @@ final class MoriaTicket implements Serializable {
     /** The time when this ticket expires, stored as seconds since epoch. */
     private final Long expiryTime;
 
+    /** The data associated with this ticket. */
+    private final MoriaStoreData data;
+
     /**
      * Construct a new ticket with auto-generated ticket id.
      *
      * @param ticketType
-     *            the type of ticket
+     *          the type of ticket
      * @param servicePrincipal
-     *            the id of the service this ticket relates to
+     *          the id of the service this ticket relates to
      * @param timeToLive
-     *            the number of seconds this ticket should be considered valid
+     *          the number of seconds this ticket should be considered valid
+     * @param data
+     *          the data object associated with this ticket. May be null
      */
-    public MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal, final Long timeToLive) {
-        this(MoriaTicket.newId(), ticketType, servicePrincipal, timeToLive);
+    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal, final Long timeToLive, final MoriaStoreData data) {
+        this(MoriaTicket.newId(), ticketType, servicePrincipal, timeToLive, data);
     }
 
     /**
@@ -72,8 +77,11 @@ final class MoriaTicket implements Serializable {
      *            the id of the service this ticket relates to
      * @param timeToLive
      *            the number of seconds this ticket should be considered valid
+     * @param data
+     *          the data object associated with this ticket. May be null
      */
-    public MoriaTicket(final String ticketId, final MoriaTicketType ticketType, final String servicePrincipal, final Long timeToLive) {
+    MoriaTicket(final String ticketId, final MoriaTicketType ticketType, final String servicePrincipal, final Long timeToLive,
+            final MoriaStoreData data) {
 
         /* Sanity checks on inputs before assignment. */
         if (ticketId == null || ticketId.equals(""))
@@ -87,6 +95,7 @@ final class MoriaTicket implements Serializable {
         /* Undefined servicePrincipal is only allowed for SSO tickets. */
         if (!ticketType.equals(MoriaTicketType.SSO_TICKET) && (servicePrincipal == null || servicePrincipal.equals("")))
             throw new IllegalArgumentException("servicePrincipal cannot be null or empty string");
+
         if (ticketType.equals(MoriaTicketType.SSO_TICKET) && servicePrincipal != null)
             throw new IllegalArgumentException("servicePrincipal must be null when creating a SSO ticket");
         this.servicePrincipal = servicePrincipal;
@@ -94,6 +103,21 @@ final class MoriaTicket implements Serializable {
         if (timeToLive == null || timeToLive.longValue() < 0)
             throw new IllegalArgumentException("expiryTime must be a positive integer");
         this.expiryTime = new Long(new Date().getTime() + timeToLive.longValue() * 1000);
+
+        /* Verify that data type matches ticket type. */
+        if (data != null) {
+            if (ticketType.equals(MoriaTicketType.LOGIN_TICKET) || ticketType.equals(MoriaTicketType.SERVICE_TICKET)) {
+                if (!(data instanceof MoriaAuthnAttempt)) {
+                    throw new IllegalArgumentException("For login and service tickets data must be MoriaAuthAttempt");
+                }
+            } else {
+                if (!(data instanceof CachedUserData)) {
+                    throw new IllegalArgumentException("For sso, tg and proxy ticket data must be CachedUserData");
+                }
+            }
+        }
+        /* The data object may be null so we just assign. */
+        this.data = data;
     }
 
     /**
@@ -101,7 +125,7 @@ final class MoriaTicket implements Serializable {
      *
      * @return the key identifying the ticket
      */
-    public String getTicketId() {
+    String getTicketId() {
         return ticketId;
     }
 
@@ -110,7 +134,7 @@ final class MoriaTicket implements Serializable {
      *
      * @return the type of ticket
      */
-    public MoriaTicketType getTicketType() {
+    MoriaTicketType getTicketType() {
         return ticketType;
     }
 
@@ -119,8 +143,45 @@ final class MoriaTicket implements Serializable {
      *
      * @return the service principal
      */
-    public String getServicePrincipal() {
+    String getServicePrincipal() {
         return servicePrincipal;
+    }
+
+    /**
+     * Checks the tickets expiry time versus the current time.
+     *
+     * @return true if the ticket has exceeded its time to live
+     */
+    boolean hasExpired() {
+        long now = new Date().getTime();
+
+        /*
+         * If the expiry time is in the future return false, the ticket has not
+         * expired.
+         */
+        if (expiryTime.longValue() > now)
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Get the the expiry time for this ticket.
+     *
+     * @return the expiry time in seconds since epoch
+     */
+    Long getExpiryTime() {
+        return expiryTime;
+    }
+
+    /**
+     * Get the data object of this ticket.
+     *
+     * @return an instance of MoriaStoreData or null if no data
+     *         object is assosiated with this ticket.
+     */
+    MoriaStoreData getData() {
+        return data;
     }
 
     /**
@@ -161,32 +222,5 @@ final class MoriaTicket implements Serializable {
      */
     static String newId() {
         return RandomId.newId();
-    }
-
-    /**
-     * Checks the tickets expiry time versus the current time.
-     *
-     * @return true if the ticket has exceeded its time to live
-     */
-    public boolean hasExpired() {
-        long now = new Date().getTime();
-
-        /*
-         * If the expiry time is in the future return false, the ticket has not
-         * expired.
-         */
-        if (expiryTime.longValue() > now)
-            return false;
-
-        return true;
-    }
-
-    /**
-     * Get the the expiry time for this ticket.
-     *
-     * @return the expiry time in seconds since epoch
-     */
-    public Long getExpiryTime() {
-        return expiryTime;
     }
 }
