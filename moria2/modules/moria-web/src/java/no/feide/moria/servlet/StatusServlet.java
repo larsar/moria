@@ -237,16 +237,22 @@ extends HttpServlet {
         try {
             config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
         } catch (ClassCastException e) {
-            log.logInfo("Unable to get configuration from context");
+            log.logCritical("Unable to get configuration from context");
+            throw new IllegalStateException();
         }
-        if (config == null)
-            throw new IllegalStateException("Configuration is not set");
+        if (config == null) {
+            log.logCritical("Configuration is not set");
+            throw new IllegalStateException();
+        }
+          
 
         // Are we missing some required properties?
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-            String requiredParameter = REQUIRED_PARAMETERS[i];
-            if ((requiredParameter == null) || (requiredParameter.equals("")))
-                throw new IllegalStateException("Required parameter '" + requiredParameter + "' is not set");
+            String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
+            if ((parvalue == null) || (parvalue.equals(""))) {
+                	log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
+                    throw new IllegalStateException();
+            }
         }
         return config;
 
