@@ -11,6 +11,7 @@ import no.feide.moria.directory.backend.BackendException;
 import no.feide.moria.directory.backend.DirectoryManagerBackend;
 import no.feide.moria.directory.backend.DirectoryManagerBackendFactory;
 import no.feide.moria.directory.index.DirectoryManagerIndex;
+import no.feide.moria.directory.index.IndexedReference;
 import no.feide.moria.log.MessageLogger;
 
 /**
@@ -197,12 +198,12 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        String[] references = index.lookup(userCredentials.getUsername());
-        if (references != null) {
+        IndexedReference reference = index.lookup(userCredentials.getUsername());
+        if (reference != null) {
 
             // Found a reference. Now open it.
             // TODO: Use secondary references as fallback if the first fails.
-            backend.open((String) references[0]);
+            backend.open((String) reference.getReferences()[0]);
 
         } else {
 
