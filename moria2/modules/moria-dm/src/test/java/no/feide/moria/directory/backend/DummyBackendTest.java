@@ -142,4 +142,26 @@ extends TestCase {
 
     }
 
+
+    /**
+     * Test unsuccessful user lookup.
+     */
+    public void testBadUserExistence() {
+
+        for (int i = 0; i < badCredentials.length; i++)
+            if (badCredentials[i] != null)
+                Assert.assertFalse("User " + badCredentials[i].getUsername() + " should not exist", backend.userExists(badCredentials[i].getUsername()));
+
+    }
+
+
+    /**
+     * Test successful user lookup.
+     */
+    public void testGoodUserExistence() {
+
+        Assert.assertTrue("User " + goodCredentials.getUsername() + " should exist", backend.userExists(goodCredentials.getUsername()));
+
+    }
+
 }

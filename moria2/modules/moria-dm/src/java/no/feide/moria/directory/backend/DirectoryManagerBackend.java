@@ -14,10 +14,19 @@ public interface DirectoryManagerBackend {
      * Opens a new backend connection.
      * @param reference
      *            The backend reference in question. Cannot be <code>null</code>.
-     * @throws BackendException
-     *             If the backend connection could not be made.
      */
-    public void open(IndexedReference reference) throws BackendException;
+    public void open(IndexedReference reference);
+
+
+    /**
+     * Checks whether a given user actually exists.
+     * @param username
+     *            The username to check for.
+     * @return <code>true</code> if we can find a user element with the given
+     *         username, otherwise <code>false</code>.
+     * @throws BackendException
+     */
+    public boolean userExists(String username) throws BackendException;
 
 
     /**

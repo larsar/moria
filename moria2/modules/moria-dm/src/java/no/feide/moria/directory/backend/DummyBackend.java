@@ -36,10 +36,23 @@ implements DirectoryManagerBackend {
 
 
     /**
+     * Will check whether the user <code>user@some.realm</code> exists.
+     * @see DirectoryManagerBackend#userExists(String)
+     */
+    public boolean userExists(final String username) {
+
+        // Fake a test.
+        if (username == null)
+            return false;
+        return username.equalsIgnoreCase("user@some.realm");
+
+    }
+
+
+    /**
      * Will authenticate a user successfully, if the user name is
      * <code>user@some.realm</code> and the password is <code>password</code>.
-     * @see no.feide.moria.directory.backend.DirectoryManagerBackend#authenticate(Credentials,
-     *      String[])
+     * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException {

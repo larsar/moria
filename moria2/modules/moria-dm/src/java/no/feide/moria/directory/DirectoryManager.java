@@ -157,6 +157,48 @@ public class DirectoryManager {
 
 
     /**
+     * Check that a user actually exists by polling the underlying backend.
+     * @param username
+     *            The username to look up.
+     * @return <code>true</code> if the user element corresponding to the
+     *         username actually exists, otherwise <code>false</code>.
+     * @throws DirectoryManagerConfigurationException
+     *             If attempting to use this method without successfully using
+     *             <code>setConfig(Properties)</code> first.
+     * @see DirectoryManagerBackend#userExists(String)
+     */
+    public boolean userExists(final String username)
+    throws BackendException {
+
+        // Sanity check.
+        if (configuration == null)
+            throw new DirectoryManagerConfigurationException("Configuration not set");
+
+        // TODO: Implement a backend pool.
+
+        // Do the call through a temporary backend instance.
+        DirectoryManagerBackend backend = backendFactory.createBackend();
+        IndexedReference reference = index.lookup(username);
+        if (reference != null) {
+
+            // Found a reference. Now open it.
+            // TODO: Use secondary references as fallback if the first fails.
+            backend.open(reference);
+
+        } else {
+
+            // Could not find the user.
+            return false;
+
+        }
+
+        // Check that the user actually exists.
+        return backend.userExists(username);
+
+    }
+
+
+    /**
      * Forwards an authentication attempt to the underlying backend.
      * @param userCredentials
      *            The user credentials passed on for authentication.
@@ -188,7 +230,7 @@ public class DirectoryManager {
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws AuthenticationFailedException, BackendException {
+    throws AuthenticationFailedException {
 
         // Sanity check.
         if (configuration == null)
