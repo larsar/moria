@@ -66,10 +66,12 @@ public interface MoriaStore {
      * Gets the authentication attempt assosiated with the ticket given as argument. Should return
      * null if no Authentication attempt is found.
      *
-     * @param loginTicketId
+     * @param ticketId
      *          the ticket from the incoming client request
      * @param keep
      *          if true the authnAttempt and ticket will be kept in the store after this operation
+     * @param servicePrincipal
+     *          the principal of the service requesting the operation (null if login ticket is supplied)
      * @return the MoriaAuthnAttempt assosiated with the ticket
      * @throws InvalidTicketException
      *          if the incoming ticket is not a login ticket
@@ -80,8 +82,8 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if loginTicketId is null or zero length
      */
-    MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException,
-            NonExistentTicketException, MoriaStoreException;
+    MoriaAuthnAttempt getAuthnAttempt(final String ticketId, final boolean keep, final String servicePrincipal)
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**
      * Creates a new CachedUserData object in the underlying store and assosiates it with a SSO
@@ -99,9 +101,9 @@ public interface MoriaStore {
 
     /**
      * Return the userdata assosiated with the incoming ticket, which must be either a
-     * sso, ticket granting or proxy ticket.
+     * proxy ticket.
      *
-     * @param ticketId
+     * @param proxyTicketId
      *          a ticket to identify a userdata object (SSO, TG or PROXY)
      * @param servicePrincipal
      *          the name of the service requesting the data
@@ -116,7 +118,7 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          if ticketId is null or zero length
      */
-    CachedUserData getUserData(final String ticketId, final String servicePrincipal) throws InvalidTicketException,
+    CachedUserData getUserData(final String proxyTicketId, final String servicePrincipal) throws InvalidTicketException,
             NonExistentTicketException, MoriaStoreException;
 
     /**
@@ -200,6 +202,26 @@ public interface MoriaStore {
      *          if loginTicketId is null or zero length, or transientAttributes is null
      */
     void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes) throws InvalidTicketException,
+            NonExistentTicketException, MoriaStoreException;
+
+    /**
+     * Provide transient attributes to be copied form a cached user data object to and stored with authentication attempt.
+     *
+     * @param loginTicketId
+     *          the ticket that identifies the AuthnAttempt that the attributes will be
+     *          assosiated with
+     * @param ssoTicketId
+     *          the ticket associated with a set of cached user data
+     * @throws InvalidTicketException
+     *          thrown if ticket is found invalid
+     * @throws NonExistentTicketException
+     *          thrown if ticket does not exist
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
+     * @throws IllegalArgumentException
+     *          if loginTicketId is null or zero length, or transientAttributes is null
+     */
+    void setTransientAttributes(final String loginTicketId, final String ssoTicketId) throws InvalidTicketException,
             NonExistentTicketException, MoriaStoreException;
 
     /**
