@@ -78,11 +78,9 @@ public class LoginServlet extends HttpServlet {
         Properties config = getConfig();
 
         /* Public computer (deny SSO)? */
-        String denySSOChoice = "false";
-        if (request.getCookies() != null) {
-            denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO),
-                                                       request.getCookies());
-        }
+        String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO),
+                                                          request.getCookies());
+
         boolean denySSO;
         if (denySSOChoice == null || denySSOChoice.equals("false") || denySSOChoice.equals("")) {
             request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(false));
@@ -99,14 +97,16 @@ public class LoginServlet extends HttpServlet {
                 String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
                 String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_SSO),
                                                                 request.getCookies());
-                serviceTicket = MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
+                if (ssoTicketId != null) {
+                    serviceTicket = MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
 
-                /* Redirect back to web service */
-                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-                response.setHeader("Location", MoriaController.getRedirectURL(serviceTicket));
+                    /* Redirect back to web service */
+                    response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                    response.setHeader("Location", MoriaController.getRedirectURL(serviceTicket));
 
-                /* Single Sign On succeeded, we're finished. */
-                return;
+                    /* Single Sign On succeeded, we're finished. */
+                    return;
+                }
             } catch (UnknownTicketException e) {
                 /* Single Sing On failed, continue with normal authentication */
             } catch (MoriaControllerException e) {
