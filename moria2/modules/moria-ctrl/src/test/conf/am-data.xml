@@ -21,8 +21,8 @@
       <Operation name="InteractiveAuth"/>
     </Operations>
     <Subsystems>
-      <Subsystem name="LocalAuth"/>
-      <Subsystem name="InteractiveAuth"/>
+      <Subsystem name="sub1"/>
+      <Subsystem name="sub2"/>
     </Subsystems>
   </Client>
 
