@@ -68,7 +68,10 @@ public class Moria {
     
     
     /**
-     * Wrapper for same JAX-RPC stub of same name.
+     * Request an authentication session from Moria. A remote
+     * procedure call is sent to Moria. If this is successful a URL is
+     * returned. The user should be redirected to this URL for
+     * authentication.
      * @param attributes The names of requested attributes, to be returned
      *                   later throught <code>getAttributes</code>.
      * @param prefix The prefix, used to build the <code>verifySession</code>
@@ -93,7 +96,12 @@ public class Moria {
     
     
     /**
-     * Wrapper for same JAX-RPC stub of same name.
+     * Returns user data from Moria. A remote procedure call is sent
+     * to Moria, requesting user data. If an empty HashMap is
+     * returned, the user has been authenticated but no more
+     * information is available to the webservice. If the web service
+     * has requested (and been authorized) user attributes, the
+     * HashMap will contain the requested user data.
      * @param id
      * @return The attributes requested when the session was established,
      *         or an empty set if no attributes were requested.
