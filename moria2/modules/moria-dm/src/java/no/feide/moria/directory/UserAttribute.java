@@ -31,7 +31,7 @@ public class UserAttribute {
         if ((name == null) || (name.length() == 0)) {
         // TODO: Add logging.
         throw new IllegalAttributeException("Attribute name cannot be NULL"); }
-        
+
         // Set values.
         myName = name;
         myValues = new Vector();
@@ -60,6 +60,20 @@ public class UserAttribute {
     public String[] getValues() {
 
         return (String[]) myValues.toArray(new String[] {});
+
+    }
+
+
+    /**
+     * Get a string representation of the user attribute.
+     * @return The user attribute as a <code>String</code>.
+     */
+    public String toString() {
+
+        String s = myName + ':';
+        for (int i = 0; i < myValues.size(); i++)
+            s = s + " [" + myValues.elementAt(i) + ']';
+        return new String(s);
 
     }
 
