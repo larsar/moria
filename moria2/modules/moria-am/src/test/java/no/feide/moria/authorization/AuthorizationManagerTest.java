@@ -42,6 +42,8 @@ import org.jdom.Element;
  */
 public class AuthorizationManagerTest extends TestCase {
 
+    private HashMap authzClients;
+
     /**
      * Run all tests.
      *
@@ -52,10 +54,39 @@ public class AuthorizationManagerTest extends TestCase {
     }
 
     /**
+     * Build test data on startup.
+     */
+    public void setUp() {
+        HashMap attributes = new HashMap();
+        attributes.put("attr1", new AuthorizationAttribute("attr1", true, 1));
+        attributes.put("attr2", new AuthorizationAttribute("attr2", false, 2));
+        attributes.put("attr3", new AuthorizationAttribute("attr3", true, 3));
+
+        HashSet operations = new HashSet();
+        operations.add("localAuth");
+
+        HashSet affiliation = new HashSet();
+        affiliation.add("uninett.no");
+        affiliation.add("feide.no");
+
+        /* Set configuration */
+        AuthorizationClient authzClient = new AuthorizationClient("test", "testDisplay", "http://moria.sf.net/", "en", "feide.no", affiliation, operations, attributes);
+        authzClients = new HashMap();
+        authzClients.put("test", authzClient);
+    }
+
+    /**
+     * Remove test data on shut down.
+     */
+    public void tearDown() {
+        authzClients = null;
+    }
+
+    /**
      * Creates a client Element with valid children and attributes.
      *
      * @return The new Element
-     */
+     **/
     private Element createValidClientElem(String name) {
         Element clientElem = new Element("Client");
         Element child;
@@ -109,7 +140,7 @@ public class AuthorizationManagerTest extends TestCase {
      * @param sso
      * @param secLevel
      * @return Element object with attributes according to the paramteres.
-     */
+     **/
     private Element createAttrElem(String name, String sso, String secLevel) {
         Element element = new Element("Attribute");
 
@@ -137,7 +168,10 @@ public class AuthorizationManagerTest extends TestCase {
     }
 
     /**
-     * Test parsing of single attribute element.
+     * Test parseAttribute method
+     *
+     * @throws IllegalConfigException
+     * @see AuthorizationManager#parseAttributeElem(org.jdom.Element)
      */
     public void testParseAttribute() throws IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
@@ -181,10 +215,11 @@ public class AuthorizationManagerTest extends TestCase {
 
     /**
      * Test parsing of attributes element that contains attribute child
-     * elements.
+     * elements. (testParseAttributes method)
      *
      * @throws IllegalArgumentException
      * @throws IllegalConfigException
+     * @see AuthorizationManager#parseAttributesElem(org.jdom.Element)
      */
     public void testParseAttributes() throws IllegalArgumentException, IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
@@ -238,8 +273,11 @@ public class AuthorizationManagerTest extends TestCase {
     }
 
     /**
-     * Test parsing of a single child element. The child element is either an
+     * Test parseChildElem method. The child element is either an
      * 'Operation' or 'Organization', which are treated the same way.
+     *
+     * @throws IllegalConfigException
+     * @see AuthorizationManager#parseChildElem(org.jdom.Element)
      */
     public void testParseChildElem() throws IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
@@ -284,6 +322,10 @@ public class AuthorizationManagerTest extends TestCase {
 
     /**
      * Test parsing of operations element.
+     *
+     * @throws IllegalArgumentException
+     * @throws IllegalConfigException
+     * @see AuthorizationManager#parseListElem(org.jdom.Element)
      */
     public void testParseListElem() throws IllegalArgumentException, IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
@@ -337,6 +379,12 @@ public class AuthorizationManagerTest extends TestCase {
         }
     }
 
+    /**
+     * Test parseClientElem method
+     *
+     * @throws IllegalConfigException
+     * @see AuthorizationManager#parseClientElem(org.jdom.Element)
+     */
     public void testParseClientElem() throws IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
         Element clientElem = createValidClientElem("client1");
@@ -417,6 +465,12 @@ public class AuthorizationManagerTest extends TestCase {
         clientElem.addContent(child);
     }
 
+    /**
+     * Test parseRootElem method
+     *
+     * @throws IllegalConfigException
+     * @see AuthorizationManager#parseRootElem(org.jdom.Element)
+     */
     public void testParseRootElem() throws IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
         Element config = new Element("ClientAuthorizationConfig");
@@ -451,9 +505,11 @@ public class AuthorizationManagerTest extends TestCase {
     }
 
     /**
-     * Requires config file...
+     * Test setConfig method. This requires that the test configuration file "am-data.xml" is
+     * present in the classpath.
      *
      * @throws IllegalConfigException
+     * @see AuthorizationManager#setConfig(java.util.Properties)
      */
     public void testSetConfig() throws IllegalConfigException {
         AuthorizationManager authMan = new AuthorizationManager();
@@ -466,7 +522,191 @@ public class AuthorizationManagerTest extends TestCase {
         }
 
         Properties props = new Properties();
-        props.put("authorizationDatabase", "/am-data.xml");
+        props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
         authMan.setConfig(props);
+    }
+
+    /**
+     * Test setAuthzClients method
+     *
+     * @see AuthorizationManager#setAuthzClients(java.util.HashMap)
+     */
+    public void testSetAuthzClients() {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+         /* Illegal */
+         try {
+            authMan.setAuthzClients(null);
+            fail("IllegalArgumentException should be raised, null value");
+         } catch (IllegalArgumentException success) {
+         }
+
+         /* Legal */
+        authMan.setAuthzClients(new HashMap());
+        authMan.setAuthzClients(authzClients);
+    }
+
+    /**
+     * Test allowSSOForAttributes method
+     *
+     * @see AuthorizationManager#allowAccessTo(java.lang.String, java.lang.String[])
+     */
+    public void testAllowAccessTo() {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        /* No configuration set */
+        try {
+            authMan.allowAccessTo("test", new String[]{});
+            fail("NoConfigException should be raised");
+        } catch (NoConfigException success) {
+        }
+
+        authMan.setAuthzClients(authzClients);
+
+        /* Null as service identifier */
+        try {
+            authMan.allowAccessTo(null, new String[]{});
+            fail("IllegalArgumentException should be raised, null as service identifier");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Empty string as identitifier */
+        try {
+            authMan.allowAccessTo("", new String[]{});
+            fail("IllegalArgumentException should be raised, empty string as service identifier");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Null as requested attributes */
+        try {
+            authMan.allowAccessTo("test", null);
+            fail("IllegalArgumentException should be raised, null as requested attributes");
+        } catch (IllegalArgumentException success) {
+        }
+
+
+        /* Nonexisting client */
+        Assert.assertFalse("Should not be allowed to access", authMan.allowAccessTo("doesNotExist", new String[]{}));
+
+        /* No attributes requested */
+        Assert.assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{}));
+
+        /* Allowed attributes */
+        Assert.assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2"}));
+        Assert.assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "attr2", "attr3"}));
+
+        /* Illegal attributes */
+        Assert.assertFalse("Should not be allowed to get access", authMan.allowAccessTo("test", new String[]{"attr1", "illegal"}));
+
+
+    }
+
+    /**
+     * Test allowSSOForAttributes method
+     *
+     * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
+     */
+    public void testAllowSSOForAttributes() {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        /* No configuration set */
+        try {
+            authMan.allowSSOForAttributes("test", new String[]{});
+            fail("NoConfigException should be raised");
+        } catch (NoConfigException success) {
+        }
+
+        authMan.setAuthzClients(authzClients);
+
+        /* Null as service identifier */
+        try {
+            authMan.allowSSOForAttributes(null, new String[]{});
+            fail("IllegalArgumentException should be raised, null as service identifier");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Empty string as identitifier */
+        try {
+            authMan.allowSSOForAttributes("", new String[]{});
+            fail("IllegalArgumentException should be raised, empty string as service identifier");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Null as requested attributes */
+        try {
+            authMan.allowSSOForAttributes("test", null);
+            fail("IllegalArgumentException should be raised, null as requested attributes");
+        } catch (IllegalArgumentException success) {
+        }
+
+
+        /* Nonexisting client */
+        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("doesNotExist", new String[]{}));
+
+        /* No attributes requested */
+        Assert.assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{}));
+
+        /* Allowed attributes */
+        Assert.assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1"}));
+        Assert.assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr3"}));
+
+        /* Illegal attributes */
+        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "illegal"}));
+        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr1", "attr2"}));
+        Assert.assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("test", new String[]{"attr2"}));
+    }
+
+    /**
+     * Test allowSSOForAttributes method
+     *
+     * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
+     */
+    public void testAllowOperations() {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        /* No configuration set */
+        try {
+            authMan.allowOperations("test", new String[]{});
+            fail("NoConfigException should be raised");
+        } catch (NoConfigException success) {
+        }
+
+        authMan.setAuthzClients(authzClients);
+
+        /* Null as service identifier */
+        try {
+            authMan.allowOperations(null, new String[]{});
+            fail("IllegalArgumentException should be raised, null as service identifier");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Empty string as identitifier */
+        try {
+            authMan.allowOperations("", new String[]{});
+            fail("IllegalArgumentException should be raised, empty string as service identifier");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Null as requested operations */
+        try {
+            authMan.allowOperations("test", null);
+            fail("IllegalArgumentException should be raised, null as requested operations");
+        } catch (IllegalArgumentException success) {
+        }
+
+
+        /* Nonexisting client */
+        Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("doesNotExist", new String[]{}));
+
+        /* No operations requested */
+        Assert.assertTrue("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{}));
+
+        /* Allowed operations */
+        Assert.assertTrue("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth"}));
+        Assert.assertTrue("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "directAuth"}));
+
+        /* Illegal attributes */
+        Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "illegal"}));
+        Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"illegal"}));
     }
 }
