@@ -24,7 +24,9 @@ import java.util.logging.Logger;
 
 import javax.xml.rpc.Stub;
 
-import no.feide.moria.service.*;
+import no.feide.moria.service.Attribute;
+import no.feide.moria.service.AuthenticationIF;
+import no.feide.moria.service.Authentication_Impl;
 
 /**
  * Represents the interface to Moria, hiding the internals of the
