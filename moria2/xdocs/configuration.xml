@@ -620,7 +620,7 @@ no.feide.moria.web.demo.slave.password=demo_subsystem
             &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;
             &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;
             &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;
-            &lt;Attribute name="tgt" sso="false" secLevel="0"/&gt;
+            &lt;Attribute name="tgt"   sso="true" secLevel="0"/&gt;
         &lt;/Attributes&gt;
         &lt;Operations&gt;
             &lt;Operation name="DirectAuth"/&gt;
