@@ -311,14 +311,19 @@ public final class RequestUtil {
         }
 
         Locale locale = new Locale(lang);
-        ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale);
+        ResourceBundle bundle = null;
+        try {
+            bundle = ResourceBundle.getBundle(bundleName, locale);
+        } catch (MissingResourceException e) {
+            /* No bundle was found, ignore and move on. */
+        }
 
         if (bundle != fallback) {
             return bundle;
         }
 
         /* Check if the fallback is actually requested. */
-        if (bundle == fallback && locale.getLanguage().equals(Locale.getDefault().getLanguage())) {
+        if (bundle != null && bundle == fallback && locale.getLanguage().equals(Locale.getDefault().getLanguage())) {
             return bundle;
         }
 
