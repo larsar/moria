@@ -22,15 +22,6 @@ package no.feide.moria.webservices.v2_1;
 
 import java.io.Serializable;
 
-import javax.xml.namespace.QName;
-
-import org.apache.axis.description.ElementDesc;
-import org.apache.axis.description.TypeDesc;
-import org.apache.axis.encoding.Deserializer;
-import org.apache.axis.encoding.Serializer;
-import org.apache.axis.encoding.ser.BeanDeserializer;
-import org.apache.axis.encoding.ser.BeanSerializer;
-
 /**
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
