@@ -70,6 +70,9 @@ final ResourceBundle bundle = RequestUtil.getBundle(
   else if (eclass == NullPointerException.class) {%>
     <p><%=bundle.getString("error_nullpointer")%></p><br/><%;
   }
+  else if (eclass == IllegalStateException.class) {%>
+    <p><%=bundle.getString("error_illegalstate")%></p><br/><%;
+  }
   else if (eclass == ServletException.class) {
   ServletException se = (ServletException) exception;
   Throwable servletThrowable = se.getRootCause();
@@ -100,6 +103,9 @@ final ResourceBundle bundle = RequestUtil.getBundle(
 	else if (servletThrowable.getClass() == NullPointerException.class) { %>
 		<p><%=bundle.getString("error_nullpointer")%></p><br/><%;
 	}
+	else if (servletThrowable.getClass() == IllegalStateException.class) {%>
+    	<p><%=bundle.getString("error_illegalstate")%></p><br/><%;
+    }
 	}
   else { %>
    <p><%=bundle.getString("error_rest")%></p><br/><%;
