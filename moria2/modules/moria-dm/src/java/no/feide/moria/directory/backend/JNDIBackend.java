@@ -164,15 +164,15 @@ implements DirectoryManagerBackend {
         for (int i = 0; i < myReferences.length; i++) {
             String[] references = myReferences[i].getReferences();
             for (int j = 0; j < references.length; j++) {
-                
+
                 // Search this reference.
                 InitialLdapContext ldap = null;
                 try {
                     ldap = connect(references[j]);
-	                if (ldapSearch(ldap, pattern) != null)
-	                    return true;
+                    if (ldapSearch(ldap, pattern) != null)
+                        return true;
                 } finally {
-                    
+
                     // Close the LDAP connection.
                     if (ldap != null)
                         try {
@@ -181,7 +181,7 @@ implements DirectoryManagerBackend {
                             // Ignored.
                             log.logWarn("Unable to close the backend connection", e);
                         }
-                        
+
                 }
 
             }
@@ -221,7 +221,7 @@ implements DirectoryManagerBackend {
 
                 // For the benefit of the finally block below.
                 InitialLdapContext ldap = null;
-                
+
                 try {
 
                     // Context for this reference.
@@ -272,7 +272,7 @@ implements DirectoryManagerBackend {
                 } catch (NamingException e) {
                     throw new BackendException("Unable to access the backend", e);
                 } finally {
-                    
+
                     // Close the LDAP connection.
                     if (ldap != null)
                         try {
@@ -281,7 +281,7 @@ implements DirectoryManagerBackend {
                             // Ignored.
                             log.logWarn("Unable to close the backend connection", e);
                         }
-                        
+
                 }
 
             }
@@ -329,12 +329,21 @@ implements DirectoryManagerBackend {
         if ((attributes == null) || (attributes.length == 0))
             return new HashMap();
 
+        // The context provider URL, for later logging.
+        String url = "unknown backend";
+
         // Get the attributes from an already initialized LDAP connection.
         Attributes oldAttrs = null;
         try {
+
+            // Remember the URL, for later logging.
+            url = (String) ldap.getEnvironment().get(Context.PROVIDER_URL);
+
+            // Get the attributes.
             oldAttrs = ldap.getAttributes(rdn, attributes);
+
         } catch (NamingException e) {
-            throw new BackendException("Unable to read attributes", e);
+            throw new BackendException("Unable to read attributes " + attributes + " from " + url, e);
         }
 
         // Translate retrieved attributes from Attributes to HashMap.
@@ -344,7 +353,7 @@ implements DirectoryManagerBackend {
             // Did we get an attribute back at all?
             Attribute oldAttr = oldAttrs.get(attributes[i]);
             if (oldAttr == null)
-                log.logWarn("Requested attribute " + attributes[i] + " not found");
+                log.logWarn("Requested attribute " + attributes[i] + " not found on " + url);
             else {
 
                 // Map the attribute values to String[].
@@ -353,7 +362,7 @@ implements DirectoryManagerBackend {
                     try {
                         newValues.add(new String((String) oldAttr.get(j)));
                     } catch (NamingException e) {
-                        throw new BackendException("Unable to read attribute value of " + oldAttr.getID(), e);
+                        throw new BackendException("Unable to read attribute value of " + oldAttr.getID() + " from " + url, e);
                     }
                 newAttrs.put(attributes[i], (String[]) newValues.toArray(new String[] {}));
 
@@ -367,18 +376,13 @@ implements DirectoryManagerBackend {
 
     /**
      * Does nothing, but needed to fulfill the
-     * <code>DirectoryManagerBackend</code> interface.
+     * <code>DirectoryManagerBackend</code> interface. Actual backend
+     * connections are closed where used.
      * @see DirectoryManagerBackend#close()
      */
     public void close() {
 
         // Does nothing.
-
-        /*
-         * try { ldap.close(); } catch (NamingException e) { // Not being able
-         * to close the connection is a non-critical error. log.logWarn("Unable
-         * to close backend connection"); }
-         */
 
     }
 
@@ -387,6 +391,8 @@ implements DirectoryManagerBackend {
      * Do a subtree search for an element given a pattern. Only the first
      * element found is considered, and all references are searched in order
      * until either a match is found or no more references are left to search.
+     * @param ldap
+     *            A prepared LDAP context.
      * @param pattern
      *            The search pattern. Must not include the character '*' or the
      *            substring '\2a' due to possible LDAP exploits.
@@ -397,7 +403,7 @@ implements DirectoryManagerBackend {
      *             If there was a problem accessing the backend. Typical causes
      *             include timeouts.
      */
-    private String ldapSearch(InitialLdapContext ldap, final String pattern)
+    private String ldapSearch(final InitialLdapContext ldap, final String pattern)
     throws BackendException {
 
         // Check pattern for illegal content.
@@ -406,10 +412,16 @@ implements DirectoryManagerBackend {
             if (pattern.indexOf(illegals[i]) > -1)
                 return null;
 
+        // The context provider URL, for later logging.
+        String url = "unknown backend";
+
         // Start counting the (milli)seconds.
         long searchStart = System.currentTimeMillis();
         NamingEnumeration results;
         try {
+
+            // Remember the URL, for later logging.
+            url = (String) ldap.getEnvironment().get(Context.PROVIDER_URL);
 
             // Perform the search.
             results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000 * myTimeout, new String[] {}, false, false));
@@ -419,17 +431,18 @@ implements DirectoryManagerBackend {
         } catch (TimeLimitExceededException e) {
 
             // The search timed out.
-            throw new BackendException("Search timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
+            throw new BackendException("Search on " + url + " for " + pattern + " timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
 
         } catch (NameNotFoundException e) {
 
             // Element not found. Possibly non-existing reference.
+            log.logWarn("Could not find " + pattern + " on " + url); // Necessary?
             return null;
 
         } catch (NamingException e) {
 
             // All other exceptions.
-            throw new BackendException("Unable to complete search for " + pattern, e);
+            throw new BackendException("Unable to complete search for " + pattern + " on " + url, e);
 
         }
 
@@ -446,18 +459,24 @@ implements DirectoryManagerBackend {
 
 
     /**
+     * Common code used to create a new connection to a given backend provider
+     * URL.
      * @param url
-     * @return
+     *            The backend provider URL.
+     * @return The opened backend connection.
+     * @throws BackendException
+     *             If unable to connect to the provider given by
+     *             <code>url</code>.
      */
     private InitialLdapContext connect(String url) throws BackendException {
 
-        //  Prepare connection to the given URL.
+        //  Prepare connection.
         Hashtable env = new Hashtable(defaultEnv);
         env.put(Context.PROVIDER_URL, url);
         try {
             return new InitialLdapContext(env, null);
         } catch (NamingException e) {
-            throw new BackendException("Unable to connect to " + env.get(Context.PROVIDER_URL));
+            throw new BackendException("Unable to connect to " + url);
         }
 
     }
