@@ -26,6 +26,7 @@
      </condition>
  
     <mkdir dir="dist"/>
+    <mkdir dir="dist/doc/javadoc">
     <mkdir dir="build/WEB-INF/classes/templates"/>
     <copy file="jaxrpc-ri-runtime.xml"
           todir="build/WEB-INF"/>
@@ -118,7 +119,7 @@
   <target name="javadoc"
           description="Generate JavaDoc">
     <javadoc sourcepath="src"
-             destdir="build/javadoc"
+             destdir="dist/doc/javadoc"
              packagenames="no.feide.moria.*"
              source="1.4">
       <classpath>
