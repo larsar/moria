@@ -45,24 +45,55 @@ $Id$
         and makes the communication between the web service and Moria totally transparent.
         How to use the stubs varies between SOAP implementations thus the SOAP
         implementation's documentation contains important documentation to understand
-        how to use a webservice as Moria.
+        how to use a web service as Moria.
       </p>
     </section>
+
     <section name="WSDL Interface">
-      <b>TODO: Finish</b>
+      <p>
+        The WSDL interface defines Moria's API and is best documented by looking at
+        the WSDL it self and the
+        <a href="moria-web/apidocs/index.html">Javadoc for the classes used to implement Moria</a>. A
+        deployed Moria instance has it's own auto-generated WSDL, available via HTTP.
+        For the URL to the WSDL file you should contact the administrators of the
+        Moria installation you use.
+      </p>
+      <p>
+        The different versions of the Moria API are backwards compatible.
+      </p>
 
       <subsection name="Version 1.0">
+        <p>
+          Version 1.0 supports the <a href="design.html">regular Moria authentication</a> and verification of user
+          existence.
+        </p>
+        <p>
+          <a href="moria-web/apidocs/index.html">Javadoc for the implementation</a>
+          describes the available methods in detail.
+        </p>
       </subsection>
 
       <subsection name="Version 1.1">
+        <p>
+          Version 1.1 extends the 1.0 version and also support the following:
+          <ul>
+            <li>Proxy authentication</li>
+            <li>Utilities for user groups</li>
+          </ul>
+        </p>
+        <p>
+          <a href="moria-web/apidocs/index.html">Javadoc for the implementation</a>
+          describes the available methods in detail.
+        </p>
+
       </subsection>
     </section>
 
     <section name="SOAP Implementations">
       <table>
         <tr><th>Language</th><th>Name</th><th>Tested with Moria</th></tr>
-        <tr><td>C</td><td>XXXX</td><td>Yes</td></tr>
-        <tr><td>Java</td><td>Axis</td><td>Yes</td></tr>
+        <tr><td>C</td><td><a href="http://www.cs.fsu.edu/~engelen/soap.html">gSOAP</a></td><td>Yes</td></tr>
+        <tr><td>Java</td><td><a href="http://ws.apache.org/axis/">Axis</a></td><td>Yes (and used in Moria)</td></tr>
       </table>
     </section>
   </body>
