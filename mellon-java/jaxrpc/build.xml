@@ -37,7 +37,7 @@
     <copy file="${wsdl_file}"
           todir=""/>
     <exec executable="sed" output="Authentication.wsdl">
-      <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! ${wsdl_file}"/>
+      <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! '${wsdl_file}'"/>
     </exec>
   </target>
 
