@@ -9,7 +9,11 @@ import java.util.logging.Logger;
  */
 public class SessionStoreTask
 extends TimerTask {
-    
+
+    /** Session time out value. */
+    private int timeout = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue()*60*1000; // Minutes to milliseconds
+
+
     /** Used for logging. */
     private static Logger log = Logger.getLogger(SessionStoreTask.class.toString());
     
@@ -33,9 +37,6 @@ extends TimerTask {
      **/
     public void run() {
         log.fine("run()");
-
-        int timeout = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue()*60*1000; // Minutes to milliseconds
-
         sessionStore.checkTimeout(timeout);
     }    
     

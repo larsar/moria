@@ -1,6 +1,8 @@
 package no.feide.moria.authorization;
 
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Iterator;
 
 
 /**
@@ -19,21 +21,67 @@ public class Attribute {
     /** Is this attribute allowd in use with SSO */
     private Boolean sso = null;
 
-
+    /** Security level */
+    private int secLevel = 1;
+    
+    /** Security level register */
+    private static HashMap secLevels = initSecLevels();
+    
 
     /**
      * Constructor
      * @param name Attribute name
      * @param sso Allow use of SSO with this attribute
      */
-    protected Attribute(String name, boolean sso) {
-        log.finer("Attribute(String, boolean)");
+    protected Attribute(String name, boolean sso, String secLevelStr) {
+        log.finer("Attribute(String, boolean, String)");
+
+        /* Set security level */
+        if (secLevelStr == null) 
+            secLevelStr = "HIGH";
+
+        if (!secLevels.containsKey(secLevelStr)) {
+            secLevelStr = "HIGH";
+            log.warning("Invalid security level: \""+secLevelStr+"\" Set to default (HIGH).");
+        }
+
+        secLevel = ((Integer) secLevels.get(secLevelStr)).intValue();
 
         this.name = name;
         this.sso = new Boolean(sso);
     }
 
+    
+    /** Return security level */
+    public int getSecLevel() {
+        return secLevel;
+    }
 
+
+    /** Initialize security level register. */
+    private static HashMap initSecLevels() {
+        HashMap secLevels = new HashMap();
+        secLevels.put("HIGH", new Integer(3));
+        secLevels.put("MEDIUM", new Integer(2));
+        secLevels.put("LOW", new Integer(1));
+        return  secLevels;
+    }
+
+
+    /**
+     * Find the name for a given security level.
+     */
+    public static String secLevelName(int level) {
+
+        for (Iterator it = secLevels.keySet().iterator(); it.hasNext(); ) {
+            String key = (String) it.next();
+            if (((Integer)secLevels.get(key)).intValue() == level)
+                return key;
+        }
+        
+        log.warning("Unknown security level: "+level);
+        return "UNKNOWN";
+    }
 
     /**
      * Constructor

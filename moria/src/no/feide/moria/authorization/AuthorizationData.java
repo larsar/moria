@@ -18,6 +18,7 @@ import java.io.File;
 
 import java.util.logging.Logger;
 
+
 /** 
  * This class is used for storing authorization data for all
  * configured web services. */
@@ -26,10 +27,13 @@ public class AuthorizationData {
     /** Used for logging */
     private static Logger log = Logger.getLogger(AuthorizationData.class.toString());
 
-    /** All configured web services*/
+    /** All configured web services */
     private Map webServices = Collections.synchronizedMap(new HashMap());
+
+    /** All configured attributes */
+    private Map attributes  = Collections.synchronizedMap(new HashMap());
    
-    /** Timestamp for configuration file*/
+    /** Timestamp for configuration file */
     private long fileTimestamp = 0;
 
     /** Singleton instance pointer */
@@ -165,6 +169,10 @@ public class AuthorizationData {
             WebService ws = (WebService) newWebServices.get((String) iterator.next());
             ws.generateAttributeList(attributes);
         }
+        
+        synchronized (attributes) {
+            this.attributes = Collections.synchronizedMap(attributes);
+        }
 
         return newWebServices;
     }
@@ -197,7 +205,8 @@ public class AuthorizationData {
 
             String name = attribute.getAttribute("name");
             String sso = attribute.getAttribute("SSO");
-                
+            String level = attribute.getAttribute("secLevel");
+
             /* Warn if we shuld do sanity check and attribute doesn't
                already exist. */
             if (existing != null &&
@@ -206,10 +215,10 @@ public class AuthorizationData {
 
             else if (sso != null) {
                 if (sso.equals("true"))
-                    attributes.put(name, new Attribute(name, true));
+                    attributes.put(name, new Attribute(name, true, level));
                 else
                     /* Default value for SSO is false. */
-                    attributes.put(name, new Attribute(name, false));
+                    attributes.put(name, new Attribute(name, false, level));
             }
             else
                 attributes.put(name, new Attribute(name));
@@ -313,6 +322,27 @@ public class AuthorizationData {
         }
         return webServices;
     }
+
+
+
+    /**
+     * Return name of security level for a given set of attributes.
+     * @param requestedAttributes Names of all requested attributes.
+     */
+    public String secLevelNameForAttributes(String requestedAttributes[]) {
+        int highestLevel = 1;
+
+        for (int i = 0; i < requestedAttributes.length; i++) {
+            String attrName = requestedAttributes[i];
+            int attrSecLevel = ((Attribute) attributes.get(attrName)).getSecLevel();
+            if (attributes.containsKey(attrName) &&  attrSecLevel > highestLevel) {
+                highestLevel = attrSecLevel;
+            }
+        }
+        return Attribute.secLevelName(highestLevel);
+    }
+
+
 
     
 

@@ -220,25 +220,26 @@ public class SessionStore {
         Vector invalidatedSessions = new Vector();
         Date start = new Date();
                
-        // Find all timedout sessions.
+        log.warning("Number of sessions: "+sessions.size());
+
+       // Find all timedout sessions.
         synchronized (sessions) {
             for (Iterator iterator = sessions.keySet().iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
                 Session session = (Session) sessions.get(key);
             
                 if (!session.isValid(new Date().getTime()-timeout)) {
-                    log.info("Invalidating session (timeout): "+session.getID());
+                    log.fine("Invalidating session (timeout): "+session.getID());
                     invalidatedSessions.add(session);
                 }
             }
-        }
 
-        // Invalidate sessions
-        for (Enumeration enum = invalidatedSessions.elements(); enum.hasMoreElements(); ) {
-            deleteSession((Session)enum.nextElement());
+            // Invalidate sessions
+            for (Enumeration enum = invalidatedSessions.elements(); enum.hasMoreElements(); ) {
+                deleteSession((Session)enum.nextElement());
+            }
         }
-
-        log.info(invalidatedSessions.size()+" sessions invalidated in "+(new Date().getTime()-start.getTime())+ " ms.");
+        log.warning(invalidatedSessions.size()+" sessions invalidated in "+(new Date().getTime()-start.getTime())+ " ms.");
 
     }
 

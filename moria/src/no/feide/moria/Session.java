@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
 import no.feide.moria.authorization.WebService;
+import no.feide.moria.authorization.AuthorizationData;
 
 public class Session {
     
@@ -36,7 +37,11 @@ public class Session {
     /** Timestamp - for invalidating session after time out. */
     private long timestamp = new Date().getTime();
     
+    /** The web service that has requested this session. */
     private WebService webService = null;
+
+    /** The name of the security level for the requested attributes. */
+    private String attributesSecLevel;
     
     /**
      * Protected constructor, only to be used by
@@ -57,6 +62,7 @@ public class Session {
     protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client) {
         log.finer("Session(String, String[], String)");
         
+        this. attributesSecLevel = AuthorizationData.getInstance().secLevelNameForAttributes(attributes);
         this.sessionID = sessionID;
         this.request = attributes;
 	this.urlPrefix = urlPrefix;
@@ -252,4 +258,13 @@ public class Session {
     public WebService getWebService() {
         return webService;
     }
+
+    
+    /**
+     * Return the name of the security level for the requested attributes.
+     */
+    public String getAttributesSecLevel() {
+        return attributesSecLevel;
+    }
+
 }

@@ -288,6 +288,8 @@ public class LoginServlet extends VelocityServlet {
             context.remove("errorDescription");
         }
 
+        System.out.println("SecLevel: "+session.getAttributesSecLevel());
+
 
         /* If no sessionID then remove loginURL */
         if (sessionID != null) 

@@ -60,7 +60,6 @@ public class WebService {
 
 
 
-
     /**
      * Check all if all the requested attributes are legal for this
      * web service.
