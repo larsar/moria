@@ -218,38 +218,39 @@ public final class MoriaControllerTest extends TestCase {
     public void testAttemptLogin() throws MoriaControllerException {
         final String validSSOTicketId = "1234";
         final String validLoginTicketId = "4321";
+        final boolean denySSO = false;
 
         /* Check controller initialization */
         controllerInitialization();
 
         /* Illegal arguments */
         try {
-            MoriaController.attemptLogin(null, validSSOTicketId, validUsername, validPassword);
+            MoriaController.attemptLogin(null, validSSOTicketId, validUsername, validPassword, denySSO);
             fail("IllegalInputException should be raised, loginTicketId is null");
         } catch (IllegalInputException success) {
         }
         try {
-            MoriaController.attemptLogin("", validSSOTicketId, validUsername, validPassword);
+            MoriaController.attemptLogin("", validSSOTicketId, validUsername, validPassword, denySSO);
             fail("IllegalInputException should be raised, loginTicketId is an empty string");
         } catch (IllegalInputException success) {
         }
         try {
-            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, null, validPassword);
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, null, validPassword, denySSO);
             fail("IllegalInputException should be raised, username is null");
         } catch (IllegalInputException success) {
         }
         try {
-            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, "", validPassword);
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, "", validPassword, denySSO);
             fail("IllegalInputException should be raised, username is an empty string");
         } catch (IllegalInputException success) {
         }
         try {
-            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, validUsername, null);
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, validUsername, null, denySSO);
             fail("IllegalInputException should be raised, username is null");
         } catch (IllegalInputException success) {
         }
         try {
-            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, validUsername, "");
+            MoriaController.attemptLogin(validLoginTicketId, validSSOTicketId, validUsername, "", denySSO);
             fail("IllegalInputException should be raised, username is an empty string");
         } catch (IllegalInputException success) {
         }
@@ -257,14 +258,14 @@ public final class MoriaControllerTest extends TestCase {
         /* SSO ticket can be empty */
         String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                       validPrincipal);
-        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
-        MoriaController.attemptLogin(loginTicketId, "", validUsername, validPassword);
+        MoriaController.attemptLogin(loginTicketId, "", validUsername, validPassword, denySSO);
 
         /* Non-existing login ticket */
         try {
-            MoriaController.attemptLogin("doesNotExist", validSSOTicketId, validUsername, validPassword);
+            MoriaController.attemptLogin("doesNotExist", validSSOTicketId, validUsername, validPassword, denySSO);
             fail("UnknownTicketException should be raised, non-existing ticket");
         } catch (UnknownTicketException success) {
         }
@@ -272,17 +273,17 @@ public final class MoriaControllerTest extends TestCase {
         /* Non-existing SSO ticket (allowed) */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
-        MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword);
+        MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword, denySSO);
 
         /* Removal of existing SSO ticket */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
-        Map tickets = MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword);
+        Map tickets = MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword, denySSO);
         final String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
 
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
-        MoriaController.attemptLogin(loginTicketId, ssoTicketId, validUsername, validPassword);
+        MoriaController.attemptLogin(loginTicketId, ssoTicketId, validUsername, validPassword, denySSO);
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
         try {
@@ -295,17 +296,17 @@ public final class MoriaControllerTest extends TestCase {
         loginTicketId =
         MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
         try {
-            MoriaController.attemptLogin(loginTicketId, null, validUsername, "wrongPassword");
+            MoriaController.attemptLogin(loginTicketId, null, validUsername, "wrongPassword", denySSO);
         } catch (AuthenticationException success) {
         }
-        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
 
         /* Use of same login ticket twice when authentication was OK first time = ERROR */
         loginTicketId =
         MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
-        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         try {
-            MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+            MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         } catch (UnknownTicketException success) {
         }
 
@@ -313,14 +314,14 @@ public final class MoriaControllerTest extends TestCase {
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
         try {
-            MoriaController.attemptLogin(loginTicketId, null, "wrong", validPassword);
+            MoriaController.attemptLogin(loginTicketId, null, "wrong", validPassword, denySSO);
             fail("AuthenticationFailedException should be raised, wrong username");
         } catch (AuthenticationException success) {
         }
 
         /* Wrong password */
         try {
-            MoriaController.attemptLogin(loginTicketId, null, validUsername, "wrong");
+            MoriaController.attemptLogin(loginTicketId, null, validUsername, "wrong", denySSO);
             fail("AuthenticationFailedException should be raised, wrong username");
         } catch (AuthenticationException success) {
         }
@@ -328,7 +329,7 @@ public final class MoriaControllerTest extends TestCase {
         /* Userorg test */
         loginTicketId=MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
         try {
-            MoriaController.attemptLogin(loginTicketId, null, validUsername2, validPassword);
+            MoriaController.attemptLogin(loginTicketId, null, validUsername2, validPassword, denySSO);
             fail("AuthorizationFailedException should be raised, userorg is not allowed");
         }catch (AuthorizationException success) {
         }
@@ -336,7 +337,7 @@ public final class MoriaControllerTest extends TestCase {
         /* Normal use */
         loginTicketId =
         MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
-        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         final Map actualAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
                                                             validPrincipal);
 
@@ -352,6 +353,7 @@ public final class MoriaControllerTest extends TestCase {
     public void testAttemptSingleSignOn() throws MoriaControllerException {
         /* Check controller initialization */
         controllerInitialization();
+        boolean denySSO = false;
 
         /* Invalid arguments */
         try {
@@ -395,7 +397,7 @@ public final class MoriaControllerTest extends TestCase {
         /* Force authentication */
           loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                         validPrincipal);
-        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
         String newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, true,
                                                                          validPrincipal);
@@ -407,7 +409,7 @@ public final class MoriaControllerTest extends TestCase {
         }
         /* userorg */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
-        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
         newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, "limited");
         try {
@@ -421,7 +423,7 @@ public final class MoriaControllerTest extends TestCase {
         /* Normal use */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                         validPrincipal);
-        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
 
         newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
@@ -441,6 +443,7 @@ public final class MoriaControllerTest extends TestCase {
     public void testGetUserAttributes() throws MoriaControllerException {
         /* Check controller initialization */
         controllerInitialization();
+        final boolean denySSO = false;
 
         /* Illegal arguments */
         try {
@@ -474,7 +477,7 @@ public final class MoriaControllerTest extends TestCase {
         /* Authorization */
         final String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                       validPrincipal);
-        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         final String serviceTicketId = (String) tickets.get(MoriaController.SERVICE_TICKET);
         try {
             MoriaController.getUserAttributes(serviceTicketId, "invalidPrincipal");
@@ -714,6 +717,7 @@ public final class MoriaControllerTest extends TestCase {
      */
     public void testProxyAuthentication() throws MoriaControllerException {
         controllerInitialization();
+        final boolean denySSO = false;
 
         final String validProxyTicketId = "1234";
 
@@ -747,7 +751,7 @@ public final class MoriaControllerTest extends TestCase {
         final String[] attrsProxy = new String[]{"tgt"};
         final String loginTicketId = MoriaController.initiateAuthentication(attrsProxy, validPrefix, validPostfix, false,
                                                                       validPrincipal);
-        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         Map resultAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
                                                             validPrincipal);
         /* Ticket generation */
@@ -800,6 +804,7 @@ public final class MoriaControllerTest extends TestCase {
      */
     public void testGetProxyTicket() throws MoriaControllerException {
         controllerInitialization();
+        final boolean denySSO = false;
 
         final String validTGT = "1234";
 
@@ -844,7 +849,7 @@ public final class MoriaControllerTest extends TestCase {
 
         final String loginTicketId = MoriaController.initiateAuthentication(new String[]{"tgt"}, validPrefix, validPostfix,
                                                                       false, validPrincipal);
-        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         final Map resultAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
                                                             validPrincipal);
         /* Ticket generation */
@@ -929,6 +934,7 @@ public final class MoriaControllerTest extends TestCase {
      */
     public void testInvalidateSSOTicket() throws MoriaControllerException {
         controllerInitialization();
+        final boolean denySSO = false;
 
         /* Invalid arguments */
         try {
@@ -948,7 +954,7 @@ public final class MoriaControllerTest extends TestCase {
         /* Existing SSO ticket */
         String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                       validPrincipal);
-        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         final String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
 
         /* Verify that SSO is possible */
@@ -976,6 +982,7 @@ public final class MoriaControllerTest extends TestCase {
      */
     public void testGetRedirectURL() throws MoriaControllerException {
         controllerInitialization();
+        final boolean denySSO = false;
 
         /* Invalid arguments */
         try {
@@ -990,7 +997,7 @@ public final class MoriaControllerTest extends TestCase {
         }
 
         final String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,                                                                      validPrincipal);
-        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        final Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword, denySSO);
         final String serviceTicket = (String) tickets.get(MoriaController.SERVICE_TICKET);
         final String actualURL = MoriaController.getRedirectURL(serviceTicket);
         final String expectedURL = validPrefix+serviceTicket+validPostfix;
