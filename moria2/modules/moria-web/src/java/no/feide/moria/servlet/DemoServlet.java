@@ -434,7 +434,7 @@ extends HttpServlet {
      * @see #REQUIRED_PARAMETERS
      * @see RequestUtil#PROP_CONFIG
      */
-    private Properties getConfig() throws IllegalStateException {
+    private Properties getConfig() {
 
         // Validate configuration, and check whether we have a fallback.
         try {

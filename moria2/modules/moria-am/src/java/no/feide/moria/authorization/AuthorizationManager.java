@@ -244,7 +244,7 @@ public final class AuthorizationManager {
      *             If <code>element</code> is <code>null</code>.
      */
     static AuthorizationClient parseClientElem(final Element element)
-    throws IllegalConfigException, IllegalArgumentException {
+    throws IllegalConfigException {
 
         // Sanity check.
         if (element == null)

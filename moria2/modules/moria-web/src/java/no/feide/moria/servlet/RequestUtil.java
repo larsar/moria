@@ -610,8 +610,7 @@ public final class RequestUtil {
      * @throws IllegalArgumentException
      *             If <code>cookieName</code> is null or an empty string.
      */
-    public static String getCookieValue(final String cookieName, final Cookie[] cookies)
-    throws IllegalArgumentException {
+    public static String getCookieValue(final String cookieName, final Cookie[] cookies) {
 
         // Sanity checks.
         if (cookieName == null || cookieName.equals(""))
@@ -646,8 +645,7 @@ public final class RequestUtil {
      *             <code>null</code> or an empty string, or if
      *             <code>validHours</code> is less than 0.
      */
-    public static Cookie createCookie(final String cookieName, final String cookieValue, final int validHours)
-    throws IllegalArgumentException {
+    public static Cookie createCookie(final String cookieName, final String cookieValue, final int validHours) {
 
         // Sanity checks.
         if (cookieName == null || cookieName.equals(""))
@@ -755,8 +753,7 @@ public final class RequestUtil {
      *             values found in <code>config</code> contains less than or
      *             more than one occurrence of the ':' separator character.
      */
-    static TreeMap parseConfig(final Properties config, final String element, final String language)
-    throws IllegalArgumentException, IllegalStateException {
+    static TreeMap parseConfig(final Properties config, final String element, final String language) {
 
         // Sanity checks.
         if (config == null)
