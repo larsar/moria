@@ -34,6 +34,9 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.encoding.ser.VectorDeserializerFactory;
@@ -90,36 +93,13 @@ import org.apache.axis.encoding.ser.VectorSerializerFactory;
 public class DemoServlet
 extends HttpServlet {
 
-    // TODO: Read configuration from file to allow for flexible deployment.
-
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(DemoServlet.class);
 
-    /**
-     * The initial (main system) attribute request. <br>
-     * <br>
-     * Currently requesting <i>eduPersonOrgDN </i> and <i>tgt </i>, the special
-     * ticket granting ticket virtual attribute.
-     */
-    private final String[] MASTER_ATTRIBUTE_REQUEST = {"eduPersonOrgDN", "tgt"};
+    /** Copy of configuration properties. */
+    private Properties config = null;
 
-    /**
-     * The second (faked subsystem) attribute request. <br>
-     * <br>
-     * Currently requesting <i>eduPersonAffiliation </i>.
-     */
-    private final String[] SLAVE_ATTRIBUTE_REQUEST = {"eduPersonAffiliation"};
-
-    /**
-     * The service endpoint. <br>
-     * <br>
-     * Current value is
-     * <code>"http://localhost:8080/moria/v2_0/Authentication"</code>.
-     */
-    private final String SERVICE_ENDPOINT = "http://localhost:8080/moria/v2_0/Authentication";
-
-    //private final String SERVICE_ENDPOINT =
-    // "https://moria.uio.no/moria2/v2_0/Authentication";
+    private String[] REQUIRED_PARAMETERS = {"MASTER_ATTRIBUTE_REQUEST", "SLAVE_ATTRIBUTE_REQUEST", "SERVICE_ENDPOINT", "MASTER_CLIENT_USERNAME", "MASTER_CLIENT_PASSWORD", "SLAVE_CLIENT_USERNAME", "SLAVE_CLIENT_PASSWORD", "ATTRIBUTE_QNAME"};
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -127,44 +107,6 @@ extends HttpServlet {
      * Current value is <code>"ticket"</code>.
      */
     private final String PARAM_TICKET = "ticket";
-
-    /**
-     * The username used by this demo service when accessing Moria as a service
-     * (not a subsystem). <br>
-     * <br>
-     * Current value is <code>"demo_service"</code>.
-     */
-    private final String MASTER_CLIENT_USERNAME = "demo_service";
-
-    /**
-     * The password used by this demo service when accessing Moria as a service
-     * (not a subsystem). <br>
-     * <br>
-     * Current value is <code>"demo_service"</code>.
-     */
-    private final String MASTER_CLIENT_PASSWORD = "demo_service";
-
-    /**
-     * The username used by this demo service when accessing Moria as a
-     * subsystem of another service. <br>
-     * <br>
-     * Current value is <code>"demo_subsystem"</code>.
-     */
-    private final String SLAVE_CLIENT_USERNAME = "demo_subsystem";
-
-    /**
-     * The password used by this demo service when accessing Moria as a
-     * subsystem of another service. <br>
-     * <br>
-     * Current value is <code>"demo_subsystem"</code>.
-     */
-    private final String SLAVE_CLIENT_PASSWORD = "demo_subsystem";
-
-    /**
-     * Used when mapping the remote <code>Attribute</code> type to the local
-     * <code>Attribute</code> class.
-     */
-    private final QName ATTRIBUTE_QNAME = new QName("https://login.feide.no/moria/v2_0/Authentication", "Attribute");
 
 
     /**
@@ -184,18 +126,21 @@ extends HttpServlet {
      * @see javax.servlet.http.HttpServlet.doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
-public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
+    public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
 
         // Be sure to dump all exceptions.
         try {
+
+            // Get configuration.
+            final Properties config = getConfig();
 
             // Do we have a ticket?
             final String ticket = request.getParameter(PARAM_TICKET);
             if (ticket == null) {
 
                 // No ticket; redirect for authentication.
-                String redirectURL = initiateAuthentication(MASTER_ATTRIBUTE_REQUEST, request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
+                String redirectURL = initiateAuthentication(convert(config.getProperty(RequestUtil.PROP_DEMO_MASTER_ATTRIBUTE_REQUEST)), request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
                 response.sendRedirect(redirectURL);
 
             } else {
@@ -204,7 +149,7 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
                 PrintWriter out = response.getWriter();
                 out.println("<html><head><title>Moria Demo Service</title></head><body>");
                 out.println("<h1 align=\"center\">Authentication successful</h1>");
-                out.println("<i>System '" + MASTER_CLIENT_USERNAME + "':</i>");
+                out.println("<i>System '" + config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME) + "':</i>");
                 String ticketGrantingTicket = null; // For later use.
 
                 // Get and display attributes.
@@ -218,7 +163,7 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
 
                         // Just remember the ticket for later use.
                         ticketGrantingTicket = attributes[i].getValues()[0];
-                        
+
                     }
 
                     else {
@@ -239,11 +184,11 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
                 out.println("<p><b>Ticket granting ticket:</b> <tt>" + ticketGrantingTicket + "</tt></p>");
 
                 // Should we try to fake a subsystem using SSO?
-                out.println("<hr><i>Subsystem '" + SLAVE_CLIENT_USERNAME + "':</i>");
+                out.println("<hr><i>Subsystem '" + config.getProperty(RequestUtil.PROP_DEMO_SLAVE_USERNAME) + "':</i>");
                 if (ticketGrantingTicket == null) {
-                    
+
                     out.println("<p align=\"center\">No ticket granting ticket was retrieved.<br>SSO denied.</p>");
-                    
+
                 } else {
 
                     // Now get a proxy ticket for your subsystem (we're actually
@@ -252,8 +197,7 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
 
                     // We now have a proxy ticket; now let's fake our own
                     // subsystem. Retrieve and display some attributes.
-                    attributes = proxyAuthentication(SLAVE_ATTRIBUTE_REQUEST, proxyTicket);
-                    log.logInfo("4");
+                    attributes = proxyAuthentication(convert(config.getProperty(RequestUtil.PROP_DEMO_SLAVE_ATTRIBUTE_REQUEST)), proxyTicket);
                     out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
                     for (int i = 0; i < attributes.length; i++) {
 
@@ -284,6 +228,7 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
         }
 
     }
+
 
     /**
      * Initiates an authentication session, hiding any Axis internals from the
@@ -316,11 +261,14 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
     private String initiateAuthentication(final String[] attributeRequest, final String urlPrefix, final String urlPostfix, final boolean denySSO)
     throws MalformedURLException, RemoteException {
 
+        // Get configuration.
+        final Properties config = getConfig();
+        
         // Preparing call.
-        Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
-        call.setUsername(MASTER_CLIENT_USERNAME);
-        call.setPassword(MASTER_CLIENT_PASSWORD);
-        final Object[] parameters = {MASTER_ATTRIBUTE_REQUEST, urlPrefix, urlPostfix, new Boolean(false)};
+        Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
+        call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME));
+        call.setPassword(config.getProperty(RequestUtil.PROP_DEMO_MASTER_PASSWORD));
+        final Object[] parameters = {convert(config.getProperty(RequestUtil.PROP_DEMO_MASTER_ATTRIBUTE_REQUEST)), urlPrefix, urlPostfix, new Boolean(false)};
 
         // Performing call.
         return (String) call.invoke(new QName("initiateAuthentication"), parameters);
@@ -351,19 +299,23 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
     private Attribute[] getUserAttributes(String serviceTicket)
     throws MalformedURLException, RemoteException {
 
+        // Get configuration
+        final Properties config = getConfig();
+        
         // Prepare call.
-        Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
-        call.setUsername(MASTER_CLIENT_USERNAME);
-        call.setPassword(MASTER_CLIENT_PASSWORD);
-        call.setReturnType(ATTRIBUTE_QNAME);
-        VectorSerializerFactory serializer = new VectorSerializerFactory(Attribute.class, ATTRIBUTE_QNAME);
-        VectorDeserializerFactory deserializer = new VectorDeserializerFactory(Attribute.class, ATTRIBUTE_QNAME);
-        call.registerTypeMapping(Attribute.class, ATTRIBUTE_QNAME, serializer, deserializer);
+        Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
+        call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME));
+        call.setPassword(config.getProperty(RequestUtil.PROP_DEMO_MASTER_PASSWORD));
+        final QName attributeQName = new QName(config.getProperty(RequestUtil.PROP_DEMO_ATTRIBUTE_NAMESPACE_URI), "Attribute");
+        call.setReturnType(attributeQName);
+        VectorSerializerFactory serializer = new VectorSerializerFactory(Attribute.class, attributeQName);
+        VectorDeserializerFactory deserializer = new VectorDeserializerFactory(Attribute.class, attributeQName);
+        call.registerTypeMapping(Attribute.class, attributeQName, serializer, deserializer);
         call.addParameter("serviceTicket", new QName("http://www.w3.org/2001/XMLSchema", "string"), String.class, ParameterMode.IN);
         final Object[] parameters = {serviceTicket};
 
         // Perform the call.
-        final Object returnedAttributes = call.invoke(new QName(SERVICE_ENDPOINT, "getUserAttributes"), parameters);
+        final Object returnedAttributes = call.invoke(new QName(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT), "getUserAttributes"), parameters);
 
         // Convert and return.
         return (Attribute[]) returnedAttributes;
@@ -396,10 +348,13 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
     private String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal)
     throws MalformedURLException, RemoteException {
 
+        // Get configuration.
+        final Properties config = getConfig();
+        
         // Preparing call.
-        Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
-        call.setUsername(MASTER_CLIENT_USERNAME);
-        call.setPassword(MASTER_CLIENT_PASSWORD);
+        Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
+        call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME));
+        call.setPassword(config.getProperty(RequestUtil.PROP_DEMO_MASTER_PASSWORD));
         final Object[] parameters = {ticketGrantingTicket, proxyServicePrincipal};
 
         // Performing call.
@@ -432,23 +387,86 @@ public final void doGet(final HttpServletRequest request, final HttpServletRespo
     private Attribute[] proxyAuthentication(final String[] attributes, final String proxyTicket)
     throws MalformedURLException, RemoteException {
 
+        // Get configuration.
+        final Properties config = getConfig();
+        
         // Prepare call.
-        Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
-        call.setUsername(SLAVE_CLIENT_USERNAME);
-        call.setPassword(SLAVE_CLIENT_PASSWORD);
-        call.setReturnType(ATTRIBUTE_QNAME);
-        VectorSerializerFactory serializer = new VectorSerializerFactory(Attribute.class, ATTRIBUTE_QNAME);
-        VectorDeserializerFactory deserializer = new VectorDeserializerFactory(Attribute.class, ATTRIBUTE_QNAME);
-        call.registerTypeMapping(Attribute.class, ATTRIBUTE_QNAME, serializer, deserializer);
+        Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
+        call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_SLAVE_USERNAME));
+        call.setPassword(config.getProperty(RequestUtil.PROP_DEMO_SLAVE_PASSWORD));
+        final QName attributeQName = new QName(config.getProperty(RequestUtil.PROP_DEMO_ATTRIBUTE_NAMESPACE_URI), "Attribute");
+        call.setReturnType(attributeQName);
+        VectorSerializerFactory serializer = new VectorSerializerFactory(Attribute.class, attributeQName);
+        VectorDeserializerFactory deserializer = new VectorDeserializerFactory(Attribute.class, attributeQName);
+        call.registerTypeMapping(Attribute.class, attributeQName, serializer, deserializer);
         call.addParameter("attributes", new QName("http://www.w3.org/2001/XMLSchema", "string[]"), String[].class, ParameterMode.IN);
         call.addParameter("proxyTicket", new QName("http://www.w3.org/2001/XMLSchema", "string"), String.class, ParameterMode.IN);
-        final Object[] parameters = {SLAVE_ATTRIBUTE_REQUEST, proxyTicket};
+        final Object[] parameters = {convert(config.getProperty(RequestUtil.PROP_DEMO_SLAVE_ATTRIBUTE_REQUEST)), proxyTicket};
 
         // Perform the call.
-        final Object returnedAttributes = call.invoke(new QName(SERVICE_ENDPOINT, "proxyAuthentication"), parameters);
+        final Object returnedAttributes = call.invoke(new QName(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT), "proxyAuthentication"), parameters);
 
         // Convert and return.
         return (Attribute[]) returnedAttributes;
+
+    }
+
+
+    /**
+     * Get this servlet's configuration from the web module, given by
+     * <code>RequestUtil.PROP_CONFIG</code>.
+     * @return The last valid configuration.
+     * @throws IllegalStateException
+     *             If unable to read the current configuration from the servlet
+     *             context, and there is no previous configuration. Also thrown
+     *             if any of the required parameters (given by
+     *             <code>REQUIRED_PARAMETERS</code>) are not set.
+     * @see #REQUIRED_PARAMETERS
+     * @see RequestUtil#PROP_CONFIG
+     */
+    private Properties getConfig() throws IllegalStateException {
+
+        // Validate configuration, and check whether we have a fallback.
+        try {
+            config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
+        } catch (ClassCastException e) {
+            log.logInfo("Unable to get configuration from context");
+        }
+        if (config == null)
+            throw new IllegalStateException("Configuration is not set");
+
+        // Are we missing some required properties?
+        for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
+            String requiredParameter = REQUIRED_PARAMETERS[i];
+            if ((requiredParameter == null) || (requiredParameter.equals("")))
+                throw new IllegalStateException("Required parameter '" + requiredParameter + "' is not set");
+        }
+        return config;
+
+    }
+
+
+    /**
+     * Convert a comma-separated list into an array.
+     * @param commaSeparatedList
+     *            A comma-separated list of elements. May be <code>null</code>
+     *            or an empty string.
+     * @return <code>commaSeparatedList</code> as a string array. Will always
+     *         return an empty array if <code>commaSeparatedList</code> is
+     *         <code>null</code> or an empty string.
+     */
+    private String[] convert(String commaSeparatedList) {
+
+        // Sanity checks.
+        if ((commaSeparatedList == null) || (commaSeparatedList.length() == 0))
+            return new String[] {};
+
+        // Convert and return.
+        ArrayList buffer = new ArrayList();
+        StringTokenizer tokenizer = new StringTokenizer(commaSeparatedList, ",");
+        while (tokenizer.hasMoreTokens())
+            buffer.add(tokenizer.nextToken());
+        return (String[]) buffer.toArray(new String[] {});
 
     }
 
