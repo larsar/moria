@@ -83,7 +83,6 @@ public class MoriaAuthenticationFilter implements Filter {
     	}
     	
     	try {
-    		System.out.println("FOOOBAR: "+connectorClass);
 			moria = (MoriaConnector)Class.forName(connectorClass).newInstance();
 		} 
     	catch (InstantiationException e1) {
