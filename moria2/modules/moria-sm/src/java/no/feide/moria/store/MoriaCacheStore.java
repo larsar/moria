@@ -127,7 +127,6 @@ public final class MoriaCacheStore implements MoriaStore {
             cacheConfigFile = new FileInputStream(cacheConfigProperty);
         } catch (FileNotFoundException fnnf) {
             String message = "The configuration file for the store was not found.";
-            messageLogger.logCritical(message, fnnf);
             throw new MoriaStoreConfigurationException(message, fnnf);
         }
 
@@ -138,7 +137,6 @@ public final class MoriaCacheStore implements MoriaStore {
             configurator.configure(store, cacheConfigFile);
         } catch (Exception e) {
             String message = "Unable to configure the cache.";
-            messageLogger.logCritical(message, e);
             throw new MoriaStoreConfigurationException(message, e);
         }
 
@@ -216,7 +214,7 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket ticket = getFromStore(potentialTicketTypes, ticketId);
 
         if (ticket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(ticketId);
         }
 
         if (ticket.getTicketType().equals(MoriaTicketType.LOGIN_TICKET)) {
@@ -232,7 +230,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (data != null && data instanceof MoriaAuthnAttempt) {
             authnAttempt = (MoriaAuthnAttempt) data;
         } else {
-            throw new InvalidTicketException("No authentication attempt associated with ticket.");
+            throw new InvalidTicketException("No authentication attempt associated with ticket. [" + ticketId + "]");
         }
 
         /* Delete the ticket if so indicated. */
@@ -278,7 +276,7 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket ticket = getFromStore(potentialTicketTypes, ticketId);
 
         if (ticket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(ticketId);
         }
 
         if (!ticket.getTicketType().equals(MoriaTicketType.SSO_TICKET)) {
@@ -296,7 +294,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (data != null && data instanceof CachedUserData) {
             cachedUserData = (CachedUserData) data;
         } else {
-            throw new InvalidTicketException("No user data associated with ticket.");
+            throw new InvalidTicketException("No user data associated with ticket. [" + ticketId + "]");
         }
 
         removeFromStore(ticket);
@@ -317,7 +315,7 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket loginTicket = getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
 
         if (loginTicket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(loginTicketId);
         }
 
         /* Primarily to check timestamp. */
@@ -334,7 +332,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (data != null && data instanceof MoriaAuthnAttempt) {
             authnAttempt = (MoriaAuthnAttempt) data;
         } else {
-            throw new InvalidTicketException("No authentication attempt associated with login ticket.");
+            throw new InvalidTicketException("No authentication attempt associated with login ticket. [" + loginTicketId + "]");
         }
 
         MoriaTicket serviceTicket = new MoriaTicket(MoriaTicketType.SERVICE_TICKET, loginTicket.getServicePrincipal(),
@@ -365,7 +363,7 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket ssoTicket = getFromStore(MoriaTicketType.SSO_TICKET, ssoTicketId);
 
         if (ssoTicket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(ssoTicketId);
         }
 
         /* Primarily to check timestamp. */
@@ -382,7 +380,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (data != null && data instanceof CachedUserData) {
             cachedUserData = (CachedUserData) data;
         } else {
-            throw new InvalidTicketException("No user data associated with SSO ticket.");
+            throw new InvalidTicketException("No user data associated with SSO ticket. [" + ssoTicketId + "]");
         }
 
         MoriaTicket tgTicket = new MoriaTicket(MoriaTicketType.TICKET_GRANTING_TICKET, targetServicePrincipal, tgTicketTTL,
@@ -414,7 +412,7 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket tgTicket = getFromStore(MoriaTicketType.TICKET_GRANTING_TICKET, tgTicketId);
 
         if (tgTicket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(tgTicketId);
         }
 
         /* Primarily to check timestamp. */
@@ -431,7 +429,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (data != null && data instanceof CachedUserData) {
             cachedUserData = (CachedUserData) data;
         } else {
-            throw new InvalidTicketException("No user data associated with ticket granting ticket.");
+            throw new InvalidTicketException("No user data associated with ticket granting ticket. [" + tgTicketId + "]");
         }
 
         MoriaTicket proxyTicket = new MoriaTicket(MoriaTicketType.PROXY_TICKET, targetServicePrincipal, proxyTicketTTL,
@@ -459,7 +457,7 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket loginTicket = getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
 
         if (loginTicket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(loginTicketId);
         }
 
         /* Primarily to check timestamp. */
@@ -472,7 +470,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (data != null && data instanceof MoriaAuthnAttempt) {
             authnAttempt = (MoriaAuthnAttempt) data;
         } else {
-            throw new InvalidTicketException("No authentication attempt associated with login ticket.");
+            throw new InvalidTicketException("No authentication attempt associated with login ticket. [" + loginTicketId + "]");
         }
 
         authnAttempt.setTransientAttributes(transientAttributes);
@@ -499,13 +497,13 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket loginTicket = getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
 
         if (loginTicket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(loginTicketId);
         }
 
         MoriaTicket ssoTicket = getFromStore(MoriaTicketType.SSO_TICKET, ssoTicketId);
 
         if (ssoTicket == null) {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(ssoTicketId);
         }
 
         /* Primarily to check timestamp. */
@@ -520,7 +518,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (ssoData != null && ssoData instanceof CachedUserData) {
             cachedUserData = (CachedUserData) ssoData;
         } else {
-            throw new InvalidTicketException("No cached user data associated with sso ticket.");
+            throw new InvalidTicketException("No cached user data associated with sso ticket. [" + ssoTicketId + "]");
         }
 
         MoriaStoreData loginData = loginTicket.getData();
@@ -528,7 +526,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (loginData != null && loginData instanceof MoriaAuthnAttempt) {
             authnAttempt = (MoriaAuthnAttempt) loginData;
         } else {
-            throw new InvalidTicketException("No authentication attempt associated with login ticket.");
+            throw new InvalidTicketException("No authentication attempt associated with login ticket. [" + loginTicketId + "]");
         }
 
         /* Transfer cached userdata to login attempt. */
@@ -554,7 +552,7 @@ public final class MoriaCacheStore implements MoriaStore {
         if (ssoTicket != null) {
             removeFromStore(ssoTicket);
         } else {
-            throw new NonExistentTicketException();
+            throw new NonExistentTicketException(ssoTicketId);
         }
     }
 
@@ -609,16 +607,12 @@ public final class MoriaCacheStore implements MoriaStore {
          * removing it at later time, so we just throw an exception.
          */
         if (ticket.hasExpired()) {
-            String message = "Ticket has expired.";
-            messageLogger.logInfo(message, ticket.getTicketId());
-            throw new InvalidTicketException(message);
+            throw new InvalidTicketException("Ticket has expired. [" + ticket.getTicketId() + "]");
         }
 
         /* Authorize the caller. */
         if (servicePrincipal != null && !ticket.getServicePrincipal().equals(servicePrincipal)) {
-            String message = "Illegal use of ticket by service: " + servicePrincipal;
-            messageLogger.logWarn(message, ticket.getTicketId());
-            throw new InvalidTicketException(message);
+            throw new InvalidTicketException("Illegal use of ticket by " + servicePrincipal + ". [" + ticket.getTicketId() + "]");
         }
 
         /* Loop through ticket types until valid type found. */
@@ -633,9 +627,8 @@ public final class MoriaCacheStore implements MoriaStore {
 
         /* Throw exception if all types were invalid. */
         if (!valid) {
-            String message = "Ticket has wrong type: " + ticket.getTicketType();
-            messageLogger.logWarn(message, ticket.getTicketId());
-            throw new InvalidTicketException(message);
+            throw new InvalidTicketException("Ticket has wrong type: " + ticket.getTicketType() + ". [" + ticket.getTicketId()
+                    + "]");
         }
     }
 
@@ -710,9 +703,9 @@ public final class MoriaCacheStore implements MoriaStore {
             try {
                 node = store.get(fqn);
             } catch (LockingException e) {
-                throw new MoriaStoreException("Locking of store failed", e);
+                throw new MoriaStoreException("Locking of store failed. [" + ticketId + "]", e);
             } catch (TimeoutException e) {
-                throw new MoriaStoreException("Access to store timed out", e);
+                throw new MoriaStoreException("Access to store timed out. [" + ticketId + "]", e);
             }
 
             if (node == null) {
@@ -758,7 +751,7 @@ public final class MoriaCacheStore implements MoriaStore {
         } catch (RuntimeException re) {
             throw re;
         } catch (Exception e) {
-            throw new MoriaStoreException("Insertion into store failed.", e);
+            throw new MoriaStoreException("Insertion into store failed. [" + ticket.getTicketId() + "]", e);
         }
     }
 
@@ -778,7 +771,7 @@ public final class MoriaCacheStore implements MoriaStore {
 
         /* Validate parameters. */
         if (ticket == null) {
-            throw new IllegalArgumentException("ticketId cannot be null.");
+            throw new IllegalArgumentException("ticket cannot be null.");
         }
 
         Fqn fqn = new Fqn(new Object[] {ticket.getTicketType(), ticket.getTicketId()});
@@ -789,7 +782,7 @@ public final class MoriaCacheStore implements MoriaStore {
             } catch (RuntimeException re) {
                 throw re;
             } catch (Exception e) {
-                throw new MoriaStoreException("Removal from store failed.", e);
+                throw new MoriaStoreException("Removal from store failed. [" + ticket.getTicketId() + "]", e);
             }
         } else {
             throw new NonExistentTicketException();
