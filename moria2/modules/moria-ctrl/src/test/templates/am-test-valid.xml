@@ -75,8 +75,8 @@
             <Operation name="InteractiveAuth"/>
         </Operations>
         <OrgsAllowed>
-            <Organization name ="some.realm"/>
-		    </OrgsAllowed>
+            <Organization name ="another.realm"/>
+        </OrgsAllowed>
     </Client>
 
 
