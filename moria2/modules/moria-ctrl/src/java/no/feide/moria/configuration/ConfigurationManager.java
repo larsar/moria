@@ -21,6 +21,7 @@
 package no.feide.moria.configuration;
 
 import no.feide.moria.controller.MoriaController;
+import no.feide.moria.log.MessageLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,6 +61,9 @@ import java.util.TimerTask;
  * @see no.feide.moria.controller.MoriaController
  */
 public class ConfigurationManager {
+
+    /** For logging events that does not throw exceptions to the layer above. */
+    private MessageLogger messageLogger = new MessageLogger(ConfigurationManager.class);
 
     /**
      * Name of the Store module, used in configuration properties.
@@ -133,32 +137,20 @@ public class ConfigurationManager {
         try {
             cmProps = readProperties(cmPropsFile);
         } catch (FileNotFoundException e) {
-            String message = "Configuration manager's configuration file not found: " + cmPropsFile;
-            // TODO: Log
-            // MessageLogger.logCritical(message, e);
-            throw new ConfigurationManagerException(message);
+            throw new ConfigurationManagerException("Configuration manager's configuration file not found: " + cmPropsFile);
         } catch (IOException e) {
-            String message = "IOException while loading configuration managers properties file: " + cmPropsFile;
-            // TODO: Log
-            // MessageLogger.logCritical(message, e);
-            throw new ConfigurationManagerException(message);
+            throw new ConfigurationManagerException("IOException while loading configuration managers properties file: " + cmPropsFile);
         }
 
         /* Timer delay */
         int timerDelay = 0;
         String timerDelayStr = cmProps.getProperty(PROPS_PREFIX + TIMER_DELAY);
         if (timerDelayStr == null || timerDelayStr.equals("")) {
-            String message = "'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties cannot be a null value.";
-            // TODO: Log
-            // MessageLogger.logCritical(message);
-            throw new ConfigurationManagerException(message);
+            throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties cannot be a null value.");
         }
         timerDelay = new Integer(timerDelayStr).intValue();
         if (timerDelay < 1) {
-            String message = "'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties must be >= 1.";
-            // TODO: Log
-            // MessageLogger.logCritical(message);
-            throw new ConfigurationManagerException(message);
+            throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties must be >= 1.");
         }
 
         /* Create listener for every module config file */
@@ -169,8 +161,6 @@ public class ConfigurationManager {
             try {
                 addFileChangeListener(filePrefix + fileName, module, timerDelay);
             } catch (FileNotFoundException e) {
-                // TODO: Log
-                // MessageLogger.logCritical("Configuration file not found: " + fileName, e);
                 throw new ConfigurationManagerException("Unable to watch file, file not found: " + fileName);
             }
         }
@@ -239,7 +229,6 @@ public class ConfigurationManager {
         FileListenerTask task = new FileListenerTask(fileName, module);
         timerEntries.put(fileName, task);
         timer.schedule(task, delay, delay);
-        // TODO: Log
     }
 
     /**
@@ -251,7 +240,6 @@ public class ConfigurationManager {
         FileListenerTask task = (FileListenerTask) timerEntries.remove(fileName);
         if (task != null) {
             task.cancel();
-            // TODO: Log
         }
     }
 
@@ -263,8 +251,6 @@ public class ConfigurationManager {
      * @see no.feide.moria.controller.MoriaController#setConfig
      */
     private void fileChangeEvent(final String module, final File configurationFile) {
-        // TODO: Remove System.out.println
-        System.out.println("Module: " + module + " File: " + configurationFile);
         Properties props = null;
 
         try {
@@ -282,17 +268,16 @@ public class ConfigurationManager {
 
         } catch (FileNotFoundException e) {
             props = null;
-            // TODO: Log
-            // MessageLogger.logCritical("Watched file disappeared from the file system, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
+            messageLogger.logCritical("Watched file disappeared from the file system, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
         } catch (IOException e) {
             props = null;
-            // TODO: Log
-            // MessageLogger.logWarn("IOException during reading of authorization database, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
+            messageLogger.logCritical("IOException during reading of authorization database, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
         }
 
         if (props != null) {
-            // TODO: Change to MoriaController.setConfig and fix if-test
             MoriaController.setConfig(module, props);
+        } else {
+            messageLogger.logCritical("Unable to create properties from file: "+configurationFile);
         }
     }
 
