@@ -52,10 +52,10 @@ public class LoginServlet extends VelocityServlet {
     private static String AUTHFAILED = "auth";
     private static String UNKNOWN    = "unknown";
 
-    Preferences prefs = Preferences.userNodeForPackage(LoginServlet.class);
-    String loginURL = prefs.get("LoginURL", null);
+    Preferences prefs;
+    String loginURL;
 
-
+    SessionStore sessionStore = SessionStore.getInstance();
 
 
     /**
@@ -64,11 +64,34 @@ public class LoginServlet extends VelocityServlet {
      */
     protected Properties loadConfiguration(ServletConfig config )
         throws IOException, FileNotFoundException {
+        
+        try {
+            Preferences.importPreferences(getClass().getResourceAsStream("/Moria.xml"));
+        }
 
+        catch (FileNotFoundException e) {
+            log.severe("FileNotFoundException caught.");
+        } 
+        
+        catch (IOException e) {
+            log.severe("IOException caught.");
+        } 
+
+        catch (InvalidPreferencesFormatException e) {
+            log.severe("InvalidPreferencesFormatException caught.");
+ 
+        }
+        
+
+
+        prefs = Preferences.userNodeForPackage(LoginServlet.class);
         log.finer("loadConfiguration(ServletConfig)");
-
+        loginURL = prefs.get("LoginURL", null);
+        
         Properties p = new Properties();
         String path = prefs.get("TemplateDir", null);
+
+        System.out.println("path: "+path);
 
         /* If path is null, log it. */ // Should also abort?
         if (path == null) {
@@ -115,7 +138,7 @@ public class LoginServlet extends VelocityServlet {
 
             else {
                 log.severe("Unsupported http request: "+request.getMethod());
-                throw new ServletException("Unsupported http request.");  
+                return genLoginTemplate(request, response, context, null, UNKNOWN);
             }
         }
 
@@ -251,7 +274,7 @@ public class LoginServlet extends VelocityServlet {
         String id = request.getParameter("id");
         
         try {
-            Session session = getSession(id);
+            Session session = sessionStore.getSession(id);
             if (session == null) {
                 return genLoginTemplate(request, response, context, null, NOSESSION);
             }
@@ -295,7 +318,7 @@ public class LoginServlet extends VelocityServlet {
 
         // Get session
         try {
-            session = getSession(id);
+            session = sessionStore.getSession(id);
             if (session == null) {
                 return genLoginTemplate(request, response, context, null, NOSESSION);
             }
@@ -327,13 +350,13 @@ public class LoginServlet extends VelocityServlet {
         catch (BackendException e) {
             // A user-friendly message would be preferable...
             log.severe("BackendException caught and re-thrown as ServletException");
-            throw new ServletException(e);
+                return genLoginTemplate(request, response, context, null, UNKNOWN);
         } 
 
         catch (SessionException e) {
             // A user-friendly message would be preferable...
             log.severe("SessionException caught and re-thrown as ServletException");
-            throw new ServletException(e);
+                return genLoginTemplate(request, response, context, null, UNKNOWN);
         }
 
 
@@ -352,41 +375,5 @@ public class LoginServlet extends VelocityServlet {
 
 
 
-    /** Validates the Moria session based on the submittet session ID.
-        @parameter request  The HttpServletRequest
-        @parameter response The HttpServletResponse
-    */
-    private Session getSession(String id) throws SessionException {
-        log.finer("getSession(String)");
-        
-        Session session = null;
-
-        /* Check session ID */
-	if (id == null) {
-	    log.severe("ID not included in request query: "+id);
-	    throw new SessionException("Ingen sesjons-ID.");
-	}
-
-
-        try {
-            session = SessionStore.getInstance().getSession(id);
-        
-            if (session == null) {
-                // Look up the Moria session and authenticate.
-                log.warning("Invalid session ID: "+id);
-                return null;
-            }
-
-            log.fine("Session ID: "+id);
-            return session;
-
-        }
-
-        catch (SessionException e) {
-            log.severe(e.getMessage());
-            throw new SessionException("Feil under uthenting av sesjon. Pr&oslash;v igjen senere.");
-        }
-
-    }
 
 }
