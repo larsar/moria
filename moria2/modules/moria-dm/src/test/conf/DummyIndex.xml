@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<Index>
+	
+	<Exception id="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base"/>
+	
+</Index>
