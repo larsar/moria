@@ -78,7 +78,17 @@ public final class AccessStatusType implements Serializable {
      * Access log type used to indicate that the service requests illegal operations.
      */
     public static final AccessStatusType OPERATIONS_NOT_PERMITTED = new AccessStatusType("OPERATIONS NOT PERMITTED");
+    
+    /**
+     * Access log type used to indicate that user from a specific userorg is not allowed to use.
+     * this service
+     */
+    public static final AccessStatusType ACCESS_DENIED_USERORG = new AccessStatusType("ACCESS DENIED USERORG");
 
+    /**
+     * Access log type used to indicate that the principal is invalid for the requested attributes.
+     */
+    public static final AccessStatusType GET_USER_ATTRIBUTES_DENIED_INVALID_PRINCIPAL = new AccessStatusType("GET USER ATTRIBUTES DENIED INVALID PRINCIPAL");
     /**
      * Access log type used to indicate that the service requests illegal attributes.
      */
@@ -95,7 +105,7 @@ public final class AccessStatusType implements Serializable {
      */
     public static final AccessStatusType ACCESS_DENIED_VERIFY_USER_EXISTENCE = new AccessStatusType(
             "ACCESS DENIED VERIFY USER EXISTENCE");
-
+    
     /**
      * Access log type used to indicate that the service requests illegal proxy authentication.
      */
@@ -231,7 +241,7 @@ public final class AccessStatusType implements Serializable {
      * Static array that hold all objects. Used by readResolve() to return correct object after de-serialization.
      */
     private static final AccessStatusType[] TYPES = {BAD_USER_CREDENTIALS, BAD_SERVICE_CREDENTIALS,
-                                                     OPERATIONS_NOT_PERMITTED,
+                                                     OPERATIONS_NOT_PERMITTED, ACCESS_DENIED_USERORG,
                                                      ACCESS_DENIED_INITIATE_AUTH, ACCESS_DENIED_DIRECT_AUTH,
                                                      ACCESS_DENIED_VERIFY_USER_EXISTENCE, ACCESS_DENIED_PROXY_AUTH,
                                                      SSO_TICKET_INVALIDATED, SUCCESSFUL_VERIFY_USER,
