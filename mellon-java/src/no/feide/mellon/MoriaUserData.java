@@ -143,7 +143,7 @@ public class MoriaUserData {
 					if(e.hasMoreElements())
 						System.out.print("; ");
 				}
-				System.out.print("");
+				System.out.println("");
 			}
 		}
 	}
