@@ -56,6 +56,16 @@
   </servlet>
 
   <servlet>
+    <servlet-name>Login.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/login.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
+    <servlet-name>Client.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/client.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
     <servlet-name>JSP-Error.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/jsp-error.jsp</jsp-file>
   </servlet>
@@ -110,8 +120,8 @@
     <url-pattern>/Error</url-pattern>
   </servlet-mapping>
 
-  <error-page>
+  <!--error-page>
     <exception-type>java.lang.Exception</exception-type>
     <location>/Error</location>
-  </error-page>
+  </error-page-->
 </web-app>
