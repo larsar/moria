@@ -54,7 +54,7 @@ final class AuthorizationAttribute {
 
     /**
      * Constructor. Name of attribute must be a non-empty string. Security
-     * level must be > 0.
+     * level must be >= 0.
      *
      * @param name     Name of attribute.
      * @param allowSSO Allow use of SSO with this attribute.
