@@ -102,9 +102,8 @@ public class LoginServlet extends VelocityServlet {
             path = "/";
         }
 
-        p.setProperty( Velocity.FILE_RESOURCE_LOADER_PATH,  path );
-        // p.setProperty( "runtime.log", path + "velocity.log" );
-        // Should set log directory.
+        p.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH,  path);
+        p.setProperty("runtime.log", System.getProperty("no.feide.moria.VelocityLog"));
 
         return p;
     }
