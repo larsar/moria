@@ -49,26 +49,10 @@ extends TimerTask {
      *                          pointer, or if any of the required
      *                          configuration settings are undefined.
      */
-    public SessionStoreTask()
-    throws SessionException {
+    public SessionStoreTask() throws SessionException {
         log.info("SessionStoreTask()");
         
         sessionStore = SessionStore.getInstance();
-       
-        // Sets some properties.
-        try {
-            
-            timeoutSec = new Integer(Configuration.getProperty("no.feide.moria.SessionTimeout")).intValue();
-            log.config("Session time out set to "+timeoutSec+" seconds.");
-            ssoTimeoutMin = new Integer(Configuration.getProperty("no.feide.moria.SessionSSOTimeout")).intValue();
-            log.config("Session SSO time out set to "+ssoTimeoutMin+" minutes.");
-            authTimeoutSec = new Integer(Configuration.getProperty("no.feide.moria.AuthenticatedSessionTimeout")).intValue();
-            log.config("Authenticated session time out set to "+authTimeoutSec+" seconds.");
-            
-        } catch (ConfigurationException e) {
-            log.severe("ConfigurationException caught and re-thrown as SessionException");
-            throw new SessionException("ConfigurationException caught", e);
-        }
     }
      
     
@@ -77,7 +61,7 @@ extends TimerTask {
      **/
     public void run() {
         log.fine("run()");
-        sessionStore.checkTimeout(timeoutSec*1000, authTimeoutSec*1000, ssoTimeoutMin*60*1000);
+        sessionStore.checkTimeout();
     }    
     
 }
