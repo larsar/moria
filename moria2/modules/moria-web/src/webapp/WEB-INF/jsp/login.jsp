@@ -28,19 +28,22 @@ function fokuser(){document.loginform.username.focus();}
       <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td colspan="2" style="text-align:right">
-#if ($loginURL)
+<!-- TODO: Only show language selection if the ticket is valid -->
 <font size="-1">
-#foreach( $lang in $availableLanguages.keySet() )
-[
-#if ($selectedLanguage == $lang)
-$availableLanguages.get($lang)
-#else
-<a href="$loginURL&lang=$lang">$availableLanguages.get($lang)</a>
-#end
-]&nbsp;
-#end
+        <%
+        TreeMap languages = (TreeMap) request.getAttribute("languages");
+        Iterator it = languages.keySet().iterator();
+        while(it.hasNext()) {
+            String longName = (String) it.next();
+            String shortName  = (String) languages.get(longName);
+            if (request.getAttribute("selectedLang").equals(shortName)) {%>
+                [<%=longName%>]
+            <%} else {%>
+                <!-- TODO: Build proper URL -->
+                <A href="<%=shortName%>"><%=longName%></A>
+            <%}%>
+        <%}%>
 </font>
-#end
 
 	</td>
       </tr>
@@ -112,7 +115,7 @@ $availableLanguages.get($lang)
 		<option value="null"><%=bundle.getString("form_selectOrg")%></option>
         <%
         TreeMap orgNames = (TreeMap) request.getAttribute("organizationNames");
-        Iterator it = orgNames.keySet().iterator();
+        it = orgNames.keySet().iterator();
         while(it.hasNext()) {
             String longName = (String) it.next();
             String shortName  = (String) orgNames.get(longName);
