@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import no.feide.moria.controller.AuthenticationException;
+import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.DirectoryUnavailableException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
@@ -236,7 +237,11 @@ extends HttpServlet {
         } catch (IllegalInputException e) {
             showLoginPage(request, response, RequestUtil.ERROR_NO_CREDENTIALS);
             return;
+        } catch (AuthorizationException e) {
+            showLoginPage(request, response, RequestUtil.ERROR_AUTHORIZATION_FAILED); 
+            return;
         }
+        
 
         // Authentication is now complete.
 
