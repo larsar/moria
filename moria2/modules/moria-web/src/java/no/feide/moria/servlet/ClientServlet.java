@@ -94,7 +94,7 @@ public class ClientServlet extends HttpServlet {
         }
 
         if (!error) {
-            Properties config = (Properties) getServletContext().getAttribute("config");
+            Properties config = (Properties) getServletContext().getAttribute("no.feide.moria.web.config");
             String redirectURL = config.getProperty("loginURLPrefix") + "?" + config.getProperty("loginTicketID") + "=" + moriaID;
             ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             ((HttpServletResponse) response).setHeader("Location", redirectURL);
