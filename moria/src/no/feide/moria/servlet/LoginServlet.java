@@ -7,6 +7,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.Date;
 
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import no.feide.moria.SessionStore;
 import no.feide.moria.Session;
 import no.feide.moria.User;
 import no.feide.moria.BackendException;
+import no.feide.moria.SessionStoreTask;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -50,9 +53,31 @@ public class LoginServlet extends VelocityServlet {
     private static String AUTHFAILED = "auth";
     private static String GENERIC    = "generic";
 
+
     String loginURL;
 
     SessionStore sessionStore = SessionStore.getInstance();
+    
+    Timer sessionTimer = new Timer();
+
+    public void init() {
+        // Initialize periodical session sessionStore checks.
+        int delay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
+        log.info("Starting time out service with delay= "+delay+"ms");
+        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), delay);
+
+    }
+
+
+    /**
+     * Stops the background maintenance thread.
+     */
+    public void destroy() {
+        log.finer("destroy()");
+        
+        sessionTimer.cancel();
+    }
+   
 
 
     /**
