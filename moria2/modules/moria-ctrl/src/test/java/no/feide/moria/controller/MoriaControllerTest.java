@@ -21,10 +21,13 @@
 
 package no.feide.moria.controller;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import java.util.HashMap;
+
+import no.feide.moria.store.InvalidTicketException;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -60,9 +63,9 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Thest the initiateMoriaAuthentication method.
      *
-     * @see MoriaController#initiateMoriaAuthentication(java.lang.String, java.lang.String[], java.lang.String, java.lang.String, boolean)
      * @throws AuthorizationException
      * @throws MoriaControllerException
+     * @see MoriaController#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean, java.lang.String)
      */
     public void testInitiateMoriaAuthentication() throws AuthorizationException, MoriaControllerException {
         String validPrefix = "http://moria.sf.net/";
@@ -114,11 +117,6 @@ public class MoriaControllerTest extends TestCase {
             fail("MoriaControllerException should be raised, postfix is null");
         } catch (MoriaControllerException success) {
         }
-        try {
-            MoriaController.initiateAuthentication(validAttrs, validPrefix, "", false, validPrincipal);
-            fail("MoriaControllerException should be raised, postfix is an empty string");
-        } catch (MoriaControllerException success) {
-        }
 
         /* Illegal attribute request */
         String[] attrs = new String[]{"illegal1", "illegal2"};
@@ -138,10 +136,10 @@ public class MoriaControllerTest extends TestCase {
         /* Legal use */
         String ticket;
         ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
-        Assert.assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
 
         ticket = MoriaController.initiateAuthentication(new String[]{}, validPrefix, validPostfix, false, validPrincipal);
-        Assert.assertTrue("Login ticket shsould be valid", MoriaController.validateLoginTicket(ticket));
+        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
     }
 
     public void testAttemptLogin() {
@@ -155,9 +153,9 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Test the validateLoginTicket method.
      *
-     * @see MoriaController#validateLoginTicket(java.lang.String)
      * @throws MoriaControllerException
      * @throws AuthorizationException
+     * @see MoriaController#validateLoginTicket(java.lang.String)
      */
     public void testValidateLoginTicket() throws MoriaControllerException, AuthorizationException {
         /* Controller not initialized */
@@ -185,7 +183,7 @@ public class MoriaControllerTest extends TestCase {
         /* Normal use */
         String ticket;
         ticket = MoriaController.initiateAuthentication(new String[]{"attr1"}, "http://foo/", "/bar/", false, "test");
-        Assert.assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
     }
 
     public void testGetUserAttributes() {
@@ -195,7 +193,7 @@ public class MoriaControllerTest extends TestCase {
     /**
      * Test the isLegalURL method.
      *
-     * @see MoriaController#isLegalURL(java.lang.String) 
+     * @see MoriaController#isLegalURL(java.lang.String)
      */
     public void testisLegalURL() {
         // TODO: Test more illegal URL constructs
@@ -214,12 +212,49 @@ public class MoriaControllerTest extends TestCase {
         }
 
         /* Illegal URL content */
-        Assert.assertFalse("URL should be rejected (no protocol)", MoriaController.isLegalURL("foobar"));
-        Assert.assertFalse("URL should be rejected (newline)", MoriaController.isLegalURL("http://moria.sf.net\n"));
-        Assert.assertFalse("URL should be rejected (wrong protocol)", MoriaController.isLegalURL("ftp://foo.bar.com"));
+        assertFalse("URL should be rejected (no protocol)", MoriaController.isLegalURL("foobar"));
+        assertFalse("URL should be rejected (newline)", MoriaController.isLegalURL("http://moria.sf.net\n"));
+        assertFalse("URL should be rejected (wrong protocol)", MoriaController.isLegalURL("ftp://foo.bar.com"));
 
         /* Legal URL content */
-        Assert.assertTrue("URL should be accepted", MoriaController.isLegalURL("http://moria.sf.net/"));
-        Assert.assertTrue("URL should be accepted", MoriaController.isLegalURL("http://moria.sf.net/index.html?foo=bar&bar=foo"));
+        assertTrue("URL should be accepted", MoriaController.isLegalURL("http://moria.sf.net/"));
+        assertTrue("URL should be accepted", MoriaController.isLegalURL("http://moria.sf.net/index.html?foo=bar&bar=foo"));
+    }
+
+    public void testGetClientProperties() throws MoriaControllerException, AuthorizationException, InvalidTicketException {
+        /* Controller not initialized */
+        MoriaController.stop();
+        try {
+            MoriaController.validateLoginTicket("foobar");
+            fail("IllegalStateException should be raised, controller not initialized.");
+        } catch (IllegalStateException success) {
+        }
+
+        MoriaController.init();
+        /* Invalid arguments */
+        try {
+            MoriaController.getServiceProperties(null);
+            fail("IllegalArgumentException should be raised, null value");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            MoriaController.getServiceProperties("");
+            fail("IllegalArgumentException should be raised, empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        String validPrefix = "http://moria.sf.net/";
+        String validPostfix = "&foo=bar";
+        String validPrincipal = "test";
+        String[] validAttrs = new String[]{"attr1", "attr2"};
+
+
+        // Create login attempt
+        String ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
+        // Get properties for loginticket
+        HashMap properties = MoriaController.getServiceProperties(ticket);
+        // Check service name for properties
+        assertEquals("Principal differs", validPrincipal, properties.get("name"));
     }
 }

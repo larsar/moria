@@ -22,6 +22,7 @@ package no.feide.moria.controller;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 
@@ -66,13 +67,15 @@ public class MoriaController {
     private static ServletContext servletContext;
 
     /**
-     * 
-     *  
+     *
+     *
      */
     synchronized static void init() {
         synchronized (ready) {
             // TODO: Implemented just to get the current code running
-            if (ready.booleanValue()) { return; }
+            if (ready.booleanValue()) {
+                return;
+            }
             ready = new Boolean(true);
 
             // TODO: Ensure single instance of store
@@ -81,9 +84,9 @@ public class MoriaController {
             // TODO: Should use value specified on the command line, in startup servlet or something
             // like that
             if (System.getProperty("no.feide.moria.configuration.cm") == null)
-                    System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
+                System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
             if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
-                    System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+                System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
 
             /* Authorization manager */
             authzManager = new AuthorizationManager();
@@ -123,11 +126,14 @@ public class MoriaController {
      */
     public static boolean validateLoginTicket(final String loginTicket) {
 
-        if (!ready.booleanValue()) { throw new IllegalStateException("Controller is not initialized."); }
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller is not initialized.");
+        }
 
         /* Valdiate parameter */
-        if (loginTicket == null || loginTicket.equals("")) { throw new IllegalArgumentException(
-                "loginTicket cannot be null or an empty string."); }
+        if (loginTicket == null || loginTicket.equals("")) {
+            throw new IllegalArgumentException("loginTicket cannot be null or an empty string.");
+        }
 
         MoriaAuthnAttempt authnAttempt = null;
         try {
@@ -154,13 +160,12 @@ public class MoriaController {
 
         // If the login ticket is invalid throw exception
         if (!validateLoginTicket(loginTicket))
-                throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
+            throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
         // TODO: Implement
         return null;
     }
 
     /**
-     * 
      * @param loginTicket
      * @param ssoTicket
      * @param userId
@@ -170,7 +175,7 @@ public class MoriaController {
      * @throws UnknownTicketException
      */
     public static boolean attemptLogin(final String loginTicket, final String ssoTicket, final String userId,
-            final String password, final String servicePrincipal) throws UnknownTicketException {
+                                       final String password, final String servicePrincipal) throws UnknownTicketException {
         // TODO: Implement
         return false;
     }
@@ -187,33 +192,46 @@ public class MoriaController {
      * @throws MoriaControllerException
      */
     public static String initiateAuthentication(final String[] attributes, final String returnURLPrefix,
-            final String returnURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
+                                                final String returnURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
             throws AuthorizationException, MoriaControllerException {
 
-        if (!ready.booleanValue()) { throw new IllegalStateException("Controller not initialized"); }
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
 
         /* Validate parameters */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new MoriaControllerException(
-                "servicePrincipal cannot be null or an empty string."); }
-        if (attributes == null) { throw new MoriaControllerException("Attributes cannot be null."); }
-        if (returnURLPrefix == null || returnURLPrefix.equals("")) { throw new MoriaControllerException(
-                "URLPrefix cannot be null or an empty string."); }
-        if (returnURLPostfix == null || returnURLPostfix.equals("")) { throw new MoriaControllerException(
-                "URLPostfix cannot be null."); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new MoriaControllerException("servicePrincipal cannot be null or an empty string.");
+        }
+        if (attributes == null) {
+            throw new MoriaControllerException("Attributes cannot be null.");
+        }
+        if (returnURLPrefix == null || returnURLPrefix.equals("")) {
+            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
+        }
+        if (returnURLPostfix == null) {
+            throw new MoriaControllerException("URLPostfix cannot be null.");
+        }
 
         /* Authorization */
         if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
-        // TODO: Access log
-        throw new AuthorizationException("Access to the requested attributes is denied."); }
-        if (!authzManager.allowOperations(servicePrincipal, new String[] {"InteractiveAuth"})) { throw new AuthorizationException(
-                "Access to the requested operations is denied."); }
+            // TODO: Access log
+            throw new AuthorizationException("Access to the requested attributes is denied.");
+        }
+        if (!authzManager.allowOperations(servicePrincipal, new String[]{"InteractiveAuth"})) {
+            throw new AuthorizationException("Access to the requested operations is denied.");
+        }
 
         /* URL validation */
-        if (returnURLPrefix == null || returnURLPrefix.equals("")) { throw new MoriaControllerException(
-                "URLPrefix cannot be null or an empty string."); }
-        if (returnURLPostfix == null) { throw new MoriaControllerException("URLPostfix cannot be null."); }
-        if (!(isLegalURL(returnURLPrefix + "FakeMoriaID" + "urlPostfix"))) { throw new MoriaControllerException(
-                "URLPrefix and URLPostfix combined does not make a valid URL."); }
+        if (returnURLPrefix == null || returnURLPrefix.equals("")) {
+            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
+        }
+        if (returnURLPostfix == null) {
+            throw new MoriaControllerException("URLPostfix cannot be null.");
+        }
+        if (!(isLegalURL(returnURLPrefix + "FakeMoriaID" + "urlPostfix"))) {
+            throw new MoriaControllerException("URLPrefix and URLPostfix combined does not make a valid URL.");
+        }
 
         /* Create authentication attempt */
         return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, servicePrincipal,
@@ -243,7 +261,7 @@ public class MoriaController {
      * @throws MoriaControllerException
      */
     public static Map directNonInteractiveAuthentication(final String[] attributes, final String userId, final String password,
-            final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
+                                                         final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
         // TODO: Implement
         return null;
     }
@@ -263,7 +281,6 @@ public class MoriaController {
     }
 
     /**
-     *
      * @param ticketGrantingTicket
      * @param proxyServicePrincipal
      * @param servicePrincipal
@@ -272,13 +289,12 @@ public class MoriaController {
      * @throws MoriaControllerException
      */
     public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal,
-            final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
+                                        final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
         // TODO: Implement
         return null;
     }
 
     /**
-     *
      * @param username
      * @param servicePrincipal
      * @return
@@ -317,7 +333,7 @@ public class MoriaController {
     /**
      * Start the controller. The controller is supposed to be started from a servlet. The supplied
      * ServletContext can be used to transfer config from the configuration manager to the servlets.
-     * 
+     *
      * @param sc the servletContext from the caller
      */
     public static void initController(ServletContext sc) {
@@ -328,16 +344,18 @@ public class MoriaController {
 
     /**
      * Validate URL. Uses blacklist to indicate whether the URL should be accepted or not.
-     * 
+     *
      * @param url the URL to validate
      * @return true if the URL is valid, else false
      */
     static boolean isLegalURL(String url) {
         // TODO: Implement a more complete URL validator
 
-        if (url == null || url.equals("")) { throw new IllegalArgumentException("url must be a non-empty string."); }
+        if (url == null || url.equals("")) {
+            throw new IllegalArgumentException("url must be a non-empty string.");
+        }
 
-        String[] illegal = new String[] {"\n", "\r"};
+        String[] illegal = new String[]{"\n", "\r"};
 
         /* Protocol */
         if (url.indexOf("http://") != 0 && url.indexOf("https://") != 0) return false;
@@ -351,5 +369,16 @@ public class MoriaController {
         }
 
         return true;
+    }
+
+    public static HashMap getServiceProperties(String ticketId) throws InvalidTicketException {
+        /* Validate arguments */
+        if (ticketId == null || ticketId.equals("")) {
+            throw new IllegalArgumentException("ticketId must be a non-empty string");
+        }
+
+        MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(ticketId, true);
+        // TODO: Finish implementation
+        return authzManager.getServiceProperties(authnAttempt.getServicePrincipal());
     }
 }
