@@ -21,6 +21,25 @@ function fokuser(){document.loginform.username.focus();}
     <td width="5%" rowspan="3">&nbsp;</td> 
     <td colspan="2">
       <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td colspan="2" style="text-align:right">
+#if ($loginURL)
+<font size="-1">
+#foreach( $lang in $availableLanguages.keySet() )
+[
+#if ($selectedLanguage == $lang)
+$availableLanguages.get($lang)
+#else
+<a href="$loginURL&lang=$lang">$availableLanguages.get($lang)</a>
+#end
+]&nbsp;
+#end
+</font>
+#end 
+
+	</td>
+      </tr>
+
         <tr>
           <td valign="middle">&nbsp;
             <a href="http://www.feide.no/"><img src="/element/feidelogo.png" alt="FEIDE-logo" border="0"/></a>
@@ -29,7 +48,9 @@ function fokuser(){document.loginform.username.focus();}
             <table summary="" cellspacing="0" cellpadding="0" border="0" >
               <tr>
                 <td valign="top">-&nbsp;</td>
-                <td><font size="-1"><b>$body_title</b></font></td>
+                <td><font size="-1"><b>$body_title</b><br>
+
+</font></td>
               </tr>
             </table>
           </td>
