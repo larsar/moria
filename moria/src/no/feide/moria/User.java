@@ -63,9 +63,6 @@ public class User {
     private Vector initialURLs = new Vector();
     */
     
-    /** The domain name to LDAP URL hash map. */
-    private HashMap ldapURLs = new HashMap();
-    
     // The index of the currently used initial URL. All access should be
     // synchronized!
 	/* LIMS-specific and hence disabled.
@@ -109,19 +106,6 @@ public class User {
             initialURLs.add(url);
         }
         */
-        
-        // Create hashtable of domain names to LDAP URLs.
-        String domain, url;
-        for (int i=1; ; i++) {
-        	domain = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".domain");
-        	if (domain == null)
-        		break;  // No more mappings.
-			url = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".url");
-			if (url == null)
-				break;  // More of a sanity check; possible syntax error in config file.
-			ldapURLs.put(domain, url);
-			log.config(domain+" mapped to "+url);
-        }
         
     }
     
@@ -260,14 +244,7 @@ public class User {
             
             // Map user ID domain to LDAP URL and connect to server.
 			Hashtable env = new Hashtable(defaultEnv);
-			String domain = c.getIdentifier().toString();
-			if (domain.indexOf('@') == -1) {
-				log.severe("Illegal user identifier; missing @: "+domain);
-				throw new BackendException("Illegal user identifier; missing @: "+domain);
-			} 
-			domain = domain.substring(domain.indexOf('@')+1);
-			String url = (String)ldapURLs.get(domain);
-			log.info("Matched domain "+domain+" to LDAP URL "+url);
+			String url = BackendIndex.lookup(c.getIdentifier().toString());
 			env.put(Context.PROVIDER_URL, url);
 			try {
 				ldap = new InitialLdapContext(env, null);
