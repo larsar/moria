@@ -263,25 +263,25 @@ public final class AuthorizationManager {
         // Parse attributes element.
         Element child = element.getChild("Attributes");
         if (child == null)
-            throw new IllegalConfigException("Attributes tag (Attributes) not found");
+            throw new IllegalConfigException("Attributes tag (Attributes) not found for client '" + name + "'");
         attrs = parseAttributesElem(child);
 
         // Parse operations element.
         child = element.getChild("Operations");
         if (child == null)
-            throw new IllegalConfigException("Operations tag (Operations) not found");
+            throw new IllegalConfigException("Operations tag (Operations) not found for client '" + name + "'");
         oper = parseListElem(child);
 
         // Parse affiliation element.
         child = element.getChild("Affiliation");
         if (child == null)
-            throw new IllegalConfigException("Affiliations tag (Affiliation) not found");
+            throw new IllegalConfigException("Affiliations tag (Affiliation) not found for client '" + name + "'");
         affil = parseListElem(child);
 
         // Parse allowed organizations element.
         child = element.getChild("OrgsAllowed");
         if (child == null)
-            throw new IllegalConfigException("Organizations allowed tag (OrgsAllowed) not found");
+            throw new IllegalConfigException("Organizations allowed tag (OrgsAllowed) not found for client '" + name + "'");
         orgsAllowed = parseListElem(child);
 
         // Parse subsystems element, if it exists.
