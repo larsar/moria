@@ -192,7 +192,7 @@
 
   <target name="mellon:filter:jar"
           description="Mellon API: Create JAR file"
-	  depends="mellon:compile">
+	  depends="mellon:filter:compile">
     <delete file="dist/feide-mellon-filter.jar"/>
     <jar destfile="dist/feide-mellon-filter.jar" basedir="build.mellon.filter"/>
   </target>
