@@ -21,11 +21,10 @@
 
 package no.feide.moria.controller;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.framework.TestCase;
 import junit.framework.Assert;
-import no.feide.moria.store.MoriaCacheStore;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -74,7 +73,7 @@ public class MoriaControllerTest extends TestCase {
         /* Controller not initialized */
         MoriaController.stop();
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, validAttrs, validPrefix, validPostfix, false);
+            MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
             fail("IllegalStateException should be raised, controller not initialized.");
         } catch (IllegalStateException success) {
         }
@@ -83,40 +82,40 @@ public class MoriaControllerTest extends TestCase {
 
         /* Illegal paramenters */
         try {
-            MoriaController.initiateMoriaAuthentication(null, validAttrs, validPrefix, validPostfix, false);
+            MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, null);
             fail("MoriaControllerException should be raised, principal is null");
         } catch (MoriaControllerException success) {
         }
         try {
-            MoriaController.initiateMoriaAuthentication("", validAttrs, validPrefix, validPostfix, false);
+            MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, "");
             fail("MoriaControllerException should be raised, principal is an empty string");
         } catch (MoriaControllerException success) {
         }
 
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, null, validPrefix, validPostfix, false);
+            MoriaController.initiateAuthentication(null, validPrefix, validPostfix, false, validPrincipal);
             fail("MoriaControllerException should be raised, attributes is null");
         } catch (MoriaControllerException success) {
         }
 
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, validAttrs, null, validPostfix, false);
+            MoriaController.initiateAuthentication(validAttrs, null, validPostfix, false, validPrincipal);
             fail("MoriaControllerException should be raised, prefix is null");
         } catch (MoriaControllerException success) {
         }
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, validAttrs, "", validPostfix, false);
+            MoriaController.initiateAuthentication(validAttrs, "", validPostfix, false, validPrincipal);
             fail("MoriaControllerException should be raised, prefix is an empty string");
         } catch (MoriaControllerException success) {
         }
 
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, validAttrs, validPrefix, null, false);
+            MoriaController.initiateAuthentication(validAttrs, validPrefix, null, false, validPrincipal);
             fail("MoriaControllerException should be raised, postfix is null");
         } catch (MoriaControllerException success) {
         }
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, validAttrs, validPrefix, "", false);
+            MoriaController.initiateAuthentication(validAttrs, validPrefix, "", false, validPrincipal);
             fail("MoriaControllerException should be raised, postfix is an empty string");
         } catch (MoriaControllerException success) {
         }
@@ -124,24 +123,24 @@ public class MoriaControllerTest extends TestCase {
         /* Illegal attribute request */
         String[] attrs = new String[]{"illegal1", "illegal2"};
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, attrs, validPrefix, validPostfix, false);
+            MoriaController.initiateAuthentication(attrs, validPrefix, validPostfix, false, validPrincipal);
             fail("AuthorizationException should be raised, illegal attributes request.");
         } catch (AuthorizationException success) {
         }
 
         /* Illegal URL */
         try {
-            MoriaController.initiateMoriaAuthentication(validPrincipal, validAttrs, "foobar", validPostfix, false);
+            MoriaController.initiateAuthentication(validAttrs, "foobar", validPostfix, false, validPrincipal);
             fail("MoriaControllerException should be raised, illegal URL (no protocol).");
         } catch (MoriaControllerException success) {
         }
 
         /* Legal use */
         String ticket;
-        ticket = MoriaController.initiateMoriaAuthentication(validPrincipal, validAttrs, validPrefix, validPostfix, false);
+        ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
         Assert.assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
 
-        ticket = MoriaController.initiateMoriaAuthentication(validPrincipal, new String[]{}, validPrefix, validPostfix, false);
+        ticket = MoriaController.initiateAuthentication(new String[]{}, validPrefix, validPostfix, false, validPrincipal);
         Assert.assertTrue("Login ticket shsould be valid", MoriaController.validateLoginTicket(ticket));
     }
 
@@ -185,7 +184,7 @@ public class MoriaControllerTest extends TestCase {
 
         /* Normal use */
         String ticket;
-        ticket = MoriaController.initiateMoriaAuthentication("test", new String[]{"attr1"}, "http://foo/", "/bar/", false);
+        ticket = MoriaController.initiateAuthentication(new String[]{"attr1"}, "http://foo/", "/bar/", false, "test");
         Assert.assertTrue("Login ticket should be valid", MoriaController.validateLoginTicket(ticket));
     }
 
