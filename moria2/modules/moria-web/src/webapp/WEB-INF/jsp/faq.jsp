@@ -85,7 +85,7 @@ d0e5"></a>1.&nbsp;<%=bundle.getString("q1")%></h2>
 </li>
 
 <li>
-<p><%=bundle.getString("answer1_3")%><a href="
+<p><%=bundle.getString("answer1_3")%> <a href="
 http://www.feide.no/" target="_top"><%=bundle.getString("answer1_4")%></a>.</p>
 </li>
 
