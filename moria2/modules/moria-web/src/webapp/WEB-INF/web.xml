@@ -24,28 +24,40 @@
   <servlet>
     <servlet-name>Login</servlet-name>
     <servlet-class>no.feide.moria.servlet.LoginServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>Logout</servlet-name>
     <servlet-class>no.feide.moria.servlet.LogoutServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>Client</servlet-name>
     <servlet-class>no.feide.moria.servlet.ClientServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
   </servlet>
 
   <servlet>
-    <display-name>Moria Axis Servlet</display-name>
     <servlet-name>AxisServlet</servlet-name>
     <servlet-class>no.feide.moria.servlet.SimpleAxisServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
-    <display-name>Moria status</display-name>
-    <servlet-name>Status</servlet-name>
+    <servlet-name>Status.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/status.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
+    <servlet-name>Logout.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/logout.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
+    <servlet-name>JSP-Error.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/jsp-error.jsp</jsp-file>
   </servlet>
 
   <servlet-mapping>
@@ -74,8 +86,17 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>Status</servlet-name>
+    <servlet-name>Status.JSP</servlet-name>
     <url-pattern>/Status</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>JSP-Error.JSP</servlet-name>
+    <url-pattern>/Error</url-pattern>
+  </servlet-mapping>
+
+  <error-page>
+    <exception-type>java.lang.Exception</exception-type>
+    <location>/Error</location>
+  </error-page>
 </web-app>
