@@ -103,9 +103,9 @@
       <output message="tns:getUserAttributesOut"/>
     </operation>
 
-    <operation name="directNonInteraciveAuthentication" parameterOrder="attributes username password">
-      <input message="tns:directNonInteraciveAuthentication"/>
-      <output message="tns:directNonInteraciveAuthentication"/>
+    <operation name="directNonInteractiveAuthentication" parameterOrder="attributes username password">
+      <input message="tns:directNonInteractiveAuthenticationIn"/>
+      <output message="tns:directNonInteractiveAuthenticationOut"/>
     </operation>
 
     <operation name="verifyUserExistence" parameterOrder="username">
