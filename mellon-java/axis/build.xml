@@ -70,7 +70,7 @@
     <axis-wsdl2java output="build/wsdl_src" 
                     testcase="false"  
                     verbose="true" 
-                    url="axis/Authentication.wsdl"> 
+                    url="workspace/mellon/axis/Authentication.wsdl"> 
       <mapping namespace="https://login.feide.no/moria" package="no.feide.moria"/> 
     </axis-wsdl2java> 
     
