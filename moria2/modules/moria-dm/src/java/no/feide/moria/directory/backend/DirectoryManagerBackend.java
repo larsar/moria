@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.backend;
@@ -34,7 +35,7 @@ public interface DirectoryManagerBackend {
      *            The backend references in question. Cannot be
      *            <code>null</code>, and must contain at least one reference.
      */
-    public void open(IndexedReference[] references);
+    void open(IndexedReference[] references);
 
 
     /**
@@ -46,7 +47,7 @@ public interface DirectoryManagerBackend {
      * @throws BackendException
      *             If there was a problem accessing the backend.
      */
-    public boolean userExists(final String username) throws BackendException;
+    boolean userExists(final String username) throws BackendException;
 
 
     /**
@@ -65,13 +66,13 @@ public interface DirectoryManagerBackend {
      * @throws BackendException
      *             If there was a problem accessing the backend.
      */
-    public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
+    HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException;
 
 
     /**
      * Closes the current backend and releases any resources.
      */
-    public void close();
+    void close();
 
 }

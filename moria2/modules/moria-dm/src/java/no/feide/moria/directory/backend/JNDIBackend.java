@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.backend;
@@ -101,7 +102,8 @@ implements DirectoryManagerBackend {
      *             If <code>guessedAttributeName</code> or
      *             <code>usernameAttribute</code> is <code>null</code>.
      */
-    protected JNDIBackend(final String sessionTicket, final int timeout, final boolean ssl, final String usernameAttributeName, final String guessedAttributeName)
+    protected JNDIBackend(final String sessionTicket, final int timeout, final boolean ssl,
+            final String usernameAttributeName, final String guessedAttributeName)
     throws IllegalArgumentException, NullPointerException {
 
         // Assignments, with sanity checks.
@@ -148,7 +150,7 @@ implements DirectoryManagerBackend {
      *             If <code>reference</code> is <code>null</code>, or an
      *             empty array.
      */
-    public void open(IndexedReference[] references) {
+    public final void open(final IndexedReference[] references) {
 
         // Sanity check.
         if ((references == null) || (references.length == 0))
@@ -171,7 +173,7 @@ implements DirectoryManagerBackend {
      * @throws BackendException
      *             If there is a problem accessing the backend.
      */
-    public boolean userExists(final String username) throws BackendException {
+    public final boolean userExists(final String username) throws BackendException {
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
@@ -194,14 +196,14 @@ implements DirectoryManagerBackend {
                 } finally {
 
                     // Close the LDAP connection.
-                    if (ldap != null)
+                    if (ldap != null) {
                         try {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
                             log.logWarn("Unable to close the backend connection to " + references[j], mySessionTicket, e);
                         }
-
+                    }
                 }
 
             }
@@ -218,7 +220,7 @@ implements DirectoryManagerBackend {
      * requested attributes.
      * @param userCredentials
      *            User's credentials. Cannot be <code>null</code>.
-     * @param attributeRequest 
+     * @param attributeRequest
      *            Requested attributes.
      * @return The requested attributes (<code>String</code> names and
      *         <code>String[]</code> values), if they did exist in the
@@ -234,7 +236,7 @@ implements DirectoryManagerBackend {
      * @throws IllegalArgumentException
      *             If <code>userCredentials</code> is <code>null</code>.
      */
-    public HashMap authenticate(Credentials userCredentials, String[] attributeRequest)
+    public final HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException {
 
         // Sanity check.
@@ -309,14 +311,14 @@ implements DirectoryManagerBackend {
                 } finally {
 
                     // Close the LDAP connection.
-                    if (ldap != null)
+                    if (ldap != null) {
                         try {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
                             log.logWarn("Unable to close the backend connection to " + references[j], mySessionTicket, e);
                         }
-
+                    }
                 }
 
             }
@@ -352,7 +354,7 @@ implements DirectoryManagerBackend {
      * @see javax.naming.directory.InitialDirContext#getAttributes(java.lang.String,
      *      java.lang.String[])
      */
-    private HashMap getAttributes(InitialLdapContext ldap, String rdn, String[] attributes)
+    private HashMap getAttributes(final InitialLdapContext ldap, final String rdn, final String[] attributes)
     throws BackendException {
 
         // Sanity checks.
@@ -386,18 +388,19 @@ implements DirectoryManagerBackend {
 
             // Did we get an attribute back at all?
             Attribute oldAttr = oldAttrs.get(attributes[i]);
-            if (oldAttr == null)
+            if (oldAttr == null) {
                 log.logInfo("Requested attribute '" + attributes[i] + "' not found on '" + url + "'", mySessionTicket);
-            else {
+            } else {
 
                 // Map the attribute values to String[].
                 ArrayList newValues = new ArrayList(oldAttr.size());
-                for (int j = 0; j < oldAttr.size(); j++)
+                for (int j = 0; j < oldAttr.size(); j++) {
                     try {
                         newValues.add(new String((String) oldAttr.get(j)));
                     } catch (NamingException e) {
                         throw new BackendException("Unable to read attribute value of '" + oldAttr.getID() + "' from '" + url + "'", e);
                     }
+                }
                 newAttrs.put(attributes[i], (String[]) newValues.toArray(new String[] {}));
 
             }
@@ -442,9 +445,10 @@ implements DirectoryManagerBackend {
 
         // Check pattern for illegal content.
         String[] illegals = {"*", "\2a"};
-        for (int i = 0; i < illegals.length; i++)
+        for (int i = 0; i < illegals.length; i++) {
             if (pattern.indexOf(illegals[i]) > -1)
                 return null;
+        }
 
         // The context provider URL, for later logging.
         String url = "unknown backend";
@@ -465,7 +469,8 @@ implements DirectoryManagerBackend {
         } catch (TimeLimitExceededException e) {
 
             // The search timed out.
-            throw new BackendException("Search on " + url + " for " + pattern + " timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
+            throw new BackendException("Search on " + url + " for " + pattern
+                    + " timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
 
         } catch (NameNotFoundException e) {
 
@@ -507,7 +512,7 @@ implements DirectoryManagerBackend {
      *             If unable to connect to the provider given by
      *             <code>url</code>.
      */
-    private InitialLdapContext connect(String url) throws BackendException {
+    private InitialLdapContext connect(final String url) throws BackendException {
 
         //  Prepare connection.
         Hashtable env = new Hashtable(defaultEnv);

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.backend;
@@ -126,7 +127,7 @@ implements DirectoryManagerBackend {
      * @return    true if the user exists, false otherwise.
      * @see DirectoryManagerBackend#userExists(String)
      */
-    public boolean userExists(final String username) {
+    public final boolean userExists(final String username) {
 
         if (username == null)
             return false;
@@ -150,7 +151,7 @@ implements DirectoryManagerBackend {
      *             If userCredentials are <code>null</code>.
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
-    public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
+    public final HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException {
 
         // Sanity check.

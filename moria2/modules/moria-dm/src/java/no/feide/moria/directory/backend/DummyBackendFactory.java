@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.backend;
@@ -48,7 +49,7 @@ implements DirectoryManagerBackendFactory {
      *             element.
      * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
-    public void setConfig(final Element config) {
+    public final void setConfig(final Element config) {
 
         // Sanity checks.
         if (config == null)
@@ -69,7 +70,7 @@ implements DirectoryManagerBackendFactory {
      * @return The new DummyBackend.
      * @see DummyBackend
      */
-    public DirectoryManagerBackend createBackend(final String sessionTicket) {
+    public final DirectoryManagerBackend createBackend(final String sessionTicket) {
 
         DummyBackend newBackend = new DummyBackend(myConfig);
         return newBackend;

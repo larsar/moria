@@ -111,7 +111,7 @@ extends TimerTask {
      * @see java.io.File#lastModified()
      * @see DirectoryManager#setConfig(Properties)
      */
-    protected DirectoryManagerIndex readIndex() {
+    protected final DirectoryManagerIndex readIndex() {
 
         // Check if the index file exists.
         File indexFile = new File(filename);

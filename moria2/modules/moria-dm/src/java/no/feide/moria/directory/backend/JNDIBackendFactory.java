@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.backend;
@@ -95,7 +96,7 @@ implements DirectoryManagerBackendFactory {
      *             or if the <code>filename</code> file does not exist.
      * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
-    public synchronized void setConfig(final Element config)
+    public final synchronized void setConfig(final Element config)
     throws DirectoryManagerConfigurationException {
 
         // Sanity checks.
@@ -111,12 +112,13 @@ implements DirectoryManagerBackendFactory {
 
         // Get optional timeout value.
         String timeout = jndiElement.getAttributeValue("timeout");
-        if (timeout != null)
+        if (timeout != null) {
             try {
                 backendTimeouts = Integer.parseInt(timeout);
             } catch (NumberFormatException e) {
                 throw new DirectoryManagerConfigurationException("\"" + timeout + "\" is not a legal timeout value", e);
             }
+        }
         if (backendTimeouts < 0)
             backendTimeouts = 0;
 
@@ -171,7 +173,7 @@ implements DirectoryManagerBackendFactory {
      * @return    The new JNDIBackend.
      * @see DirectoryManagerBackendFactory#createBackend(String)
      */
-    public DirectoryManagerBackend createBackend(final String sessionTicket) {
+    public final DirectoryManagerBackend createBackend(final String sessionTicket) {
 
         return new JNDIBackend(sessionTicket, backendTimeouts, useSSL, usernameAttribute, guessedAttribute);
 

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  */
 
 package no.feide.moria.directory.backend;
@@ -87,7 +88,7 @@ public class DummyUser {
      *             If <code>username</code> or <code>password</code> is
      *             <code>null</code>.
      */
-    public boolean authenticate(final String username, final String password) {
+    public final boolean authenticate(final String username, final String password) {
 
         // Sanity checks.
         if (username == null)
@@ -109,7 +110,7 @@ public class DummyUser {
      *         attribute names returned will match the case of the attribute
      *         names in the request.
      */
-    public HashMap getAttributes(String[] request) {
+    public final HashMap getAttributes(final String[] request) {
 
         HashMap requestedAttributes = new HashMap();
 
@@ -117,7 +118,7 @@ public class DummyUser {
         if ((request != null) && (request.length > 0)) {
 
             // Some attributes were requested.
-            for (int i = 0; i < request.length; i++)
+            for (int i = 0; i < request.length; i++) {
                 if (myAttributes.containsKey(request[i].toLowerCase())) {
 
                     // Requested attribute found.
@@ -125,6 +126,7 @@ public class DummyUser {
                     requestedAttributes.put(request[i], requestedValues.toArray(new String[] {}));
 
                 }
+            }
         }
 
         // Return requested attributes.

@@ -97,7 +97,7 @@ public class SerializableIndexCreator {
         for (int i = 0; i < exceptions.size(); i++) {
 
             Element exception = (Element) exceptions.get(i);
-            generatedIndex.addException(exception.getAttributeValue("id"), exception.getAttributeValue("reference"), 
+            generatedIndex.addException(exception.getAttributeValue("id"), exception.getAttributeValue("reference"),
                     exception.getAttributeValue("realm"));
 
         }
