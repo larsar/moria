@@ -39,8 +39,7 @@ function fokuser(){document.loginform.username.focus();}
             if (request.getAttribute("selectedLang").equals(shortName)) {%>
                 [<%=longName%>]
             <%} else {%>
-                <!-- TODO: Build proper URL -->
-                <A href="<%=shortName%>"><%=longName%></A>
+                <A href="<%= request.getAttribute("baseURL") + "&lang=" + shortName %>"><%=longName%></A>
             <%}%>
         <%}%>
 </font>
@@ -68,7 +67,7 @@ function fokuser(){document.loginform.username.focus();}
     <td width="5%" rowspan="2">&nbsp;</td>
   </tr>
 
-#if ($errorMessage)
+<% if (request.getAttribute("errorType") != null) { %>
   <tr>
    <td colspan="2">
    <table summary="" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -77,23 +76,23 @@ function fokuser(){document.loginform.username.focus();}
     <img src="/element/varseltrekant.png" alt="feilmelding"/>
     </td>
     <td valign="middle" width="99%">
-    <b>$errorMessage</b><br/>
-    <i>$errorDescription</i>
+    <b><%=bundle.getString("error_" + (String) request.getAttribute("errorType"))%></b><br/>
+    <i><%=bundle.getString("error_" + (String) request.getAttribute("errorType") + "_desc")%></i>
 
     </td>
     </tr>
     </table>
     </td>
    </tr>
-#end
+<%}%>
 
-#if ($loginURL)
+<% if (request.getAttribute("errorType") == null || !request.getAttribute("errorType").equals("unknownTicket")) { %>
   <tr valign="top">
     <td width="20%">
       <table summary="" cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF">
         <tr>
           <td>
-            <form action="$loginURL" method="POST" name="loginform" autocomplete="off">
+            <form action="<%= request.getAttribute("baseURL")%>" method="POST" name="loginform" autocomplete="off">
               <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
                 <tbody>
 
@@ -111,7 +110,7 @@ function fokuser(){document.loginform.username.focus();}
 
 		<tr>
 		<td><%=bundle.getString("form_org")%><br>
-		<select name="realm">
+		<select name="org">
 		<option value="null"><%=bundle.getString("form_selectOrg")%></option>
         <%
         TreeMap orgNames = (TreeMap) request.getAttribute("organizationNames");
@@ -120,7 +119,7 @@ function fokuser(){document.loginform.username.focus();}
             String longName = (String) it.next();
             String shortName  = (String) orgNames.get(longName);
         %>
-	    <option <%if (request.getAttribute("selectedRealm").equals(shortName)) {%>selected=="true" <%}%>value="<%=shortName%>"><%=longName%></option>
+	    <option <%if (request.getAttribute("selectedOrg").equals(shortName)) {%>selected=="true" <%}%>value="<%=shortName%>"><%=longName%></option>
         <%}%>
 		</select>
 		</td>
@@ -157,20 +156,10 @@ function fokuser(){document.loginform.username.focus();}
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
         <td><%=RequestUtil.insertLink("CLIENT_LINK",
-                                         bundle.getString("expl_data"),
+                                         bundle.getString("expl_data_"+request.getAttribute("secLevel")),
                                          (String) request.getAttribute("clientName"),
                                          (String) request.getAttribute("clientURL"))%><BR/>
 
-#if (!$attrNames)
-<a href="$loginURL&showAttrs">$attrs_show</a>
-#else
-$attrs_desc:
-<ul>
-#foreach( $attrName in $attrNames )
-    <li>$attrName<BR/></li>
-#end
-</ul>
-#end
 
        </td>
       </tr>
@@ -181,16 +170,16 @@ $attrs_desc:
       <tr valign="top">
         <td>&nbsp;</td>
         <td>
-	  <a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a><img src="/element/emblemS.png" border="0" valign="middle" ALT="Arrow" />
+        <a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a><img src="/element/emblemS.png" border="0" valign="middle" ALT="Arrow" />
 	</td>
       </tr>
     </table>
   </td>
 
-#else
+<%} else {%>
 
 <td><a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a><img src="/element/emblemS.png" border="0" valign="middle" ALT="Arrow" /></td>
-#end
+<%}%>
 
 
 </tr>
