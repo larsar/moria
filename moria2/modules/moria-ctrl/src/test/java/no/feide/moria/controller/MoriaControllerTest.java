@@ -78,7 +78,7 @@ public class MoriaControllerTest extends TestCase {
      *
      * @see MoriaController#init()
      */
-    public void testInit() {
+    public void testInit() throws MoriaControllerException {
         MoriaController.init();
     }
 
@@ -268,7 +268,6 @@ public class MoriaControllerTest extends TestCase {
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
         Map tickets = MoriaController.attemptLogin(loginTicketId, "doesNotExist", validUsername, validPassword);
-        String serviceTicketId = (String) tickets.get(MoriaController.SERVICE_TICKET);
         String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
 
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
@@ -446,7 +445,6 @@ public class MoriaControllerTest extends TestCase {
      */
     public void testisLegalURL() {
         // TODO: Test more illegal URL constructs
-        MoriaController.init();
 
         /* Illegal parameters */
         try {
