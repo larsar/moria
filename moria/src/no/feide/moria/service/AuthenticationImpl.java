@@ -129,31 +129,6 @@ implements AuthenticationIF, ServiceLifecycle {
     }
 
 
-    /**
-     * A simple wrapper for 
-     * <code>requestSession(String[], String, String, true)</code>. That is,
-     * the web service configuration is used to determine if SSO should be
-     * used or not.
-     * @param attributes The requested user attributes, to be returned from
-     *                   <code>verifySession()</code> once authentication is
-     *                   complete. <code>null</code> value allowed.
-     * @param prefix The prefix, used to build the <code>verifySession</code>
-     *               return value. May be <code>null</code>.
-     * @param postfix The postfix, used to build the
-     *                <code>verifySession</code> return value. May be
-     *                <code>null</code>.
-     * @return An URL to the authentication service.
-     * @throws RemoteException If a SessionException or a
-     *                         BackendException is caught. Also thrown if the
-     *                         prefix/postfix doesn't combine into a valid
-     *                         URL, or if the 
-     */
-    public String requestSession(String[] attributes, String prefix, String postfix)
-    throws RemoteException {
-        log.finer("requestSession(String[], String, String)");
-
-	return requestSession(attributes, prefix, postfix, false);
-    }
 
 
     /**
@@ -182,6 +157,13 @@ implements AuthenticationIF, ServiceLifecycle {
     throws RemoteException {
         log.finer("requestSession(String[], String, String, boolean)");
         
+        log.info("ATTR: "+attributes[0]);
+
+        /* If no attributes are given, then create an empty attribute
+         * array. */
+        if (attributes == null) {
+            attributes = new String[]{};
+        }
 
         /* Look up service authorization data. */
         Principal p = ctx.getUserPrincipal();
@@ -204,7 +186,7 @@ implements AuthenticationIF, ServiceLifecycle {
         }
 
 
-        log.info("ServiceName: "+serviceName+", Attrs: "+attributes.toString()+", DenySSO: "+denySso+", URL: "+simulatedURL);
+        log.info("ServiceName: "+serviceName+", Attrs: "+attributes+", DenySSO: "+denySso+", URL: "+simulatedURL);
 
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
@@ -288,7 +270,7 @@ implements AuthenticationIF, ServiceLifecycle {
                 Vector oldValues = (Vector)result.get(attrName);
                 Attribute newAttr = new Attribute();
                 newAttr.setName(attrName);
-                newAttr.setValues((String[])oldValues.toArray(new String[] {}));
+                newAttr.setValues((String[])oldValues.toArray(new String[] {}));                
                 attributes.add(newAttr);
             }
             return (Attribute[])attributes.toArray(new Attribute[] {});

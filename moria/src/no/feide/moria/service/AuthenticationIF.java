@@ -23,7 +23,6 @@ import java.util.HashMap;
 
 public interface AuthenticationIF extends Remote {
     
-    public String requestSession(String[] attributes, String prefix, String postfix) throws RemoteException;
     public String requestSession(String[] attributes, String prefix, String postfix, boolean denySSO) throws RemoteException;
     public Attribute[] getAttributes(String id) throws RemoteException;
 }
