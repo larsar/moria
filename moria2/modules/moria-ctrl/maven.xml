@@ -20,6 +20,7 @@
        todir="${project.test.generated.dir}">
       <fileset dir="${project.test.templates.dir}">
 	<include name="moria-base*.properties"/>
+	<include name="dm-test-valid.properties"/>
 	<include name="sm-test-valid.properties"/>
       </fileset>
     </copy>
