@@ -181,8 +181,12 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new RemoteException("Malformed URL: "+simulatedURL);
         }
             
-
-        log.info("ServiceName: "+serviceName+", Attrs: "+attributes+", DenySSO: "+denySso+", URL: "+simulatedURL);
+        //Prepare attribute list and write to log.
+        String s = new String();
+        for (int i=0; i<attributes.length-1; i++)
+            s = s + attributes[i] + ',';
+        s = s + attributes[attributes.length-1];
+        log.info("Service name: "+serviceName+"; attributes: "+s+"; deny SSO "+denySso+"; URL "+simulatedURL);
 
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
