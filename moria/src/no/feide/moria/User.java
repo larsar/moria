@@ -259,7 +259,7 @@ public class User {
      * @return The element's relative DN, or <code>null</code> if none was
      *         found. <code>null</code> is also returned if the search
      *         pattern contains an illegal character or substring.
-     * @throws BackendException If a <code>NamingException occurs</code>, or
+     * @throws BackendException If a <code>NamingException</code> occurs, or
      *                          if a <code>ConfigurationException</code> is
      *                          caught.
      */
@@ -282,7 +282,7 @@ public class User {
                 long searchStart = System.currentTimeMillis();
                 try {
                     
-                    // Timeout hack, for real this time.
+                    // Timeout hack, for real this time.    
                     int attempts = 0;
                     while (true) {
                         try {
@@ -290,8 +290,14 @@ public class User {
                             results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, false));
                             break;
                         } catch (TimeLimitExceededException e) {
-                            if (attempts < 5)
-                                log.severe("Timeout, trying again...");
+                            if (attempts < 5) {
+                                log.severe("Timeout, trying again after 500ms...");
+                                try {
+                                    Thread.currentThread().sleep(500);
+                                } catch (InterruptedException ee) {
+                                    // Ignored.
+                                }
+                            }
                             else {
                                 log.severe("Too many timeouts, aborting...");
                                 throw new TimeLimitExceededException("Too many timeouts, aborting...");
