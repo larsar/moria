@@ -71,14 +71,14 @@
            debug="true"
            destdir="build.moria/WEB-INF/classes"
            includes="no/feide/moria/**">
-           <classpath>
-                <fileset dir="lib/">
-                  <include name="*.jar"/>
-                </fileset>
-                <fileset dir="moria/lib/">
-                  <include name="*.jar"/>
-                </fileset>
-           </classpath>
+      <classpath>
+        <fileset dir="lib/">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="moria/lib/">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
     </javac>
   </target>
 
@@ -141,7 +141,7 @@
 
   <target name="moria:undeploy"
           description="Moria: Undeploy from Tomcat">
-     <undeploy url="${jwsdp_manager_url}"
+    <undeploy url="${jwsdp_manager_url}"
               username="${jwsdp_manager_username}"
               password="${jwsdp_manager_password}"
               path="/feide-moria"/>
@@ -182,11 +182,11 @@
     <mkdir dir="build.mellon/filter"/>
     <mkdir dir="build.mellon/demo/WEB-INF/classes"/>
     <copy todir="build.mellon/demo/WEB-INF/lib">
-<!--
+      <!--
       <fileset dir="moria/lib/">
         <include name="**/*.jar"/>
       </fileset> 
--->
+      -->
       <fileset dir="lib/">
         <include name="**/*.jar"/>
       </fileset>
@@ -212,9 +212,9 @@
            destdir="build.mellon/api"
            includes="no/feide/mellon/*"
            excludes="no/feide/mellon/servlet/*,no/feide/mellon/test/*">
-           <classpath>
-             <fileset dir="lib/" includes="*.jar"/>
-           </classpath>
+      <classpath>
+        <fileset dir="lib/" includes="*.jar"/>
+      </classpath>
     </javac>
   </target>
   
@@ -223,7 +223,6 @@
           depends="mellon:compile">
     <delete file="dist/feide-mellon-api.jar"/>
     <jar destfile="dist/feide-mellon-api.jar" basedir="build.mellon/api"/>
-
   </target>
 
   <target name="mellon:build"
@@ -263,10 +262,10 @@
            debug="true"
            destdir="build.mellon/filter"
            includes="no/feide/mellon/filter/*">
-           <classpath>
-             <fileset dir="lib/" includes="*.jar"/>
-             <fileset file="dist/feide-mellon-api.jar"/>
-           </classpath>
+      <classpath>
+        <fileset dir="lib/" includes="*.jar"/>
+        <fileset file="dist/feide-mellon-api.jar"/>
+      </classpath>
     </javac>
   </target>
 
@@ -302,10 +301,10 @@
            debug="true"
            destdir="build.mellon/demo/WEB-INF/classes"
            includes="no/feide/mellon/servlet/*">
-           <classpath>
-             <fileset dir="lib/" includes="*.jar"/>
-             <fileset file="dist/feide-mellon-api.jar"/>
-           </classpath>
+      <classpath>
+        <fileset dir="lib/" includes="*.jar"/>
+        <fileset file="dist/feide-mellon-api.jar"/>
+      </classpath>
     </javac>
   </target>
 
@@ -330,7 +329,7 @@
 
   <target name="mellon:demo:undeploy"
           description="Mellon demo: Undeploy from Tomcat">
-     <undeploy url="${jwsdp_manager_url}"
+    <undeploy url="${jwsdp_manager_url}"
               username="${jwsdp_manager_username}"
               password="${jwsdp_manager_password}"
               path="/feide-mellon-demo"/>
@@ -347,20 +346,20 @@
 
   <target name="mellon:zip"
           description="Mellon jars, docs and example code in zip-file.">
-          <copy todir="build.mellon/zip">
-            <fileset dir="dist" includes="**/feide-mellon-api.jar"/>
-            <fileset dir="mellon/config" includes="mellon.properties"/>
-            <fileset dir="doc/mellon/java/examples" includes="SimpleCreateAuthSession.java"/>
-            <fileset dir="lib">
-              <include name="**/*.jar"/>
-            </fileset>
-          </copy>   
-          <copy todir="build.mellon/zip/javadoc">
-            <fileset dir="build.mellon/javadoc"/>
-          </copy>
+    <copy todir="build.mellon/zip">
+      <fileset dir="dist" includes="**/feide-mellon-api.jar"/>
+      <fileset dir="mellon/config" includes="mellon.properties"/>
+      <fileset dir="doc/mellon/java/examples" includes="SimpleCreateAuthSession.java"/>
+      <fileset dir="lib">
+        <include name="**/*.jar"/>
+      </fileset>
+     </copy>   
+     <copy todir="build.mellon/zip/javadoc">
+       <fileset dir="build.mellon/javadoc"/>
+     </copy>
 
-          <zip destfile="dist/mellon.zip">
-            <fileset dir="build.mellon/zip"/>
-          </zip>
-  </target>       
+     <zip destfile="dist/mellon.zip">
+       <fileset dir="build.mellon/zip"/>
+     </zip>
+  </target>
 </project>
