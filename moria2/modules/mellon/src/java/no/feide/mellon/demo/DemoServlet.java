@@ -230,6 +230,7 @@ extends HttpServlet {
                 // We have a ticket.
                 response.setContentType("text/html");
                 PrintWriter out = response.getWriter();
+                out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01" + "Transitional//EN\">\n");
                 out.println("<html><head><title>Moria Demo Service</title></head><body>");
                 out.println("<h1 align=\"center\">Authentication successful</h1>");
                 out.println("<p align=\"center\"><a href=\"" + config.getProperty(CONFIG_LOGOUT_URL) + "\">Logout</a></p>");
