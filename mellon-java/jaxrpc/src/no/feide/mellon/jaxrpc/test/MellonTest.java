@@ -32,7 +32,7 @@ public class MellonTest {
 	private static final String username = "test@uninett.no";
 	
 	/** The test group name. */
-	private static final String groupname = "NOT IMPLEMENTED";
+	private static final String groupname = "FOOBAR";
 	
 
 	/**
