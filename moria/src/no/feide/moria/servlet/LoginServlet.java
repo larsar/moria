@@ -2,24 +2,31 @@ package no.feide.moria.servlet;
 
 
 import java.util.Properties;
-import java.util.Vector;
+import java.util.prefs.Preferences;
+import java.util.logging.Logger;
+
+import java.io.PrintWriter;
+import java.io.IOException;
 import java.io.FileNotFoundException;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.Logger;
-import javax.servlet.ServletException;
 import javax.servlet.ServletConfig;
-import javax.servlet.http.*;
-import no.feide.moria.*;
-import no.feide.moria.*;
-import java.util.prefs.Preferences;
-import org.apache.velocity.servlet.VelocityServlet;
-import org.apache.velocity.context.Context;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import no.feide.moria.Credentials;
+import no.feide.moria.SessionException;
+import no.feide.moria.SessionStore;
+import no.feide.moria.Session;
+import no.feide.moria.User;
+import no.feide.moria.BackendException;
+
 import org.apache.velocity.Template;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.context.Context;
+import org.apache.velocity.servlet.VelocityServlet;
+import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.ResourceNotFoundException;
 
 
 /**
@@ -31,10 +38,14 @@ public class LoginServlet extends VelocityServlet {
     
     /** Used for logging. */
     private static Logger log = Logger.getLogger(LoginServlet.class.toString());
+    private static String NOSESSION  = "NOSESSION";
+    private static String MAXLOGIN   = "MAXLOGIN";
+    private static String AUTHFAILED = "AUTHFAILED";
+
     Preferences prefs = Preferences.userNodeForPackage(User.class);
     String loginURL = prefs.get("LoginURL", null);
 
-    
+
 
 
     /**
@@ -47,8 +58,6 @@ public class LoginServlet extends VelocityServlet {
         log.finer("loadConfiguration(ServletConfig)");
 
         Properties p = new Properties();
-
-        Preferences prefs = Preferences.userNodeForPackage(SessionStore.class);
         String path = prefs.get("TemplateDir", null);
 
         try {
@@ -68,15 +77,17 @@ public class LoginServlet extends VelocityServlet {
                   
         p.setProperty( Velocity.FILE_RESOURCE_LOADER_PATH,  path );
         // p.setProperty( "runtime.log", path + "velocity.log" );
+        // Should set log directory.
 
         return p;
     }
 
 
+
     /**
      * Handles all http requests from the client. A login page is
      * returned for GET-requests and POST requests are considered as
-      * login attempts.
+     * login attempts.
      * @param request  The http request
      * @param response The http response
      * @param context  The Velocity contex
@@ -121,18 +132,23 @@ public class LoginServlet extends VelocityServlet {
     }
 
 
+
     /**
      *  Creates a Template based on the login tamplate file. If an
      *  error message is supplied, the error message is displayed. If
      *  no sessionID is supplied the login login form is not displayed.
      */
-    private Template genLoginTemplate(Context context, String sessionID, String errorMessage) throws ParseErrorException, ResourceNotFoundException, Exception {
+    private Template genLoginTemplate(Context context, String sessionID, String errorMessage, String errorDescription) throws ParseErrorException, ResourceNotFoundException, Exception {
         
-        if (errorMessage != null)
+        if (errorMessage != null) {
             context.put("errorMessage", errorMessage);
+            context.put("errorDescription", errorDescription);
+        }
         
-        else 
+        else {
             context.remove("errorMessage");
+            context.remove("errorDescription");
+        }
         
 
         if (sessionID != null) 
@@ -142,7 +158,6 @@ public class LoginServlet extends VelocityServlet {
             context.remove("loginURL");
         
         return getTemplate("login.vm");
-
     }
 
 
@@ -165,17 +180,17 @@ public class LoginServlet extends VelocityServlet {
         try {
             Session session = getSession(id);
             if (session == null) {
-                return genLoginTemplate(context, null, "Sesjonen eksisterer ikke. Hendelsen er loggf&oslash;rt.");
+                return genLoginTemplate(context, null, "Sesjonen eksisterer ikke. Hendelsen er loggf&oslash;rt.", "NOSESSION");
             }
             
             // Should also generate new sessionID
             // (SessionStore.confirmSession()) to avoid the web
             // service to do authentication without users intervention.
-            return genLoginTemplate(context, session.getDescriptor().getID(), null);
+            return genLoginTemplate(context, session.getDescriptor().getID(), null, null);
         }
         
         catch (SessionException e) {
-            return genLoginTemplate(context, null, e.getMessage());
+            return genLoginTemplate(context, null, e.getMessage(), null);
         }
     }
 
@@ -208,13 +223,13 @@ public class LoginServlet extends VelocityServlet {
         try {
             session = getSession(id);
             if (session == null) {
-                return genLoginTemplate(context, null, "Sesjonen eksisterer ikke. Hendelsen er loggf&oslash;rt.");
+                return genLoginTemplate(context, null, "Sesjonen eksisterer ikke. Hendelsen er loggf&oslash;rt.", NOSESSION);
             }
 
         }
         
         catch (SessionException e) {
-            return genLoginTemplate(context, null, e.getMessage());
+            return genLoginTemplate(context, null, e.getMessage(), null);
         }
 
 
@@ -227,13 +242,11 @@ public class LoginServlet extends VelocityServlet {
                 if (getSession(id) == null) {
                     // Max login tries has been reached. Session is
                     // terminated.
-                    return genLoginTemplate(context, null, "Maks antall innloggingsfors&oslash;k er oppn&aring;dd.");
+                    return genLoginTemplate(context, null, "Maks antall innloggingsfors&oslash;k er oppn&aring;dd.", MAXLOGIN);
                 }
 
                 else
-                    return genLoginTemplate(context, session.getDescriptor().getID(), "Feil brukernavn/passord.");
-
-
+                    return genLoginTemplate(context, session.getDescriptor().getID(), "Feil brukernavn/passord.", AUTHFAILED);
             }
         } 
         
@@ -284,7 +297,6 @@ public class LoginServlet extends VelocityServlet {
             if (session == null) {
                 // Look up the Moria session and authenticate.
                 log.warning("Invalid session ID: "+id);
-                //genLoginPage(response, null, false, "Ugyldig sesjonsID.");
                 return null;
             }
 
