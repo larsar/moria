@@ -59,27 +59,31 @@ extends HttpServlet {
      * <br>
      * Current required parameters are:
      * <ul>
-     * <li><code>RequestUtil.PROP_COOKIE_DENYSSO</code>
-     * <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
      * <li><code>RequestUtil.PROP_COOKIE_SSO</code>
-     * <li><code>RequestUtil.PROP_COOKIE_LANG</code>
-     * <li><code>RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE</code>
+     * <li><code>RequestUtil.PROP_COOKIE_SSO_TTL</code>
+     * <li><code>RequestUtil.PROP_COOKIE_DENYSSO</code>
      * <li><code>RequestUtil.PROP_COOKIE_DENYSSO_TTL</code>
+     * <li><code>RequestUtil.PROP_COOKIE_LANG</code>
+     * <li><code>RequestUtil.PROP_COOKIE_LANG_TTL</code>
      * <li><code>RequestUtil.PROP_COOKIE_ORG</code>
      * <li><code>RequestUtil.PROP_COOKIE_ORG_TTL</code>
-     * <li><code>RequestUtil.PROP_COOKIE_SSO_TTL</code>
+     * <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
+     * <li><code>RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE</code>
+     * <li><code>RequestUtil.PROP_LOGIN_URL_PREFIX</code>
      * </ul>
-     * @see RequestUtil.PROP_COOKIE_DENYSSO
-     * @see RequestUtil.PROP_LOGIN_TICKET_PARAM
      * @see RequestUtil.PROP_COOKIE_SSO
+     * @see RequestUtil.PROP_COOKIE_SSO_TTL
+     * @see RequestUtil.PROP_COOKIE_DENYSSO
+     * @see RequestUtil.PROP_COOKIE_DENYSSO_TTL 
      * @see RequestUtil.PROP_COOKIE_LANG
-     * @see RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE
-     * @see RequestUtil.PROP_COOKIE_DENYSSO_TTL
+     * @see RequestUtil.PROP_COOKIE_LANG_TTL
      * @see RequestUtil.PROP_COOKIE_ORG
      * @see RequestUtil.PROP_COOKIE_ORG_TTL
-     * @see RequestUtil.PROP_COOKIE_SSO_TTL
+     * @see RequestUtil.PROP_LOGIN_TICKET_PARAM
+     * @see RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE
+     * @see RequestUtil.PROP_LOGIN_URL_PREFIX
      */
-    final String[] REQUIRED_PARAMETERS = {RequestUtil.PROP_COOKIE_DENYSSO, RequestUtil.PROP_LOGIN_TICKET_PARAM, RequestUtil.PROP_COOKIE_SSO, RequestUtil.PROP_COOKIE_LANG, RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE, RequestUtil.PROP_COOKIE_DENYSSO_TTL, RequestUtil.PROP_COOKIE_ORG, RequestUtil.PROP_COOKIE_ORG_TTL, RequestUtil.PROP_COOKIE_SSO_TTL};
+    final String[] REQUIRED_PARAMETERS = {RequestUtil.PROP_COOKIE_DENYSSO, RequestUtil.PROP_LOGIN_TICKET_PARAM, RequestUtil.PROP_COOKIE_SSO, RequestUtil.PROP_COOKIE_LANG, RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE, RequestUtil.PROP_COOKIE_DENYSSO_TTL, RequestUtil.PROP_COOKIE_ORG, RequestUtil.PROP_COOKIE_ORG_TTL, RequestUtil.PROP_COOKIE_SSO_TTL, RequestUtil.PROP_COOKIE_LANG_TTL, RequestUtil.PROP_LOGIN_URL_PREFIX};
 
 
     /**
@@ -187,11 +191,9 @@ extends HttpServlet {
         if (username.indexOf("@") != -1)
             org = username.substring(username.indexOf("@") + 1, username.length());
         if (org == null || org.equals("") || org.equals("null")) {
-            log.logInfo("Unable to resolve user's organization");
             showLoginPage(request, response, RequestUtil.ERROR_NO_ORG);
             return;
         } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE)).containsValue(org)) {
-            log.logInfo("Invalid user organization");
             showLoginPage(request, response, RequestUtil.ERROR_INVALID_ORG);
             return;
         }
@@ -243,10 +245,9 @@ extends HttpServlet {
             response.addCookie(ssoTicketCookie);
         }
 
-        /* Redirect back to web service */
+        // Redirect back to the web service.
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", redirectURL);
-        log.logInfo("Redirecting back to service at " + redirectURL);
     }
 
 
@@ -323,11 +324,10 @@ extends HttpServlet {
         }
         request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, selectedOrg);
 
-        /* Selected language */
+        // Did the user select a different language?
         request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
-        if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
+        if (request.getParameter(RequestUtil.PARAM_LANG) != null)
             response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
-        }
 
         /* Service attributes */
         if (serviceProperties != null) {

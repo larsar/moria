@@ -57,7 +57,7 @@ public final class RequestUtil {
 
     /**
      * Configuration property giving the name of the URL parameter containing
-     * the Moria ticket ID. <em>This property is requried.</em><br>
+     * the Moria ticket ID. <em>This property is required.</em><br>
      * <br>
      * Current value is <code>PATH_PREFIX + "login.ticket_param"</code>.
      */
@@ -84,7 +84,10 @@ public final class RequestUtil {
     public static final String PROP_LANGUAGE = PATH_PREFIX + "lang";
 
     /**
-     * Property name for: URL prefix.
+     * Configuration property giving the URL to the login servlet.
+     * <em>This property is required.</em><br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "login.url_prefix"</code>.
      */
     public static final String PROP_LOGIN_URL_PREFIX = PATH_PREFIX + "login.url_prefix";
 
@@ -132,7 +135,11 @@ public final class RequestUtil {
     public static final String PROP_COOKIE_LANG = PATH_PREFIX + "cookie.lang.name";
 
     /**
-     * Property name for: TTL of cookie.
+     * Configuration property giving the lifetime, in hours, for the cookie used
+     * to set user's desired language. <em>This property is required.</em>
+     * <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "cookie.lang.ttl"</code>.
      */
     public static final String PROP_COOKIE_LANG_TTL = PATH_PREFIX + "cookie.lang.ttl";
 
