@@ -1,28 +1,71 @@
 package no.feide.moria.authorization;
 
+import java.util.logging.Logger;
+
+
+/**
+ * This class represents a LDAP attribute and is used for
+ * authorization of a web service. Both Profile and WebService have
+ * lists of attributes.
+ */
 public class Attribute {
 
-    private String name;
-    private boolean sso;
+    /** Used for logging. */
+    private static Logger log = Logger.getLogger(Attribute.class.toString());
 
-    public Attribute(String name, String sso) {
+    /** Name of attribute */
+    private String name = null;
+
+    /** Is this attribute allowd in use with SSO */
+    private Boolean sso = null;
+
+
+
+    /**
+     * Constructor
+     * @param name Attribute name
+     * @param sso Allow use of SSO with this attribute
+     */
+    protected Attribute(String name, boolean sso) {
+        log.finer("Attribute(String, boolean)");
+
         this.name = name;
-
-        if (sso.equals("true"))
-            this.sso = true;
-        else 
-            this.sso = false;
-
-        System.out.println("Creating attribute. Name = "+name+" SSO = "+this.sso);
-
+        this.sso = new Boolean(sso);
     }
 
+
+
+    /**
+     * Constructor
+     * @param name Attribute name
+     */
+    public Attribute(String name) {
+        log.finer("Attribute(String)");
+
+        this.name = name;
+        this.sso = null;
+    }
+
+
+    
+    /**
+     * Get name of attribute.
+     */
     public String getName() {
+        log.finer("getName()");
+
         return name;
     }
 
-    public boolean getSso() {
-        return sso;
+
+
+    /**
+     * Is the attribute allowed in use with SSO?
+     */
+    public boolean allowSso() {
+        log.finer("allowSso()");
+
+        return sso.booleanValue();
     }
 
 
