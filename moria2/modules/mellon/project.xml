@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<!DOCTYPE project [
+	  <!ENTITY % locator-entities SYSTEM "file:locator.ent">
+	  %locator-entities;
+	  ]>
+
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <name>Moria Demo Service</name>
+  <id>moria-demo</id>
+  <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
+  <package>no.feide.moria.*</package>
+  <shortDescription>Moria Demo Service (HTML and SOAP)</shortDescription>
+
+  <description/>
+
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-web</siteDirectory>
+
+  <dependencies>
+
+    <!-- Axis deps -->
+    &dep-axis;
+    &dep-axis-ant;
+    &dep-jaxrpc;
+    &dep-saaj;
+    &dep-wsdl4j;
+    &dep-commons-discovery;
+
+    <!-- Moria Modules deps
+    &dep-moria-am;
+    &dep-moria-ctrl;
+    &dep-moria-dm;
+    &dep-moria-log;
+    &dep-moria-sm; -->
+    &dep-moria-attribute;
+
+    <!-- Misc deps -->
+    <!-- &dep-log4j; -->
+    &dep-servlet-api;
+    <!-- &dep-jsp-api;
+    &dep-xerces-xercesImpl;
+    &dep-xerces-xmlParserAPIs;
+    &dep-jdom; -->
+
+    <!-- JBossCache deps
+    &dep-concurrent;
+    &dep-trove;
+    &dep-javagroups;
+    &dep-jboss-aop;
+    &dep-jboss-cache;
+    &dep-jboss-common;
+    &dep-jboss-j2ee;
+    &dep-jboss-jmx;
+    &dep-jboss-system;
+    &dep-commons-logging; -->
+
+  </dependencies>
+
+  <build>
+
+    <resources>
+      <resource>
+        <directory>src/conf</directory>
+        <includes>
+          <include>*.xml</include>
+          <include>*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${project.resourcebundle.dir}</directory>
+        <includes>
+          <include>*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <unitTest>
+      <resources>
+        <resource>
+          <directory>src/test/bundles</directory>
+          <includes>
+            <include>*.properties</include>
+          </includes>
+        </resource>
+        <resource>
+          <directory>src/test/conf</directory>
+          <includes>
+            <include>*.properties</include>
+          </includes>
+        </resource>
+      </resources>
+    </unitTest>
+
+  </build>
+</project>

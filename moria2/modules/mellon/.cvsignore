@@ -1,0 +1,10 @@
+velocity.log
+maven.log
+target
+.classpath
+.project
+.settings
+*.ipr
+*.iws
+*.iml
+build.properties
