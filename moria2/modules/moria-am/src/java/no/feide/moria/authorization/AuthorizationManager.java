@@ -358,7 +358,9 @@ public class AuthorizationManager {
         try {
             Document doc = builder.build(new File(fileName));
             HashMap newClients = parseRootElem(doc.getRootElement());
-            authzClients = newClients;
+            synchronized (authzClients) {
+                authzClients = newClients;
+            }
         } catch (JDOMException e) {
             // TODO: Log
             System.out.println("Error during parsing of authorization database file. Still using old database.");
