@@ -35,6 +35,7 @@ import java.util.Date;
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
+// TODO: Update the description. No longer correct - doesn't need to set a node ID.
 public final class RandomId {
 
     /** The random generator. */
