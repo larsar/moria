@@ -21,7 +21,7 @@ $Id$
 -->
 
 <project name="Moria">
-  
+
   <title>Moria</title>
 
   <body>
@@ -31,7 +31,6 @@ $Id$
     <links>
       <item name="UNINETT FAS" href="http://www.uninett.no/"/>
       <item name="FEIDE" href="http://www.feide.no/"/>
-      <item name="PDF Documentation" href="/moria.pdf"/>
     </links>
 
     <menu name="Overview">
