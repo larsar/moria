@@ -17,7 +17,7 @@
 
 package no.feide.moria;
 
-import java.net.ConnectException;
+//import java.net.ConnectException;  // No longer used for LIMS.
 import java.security.Security;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -35,7 +35,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapReferralException;
+//import javax.naming.ldap.LdapReferralException;  No longer used for LIMS.
 
 
 /**
@@ -59,24 +59,33 @@ public class User {
     private static boolean initialized = false;
     
     /** The set of initial backend URLs. */
+	/* LIMS-specific and hence disabled.
     private Vector initialURLs = new Vector();
+    */
+    
+    /** The domain name to LDAP URL hash map. */
+    private HashMap ldapURLs = new HashMap();
     
     // The index of the currently used initial URL. All access should be
     // synchronized!
+	/* LIMS-specific and hence disabled.
     private static Integer initialURLIndex = new Integer(0);
+    */
     
     /**
      * The number of referrals we've followed. Used to switch to a secondary
      * index server if needed.
      */
+	/* LIMS-specific and hence disabled.
     private int referrals;
+    */
     
     /** Default initial hash table for LDAP context environment. */
     private Hashtable defaultEnv;
     
     
     /**
-     * Constructor. Initializes the list of initial index server URLs.
+     * Constructor. Initializes the list of initial LDAP server URLs.
      * @throws ConfigurationException If unable to read from configuration.
      **/
     private User()
@@ -88,7 +97,9 @@ public class User {
         defaultEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         defaultEnv.put(Context.REFERRAL, "throw");  // To catch referrals.
         defaultEnv.put("java.naming.ldap.derefAliases", "never");  // Due to OpenSSL problems.
+		defaultEnv.put(Context.SECURITY_PROTOCOL, "ssl");  // SSL enabled by default (must be removed if reintroducing LIMS).
         
+        /* Old LIMS code temporarily disabled.
         // Populate list of initial URLs.
         String url;
         for (int i=1; ; i++) {
@@ -97,6 +108,21 @@ public class User {
                 break; // No more URLs.
             initialURLs.add(url);
         }
+        */
+        
+        // Create hashtable of domain names to LDAP URLs.
+        String domain, url;
+        for (int i=1; ; i++) {
+        	domain = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".domain");
+        	if (domain == null)
+        		break;  // No more mappings.
+			url = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".url");
+			if (url == null)
+				break;  // More of a sanity check; possible syntax error in config file.
+			ldapURLs.put(domain, url);
+			log.config(domain+" mapped to "+url);
+        }
+        
     }
     
     /**
@@ -125,7 +151,7 @@ public class User {
      * Used to do one-time global JNDI initialization, the very first time
      * <code>authenticate(Credentials)</code> is called.
      * @throws ConfigurationException If one of the required properties
-     *                                cannot be resolved.
+     *                                 cannot be resolved.
      */
     private static void init()
     throws BackendException, ConfigurationException {
@@ -201,6 +227,7 @@ public class User {
         
         try {
             
+            /* Old LIMS code; disabled.
             // Try all initial (index) servers, if necessary.
             Hashtable env = new Hashtable(defaultEnv);
             int failures = 0;
@@ -229,6 +256,25 @@ public class User {
                         }
                 } while (ldap == null);
             }
+            */
+            
+            // Map user ID domain to LDAP URL and connect to server.
+			Hashtable env = new Hashtable(defaultEnv);
+			String domain = c.getIdentifier().toString();
+			if (domain.indexOf('@') == -1) {
+				log.severe("Illegal user identifier; missing @: "+domain);
+				throw new BackendException("Illegal user identifier; missing @: "+domain);
+			} 
+			domain = domain.substring(domain.indexOf('@'));
+			String url = (String)ldapURLs.get(domain);
+			log.info("Matched domain "+domain+" to LDAP URL "+url);
+			env.put(Context.PROVIDER_URL, url);
+			try {
+				ldap = new InitialLdapContext(env, null);
+			} catch (CommunicationException e) {
+				log.severe("Unable to connect to "+env.get(Context.PROVIDER_URL));
+				throw new BackendException("Unable to connect to "+env.get(Context.PROVIDER_URL));
+			}
 
             // Search for user element.
 	        log.config("Connected to "+env.get(Context.PROVIDER_URL));
@@ -236,11 +282,15 @@ public class User {
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
             rdn = ldapSearch(pattern);
             if (rdn == null) {
-                // No user element found.
+            	
+                // No user element found. Try to guess the DN anyway.
                 log.fine("No subtree match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                return false;
-            }
-            log.fine("Found element at "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+                rdn = c.getIdentifier().toString();
+                rdn = "uid="+rdn.substring(0, rdn.indexOf('@'));
+                log.info("Guessing on RDN "+rdn);
+                
+            } else
+            	log.fine("Found element at "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
 
             // Authenticate.
             ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
@@ -264,20 +314,21 @@ public class User {
     
     /**
      * Do a subtree search for an element given a pattern. Only the first
-     * element found is considered. Any referrals are followed recursively.
-      <em>Note:</em> The default timeout when searching is 15 seconds,
+     * element found is considered. Implemented as a separate method due to
+     * recursive referral support (temporarily disabled).
+     * <em>Note:</em> The default timeout when searching is 15 seconds,
      *                unless
      *                <code>no.feide.moria.backend.ldap.timeout</code> is
      *                set.
      * @param pattern The search pattern. Must not include the character
-     *                '*' or the substring '\2a' due to possible LDAP
-     *                exploits.
+     *                 '*' or the substring '\2a' due to possible LDAP
+     *                 exploits.
      * @return The element's relative DN, or <code>null</code> if none was
-     *         found. <code>null</code> is also returned if the search
-     *         pattern contains an illegal character or substring.
+     *          found. <code>null</code> is also returned if the search
+     *          pattern contains an illegal character or substring.
      * @throws BackendException If a <code>NamingException</code> occurs, or
-     *                          if a <code>ConfigurationException</code> is
-     *                          caught.
+     *          if a <code>ConfigurationException</code> is
+     *          caught.
      */
     private String ldapSearch(String pattern)
     throws BackendException {
@@ -292,6 +343,7 @@ public class User {
         try {
             
             NamingEnumeration results;
+            /* The following block is the old LIMS-enabled initial search code. 
             try {
                 
                 // Start counting the (milli)seconds.
@@ -334,6 +386,20 @@ public class User {
                 return ldapSearch(pattern);
                 
             }
+            */
+                        
+			// Start counting the (milli)seconds.
+			long searchStart = System.currentTimeMillis();
+			try {
+				results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, false));
+				if (!results.hasMore()) {
+					log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+					return null;
+				}
+			} catch (TimeLimitExceededException e) {
+				log.severe("TimelimitExceededException caught after "+(System.currentTimeMillis()-searchStart)+"ms and re-thrown as BackendException");
+				throw new BackendException(e);
+			}
             
             // We just found an element.
             try {
@@ -341,9 +407,7 @@ public class User {
                 SearchResult entry = (SearchResult)results.next();
                 log.info("Getting entry name");
                 String rdn = entry.getName();
-                log.info("Done");
                 log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to element "+rdn);
-                log.info("All done");
                 return rdn;
             } catch (TimeLimitExceededException e) {
                 log.severe("TimeLimitExceededException caught (when reading search results) and re-thrown as BackendException");
