@@ -1,12 +1,10 @@
 package no.feide.moria.directory.backend;
 
-import no.feide.moria.directory.DirectoryManagerException;
-
 /**
  * Represents an exception originating form the directory manager's backend.
  */
 public class BackendException
-extends DirectoryManagerException {
+extends Exception {
 
     /**
      * Constructor.
