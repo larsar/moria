@@ -8,41 +8,80 @@
      name="jboss.cache:service=TreeCache">
 
     <depends>jboss:service=Naming</depends>
+
     <depends>jboss:service=TransactionManager</depends>
+
+    <attribute name="ClusterName">Moria-Cluster</attribute>
 
     <attribute name="TransactionManagerLookupClass">org.jboss.cache.DummyTransactionManagerLookup</attribute>
 
-    <attribute name="LockingLevel">READ_COMMITTED</attribute>
+    <attribute name="LockingLevel">NONE</attribute>
 
     <attribute name="CacheMode">LOCAL</attribute>
 
-    <attribute name="ClusterName">MoriaCluster</attribute>
+    <attribute name="MaxCapacity">200000</attribute>
+
+    <attribute name="InitialStateRetrievalTimeout">20000</attribute>
+
+    <attribute name="SyncReplTimeout">5000</attribute>
+
+    <attribute name="LockAcquisitionTimeout">5000</attribute>
+
+    <attribute name="LockLeaseTimeout">20000</attribute>
+
+    <attribute name="EvictionPolicyClass">no.feide.moria.store.TicketTTLEvictionPolicy</attribute>
+
+    <attribute name="EvictionPolicyConfig">
+      <config>
+        <attribute name="wakeUpIntervalSeconds">5</attribute>
+
+        <attribute name="maxNodes">200000</attribute>
+
+        <region name="Login Ticket">
+          <attribute name="timeToLive">30000</attribute>
+        </region>
+
+        <region name="Service Ticket">
+          <attribute name="timeToLive">30000</attribute>
+        </region>
+
+        <region name="Single Sign-On Ticket">
+          <attribute name="timeToLive">288000</attribute>
+        </region>
+
+        <region name="Ticket Granting Ticket">
+          <attribute name="timeToLive">36000</attribute>
+        </region>
+
+        <region name="Proxy Ticket">
+          <attribute name="timeToLive">60000</attribute>
+        </region>
+      </config>
+    </attribute>
 
     <attribute name="ClusterConfig">
       <config>
-        <UDP
-           mcast_addr="228.75.12.3"
-           mcast_port="43566"
-           ip_ttl="64"
-	   ip_mcast="true"
-           mcast_send_buf_size="150000"
-           mcast_recv_buf_size="80000"
-           ucast_send_buf_size="150000"
-           ucast_recv_buf_size="80000"
+        <TCP1_4
+           start_port="7800"
+           bind_addr="localhost"
            loopback="false"/>
 
-        <PING
-           timeout="2000"
-           num_initial_members="3"
-           up_thread="false"
-           down_thread="false"/>
+        <TCPPING
+           initial_hosts="localhost[7800],localhost[7801]"
+           port_range="3"
+           timeout="3000"
+           num_initial_members="2"
+           up_thread="true"
+           down_thread="true"/>
 
         <MERGE2
-           min_interval="10000"
-           max_interval="20000"/>
+           min_interval="2400"
+           max_interval="9600"/>
 
         <FD
-           shun="true"
+           timeout="2000"
+           max_tries="4"
+           shun="false"
            up_thread="true"
            down_thread="true"/>
 
@@ -50,7 +89,7 @@
            timeout="1500"
            up_thread="false"
            down_thread="false"/>
-
+        
         <pbcast.NAKACK
            gc_lag="50"
            retransmit_timeout="600,1200,2400,4800"
@@ -59,42 +98,26 @@
 
         <pbcast.STABLE
            desired_avg_gossip="20000"
+           max_bytes="0"
+           stability_delay="1000"
            up_thread="false"
            down_thread="false"/>
-
-        <UNICAST
-           timeout="600,1200,2400"
-           window_size="100"
-           min_threshold="10"
-           down_thread="false"/>
-
-        <FRAG
-           frag_size="8192"
-           down_thread="false"
-           up_thread="false"/>
 
         <pbcast.GMS
            join_timeout="5000"
            join_retry_timeout="2000"
            shun="true"
-           print_local_addr="true"/>
+           print_local_addr="false"
+           up_thread="true"
+           down_thread="true"/>
 
         <pbcast.STATE_TRANSFER
-           up_thread="false"
-           down_thread="false"/>
+           timeout_get_appl_state="10000"
+           timeout_return_state="120000"
+           up_thread="true"
+           down_thread="true"/>
+
       </config>
     </attribute>
-
-    <attribute name="MaxCapacity">20000</attribute>
-
-    <attribute name="InitialStateRetrievalTimeout">20000</attribute>
-
-    <attribute name="SyncReplTimeout">10000</attribute>
-
-    <attribute name="LockAcquisitionTimeout">15000</attribute>
-
-    <attribute name="LockLeaseTimeout">60000</attribute>
-
-    <attribute name="EvictionPolicyClass"></attribute>
   </mbean>
 </server>
