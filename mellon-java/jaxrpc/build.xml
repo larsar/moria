@@ -6,9 +6,6 @@
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
 
-
-
-  <!-- Targets to build the Mellon API. -->
   <target name="prepare"
           description="Mellon API: Prepare build directory">
      <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
@@ -50,10 +47,8 @@
       <arg line="-verbose"/>
       <arg line="config/jaxrpc.xml"/>
     </exec>
-    
     <delete file="dist/feide-mellon-api*.jar"/>
-    <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build/api"/>
-    
+    <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build/api"/>    
   </target>
 
   <target name="build"
@@ -63,14 +58,12 @@
            debug="true"
            destdir="build/connector"
            includes="no/feide/mellon/jaxrpc/*">
-
       <classpath>
       	<fileset dir="dist" includes="feide-mellon-api*.jar"/>
         <fileset dir="${jaxrpc_libs}" includes="*.jar"/>
         <fileset dir="../common/dist" includes="*.jar"/>
       </classpath>
     </javac>
-
     <delete file="dist/moriaJAXRPCConnector*.jar"/>
     <jar destfile="dist/moriaJAXRPCConnector.jar" basedir="build/connector"/>
   </target>
@@ -98,6 +91,4 @@
     <delete file="Authentication.wsdl"/>
   </target>
     
-
-
 </project>
