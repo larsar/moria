@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 FEIDE
+ * Copyright (c) 2004 UNINETT FAS
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -42,6 +42,7 @@ import java.util.Date;
 public class RandomId {
 
     private static byte[] nodeId;
+
     private static SecureRandom random;
 
     static {
@@ -64,8 +65,7 @@ public class RandomId {
     }
 
     /* The characters used in our version of base64 */
-    private static final byte[] CHAR_64 =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*-".getBytes();
+    private static final byte[] CHAR_64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*-".getBytes();
 
     /* The number of random bits to get from the PRNG */
     private static final int NO_OF_RANDOM_BITS = 384;
@@ -78,8 +78,7 @@ public class RandomId {
         /* Round up number of bytes if the bits don't divide by eight */
         int noOfRandomBytes = NO_OF_RANDOM_BITS / 8;
 
-        if ((NO_OF_RANDOM_BITS % 8) != 0)
-            noOfRandomBytes++;
+        if ((NO_OF_RANDOM_BITS % 8) != 0) noOfRandomBytes++;
 
         /* Get the randomness */
         byte[] randomBytes = new byte[noOfRandomBytes];
@@ -99,14 +98,16 @@ public class RandomId {
      * Takes a byte array and returns a string encoded with a slightly modified
      * version of Base64.
      * 
-     * The difference compared to standard Base64 is that the extra two chars; + & /
-     * have been exchanged for the more url-friendly - & *, and the resulting
-     * string is not padded with = as required by the spec (rfc 2045).
+     * The difference compared to standard Base64 is that the extra two chars;
+     * "+" and "/" have been exchanged for the more url-friendly "-" and "*",
+     * and the resulting string is not padded with = as required by the spec
+     * (rfc 2045).
      * 
-     * Parts of code copyright (c) 2003, Sverre H. Huseby
+     * Parts of code Copyright (c) 2003, Sverre H. Huseby
      * &lt;shh@thathost.com&gt;
      * 
-     * @param bytes the data to convert
+     * @param bytes
+     *            the data to convert
      * @return the encoded version of the input
      */
     static String pseudoBase64Encode(byte[] bytes) {
@@ -128,8 +129,7 @@ public class RandomId {
         for (byteOffset = 0;;) {
 
             /* Six first bits of the first of three bytes */
-            if (byteOffset >= bytes.length)
-                break;
+            if (byteOffset >= bytes.length) break;
             currentByte = ((int) bytes[byteOffset++]) & 255;
             charOffset = currentByte >> 2;
             finalId.append((char) CHAR_64[charOffset]);
@@ -168,7 +168,8 @@ public class RandomId {
      * Takes a long value (64 bit) and returns it as an eight element byte
      * array.
      * 
-     * @param in the long value to be converted
+     * @param in
+     *            the long value to be converted
      * @return a byte array representation of the long value given as input
      */
     static byte[] longToByteArray(long in) {
