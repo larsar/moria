@@ -31,16 +31,10 @@
   <!-- Targets to build/deploy Moria. -->
   <target name="moria:prepare"
           description="Moria: Prepare build directory">
-    <mkdir dir="build.moria/WEB-INF/classes"/>
     <mkdir dir="dist"/>
     <mkdir dir="build.moria/WEB-INF/classes/templates"/>
     <copy file="moria/jaxrpc-ri-runtime.xml"
           todir="build.moria/WEB-INF"/>
-    <copy file="Authentication.wsdl"
-          todir="build.moria/WEB-INF"/>
-    <exec executable="sed" output="build.moria/WEB-INF/Authentication.wsdl">
-      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' Authentication.wsdl"/>
-    </exec>
     <copy todir="build.moria/WEB-INF/classes/templates">      
       <fileset dir="moria/templates">
         <include name="**/*.vtl"/>
@@ -70,6 +64,16 @@
     </copy>
   </target>
 
+  <target name="moria:wsdl"
+          description="Moria: Prepare WSDL file">
+    <mkdir dir="build.moria/WEB-INF/classes"/>
+    <copy file="Authentication.wsdl"
+          todir="build.moria/WEB-INF"/>
+    <exec executable="sed" output="build.moria/WEB-INF/Authentication.wsdl">
+      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' Authentication.wsdl"/>
+    </exec>
+  </target>
+
   <target name="moria:compile"
           description="Moria: Compile source"
           depends="moria:prepare">
@@ -90,13 +94,13 @@
 
   <target name="moria:wscompile"
           description="Moria: Generate JAX-RPC server ties"
-          depends="moria:compile">
+          depends="moria:wsdl,moria:compile">
     <exec executable="${jaxrpc_home}/bin/wscompile.sh">
       <arg line="-gen:server"/>
       <arg line="-d build.moria/WEB-INF/classes"/>
       <arg line="-model build.moria/WEB-INF/Authentication_model.xml"/>
       <arg line="-verbose"/>
-      <arg line="common/jaxrpc.xml"/>
+      <arg line="moria/config/jaxrpc.xml"/>
     </exec>
     <exec executable="gzip">
       <arg line="build.moria/WEB-INF/Authentication_model.xml"/>
@@ -171,11 +175,12 @@
 
   <target name="mellon:wscompile"
           description="Mellon API: Generate JAX-RPC client stubs"
-          depends="mellon:prepare">
+          depends="moria:wsdl,mellon:prepare">
     <exec executable="${jaxrpc_home}/bin/wscompile.sh">
       <arg line="-gen:client"/>
       <arg line="-d build.mellon/api"/>
-      <arg line="common/jaxrpc.xml"/>
+      <arg line="-verbose"/>
+      <arg line="mellon/config/jaxrpc.xml"/>
     </exec>
   </target>
 
