@@ -50,6 +50,7 @@ public class LoginServlet extends VelocityServlet {
     
     /** Used for logging. */
     private static Logger log = Logger.getLogger(LoginServlet.class.toString());
+    
     private static String NOSESSION  = "nosession";
     private static String MAXLOGIN   = "maxlogin";
     private static String AUTHFAILED = "auth";
@@ -58,15 +59,32 @@ public class LoginServlet extends VelocityServlet {
 
     String loginURL;
 
-    SessionStore sessionStore = SessionStore.getInstance();
+    /** Local pointer to session store. */
+    SessionStore sessionStore;
     
     Timer sessionTimer = new Timer();
 
-    public void init() {
-        /* Initialize session timeout timer */
-        int sessionDelay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
-        log.info("Starting time out service with delay= "+sessionDelay+"ms");
-        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelay);
+    /**
+     * Some basic initialization.
+     * @throws ServletException If a SessionException is caught when getting
+     *                          the the session store.
+     */
+    public void init()
+    throws ServletException {
+        log.finer("init()");
+        
+        try {
+            /* Initialize session timeout timer */
+            int sessionDelay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
+            log.info("Starting time out service with delay= "+sessionDelay+"ms");
+            sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelay);
+        
+            // Set local pointer to session store.
+            sessionStore = SessionStore.getInstance();
+        } catch (SessionException e) {
+            log.severe("SessionException caught and re-thrown as ServletException");
+            throw new ServletException("SessionException caught and re-thrown as ServletException", e);
+        }
     }
 
 
