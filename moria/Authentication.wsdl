@@ -116,7 +116,7 @@
 
   <service name="Authentication">
     <port name="AuthenticationIFPort" binding="tns:AuthenticationIFBinding">
-      <soap:address location="https://demo.feide.no/moria/Authentication?WSDL"/>
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
     </port>
   </service>
 
