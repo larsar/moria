@@ -210,7 +210,7 @@ public class MoriaServlet extends VelocityServlet {
         }
 
         cookie.setMaxAge(validDays*24*60*60); // Days to seconds
-        cookie.setVersion(1);
+        cookie.setVersion(0);
         response.addCookie(cookie);
     }
 
