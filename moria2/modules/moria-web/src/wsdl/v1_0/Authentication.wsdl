@@ -53,7 +53,7 @@
   </message>
 
   <message name="initiateAuthenticationOut">
-    <part name="result" type="xsd:string"/>
+    <part name="redirectUrl" type="xsd:string"/>
   </message>
 
   <message name="directNonInteractiveAuthenticationIn">
@@ -63,15 +63,15 @@
   </message>
 
   <message name="directNonInteractiveAuthenticationOut">
-    <part name="result" type="xsd:string"/>
+    <part name="userAttributes" type="xsd:string"/>
   </message>
 
   <message name="getUserAttributesIn">
-    <part name="ticketId" type="xsd:string"/>
+    <part name="serviceTicket" type="xsd:string"/>
   </message>
 
   <message name="getUserAttributesOut">
-    <part name="result" type="tns:ArrayOfAttribute"/>
+    <part name="userAttributes" type="tns:ArrayOfAttribute"/>
   </message>
 
   <message name="verifyUserExistenceIn">
@@ -95,7 +95,7 @@
       <output message="tns:directNonInteractiveAuthenticationOut"/>
     </operation>
 
-    <operation name="getUserAttributes" parameterOrder="ticketId">
+    <operation name="getUserAttributes" parameterOrder="serviceTicket">
       <input message="tns:getUserAttributesIn"/>
       <output message="tns:getUserAttributesOut"/>
     </operation>

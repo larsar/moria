@@ -53,7 +53,7 @@
   </message>
 
   <message name="initiateAuthenticationOut">
-    <part name="loginTicket" type="xsd:string"/>
+    <part name="redirectUrl" type="xsd:string"/>
   </message>
 
   <message name="directNonInteractiveAuthenticationIn">
@@ -77,7 +77,7 @@
 
   <message name="getProxyTicketIn">
     <part name="ticketGrantingTicket" type="xsd:string"/>
-    <part name="servicePrincipal" type="xsd:string"/>
+    <part name="proxyServicePrincipal" type="xsd:string"/>
   </message>
 
   <message name="getProxyTicketOut">
@@ -143,7 +143,7 @@
       <output message="tns:proxyAuthenticationOut"/>
     </operation>
 
-    <operation name="getProxyTicket" parameterOrder="ticketGrantingTicket servicePrincipal">
+    <operation name="getProxyTicket" parameterOrder="ticketGrantingTicket proxyServicePrincipal">
       <input message="tns:getProxyTicketIn"/>
       <output message="tns:getProxyTicketOut"/>
     </operation>
