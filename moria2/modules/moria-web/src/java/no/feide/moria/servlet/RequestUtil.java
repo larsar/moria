@@ -20,19 +20,19 @@
 
 package no.feide.moria.servlet;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.Cookie;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
-import java.util.MissingResourceException;
-import java.util.Vector;
+import javax.servlet.http.HttpServlet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.Vector;
 
 /**
  * This class is a toolkit for the servlets and it's main functionality is to retrieve

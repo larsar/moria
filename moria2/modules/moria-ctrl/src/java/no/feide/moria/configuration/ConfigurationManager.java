@@ -20,20 +20,18 @@
 
 package no.feide.moria.configuration;
 
-import no.feide.moria.log.MessageLogger;
 import no.feide.moria.controller.MoriaController;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Iterator;
-import java.util.Set;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
-import java.io.FileInputStream;
 
 /**
  * ConfigurationManager watches configuration files and reloads them when the are changed.

@@ -20,16 +20,15 @@
 
 package no.feide.moria.store;
 
-import java.util.HashMap;
-
 import no.feide.moria.log.MessageLogger;
-
 import org.jboss.cache.Fqn;
 import org.jboss.cache.Node;
 import org.jboss.cache.PropertyConfigurator;
 import org.jboss.cache.TreeCache;
 import org.jboss.cache.lock.LockingException;
 import org.jboss.cache.lock.TimeoutException;
+
+import java.util.HashMap;
 
 /**
  * Distributed store implementation using JBoss Cache.

@@ -20,12 +20,6 @@
 
 package no.feide.moria.controller;
 
-import java.util.Map;
-import java.util.Properties;
-import java.util.HashMap;
-
-import javax.servlet.ServletContext;
-
 import no.feide.moria.authorization.AuthorizationManager;
 import no.feide.moria.configuration.ConfigurationManager;
 import no.feide.moria.configuration.ConfigurationManagerException;
@@ -34,6 +28,11 @@ import no.feide.moria.store.MoriaAuthnAttempt;
 import no.feide.moria.store.MoriaStore;
 import no.feide.moria.store.MoriaStoreFactory;
 import no.feide.moria.store.UnknownTicketException;
+
+import javax.servlet.ServletContext;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
