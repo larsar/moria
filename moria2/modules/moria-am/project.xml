@@ -4,12 +4,17 @@
 
 <project>
   <extend>${basedir}/../../project.xml</extend>
-  <name>Moria NextGen Authorization manager</name>
+  <name>Moria Authorization manager</name>
   <id>moria-am</id>
-  <package>no.feide.moria.authorizationmanager</package>
+  <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
+  <package>no.feide.moria.authorization</package>
 
   <shortDescription>This is the authorization manager for
-  Moria</shortDescription>
+   Moria.</shortDescription>
+
+  <description/>
+
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-am</siteDirectory>
 
   <dependencies>
     <dependency>
@@ -23,11 +28,7 @@
   </dependencies>
 
   <build>
-
     <resources>
-
     </resources>
-
   </build>
-
 </project>
