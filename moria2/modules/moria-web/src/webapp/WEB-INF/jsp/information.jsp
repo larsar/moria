@@ -3,7 +3,7 @@
 <%@ page
 			language="java"
 			errorPage="/Error"
-			session="false"
+			session="true"
 			contentType="text/html; charset=ISO-8859-1"
 			pageEncoding="ISO-8859-1"
 			import="java.util.ResourceBundle, java.util.Vector, no.feide.moria.servlet.RequestUtil,
@@ -12,6 +12,11 @@
 <% ResourceBundle bundle = (ResourceBundle) request.getAttribute("bundle"); %>
 <% Vector tabledata = (Vector) request.getAttribute("tabledata"); %>
 <% String userorg = (String) request.getAttribute("userorg"); %>
+<% String[] picarr = (String[]) request.getAttribute("picture"); %>
+<% if (picarr != null) { %>
+<% session.setAttribute("picture", picarr); %>
+<% } %>
+
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
 	  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -50,7 +55,7 @@
    
    <!-- Logout-->
    <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&logout=user_logout" %>"><%=bundle.getString("user_logout")%></A>
-  
+   
 
     <br/>
     <br/>    
@@ -64,14 +69,12 @@
        	<th> <%= bundle.getString("tc_relevance") %> </th></tr>
 		<% 
         final int n = tabledata.size();
+        String piclink = "http://localhost:8080/moria/Picture";
         for (int i = 0; i < n; i += 4) {
           String link = (String) tabledata.get(i);
           String description = (String) tabledata.get(i+1);
           String userstring = (String) tabledata.get(i+2);
           String relevance = (String) tabledata.get(i+3);
-          if (userstring.equals("p_yes")) {
-          userstring=bundle.getString("p_yes");
-          }
           if (userstring == null || userstring.equals("")) {	
 		    if (relevance.equals("fd_mandatory")) {
                 userstring = "<FONT COLOR=\"#ff0000\">" + bundle.getString("m_missing") + " " + userorg + "</FONT>";
@@ -81,6 +84,14 @@
             }
           }
           relevance = bundle.getString(relevance);
+          if (userstring.equals("p_yes")) {
+            userstring = "";
+            if (picarr != null) {
+          	  for (int j = 0; j < picarr.length; j++) {
+			    userstring += "<A HREF=\"" + piclink + "?index=" + j + "\" TARGET=\"_blank\">Picture " + (j+1) + "</A><BR>"; 
+			  }
+			}
+         }
 		%>
           <tr>
             <td align=left><A HREF="<%= link %>" TARGET="_blank"> <%= description %></A></td>

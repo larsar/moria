@@ -32,7 +32,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -212,7 +211,7 @@ public class InformationServlet extends HttpServlet {
                 if (userdata != null) {
                     userstring = "p_yes";                    
                 }
-               }
+            }
             out.add(link);
             out.add(description);
             out.add(userstring);
@@ -303,8 +302,6 @@ public class InformationServlet extends HttpServlet {
                 request.getParameter(RequestUtil.PARAM_LANG), langFromCookie, null,
                 request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
 
-        HttpSession session = request.getSession(true);
-
         request.setAttribute("bundle", bundle);
         String urlPrefix = (String)config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX);
         if ((urlPrefix == null) || (urlPrefix.equals(""))) {
@@ -351,7 +348,12 @@ public class InformationServlet extends HttpServlet {
                 userorg = userorgarray[0];
             }
             request.setAttribute("userorg", userorg);
-
+            // Pictures are stored for later use in the JSP
+            String[] picarr = (String[]) userData.get(new String("jpegPhoto"));
+            if (picarr != null && picarr.length > 0) {
+                request.setAttribute("picture", picarr);
+            }
+            
             Vector tabledata = printTableToVector(userData, bundle);
             request.setAttribute("tabledata", tabledata);
 
