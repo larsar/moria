@@ -38,7 +38,6 @@ import no.feide.moria.log.MessageLogger;
  * Represents a user in the backend. Used to authenticate users and retrieve the
  * associated attributes.
  */
-// TODO: Close all used LDAP connections.
 public class JNDIBackend
 implements DirectoryManagerBackend {
 
@@ -165,10 +164,25 @@ implements DirectoryManagerBackend {
         for (int i = 0; i < myReferences.length; i++) {
             String[] references = myReferences[i].getReferences();
             for (int j = 0; j < references.length; j++) {
-
+                
                 // Search this reference.
-                if (ldapSearch(connect(references[j]), pattern) != null)
-                    return true;
+                InitialLdapContext ldap = null;
+                try {
+                    ldap = connect(references[j]);
+	                if (ldapSearch(ldap, pattern) != null)
+	                    return true;
+                } finally {
+                    
+                    // Close the LDAP connection.
+                    if (ldap != null)
+                        try {
+                            ldap.close();
+                        } catch (NamingException e) {
+                            // Ignored.
+                            log.logWarn("Unable to close the backend connection", e);
+                        }
+                        
+                }
 
             }
         }
@@ -205,10 +219,13 @@ implements DirectoryManagerBackend {
             String[] references = myReferences[i].getReferences();
             for (int j = 0; j < references.length; j++) {
 
+                // For the benefit of the finally block below.
+                InitialLdapContext ldap = null;
+                
                 try {
 
                     // Context for this reference.
-                    InitialLdapContext ldap = connect(references[j]);
+                    ldap = connect(references[j]);
 
                     // Skip search phase if the reference(s) are explicit.
                     String rdn = "";
@@ -254,6 +271,17 @@ implements DirectoryManagerBackend {
                     throw new BackendException("Backend configuration problem", e);
                 } catch (NamingException e) {
                     throw new BackendException("Unable to access the backend", e);
+                } finally {
+                    
+                    // Close the LDAP connection.
+                    if (ldap != null)
+                        try {
+                            ldap.close();
+                        } catch (NamingException e) {
+                            // Ignored.
+                            log.logWarn("Unable to close the backend connection", e);
+                        }
+                        
                 }
 
             }
