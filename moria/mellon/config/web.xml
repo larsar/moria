@@ -4,13 +4,6 @@
 <display-name>FEIDE Mellon Demo</display-name>
 <description>Demo of AuthenticatonFilter</description>
 
- <servlet>
-   <servlet-name>Demo</servlet-name>
-   <servlet-class>
-     no.feide.mellon.servlet.DemoServlet
-   </servlet-class>
- </servlet>
-
  <filter>
    <filter-name>AuthenticationFilter</filter-name>
    <filter-class>
@@ -23,7 +16,13 @@
    <url-pattern>/Demo</url-pattern>
  </filter-mapping>
 
- <!-- Mapping -->
+ <servlet>
+   <servlet-name>Demo</servlet-name>
+   <servlet-class>
+     no.feide.mellon.servlet.DemoServlet
+   </servlet-class>
+ </servlet>
+
  <servlet-mapping>
  <servlet-name>Demo</servlet-name>
    <url-pattern>/Demo</url-pattern>
