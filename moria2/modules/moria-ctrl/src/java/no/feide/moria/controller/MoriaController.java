@@ -624,7 +624,7 @@ public class MoriaController {
             }
         } else if (module.equals(ConfigurationManager.MODULE_WEB)) {
             if (servletContext != null) {
-                servletContext.setAttribute("no.feide.moira.web.config", properties);
+                servletContext.setAttribute("no.feide.moria.web.config", properties);
             } else {
                 // TODO: Log event
                 // MessageLogger.logCritical("Servlet context not set. Config cannot be updated.");
