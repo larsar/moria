@@ -169,36 +169,36 @@ extends HttpServlet {
         out.println("<p><b>Status:</b><br/>" + statusMsg + "</p>");
         
         // Prepare to check test users.
-        out.println("<b>Test users:</b><br/><table>");
+        out.println("<table border=1><tr><th>Test users</th><th>Organization</th><th>Status</th></tr>");
   
         // Start checking a new user.
         
         for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
             BackendStatusUser userData = (BackendStatusUser) backendDataUsers.get(key);
-            out.println("<tr><td>" + userData.getName());
+            out.println("<tr><td>" +  userData.getName() + "</td>");
             try {
-            
+                out.println("<td>" + MoriaController.getUserOrg(userData.getName()) + "</td>");
                 final Map attributes = MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE},
                         userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
         	
                 // This test user worked.
-                out.println("OK</td></tr>");
+                out.println("<td>OK</td>");
             
             } catch (AuthenticationException e) {
-                out.println("Failed authentication; check configuration</td></tr>");            
+                out.println("<td>unknown</td><td> Failed authentication; check configuration</td></tr>");            
             } catch (DirectoryUnavailableException e) {
-                out.println("Directory unavailable</td></tr>");            
+                out.println("<td> Directory unavailable</td></tr>");            
             } catch (AuthorizationException e) {
-                out.println("Failed authorization; check configuration</td></tr>");            
+                out.println("<td> Failed authorization; check configuration</td></tr>");            
             } catch (IllegalInputException e) {
-                out.println("Illegal input; check configuration</td></tr>");            
+                out.println("<td> Illegal input; check configuration</td></tr>");            
             } catch (InoperableStateException e) {
-                out.println("Inoperable state; check configuration</td></tr>");            
+                out.println("<td> Inoperable state; check configuration</td></tr>");            
             } finally {
             
                 // Finish the table row.
-                out.println("</td></tr>");
+                out.println("</tr>");
             
             }
         }
