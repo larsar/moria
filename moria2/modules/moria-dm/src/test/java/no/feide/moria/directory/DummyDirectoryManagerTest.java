@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import no.feide.moria.directory.backend.AuthenticationFailedException;
+import no.feide.moria.directory.backend.BackendException;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -23,17 +24,19 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * JUnit tests for the DirectoryManager class.
+ * JUnit tests for the DirectoryManager class using a dummy backend. Note that
+ * the configuration file used must set up a proper dummy backend; browse the
+ * code in advance.
  * @author Cato Olsen
  */
 public class DummyDirectoryManagerTest
 extends TestCase {
 
-    /** The user credentials used. */
-    private static Credentials goodCredentials = new Credentials("user@some.realm", "password");
+    /** Working credentials. */
+    private static final Credentials goodCredentials = new Credentials("user@some.realm", "user@some.realm");
 
-    /** Non-existing user credentials. */
-    private static Credentials badCredentials = new Credentials("foo", "bar");
+    /** Non-working credentials. */
+    private static final Credentials[] badCredentials = {new Credentials("user@another.realm", "password"), new Credentials("test@feide.no", "Test"), null};
 
     /** The attribute request used. */
     private static final String[] goodRequest = {"someAttribute"};
@@ -147,10 +150,12 @@ extends TestCase {
 
             // Test unsuccessful authentication.
             dm.setConfig(config);
-            HashMap attributes = null;
-            attributes = dm.authenticate(badCredentials, new String[] {});
-            Assert.assertNull("Attributes were returned", attributes);
-            Assert.fail("Bad authentication succeeded");
+            for (int i = 0; i < badCredentials.length; i++) {
+                HashMap attributes = null;
+                attributes = dm.authenticate(badCredentials[i], new String[] {});
+                Assert.assertNull("Attributes were returned", attributes);
+                Assert.fail("Bad authentication succeeded");
+            }
 
         } catch (AuthenticationFailedException e) {
             // Expected.
@@ -243,6 +248,56 @@ extends TestCase {
 
         } catch (DirectoryManagerConfigurationException e) {
             // Expected.
+        }
+
+    }
+
+
+    /**
+     * Test unsuccessful user lookup.
+     */
+    public void testBadUserExistence() {
+
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
+
+        try {
+
+            dm.setConfig(config);
+            for (int i = 0; i < badCredentials.length; i++) {
+                if (badCredentials[i] != null) {
+
+                    // Test bad user existence.
+                    Assert.assertFalse("User " + badCredentials[i].getUsername() + " should not exist", dm.userExists(badCredentials[i].getUsername()));
+
+                }
+            }
+
+        } catch (BackendException e) {
+            Assert.fail("Unexpected BackendException");
+        }
+
+    }
+
+
+    /**
+     * Test successful user lookup.
+     */
+    public void testGoodUserExistence() {
+
+        // Set configuration properties.
+        Properties config = new Properties();
+        config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
+
+        try {
+
+            // Test good user existence.
+            dm.setConfig(config);
+            Assert.assertTrue("User " + goodCredentials.getUsername() + " should exist", dm.userExists(goodCredentials.getUsername()));
+
+        } catch (BackendException e) {
+            Assert.fail("Unexpected BackendException");
         }
 
     }
