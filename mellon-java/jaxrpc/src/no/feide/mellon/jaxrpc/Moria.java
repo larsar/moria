@@ -64,7 +64,7 @@ public class Moria {
     /**
      * Get an instance of Moria.
      * @return An instance of the Moria interface.
-     * @throws MoriaException If the singleton object couldn't be constructed.
+     * @throws Exception If the singleton object couldn't be constructed.
      */
     public static Moria getInstance()
     throws Exception {
@@ -89,7 +89,7 @@ public class Moria {
      * @param postfix The postfix, used to build the
      *                <code>verifySession</code> return value.
      * @return A Moria session descriptor.
-     * @throws MoriaException If a RemoteException is caught.
+     * @throws Exception If a RemoteException is caught.
      */
     public String requestSession(String[] attributes, String prefix, String postfix, boolean denySso) 
     throws Exception {
@@ -99,9 +99,35 @@ public class Moria {
         try {
             return service.requestSession(attributes, prefix, postfix, denySso);
         } catch (RemoteException e) {
-            log.severe("RemoteException caught and re-thrown as MoriaException");
+            log.severe("RemoteException caught and re-thrown as Exception");
             throw new Exception("RemoteException caught", e);
         }
+    }
+    
+    
+    /**
+     * Authenticates the user directly, bypassing the normal web-based redirect
+     * loop. Note that the web service must be authorized to use direct user
+     * authentication.
+     * @param id The session ID returned from Moria upon session request (using
+     *           <code>requestSession</code>.
+     * @param username The user's username.
+     * @param password The user's password, in clear text.
+     * @return <code>null</code> if the user could not be authenticated using
+     *         the given credentials, otherwise the updated session ID.
+     * @throws Exception If a RemoteException is caught.
+     */
+    public String authenticateUser(String id, String username, String password)
+    throws Exception {
+    	log.finer("authenticateUser(String, String, String)");
+    	
+    	AuthenticationIF service = (AuthenticationIF)stub;
+    	try {
+    		return service.authenticateUser(id, username, password);
+    	} catch (RemoteException e) {
+    		log.severe("RemoteException caught and re-thrown as Exception");
+    		throw new Exception("RemoteException caught", e);
+    	}
     }
     
     
@@ -116,7 +142,7 @@ public class Moria {
      *           authentication.
      * @return The attributes requested when the session was established,
      *         or an empty set if no attributes were requested.
-     * @throws MoriaException If a RemoteException is caught.
+     * @throws Exception If a RemoteException is caught.
      */
     public HashMap getAttributes(String id)
     throws Exception {
@@ -138,7 +164,7 @@ public class Moria {
             return newAttrs;
             
         } catch (RemoteException e) {
-            log.severe("RemoteException caught and re-thrown as MoriaException");
+            log.severe("RemoteException caught and re-thrown as Exception");
             throw new Exception("RemoteException caught", e);
         }
     }
