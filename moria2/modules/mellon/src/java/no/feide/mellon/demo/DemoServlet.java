@@ -222,6 +222,7 @@ extends HttpServlet {
             } else {
 
                 // We have a ticket.
+                response.setContentType("text/html");
                 PrintWriter out = response.getWriter();
                 out.println("<html><head><title>Moria Demo Service</title></head><body>");
                 out.println("<h1 align=\"center\">Authentication successful</h1>");
