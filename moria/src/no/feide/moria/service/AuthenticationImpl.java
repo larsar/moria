@@ -25,9 +25,7 @@ import java.security.Principal;
 import java.rmi.RemoteException;
 import java.net.MalformedURLException;
 
-import java.util.Date;
-import java.util.Timer;
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.Logger;
 
 import javax.xml.rpc.ServiceException;
@@ -252,21 +250,19 @@ implements AuthenticationIF, ServiceLifecycle {
      *                         of the client service originally requesting
      *                         the session.
      */
-    public HashMap getAttributes(String id)
+    public Attribute[] getAttributes(String id)
     throws RemoteException {
         log.finer("getAttributes(String)");
 
+    	try {
 
-	try {
-
-	    /* Look up session and check the client identity. */
+            /* Look up session and check the client identity. */
             Session session = sessionStore.getSession(id);
-
 
             String serviceName = null;
             if (ctx.getUserPrincipal() != null)
                 serviceName = ctx.getUserPrincipal().getName();
-            
+
             String log_prefix = "Attributes requested by "+serviceName+": ";
 
             /* Reauthorize the WebService */
@@ -275,18 +271,27 @@ implements AuthenticationIF, ServiceLifecycle {
                 throw new RemoteException("Access denied");
             }
 
-
             if (session.isLocked()) {
                 log.warning(log_prefix+"DENIED, Session is locked");
                 throw new RemoteException("No such session.");
             }
 
-	    assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
+            assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
 
-	    /* Return attributes. */
+            /* Parse and return attributes. */
             log.info(log_prefix+"ACCEPTED, SID="+session.getID());
             HashMap result = session.getAttributes();
-            return result;
+            Iterator keys = result.keySet().iterator();
+            ArrayList attributes = new ArrayList(result.size());
+            while (keys.hasNext()) {
+                String attrName = (String)keys.next();
+                Vector oldValues = (Vector)result.get(attrName);
+                Attribute newAttr = new Attribute();
+                newAttr.setName(attrName);
+                newAttr.setValues((String[])oldValues.toArray(new String[] {}));
+                attributes.add(newAttr);
+            }
+            return (Attribute[])attributes.toArray(new Attribute[] {});
 
         } catch (SessionException e) {
             log.severe("SessionException caught, and re-thrown as RemoteException");
