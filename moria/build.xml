@@ -201,8 +201,8 @@
   <target name="mellon:jar"
           description="Mellon API: Create JAR file"
           depends="mellon:compile">
-    <delete file="dist/feide-mellon-api.jar"/>
-    <jar destfile="dist/feide-mellon-api.jar" basedir="build.mellon/api"/>
+    <delete file="dist/feide-mellon-api-*.jar"/>
+    <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build.mellon/api"/>
   </target>
 
   <target name="mellon:build"
@@ -230,7 +230,7 @@
           description="Mellon API: Clean up">
     <delete dir="build.mellon"/>
     <delete file="dist/feide-mellon-filter.jar"/>
-    <delete file="dist/feide-mellon-api.jar"/>
+    <delete file="dist/feide-mellon-api-*.jar"/>
   </target>
     
 
@@ -244,7 +244,7 @@
            includes="no/feide/mellon/filter/*">
       <classpath>
         <fileset dir="lib/" includes="*.jar"/>
-        <fileset file="dist/feide-mellon-api.jar"/>
+        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
       </classpath>
     </javac>
   </target>
@@ -283,7 +283,7 @@
            includes="no/feide/mellon/servlet/*">
       <classpath>
         <fileset dir="lib/" includes="*.jar"/>
-        <fileset file="dist/feide-mellon-api.jar"/>
+        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
       </classpath>
     </javac>
   </target>
@@ -327,7 +327,7 @@
   <target name="mellon:zip"
           description="Mellon jars, docs and example code in zip-file.">
     <copy todir="build.mellon/zip">
-      <fileset dir="dist" includes="**/feide-mellon-api.jar"/>
+      <fileset dir="dist" includes="**/feide-mellon-api-${mellon_tag}.jar"/>
       <fileset dir="mellon/config" includes="mellon.properties"/>
       <fileset dir="doc/mellon/java/examples" includes="SimpleCreateAuthSession.java"/>
       <fileset dir="lib">
