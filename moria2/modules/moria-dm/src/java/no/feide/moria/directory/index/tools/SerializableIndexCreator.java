@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Iterator;
 import java.util.List;
 import no.feide.moria.directory.index.SerializableIndex;
 import no.feide.moria.directory.index.WriteableSerializableIndex;
@@ -82,7 +83,18 @@ public class SerializableIndexCreator {
         final SerializableIndex writtenIndex = (SerializableIndex) in.readObject();
         in.close();
 
-        // Verify index contents.
+        // Dump written index to console.
+        Iterator realms = writtenIndex.getAssociations().keySet().iterator();
+        while (realms.hasNext()) {
+            
+            String realm = (String)realms.next();
+            List bases = writtenIndex.getAssociation(realm);
+            for (int i=0; i<bases.size(); i++)
+                System.out.println('\t' + realm + " = " + (String)bases.get(i));
+            
+        }
+        
+        // Verify index contents.        
         if (generatedIndex.equals(writtenIndex))
             System.out.println("Generated and written indexes match");
         else
