@@ -19,7 +19,6 @@
  */
 
 package no.feide.moria.servlet;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -63,6 +62,7 @@ public final class RequestUtil {
     /**
      * Property name for: Default language.
      */
+      
     public static final String PROP_LOGIN_DEFAULT_LANGUAGE = PATH_PREFIX + "login.default_language";
     /**
      * Property name for: Language.
@@ -117,6 +117,21 @@ public final class RequestUtil {
      * Bundle for the login page.
      */
     public static final String BUNDLE_LOGIN = "login";
+    
+    
+    /**
+     * TODO Eva Rename, and configure
+     */
+    public static final String PATH_FEIDEATTRIBS = "C:/moria2/modules/moria-web/src/test/conf/feideattribs.xml";
+    /**
+     * Bundle for the information servlet.
+     */
+    public static final String BUNDLE_INFORMATIONSERVLET = "feideattribs";
+    
+    /**
+     * Legal name for an organization, used by Information Servlet
+     */
+    public static final String EDU_ORG_LEGAL_NAME = "eduOrgLegalName";
 
     /**
      * From Authorization config: Language.
