@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Copyright (c) 2004 UNINETT
 
@@ -19,369 +18,394 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
 
 $Id$
 -->
-
 <document>
-
   <properties>
     <title>Configuration</title>
-    <author email="lars.preben.arnesen@conduct.no">Lars Preben S. Arnesen</author>
+
+    <author email="lars.preben.arnesen@conduct.no">Lars Preben S.
+    Arnesen</author>
   </properties>
 
   <body>
-
     <section name="Introduction">
-      <p>
-        Moria is software for providing authentication over HTTP using multiple directory backends.
-        The software is designed with a servlet frontend both to the service provider and the user;
-        the service frontend is SOAP based, and HTML is used for the interactive user interface.
-      </p>
-      <p>
-        The authentication design is described in detail in the <a href="design.html">design document</a>.
-      </p>
+      <p> Moria is software for providing authentication over HTTP using
+      multiple directory backends. The software is designed with a servlet
+      frontend both to the service provider and the user; the service frontend
+      is SOAP based, and HTML is used for the interactive user interface. </p>
 
-      <p>
-        This document describes the configuration and setup of Moria from scratch.
-      </p>
+      <p> The authentication design is described in detail in the <a
+      href="design.html">design document</a>. </p>
+
+      <p> This document describes the configuration and setup of Moria from
+      scratch. </p>
     </section>
 
     <section name="Presentation">
-      <p>
-        JSP is used for the user login and logout page and Moria ships with standard versions of
-        both.  In addition there's a number of other JSP used.  These standard files are contained
-        in the src/webapp/WEB-INF/jsp directory of the web module.
-      </p>
-      <p>
-	There are two ways of replacing the standard JSP's.  One can either replace the files when
-	building the war or additionally add some new JSP's and provide a web.xml where the servlet
-	definitions for the JSP's are redefined.
-      </p>
-      <p>
-	A property named <strong>project.alternative.jsp.location</strong> will be used as source
-	directory for JSP files if defined.  All *.jsp files in this location will end up in the jsp
-	directory in the war file.  For ways to replace the default web.xml file see the Maven war
-	plugin documentation.
-      </p>
-      <p>
-	When replacing the JSP's one may also want to replace the language files.  This can be done
-	by redefining the property <strong>project.resourcebundle.dir</strong>, pointing it to a
-	directory with replacement bundles.
-      </p>
-    </section>
+      <p> JSP is used for the user login and logout page and Moria ships with
+      standard versions of both. In addition there's a number of other JSP
+      used. These standard files are contained in the src/webapp/WEB-INF/jsp
+      directory of the web module. </p>
 
+      <p> There are two ways of replacing the standard JSP's. One can either
+      replace the files when building the war or additionally add some new
+      JSP's and provide a web.xml where the servlet definitions for the JSP's
+      are redefined. </p>
+
+      <p> A property named <strong>project.alternative.jsp.location</strong>
+      will be used as source directory for JSP files if defined. All *.jsp
+      files in this location will end up in the jsp directory in the war file.
+      For ways to replace the default web.xml file see the Maven war plugin
+      documentation. </p>
+
+      <p> When replacing the JSP's one may also want to replace the language
+      files. This can be done by redefining the property
+      <strong>project.resourcebundle.dir</strong>, pointing it to a directory
+      with replacement bundles. </p>
+    </section>
 
     <section name="Base configuration">
-      <p>
-        Moria is dependent on three inital properties which has to be specified as system properties
-        in the VM (or classloader if your appserver supports this functionality).  The three are:
+      <p> Moria is dependent on three inital properties which has to be
+      specified as system properties in the VM (or classloader if your
+      appserver supports this functionality). The three are: <source> # The
+      configuration managers property file
+      no.feide.moria.configuration.base=/full/path/to/configuration_managers.properties
+      </source> <source> # The node id. A three character alphanumeric string.
+      no.feide.moria.node.id=no1 </source> <source> # log4j's configuration
+      log4j.configuration=/full/path/to/log4j.xml </source> </p>
 
-        <source>
-# The configuration managers property file
-no.feide.moria.configuration.base=/full/path/to/configuration_managers.properties
-        </source>
-	<source>
-# The node id. A three character alphanumeric string.
-no.feide.moria.node.id=no1
-	</source>
-	<source>
-# log4j's configuration
-log4j.configuration=/full/path/to/log4j.xml
-	</source>
-      </p>
-      <p>
-	The last one may be considered optional as log4j on initialization has its own regime of
-	locating the config, but this is the prefered way to do it when using Moria.
-      </p>
+      <p> The last one may be considered optional as log4j on initialization
+      has its own regime of locating the config, but this is the prefered way
+      to do it when using Moria. </p>
     </section>
 
-      <section name="Configuration manager">
-        <p>
-          <b>TODO: Required system property</b><br/>
-          The Configuration Manager reads and watches the configuration file for all modules.
-          When a module's configuration file is changed, the CM pushes the updated configuration to the module.
-          Configuration files for all modules can be changed runtime without restart of Moria,
-          but changes in the base configuration (CM config file) requires a restart of Moria.
-        </p>
-        <p>
-          All file paths can be given as a <strong>full path or relative to the location of the base
-          configuration file</strong>.
-       </p>
+    <section name="Configuration manager">
+      <p> <b>TODO: Required system property</b><br /> The Configuration
+      Manager reads and watches the configuration file for all modules. When a
+      module's configuration file is changed, the CM pushes the updated
+      configuration to the module. Configuration files for all modules can be
+      changed runtime without restart of Moria, but changes in the base
+      configuration (CM config file) requires a restart of Moria. </p>
 
-       <source>
-# Number of seconds between polling the configuration files
-no.feide.moria.configuration.fileListenerIntervalSeconds=1
+      <p> All file paths can be given as a <strong>full path or relative to
+      the location of the base configuration file</strong>. </p>
 
-# Path to the store manager's configuration file.
-no.feide.moria.configuration.sm=/full/path/to/store.properties
+      <source> # Number of seconds between polling the configuration files
+      no.feide.moria.configuration.fileListenerIntervalSeconds=1 # Path to the
+      store manager's configuration file.
+      no.feide.moria.configuration.sm=/full/path/to/store.properties # Path to
+      the directory manager's configuration file.
+      no.feide.moria.configuration.dm=../../directory.properties # Path to the
+      authorization manager's configuration file.
+      no.feide.moria.configuration.am=authorization.xml # Path to the web
+      module's configuration file.
+      no.feide.moria.configuration.web=web.properties </source>
+    </section>
 
-# Path to the directory manager's configuration file.
-no.feide.moria.configuration.dm=../../directory.properties
+    <section name="Web module">
+      <p> The web module's configuration consists mostly of language and
+      cookie information used by the login and logout servlet. On the other
+      hand the Axis servlet uses only the URL prefix and the ticket parameter
+      name to generate a URL to the login page after the web service has
+      initiated an authentication attempt. </p>
 
-# Path to the authorization manager's configuration file.
-no.feide.moria.configuration.am=authorization.xml
+      <p> It's important that there exist a language bundle for the default
+      language, else the the login and logout servlet will fail whenever they
+      try to use the default language. </p>
 
-# Path to the web module's configuration file.
-no.feide.moria.configuration.web=web.properties
-        </source>
-      </section>
+      <source> # Prefix for the login page
+      no.feide.moria.web.login.url_prefix=https://login.feide.no/moria/Login #
+      Ticket parameter name (for reading the login ticket from the user's
+      request URL) no.feide.moria.web.login.ticket_param=moriaID #
+      Organization names on different languages (English). Format:
+      shortName1:LongName1,shortName2:LongName2
+      no.feide.moria.web.org_en=uninett.no:UNINETT,uio.no:University of Oslo
+      no.feide.moria.web.org_no=uninett.no:UNINETT,uio.no:Universitetet i Oslo
+      # Supported languages. Format: lang1Short:lang1Name,lang2Short:lang2Name
+      no.feide.moria.web.lang_common=no:Norsk,nn:Nynorsk,en:English # SSO
+      ticket cookie name no.feide.moria.web.cookie.sso.name=ssoTicket # SSO
+      cookie time to live in hours no.feide.moria.web.cookie.sso.ttl=8 # Deny
+      SSO cookie name no.feide.moria.web.cookie.denysso.name=denySSO # Deny
+      SSO cookie time to live in hours
+      no.feide.moria.web.cookie.denysso.ttl=240 # Selected language cookie
+      name no.feide.moria.web.cookie.lang.name=lang # Selected language cookie
+      time to live in hours no.feide.moria.web.cookie.lang.ttl=240 # Selected
+      organization cookie name no.feide.moria.web.cookie.org.name=org #
+      Selected organization cookie time to live in hours
+      no.feide.moria.web.cookie.org.ttl=240 # Default language for Moria
+      no.feide.moria.web.login.default_language=en # URL parameter for
+      redirecting after Single Sign-On ticket removal
+      no.feide.moria.web.logout.url_param=redirUrl </source>
+    </section>
 
-      <section name="Web module">
-        <p>
-          The web module's configuration consists mostly of language and cookie information used by the login and logout
-          servlet. On the other hand the Axis servlet uses only the URL prefix and the ticket parameter name to generate
-          a URL to the login page after the web service has initiated an authentication attempt.
-        </p>
-        <p>
-          It's important that there exist a language bundle for the default language, else the the login and logout
-          servlet will fail whenever they try to use the default language.
-        </p>
-        <source>
-# Prefix for the login page
-no.feide.moria.web.login.url_prefix=https://login.feide.no/moria/Login
+    <section name="Authorization manager">
+      <p> The authorization manager is configured by a XML file which contains
+      a <i>ClientAuthorizationConfig</i>, which contains a <i>Client</i>
+      element for every web service allowed to use Moria. Service
+      authentication is performed outside of Moria so password and/or
+      certificates must be configured in the server that performs the
+      authentication. </p>
 
-# Ticket parameter name (for reading the login ticket from the user's request URL)
-no.feide.moria.web.login.ticket_param=moriaID
+      <p>
+        <a href="authorization.dtd">DTD for the authorization configuration
+        file</a>
+      </p>
 
-# Organization names on different languages (English). Format: shortName1:LongName1,shortName2:LongName2
-no.feide.moria.web.org_en=uninett.no:UNINETT,uio.no:University of Oslo
-no.feide.moria.web.org_no=uninett.no:UNINETT,uio.no:Universitetet i Oslo
+      <p> A client element consists of the following: <ol>
+          <li> A required name attribute which is the same as the principal
+          used for the external authentication. </li>
 
-# Supported languages. Format: lang1Short:lang1Name,lang2Short:lang2Name
-no.feide.moria.web.lang_common=no:Norsk,nn:Nynorsk,en:English
+          <li><i>DisplayName</i> element that contains the full name to the
+          web service. This is the name that presented on the login page.
+          </li>
 
-# SSO ticket cookie name
-no.feide.moria.web.cookie.sso.name=ssoTicket
+          <li><i>URL</i> element which points to the main page of the web
+          service. This URL is used to connect a link to the displayed web
+          service name on the login page. </li>
 
-# SSO cookie time to live in hours
-no.feide.moria.web.cookie.sso.ttl=8
+          <li> <i>Home</i> specifies which organization the web service
+          belongs to. <i>This element is not currently in use, but should be
+          present for future authorization use.</i> </li>
 
-# Deny SSO cookie name
-no.feide.moria.web.cookie.denysso.name=denySSO
+          <li> <i>Language</i> is the language used on the web service's web
+          interface. This language will be used as default language for the
+          login page if the user hasn't selected another language. </li>
 
-# Deny SSO cookie time to live in hours
-no.feide.moria.web.cookie.denysso.ttl=240
+          <li> <i>Affiliation</i> is used to connect the service with a group
+          of organizations. The element contains <i>Organization</i> elements
+          that contains the short name of each affiliated organization. It is
+          not to list the home organization as a affiliated organization.
+          <i>The <i>Affiliation</i> element is not currently in use, but
+          should be present for future authorization use.</i> </li>
 
-# Selected language cookie name
-no.feide.moria.web.cookie.lang.name=lang
+          <li> <i>Attributes</i> contains the attributes that the web service
+          is granted access to. The element contains <i>Attribute</i> elements
+          that contains the attribute name, specification for SSO usage and
+          security level. <i>sso</i> can be set to true or false and
+          <i>secLevel</i> must be &gt;= 0. The <i>secLevel</i> attribute is
+          used for classifying an attribute request and display a
+          warning/description to the user on the login page. </li>
 
-# Selected language cookie time to live in hours
-no.feide.moria.web.cookie.lang.ttl=240
+          <li> The <i>Operations</i> element contains <i>Operation</i>
+          elements for all operations the web service is allowed to perform.
+          The following operations are implemented in Moria: <table>
+              <tr>
+                <th>Operation</th>
 
-# Selected organization cookie name
-no.feide.moria.web.cookie.org.name=org
+                <th>Explanation</th>
+              </tr>
 
-# Selected organization cookie time to live in hours
-no.feide.moria.web.cookie.org.ttl=240
+              <tr>
+                <td>InteractiveAuth</td>
 
-# Default language for Moria
-no.feide.moria.web.login.default_language=en
+                <td>Normal interactive authentication</td>
+              </tr>
 
-# URL parameter for redirecting after Single Sign-On ticket removal
-no.feide.moria.web.logout.url_param=redirUrl         
-        </source>
-      </section>
+              <tr>
+                <td>DirectAuth</td>
 
-      <section name="Authorization manager">
-        <p>
-          The authorization manager is configured by a XML file which contains a <i>ClientAuthorizationConfig</i>,
-          which contains a <i>Client</i> element for every web service allowed to use Moria. Service authentication is
-          performed outside of Moria so password and/or certificates must be configured in the server that performs the
-          authentication.
-        </p>
-        <p><a href="authorization.dtd">DTD for the authorization configuration file</a></p>
-        <p>
-          A client element consists of the following:
-          <ol>
-            <li>
-              A required name attribute which is the same as the principal used for the external authentication.
-            </li>
-            <li><i>DisplayName</i> element that contains the full name to the web service. This is the name that
-              presented on the login page.
-            </li>
-            <li><i>URL</i> element which points to the main page of the web service. This URL is used to connect a
-              link to the displayed web service name on the login page.
-            </li>
-            <li>
-              <i>Home</i> specifies which organization the web service belongs to.
-              <i>This element is not currently in use, but should be present for future authorization use.</i>
-            </li>
-            <li>
-              <i>Language</i> is the language used on the web service's web interface. This language will be used
-              as default language for the login page if the user hasn't selected another language.
-            </li>
-            <li>
-              <i>Affiliation</i> is used to connect the service with a group of organizations. The element contains
-              <i>Organization</i> elements that contains the short name of each affiliated organization. It is not
-              to list the home organization as a affiliated organization.
-              <i>The <i>Affiliation</i> element is not currently in use, but should be present for future
-              authorization use.</i>
-            </li>
-            <li>
-              <i>Attributes</i> contains the attributes that the web service is granted access to. The element
-              contains <i>Attribute</i> elements that contains the attribute name, specification for SSO usage
-              and security level. <i>sso</i> can be set to true or false and <i>secLevel</i> must be >= 0.
-              The <i>secLevel</i> attribute is used for classifying an attribute request and display
-              a warning/description to the user on the login page.
-            </li>
-            <li>
-              The <i>Operations</i> element contains <i>Operation</i> elements for all operations the web service is
-              allowed to perform. The following operations are implemented in Moria:
-              <table>
-                <tr><th>Operation</th><th>Explanation</th></tr>
-                <tr><td>InteractiveAuth</td><td>Normal interactive authentication</td></tr>
-                <tr><td>DirectAuth</td><td>The user sends username/password through the web service</td></tr>
-                <tr><td>ProxyAuth</td><td>Authentication using a proxy ticket</td></tr>
-                <tr><td>VerifyUserExistence</td><td>Allow the web service to check for user existence</td></tr>
-              </table>
-            </li>
-            <li>
-              The <i>Subsystems</i> element contains a <i>Subsystem</i> element for every service/client the client
-              is allowed to use proxy authentication with. Each sub system must be configured as a client with the
-              <i>proxy operation</i>.
-            </li>
-          </ol>
+                <td>The user sends username/password through the web
+                service</td>
+              </tr>
 
-        </p>
+              <tr>
+                <td>ProxyAuth</td>
 
-        <!-- Example config -->
-        <p>
-<hr/>
-&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;<br/>
-<br/>
-&lt;ClientAuthorizationConfig&gt;
+                <td>Authentication using a proxy ticket</td>
+              </tr>
 
-<ul>    &lt;Client name="test"&gt;<br/>
-<ul>        &lt;DisplayName&gt;Foobar&lt;/DisplayName&gt;<br/>
-        &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;<br/>
-        &lt;Home&gt;uio.no&lt;/Home&gt;<br/>
-        &lt;Language&gt;no&lt;/Language&gt;<br/>
-        &lt;Affiliation&gt;<br/>
-<ul>            &lt;Organization name="uninett.no"/&gt;<br/>
-            &lt;Organization name="uio.no"/&gt;<br/>
-</ul>        &lt;/Affiliation&gt;<br/>
-        &lt;Attributes&gt;<br/>
-<ul>            &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;<br/>
-            &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;<br/>
-            &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;<br/>
-</ul>            &lt;Attribute name="tgt"   sso="false" secLevel="0"/&gt;<br/>
-        &lt;/Attributes&gt;<br/>
-        &lt;Operations&gt;<br/>
-<ul>            &lt;Operation name="DirectAuth"/&gt;<br/>
-            &lt;Operation name="InteractiveAuth"/&gt;<br/>
-            &lt;Operation name="VerifyUserExistence"/&gt;<br/>
-</ul>            &lt;Operation name="ProxyAuth"/&gt;<br/>
-        &lt;/Operations&gt;<br/>
-        &lt;Subsystems&gt;<br/>
-<ul>            &lt;Subsystem name="sub1"/&gt;<br/>
-            &lt;Subsystem name="sub2"/&gt;<br/>
-</ul>        &lt;/Subsystems&gt;<br/>
-</ul>    &lt;/Client&gt;<br/>
-<br/>
+              <tr>
+                <td>VerifyUserExistence</td>
 
-&lt;Client name="sub1"&gt;<br/>
-<ul>    &lt;DisplayName&gt;Subsystem 1&lt;/DisplayName&gt;<br/>
-    &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;<br/>
-    &lt;Home&gt;uio.no&lt;/Home&gt;<br/>
-    &lt;Language&gt;no&lt;/Language&gt;<br/>
-    &lt;Affiliation&gt;<br/>
-<ul>        &lt;Organization name="uninett.no"/&gt;<br/>
-        &lt;Organization name="uio.no"/&gt;<br/>
-</ul>    &lt;/Affiliation&gt;<br/>
-    &lt;Attributes&gt;<br/>
-<ul>        &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;<br/>
-        &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;<br/>
-        &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;<br/>
-</ul>    &lt;/Attributes&gt;<br/>
-    &lt;Operations&gt;<br/>
-<ul>        &lt;Operation name="ProxyAuth"/&gt;<br/>
-</ul>    &lt;/Operations&gt;<br/>
-    &lt;Subsystems&gt;<br/>
-    &lt;/Subsystems&gt;<br/>
-</ul>&lt;/Client&gt;
+                <td>Allow the web service to check for user existence</td>
+              </tr>
+            </table> </li>
 
-</ul>&lt;/ClientAuthorizationConfig&gt;<br/>
-        </p>
-      </section>
+          <li> The <i>Subsystems</i> element contains a <i>Subsystem</i>
+          element for every service/client the client is allowed to use proxy
+          authentication with. Each sub system must be configured as a client
+          with the <i>proxy operation</i>. </li>
+        </ol> </p>
 
-      <section name="Store manager">
-	<p>
-	  The store managers configuration file must contain two properties.
+      <!-- Example config -->
 
-	  <source>
-# The configuration for JBoss Cache
-no.feide.moria.store.cachestoreconf=/full/path/to/jboss-cache.xml
+      <p> <hr /> &lt;?xml version="1.0" encoding="ISO-8859-1"
+      standalone="yes"?&gt;<br /> <br /> &lt;ClientAuthorizationConfig&gt;
+      <ul> &lt;Client name="test"&gt;<br /> <ul>
+      &lt;DisplayName&gt;Foobar&lt;/DisplayName&gt;<br />
+      &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;<br />
+      &lt;Home&gt;uio.no&lt;/Home&gt;<br />
+      &lt;Language&gt;no&lt;/Language&gt;<br /> &lt;Affiliation&gt;<br /> <ul>
+      &lt;Organization name="uninett.no"/&gt;<br /> &lt;Organization
+      name="uio.no"/&gt;<br /> </ul> &lt;/Affiliation&gt;<br />
+      &lt;Attributes&gt;<br /> <ul> &lt;Attribute name="attr1" sso="true"
+      secLevel="0"/&gt;<br /> &lt;Attribute name="attr2" sso="true"
+      secLevel="1"/&gt;<br /> &lt;Attribute name="attr3" sso="false"
+      secLevel="2"/&gt;<br /> </ul> &lt;Attribute name="tgt" sso="false"
+      secLevel="0"/&gt;<br /> &lt;/Attributes&gt;<br />
+      &lt;Operations&gt;<br /> <ul> &lt;Operation name="DirectAuth"/&gt;<br />
+      &lt;Operation name="InteractiveAuth"/&gt;<br /> &lt;Operation
+      name="VerifyUserExistence"/&gt;<br /> </ul> &lt;Operation
+      name="ProxyAuth"/&gt;<br /> &lt;/Operations&gt;<br />
+      &lt;Subsystems&gt;<br /> <ul> &lt;Subsystem name="sub1"/&gt;<br />
+      &lt;Subsystem name="sub2"/&gt;<br /> </ul> &lt;/Subsystems&gt;<br />
+      </ul> &lt;/Client&gt;<br /> <br /> &lt;Client name="sub1"&gt;<br /> <ul>
+      &lt;DisplayName&gt;Subsystem 1&lt;/DisplayName&gt;<br />
+      &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;<br />
+      &lt;Home&gt;uio.no&lt;/Home&gt;<br />
+      &lt;Language&gt;no&lt;/Language&gt;<br /> &lt;Affiliation&gt;<br /> <ul>
+      &lt;Organization name="uninett.no"/&gt;<br /> &lt;Organization
+      name="uio.no"/&gt;<br /> </ul> &lt;/Affiliation&gt;<br />
+      &lt;Attributes&gt;<br /> <ul> &lt;Attribute name="attr1" sso="true"
+      secLevel="0"/&gt;<br /> &lt;Attribute name="attr2" sso="true"
+      secLevel="1"/&gt;<br /> &lt;Attribute name="attr3" sso="false"
+      secLevel="2"/&gt;<br /> </ul> &lt;/Attributes&gt;<br />
+      &lt;Operations&gt;<br /> <ul> &lt;Operation name="ProxyAuth"/&gt;<br />
+      </ul> &lt;/Operations&gt;<br /> &lt;Subsystems&gt;<br />
+      &lt;/Subsystems&gt;<br /> </ul>&lt;/Client&gt;
+      </ul>&lt;/ClientAuthorizationConfig&gt;<br /> </p>
+    </section>
 
-# The percentage defining the actual (or real) ticket time to live
-no.feide.moria.store.real_ttl_percentage=80
-	  </source>
-	</p>
-	<p>
-	  The first points to the JBoss Cache specific configuration file.  The format of this is
-	  defined in the JBoss Cache documentation found <a href="TODO">here</a>.  The eviction
-	  policy configuration must be contained in this file, it's format is simply this:
-	  <source>
-&lt;attribute name="EvictionPolicyClass"&gt;no.feide.moria.store.TicketTTLEvictionPolicy&lt;/attribute&gt;
+    <section name="Store manager">
+      <p> The store managers configuration file must contain two properties.
+      <source> # The configuration for JBoss Cache
+      no.feide.moria.store.cachestoreconf=/full/path/to/jboss-cache.xml # The
+      percentage defining the actual (or real) ticket time to live
+      no.feide.moria.store.real_ttl_percentage=80 </source> </p>
 
-&lt;attribute name="EvictionPolicyConfig"&gt;
-  &lt;config&gt;
-    &lt;attribute name="wakeUpIntervalSeconds"&gt;60&lt;/attribute&gt;
+      <p> The first points to the JBoss Cache specific configuration file. The
+      format of this is defined in the JBoss Cache documentation found <a
+      href="TODO">here</a>. The eviction policy configuration must be
+      contained in this file, it's format is simply this: <source>
+      &lt;attribute
+      name="EvictionPolicyClass"&gt;no.feide.moria.store.TicketTTLEvictionPolicy&lt;/attribute&gt;
+      &lt;attribute name="EvictionPolicyConfig"&gt; &lt;config&gt;
+      &lt;attribute name="wakeUpIntervalSeconds"&gt;60&lt;/attribute&gt;
+      &lt;attribute name="maxNodes"&gt;200000&lt;/attribute&gt; &lt;region
+      name="Login Ticket"&gt; &lt;attribute
+      name="timeToLive"&gt;375&lt;/attribute&gt; &lt;/region&gt; &lt;region
+      name="Service Ticket"&gt; &lt;attribute
+      name="timeToLive"&gt;375&lt;/attribute&gt; &lt;/region&gt; &lt;region
+      name="Single Sign-On Ticket"&gt; &lt;attribute
+      name="timeToLive"&gt;36000&lt;/attribute&gt; &lt;/region&gt; &lt;region
+      name="Ticket Granting Ticket"&gt; &lt;attribute
+      name="timeToLive"&gt;4500&lt;/attribute&gt; &lt;/region&gt; &lt;region
+      name="Proxy Ticket"&gt; &lt;attribute
+      name="timeToLive"&gt;750&lt;/attribute&gt; &lt;/region&gt;
+      &lt;/config&gt; &lt;/attribute&gt; </source> Each regions name match the
+      actual name of the branch in the cache. The time to live is the time in
+      seconds. The wakeUpIntervalSeconds attribute defines how often the
+      thread doing the evictions should be run. The maxNodes attributes is
+      required by the underlying api but isn't really used in this policy.
+      </p>
 
-    &lt;attribute name="maxNodes"&gt;200000&lt;/attribute&gt;
+      <p> The second property, the real ttl percentage, is used to calculate
+      the actual validity time of tickets. While the time defined in the
+      eviction policy declaration defines the time the tickets will remain in
+      the cache, the time the tickets are valid is a sub one multiple of this.
+      I.e.: Service Tickets stay in the cache for 375 seconds, but is
+      considered valid for use only 80 percent of this period (which
+      calculates to: 375 * 0.8 = 300 seconds or 5 minutes). </p>
+    </section>
 
-    &lt;region name="Login Ticket"&gt;
-      &lt;attribute name="timeToLive"&gt;375&lt;/attribute&gt;
-    &lt;/region&gt;
+    <section name="Directory manager">
+      <p>The Directory Manager configuration consists of an XML file and an
+      index file. The index file is actually an instance of
+      <strong>no.feide.moria.directory.index.SerializableIndex</strong>
+      written to file (using the tool
+      <strong>no.feide.moria.directory.index.tools.SerializableIndexCreator</strong>,
+      which is described in detail <a href="moria-dm/index.html">here</a>)
+      which is in turn referenced from the Directory Manager configuration XML
+      file.</p>
 
-    &lt;region name="Service Ticket"&gt;
-      &lt;attribute name="timeToLive"&gt;375&lt;/attribute&gt;
-    &lt;/region&gt;
+      <p>Two implementations of the Directory Manager backend exists; a JNDI
+      backend, for accessing authentication servers (usually plain old LDAP
+      servers) through JNDI, and a dummy backend, which can be configured to
+      emulate a functioning authentication server.</p>
 
-    &lt;region name="Single Sign-On Ticket"&gt;
-      &lt;attribute name="timeToLive"&gt;36000&lt;/attribute&gt;
-    &lt;/region&gt;
+      <p>Two implementations of the Directory Manager backend exists; a JNDI
+      backend, for accessing authentication servers (usually plain old LDAP
+      servers) through JNDI, and a dummy backend, which can be configured to
+      emulate one or more functioning authentication servers.</p>
 
-    &lt;region name="Ticket Granting Ticket"&gt;
-      &lt;attribute name="timeToLive"&gt;4500&lt;/attribute&gt;
-    &lt;/region&gt;
+      <p>Both backend implementations' configuration file contain one root
+      <i>DirectoryManagerConfiguration</i> element. This in turn contains two
+      child elements; the <i>Index</i> element and the <i>Backend</i>
+      element.</p>
 
-    &lt;region name="Proxy Ticket"&gt;
-      &lt;attribute name="timeToLive"&gt;750&lt;/attribute&gt;
-    &lt;/region&gt;
-  &lt;/config&gt;
-&lt;/attribute&gt;
-	  </source>
-	  Each regions name match the actual name of the branch in the cache.  The time to live is
-	  the time in seconds.  The wakeUpIntervalSeconds attribute defines how often the thread
-	  doing the evictions should be run.  The maxNodes attributes is required by the underlying
-	  api but isn't really used in this policy.
-	</p>
-	<p>
-	  The second property, the real ttl percentage, is used to calculate the actual validity
-	  time of tickets.  While the time defined in the eviction policy declaration defines the
-	  time the tickets will remain in the cache, the time the tickets are valid is a sub one
-	  multiple of this.  I.e.: Service Tickets stay in the cache for 375 seconds, but is
-	  considered valid for use only 80 percent of this period (which calculates to: 375 * 0.8 =
-	  300 seconds or 5 minutes).
-	</p>
-      </section>
+      <p>The Index element only has two attributes - <i>file</i>, giving the
+      filename (absolute or relative path) of the previously mentioned
+      SerializableIndex file, and <i>update</i>, which is the index update
+      interval in seconds. The update will only occur if the timestamp of the
+      index file has changed.</p>
 
-      <section name="Directory manager">
-        <b>TODO: Cato</b>
-      </section>
+      <p>The <i>Backend</i> element differs between backend implementations,
+      but will always include one attribute, <i>class</i>, which states which
+      backend implementation to use. Legal values are
+      <strong>no.feide.moria.directory.backend.DummyBackendFactory</strong>
+      and
+      <strong>no.feide.moria.directory.backend.JNDIBackendFactory</strong>.
+      The children of the Backend element varies depending on the
+      implementation given by the <i>class</i> attribute.</p>
 
-      <section name="Logging">
-	<p>
-	  Configuration of the log api is basically limited to producing a suitable log4j
-	  configuration.  See log4j's manual and the distributed examples for hints.
-	</p>
-	<p>
-	  The only special case to consider is the access log.  The logger's identifier will always
-	  the fully qualified path of the AccessLogger class itself. To isolate the access log it's
-	  therefore important to define the logger that catches the AccessLogger output before any
-	  other loggers catching output from the no.feide.moria hierarchy. Also, all logging from
-	  the AccessLogger is done at log4j level warn, so to disable access logging define the log
-	  level at a higher level than this.
-	</p>
-      </section>
+      <p>For the dummy backend, the <i>Backend</i> element must contain one
+      <i>Dummy</i> child element. The <i>Dummy</i> element may contain one or
+      more <i>User</i> child elements, with the attributes <i>name</i> (for
+      the user's username) and <i>password</i> (for the user's password). The
+      <i>User</i> element may contain one or more <i>Attribute</i> child
+      elements, with the attribute <i>name</i> (for the attribute's name). The
+      <i>Attribute</i> element must contain one or more <i>Value</i> child
+      elements. The <i>Value</i> element must contain a text child element
+      with an attribute value.</p>
 
+      <p>Thus for the dummy backend it is possible to configure several users
+      (with passwords) with several attributes that in turn may yield several
+      values. An example configuration is <source>&lt;?xml version="1.0"
+      encoding="ISO-8859-1"
+      standalone="yes"?&gt;<br />&lt;DirectoryManagerConfiguration&gt;<br />&lt;Index
+      file="src/test/conf/DummyIndex.object" update="120"&gt;<br />&lt;Backend
+      class="no.feide.moria.directory.backend.DummyBackendFactory"&gt;<br />&lt;Dummy&gt;<br />&lt;User
+      name="user@some.realm" password="password"&gt;<br />&lt;Attribute
+      name="MyAttribute"&gt;<br />&lt;Value&gt;MyValue&lt;/Value&gt;<br />&lt;/Attribute&gt;<br />&lt;/User&gt;<br />&lt;/Dummy&gt;<br />&lt;/Backend&gt;<br />&lt;/DirectoryManagerConfiguration&gt;</source>
+      In this example we have configured one user, with a single-valued
+      attribute <strong>MyAttribute</strong>.</p>
+
+      <p>For the JNDI backend, the <i>Backend</i> element must contain one
+      <i>JNDI</i> child element, with the attributes <i>timeout</i> (giving
+      the timeout used when accessing authentication servers),
+      <i>usernameAttribute</i> (used when trying to match a username to a
+      given user), and <i>guessedAttribute</i> (used for guessing on the user
+      Distinguished Name when searching fails). The <i>JNDI</i> element must
+      contain one <i>Security</i> child element. The <i>Security</i> element
+      must contain one <i>Truststore</i> child element, with the attributes
+      <i>filename</i> (relative or absolute, to the file containing the
+      truststore with authentication server or CA certificates), and
+      <i>password</i> (to the truststore).</p>
+
+      <p>Thus for the JNDI backend it is possible to configure how to access
+      and search for users on an authentication server, and how to
+      authenticate the authentication server itself. An example configuration
+      is <source>&lt;?xml version="1.0" encoding="ISO-8859-1"
+      standalone="yes"?&gt;<br />&lt;DirectoryManagerConfiguration&gt;<br />&lt;Index
+      file="src/test/conf/TestIndex.object" update="120"/&gt;<br />&lt;Backend
+      class="no.feide.moria.directory.backend.JNDIBackendFactory"&gt;<br />&lt;JNDI
+      timeout="10" usernameAttribute="eduPersonPrincipalName"
+      guessedAttribute="uid"&gt;<br />&lt;Security&gt;<br />&lt;Truststore
+      filename="src/test/conf/moria.truststore"
+      password="changeit"/&gt;<br />&lt;/Security&gt;<br />&lt;/JNDI&gt;<br />&lt;/Backend&gt;<br />&lt;/DirectoryManagerConfiguration&gt;</source></p>
+    </section>
+
+    <section name="Logging">
+      <p> Configuration of the log API is basically limited to producing a
+      suitable log4j configuration. See log4j's manual and the distributed
+      examples for hints. </p>
+
+      <p> The only special case to consider is the access log. The logger's
+      identifier will always the fully qualified path of the AccessLogger
+      class itself. To isolate the access log it's therefore important to
+      define the logger that catches the AccessLogger output before any other
+      loggers catching output from the no.feide.moria hierarchy. Also, all
+      logging from the AccessLogger is done at log4j level warn, so to disable
+      access logging define the log level at a higher level than this. </p>
+    </section>
   </body>
 </document>
