@@ -55,7 +55,7 @@ $Id$
             definitions for the JSPs are redefined.
             </p>
             <p>
-            A property named <tt>project.alternative.jsp.location</tt> will be
+            A property named <code>project.alternative.jsp.location</code> will be
             used as source directory for JSP files if defined. All
             <code>*.jsp</code> files in this location will end up in the
             <code>jsp</code> directory in the resulting WAR file. For ways to
@@ -741,9 +741,9 @@ no.feide.moria.store.real_ttl_percentage=80
             <p>
             The Directory Manager configuration consists of an XML file and
             an index file. The index file is actually an instance of
-            <tt>no.feide.moria.directory.index.SerializableIndex</tt>
+            <code>no.feide.moria.directory.index.SerializableIndex</code>
             written to file (using the tool
-            <tt>no.feide.moria.directory.index.tools.SerializableIndexCreator</tt>,
+            <code>no.feide.moria.directory.index.tools.SerializableIndexCreator</code>,
             which is described in detail in the Directory Manager
             <a href="moria-dm/index.html">documentation</a>) which is in turn
             referenced from the Directory Manager configuration XML file.
@@ -764,16 +764,17 @@ no.feide.moria.store.real_ttl_percentage=80
             <p>
             The <i>Index</i> element only has two attributes - <i>file</i>,
             giving the filename (absolute or relative path) of the previously
-            mentioned <tt>SerializableIndex</tt> file, and <i>update</i>, which
-            is the index update interval in seconds. The update will only occur
-            if the timestamp of the index file has changed.
+            mentioned <code>SerializableIndex</code> file, and <i>update</i>,
+            which is the index update interval in seconds. The update will only
+            occur if the timestamp of the index file has changed.
             </p>
             <p>
             The <i>Backend</i> element differs between backend implementations,
             but will always include one attribute, <i>class</i>, which states
             which backend implementation to use. Legal values are
-            <tt>no.feide.moria.directory.backend.DummyBackendFactory</tt> and
-            <tt>no.feide.moria.directory.backend.JNDIBackendFactory</tt>.
+            <code>no.feide.moria.directory.backend.DummyBackendFactory</code>
+            and
+            <code>no.feide.moria.directory.backend.JNDIBackendFactory</code>.
             The children of the Backend element varies depending on the
             implementation given by the <i>class</i> attribute.
             </p>
