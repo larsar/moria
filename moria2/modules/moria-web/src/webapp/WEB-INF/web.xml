@@ -50,6 +50,8 @@
     <servlet-name>Information.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/information.jsp</jsp-file>
   </servlet>
+  
+  
 
   <servlet>
     <servlet-name>Status.JSP</servlet-name>
@@ -90,10 +92,30 @@
     <servlet-name>Axis-SOAP-Error.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/axis-soap-error.jsp</jsp-file>
   </servlet>
+  
+  <servlet>
+    <servlet-name>Information-About.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/information-about.jsp</jsp-file>
+  </servlet>
+ 
+ <servlet>
+    <servlet-name>Faq.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/faq.jsp</jsp-file>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>InformationServlet</servlet-name>
     <url-pattern>/Information</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>Information-About.JSP</servlet-name>
+    <url-pattern>/Information-About</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>Faq.JSP</servlet-name>
+    <url-pattern>/Faq</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
