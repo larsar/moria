@@ -9,6 +9,9 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Vector;
 
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -51,18 +54,32 @@ public class LoginServlet extends VelocityServlet {
     /** Used for logging. */
     private static Logger log = Logger.getLogger(LoginServlet.class.toString());
     
+    /** Constant for property lookup. */
     private static String NOSESSION  = "nosession";
+
+    /** Constant for property lookup. */
     private static String MAXLOGIN   = "maxlogin";
+
+    /** Constant for property lookup. */
     private static String AUTHFAILED = "auth";
+
+    /** Constant for property lookup. */
     private static String GENERIC    = "generic";
 
 
-    String loginURL;
+    /** The URL the user should post it's username and password to. */
+    private String loginURL;
 
     /** Local pointer to session store. */
-    SessionStore sessionStore;
+    private SessionStore sessionStore;
     
+    /** Flag if the user should be displayed a complete list of attributes. */
+    private boolean showAllAttributes = false;
+
+    /** Timer for the session time out service. */
     Timer sessionTimer = new Timer();
+
+    
 
     /**
      * Some basic initialization.
@@ -199,6 +216,7 @@ public class LoginServlet extends VelocityServlet {
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
 
+
         if (session != null)
             sessionID = session.getID();
 
@@ -208,8 +226,6 @@ public class LoginServlet extends VelocityServlet {
         StringTokenizer tokenizer = new StringTokenizer(acceptLanguage, ",");
         Locale locale = null;
 
-
-        
         /* Find fallback resource bundle. */
         try {
             fallback = ResourceBundle.getBundle(bundleName, new Locale("bogus"));
@@ -270,17 +286,18 @@ public class LoginServlet extends VelocityServlet {
                 String value = bundle.getString(key);
                 int index;
             
+                /* This changes WS_NAME to hyperlink in all property
+                 * strings from the bundle.*/
                 if ((index = value.indexOf("WS_NAME")) != -1 && wsName != null) {
                     value = value.substring(0, index)+"<A href=\""+wsURL+"\">"+wsName+"</A>"+value.substring(index+7, value.length());
                 }
                 context.put(key, value);
             }        
 
-
         /* Set or reset error messages */
         if (errorType != null) {
-            context.put("errorMessage", bundle.getString("error_"+errorType));
-            context.put("errorDescription", bundle.getString("error_"+errorType+"_desc"));
+            context.put("errorMessage", context.get("error_"+errorType));
+            context.put("errorDescription", context.get("error_"+errorType+"_desc"));
         }
      
         else {
@@ -288,15 +305,38 @@ public class LoginServlet extends VelocityServlet {
             context.remove("errorDescription");
         }
 
-        System.out.println("SecLevel: "+session.getAttributesSecLevel());
-
-
-        /* If no sessionID then remove loginURL */
-        if (sessionID != null) 
+        if (sessionID != null) { 
             context.put("loginURL", loginURL+"?id="+sessionID);
-        
+
+            String secLevel = session.getAttributesSecLevel().toLowerCase();
+            context.put("expl_data", context.get("expl_data_"+secLevel));
+
+            /* Detailed list of attributes */
+            if (showAllAttributes) {
+                Vector attrNames = new Vector();
+                HashMap attributes = session.getWebService().getAttributes();
+                for (Iterator it = attributes.keySet().iterator(); it.hasNext();) {
+                    attrNames.add(context.get("ldap_"+it.next()));
+                }
+                context.put("attrNames", attrNames);
+
+                /* Link to page with detailed attribute list. */
+                if (context.get("attrs_hide") != null)
+                    context.put("showHideLink", "<A href=\""+loginURL+"?id="+sessionID+"\">"+context.get("attrs_hide")+"</A>");
+                else 
+                    context.put("showHideLink", "");
+            }
+            else if (context.get("attrs_show") != null) {
+                context.put("showHideLink", "<A href=\""+loginURL+"?id="+sessionID+"&showAttrs=yes\">"+context.get("attrs_show")+"</A>");
+            }
+            else 
+                context.put("showHideLink", "");
+        }
         else 
+            /* If no sessionID then remove loginURL */
             context.remove("loginURL");
+
+        
 
 
         return getTemplate("login.vtl");
@@ -321,9 +361,16 @@ public class LoginServlet extends VelocityServlet {
         
         String id = request.getParameter("id");
         
+        if (request.getParameter("showAttrs") != null)
+            showAllAttributes = request.getParameter("showAttrs").equals("yes");
+        else 
+            showAllAttributes = false;
+
         try {
             Session session = sessionStore.getSession(id);
-            sessionStore.renameSession(session);
+            /*sessionStore.renameSession(session); Not nessesary
+              unless a session lock (that requires this method to be
+              called before authentication attempt) is in place. */
             return genLoginTemplate(request, response, context, session, null);
         }
         

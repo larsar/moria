@@ -99,7 +99,16 @@ function fokuser(){document.loginform.username.focus();}
       </tr>
       <tr valign="top">
         <td><img src="element/listepunkt.gif" alt="-"/></td>
-        <td>$expl_data</td>
+        <td>$expl_data <BR/>
+
+$showHideLink<BR/>
+
+
+#foreach( $attrName in $attrNames )
+    $attrName<BR/>
+#end
+
+        </td>
       </tr>
       <tr>
         <td>&nbsp;</td>

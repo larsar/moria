@@ -110,6 +110,7 @@ public class WebService {
     protected void generateAttributeList(HashMap allAttributes) {
         log.finer("generateAttributeList(HashMap)");
 
+        
         /* Profiles */
         for (Iterator profIt = profiles.keySet().iterator(); profIt.hasNext();) {
             Profile profile = (Profile) profiles.get((String)profIt.next());
@@ -224,7 +225,7 @@ public class WebService {
     /**
      * List of all attributes a web service is allowed to use.
      */
-    protected HashMap getAttributes() {
+    public HashMap getAttributes() {
         log.finer("getAttributes()");
         return attributes;
     }
