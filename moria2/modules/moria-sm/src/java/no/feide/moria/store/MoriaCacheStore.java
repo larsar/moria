@@ -206,7 +206,7 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket ticket = getTicketFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
 
         if (ticket == null) {
-            return null;
+            throw new InvalidTicketException("Ticket does not exist");
         }
 
         /* Validate ticket. */
