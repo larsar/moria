@@ -57,13 +57,13 @@ final class MoriaTicket implements Serializable {
      *          the type of ticket
      * @param servicePrincipal
      *          the id of the service this ticket relates to
-     * @param timeToLive
-     *          the number of seconds this ticket should be considered valid
+     * @param expiryTime
+     *          the time when this ticket expires (in milliseconds since Epoch)
      * @param data
      *          the data object associated with this ticket. May be null
      */
-    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal, final Long timeToLive, final MoriaStoreData data) {
-        this(MoriaTicket.newId(), ticketType, servicePrincipal, timeToLive, data);
+    MoriaTicket(final MoriaTicketType ticketType, final String servicePrincipal, final Long expiryTime, final MoriaStoreData data) {
+        this(MoriaTicket.newId(), ticketType, servicePrincipal, expiryTime, data);
     }
 
     /**
@@ -75,13 +75,13 @@ final class MoriaTicket implements Serializable {
      *            the type of ticket
      * @param servicePrincipal
      *            the id of the service this ticket relates to
-     * @param timeToLive
-     *            the number of seconds this ticket should be considered valid
+     * @param expiryTime
+     *          the time when this ticket expires (in milliseconds since Epoch)
      * @param data
      *          the data object associated with this ticket. May be null
      */
-    MoriaTicket(final String ticketId, final MoriaTicketType ticketType, final String servicePrincipal, final Long timeToLive,
-            final MoriaStoreData data) {
+    MoriaTicket(final String ticketId, final MoriaTicketType ticketType, final String servicePrincipal, final Long expiryTime,
+                final MoriaStoreData data) {
 
         /* Sanity checks on inputs before assignment. */
         if (ticketId == null || ticketId.equals(""))
@@ -100,9 +100,10 @@ final class MoriaTicket implements Serializable {
             throw new IllegalArgumentException("servicePrincipal must be null when creating a SSO ticket");
         this.servicePrincipal = servicePrincipal;
 
-        if (timeToLive == null || timeToLive.longValue() < 0)
-            throw new IllegalArgumentException("expiryTime must be a positive integer");
-        this.expiryTime = new Long(new Date().getTime() + timeToLive.longValue() * 1000);
+        /* 107291520000L equals Thu Jan  1 00:00:00 UTC 2004. */
+        if (expiryTime == null || expiryTime.longValue() < 1072915200000L)
+            throw new IllegalArgumentException("expiryTime must a time in the future");
+        this.expiryTime = expiryTime;
 
         /* Verify that data type matches ticket type. */
         if (data != null) {
@@ -153,7 +154,7 @@ final class MoriaTicket implements Serializable {
      * @return true if the ticket has exceeded its time to live
      */
     boolean hasExpired() {
-        long now = new Date().getTime();
+        final long now = new Date().getTime();
 
         /*
          * If the expiry time is in the future return false, the ticket has not
