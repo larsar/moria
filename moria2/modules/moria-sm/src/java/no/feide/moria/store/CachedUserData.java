@@ -45,6 +45,16 @@ public final class CachedUserData implements MoriaStoreData {
             throw new IllegalArgumentException("Argument can not be null");
         this.attributes = attributes;
     }
+    
+    /**
+     * Needed to add TGT to cache
+     * 
+     * @param name attribute name
+     * @param data attribute data
+     */
+    public void addAttribute(String name, Object data) {
+        this.attributes.put(name, data);
+    }
 
     /**
      * Get a map containing the attributes.

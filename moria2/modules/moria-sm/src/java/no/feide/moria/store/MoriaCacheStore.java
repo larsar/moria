@@ -471,6 +471,14 @@ implements MoriaStore {
         MoriaTicket tgTicket = new MoriaTicket(MoriaTicketType.TICKET_GRANTING_TICKET, targetServicePrincipal, expiryTime, cachedUserData, ssoTicket.getUserorg());
         insertIntoStore(tgTicket);
 
+        // Set TGT in cache to the newly created TGT id
+        HashMap map = cachedUserData.getAttributes();
+        if (map.containsKey("tgt")) {
+            // try to cache the TGT
+            removeFromStore(ssoTicket);
+            cachedUserData.addAttribute("tgt", tgTicket.getTicketId());    
+            insertIntoStore(ssoTicket);
+        }
         return tgTicket.getTicketId();
     }
 
