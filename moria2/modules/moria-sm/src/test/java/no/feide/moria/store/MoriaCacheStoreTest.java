@@ -335,17 +335,27 @@ public class MoriaCacheStoreTest extends TestCase {
     public void testCacheUserData()
             throws InvalidTicketException, MoriaStoreException {
         HashMap cachedAttrs = new HashMap();
-
+        
+        cachedAttrs.put("a", "b");
+        cachedAttrs.put("c", "d");
+        
         /* Invalid parameters */
         try {
-            store.cacheUserData(null, "");
+            store.cacheUserData(null, dummyOrg);
             fail("IllegalArgumentException should be raised, null value");
         } catch (IllegalArgumentException success) {
         }
-
-        cachedAttrs.put("a", "b");
-        cachedAttrs.put("c", "d");
-
+        try {
+            store.cacheUserData(cachedAttrs, null);
+            fail("IllegalArgumentException should be raised, null value");
+        } catch (IllegalArgumentException success) {  
+        }
+        try {
+            store.cacheUserData(cachedAttrs, "");
+            fail("IllegalArgumentException should be raised, userorg is an empty string");
+        } catch (IllegalArgumentException success) {
+        }
+        
         MoriaTicket ticket = store.getFromStore(MoriaTicketType.SSO_TICKET, store.cacheUserData(cachedAttrs, dummyOrg));
         assertNotNull("SSO ticket should not be null", ticket);
         assertEquals("SSO ticket has wrong type", MoriaTicketType.SSO_TICKET, ticket.getTicketType());
@@ -614,4 +624,106 @@ public class MoriaCacheStoreTest extends TestCase {
         }
         return equals;
     }
-}
+    
+    /**
+     * Test getTicketServicePrincipal
+     * Ticket type doesn't matter, so all tests are done with loginticket
+     * 
+     * @throws InvalidTicketException
+     */
+    public void testGetTicketServicePrincipal() 
+    		throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+        
+        /*Illegal Argument */
+        try {
+            store.getTicketServicePrincipal(null, MoriaTicketType.LOGIN_TICKET);
+            fail("IllegalArgumentException should be raised, ticketId is null");
+            } catch (IllegalArgumentException success) {  
+            }
+        try {
+            store.getTicketServicePrincipal("", MoriaTicketType.LOGIN_TICKET);
+            fail("IllegalArgumentException should be raised, ticketId is an empty String");
+        	} catch(IllegalArgumentException success){
+        	}
+       
+       /* Invalid ticket */
+       try {
+            store.getTicketServicePrincipal("doesNotExist", MoriaTicketType.LOGIN_TICKET);
+            fail("NonExistentTicketException should be raised, ticket does not exist");
+       		} catch (NonExistentTicketException success) {
+       		}
+       	
+       	/* Normal Use */
+       String ticketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, principal);
+       assertNotNull("The ticket Service Principal should not be null", store.getTicketServicePrincipal(ticketId, MoriaTicketType.LOGIN_TICKET));
+    }
+    
+    /**
+     * Test setTicketUserorg
+     * Ticket type doesn't matter, so all tests are done with loginticket
+     * 
+     * @throws InvalidTicketException
+     */
+    public void testSetTicketUserorg() 
+        throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+        
+        /*Illegal Argument */
+        try {
+            store.setTicketUserorg(null, MoriaTicketType.LOGIN_TICKET, dummyOrg);
+            fail("IllegalArgumentException should be raised, ticketId is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            store.setTicketUserorg("", MoriaTicketType.LOGIN_TICKET, dummyOrg);
+            fail("IllegalArgumentException should be raised, ticketId is an empty String");
+        } catch (IllegalArgumentException success) {
+        }
+                
+        /* Invalid ticket */
+        try {
+            store.setTicketUserorg("doesNotExist", MoriaTicketType.LOGIN_TICKET, dummyOrg);
+            fail("NonExistentTicketException should be raised, the ticket doesn't exist");
+        } catch (NonExistentTicketException success) {
+        }
+        
+        /* Normal use */
+        String ticketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, principal);
+        store.setTicketUserorg(ticketId, MoriaTicketType.LOGIN_TICKET, dummyOrg);
+        assertEquals("Ticket Userorg differs", dummyOrg, store.getTicketUserorg(ticketId, MoriaTicketType.LOGIN_TICKET));   
+        }
+    
+    /**
+     * Test getTicketUserorg
+     * Ticket type doesn't matter, so all tests are done with loginticket
+     * 
+     * @throws InvalidTicketException
+     */
+    public void testGetTicketUserorg()
+    		throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+        
+        /*Illegal Arguments */
+        try {
+            store.getTicketUserorg(null, MoriaTicketType.LOGIN_TICKET);
+            fail("IllegalArgumentException should be raised, ticketId is null");
+        } catch (IllegalArgumentException success) {
+        }
+        
+        try {
+            store.getTicketUserorg("", MoriaTicketType.LOGIN_TICKET);
+            fail("IllegalArgumentException should be raised, ticketId is an empty String");
+        } catch (IllegalArgumentException success) {
+        }
+        
+        /* Invalid Ticket */
+        try {
+            store.getTicketUserorg("doesNotExist", MoriaTicketType.LOGIN_TICKET);
+            fail("NonExistentTicketException should be raised, the ticket doesn't exit");
+        } catch (NonExistentTicketException success) {
+        }
+        
+        /* Normal Use */
+        String ticketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, principal);
+        store.setTicketUserorg(ticketId, MoriaTicketType.LOGIN_TICKET, dummyOrg);
+        assertNotNull("Ticket Userorg should not be null", store.getTicketUserorg(ticketId, MoriaTicketType.LOGIN_TICKET));
+       }
+ }

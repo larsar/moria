@@ -649,7 +649,9 @@ implements MoriaStore {
         return ticket.getServicePrincipal();
     }
 
-
+    /**
+     *  @see no.feide.moria.store.MoriaStore#setTicketUserorg(String, MoriaTicketType, String)
+     */
     public void setTicketUserorg(final String ticketId, MoriaTicketType ticketType, String userorg)
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
@@ -669,7 +671,9 @@ implements MoriaStore {
         insertIntoStore(ticket);
     }
 
-
+    /**
+     *  @see no.feide.moria.store.MoriaStore#getTicketUserorg(String, MoriaTicketType)
+     */
     public String getTicketUserorg(final String ticketId, MoriaTicketType ticketType)
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
