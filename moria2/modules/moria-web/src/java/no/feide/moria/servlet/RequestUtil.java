@@ -36,8 +36,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 
 /**
- * This class is a toolkit for the servlets and it's main functionality is to retrieve
- * resource bundles.
+ * This class is a toolkit for the servlets and it's main functionality is to retrieve resource bundles.
  *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
@@ -51,8 +50,8 @@ public final class RequestUtil {
     }
 
     /**
-     * Generate a resource bundle. The language of the resource bundle is selected
-     * from the following priority list: URL parameter, cookie, service config, browser setting, Moria default
+     * Generate a resource bundle. The language of the resource bundle is selected from the following priority list: URL
+     * parameter, cookie, service config, browser setting, Moria default
      *
      * @param bundleName       name of the bundle to retrieve, cannot be null
      * @param requestParamLang language specified as URL parameter, can be null
@@ -64,7 +63,7 @@ public final class RequestUtil {
      * @throws MissingResourceException if no bundle is found
      */
     public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final Cookie[] cookies,
-            final String serviceLang, final String browserLang, final String moriaLang) {
+                                           final String serviceLang, final String browserLang, final String moriaLang) {
 
         /* Validate parameters. */
         if (bundleName == null || bundleName.equals("")) {
@@ -103,12 +102,10 @@ public final class RequestUtil {
             }
         }
 
-        /* Moria. */
-        if (moriaLang != null && !moriaLang.equals("")) {
-            langSelections.add(moriaLang);
-        }
+        /* Moria default */
+        langSelections.add(moriaLang);
 
-        ResourceBundle bundle = null;
+        ResourceBundle bundle;
         for (Enumeration e = langSelections.elements(); e.hasMoreElements();) {
             bundle = locateBundle(bundleName, (String) e.nextElement());
             if (bundle != null) {
@@ -137,7 +134,7 @@ public final class RequestUtil {
         }
 
         /* Find fallback resource bundle. */
-        ResourceBundle fallback = null;
+        ResourceBundle fallback;
         try {
             fallback = ResourceBundle.getBundle(bundleName, new Locale("bogus"));
         } catch (MissingResourceException e) {
@@ -178,11 +175,9 @@ public final class RequestUtil {
         }
 
         String value = null;
-        if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                if (cookies[i].getName().equals(cookieName)) {
-                    value = cookies[i].getValue();
-                }
+        for (int i = 0; i < cookies.length; i++) {
+            if (cookies[i].getName().equals(cookieName)) {
+                value = cookies[i].getValue();
             }
         }
 
@@ -194,10 +189,10 @@ public final class RequestUtil {
      *
      * @param cookieName  Name of the cookie
      * @param cookieValue Value to be set
-     * @param validDays   Number of days before the cookie expires
+     * @param validHours  Number of hours before the cookie expires
      * @return a Cookie with the specified name and value
      */
-    public static Cookie createCookie(final String cookieName, final String cookieValue, final int validDays) {
+    public static Cookie createCookie(final String cookieName, final String cookieValue, final int validHours) {
 
         /* Validate parameters. */
         if (cookieName == null || cookieName.equals("")) {
@@ -206,20 +201,19 @@ public final class RequestUtil {
         if (cookieValue == null || cookieValue.equals("")) {
             throw new IllegalArgumentException("cookieValue must be a non-empty string.");
         }
-        if (validDays < 0) {
+        if (validHours < 0) {
             throw new IllegalArgumentException("validDays must be a >= 0.");
         }
 
         Cookie cookie = new Cookie(cookieName, cookieValue);
-        cookie.setMaxAge(validDays * 24 * 60 * 60); // Days to seconds
+        cookie.setMaxAge(validHours * 60 * 60); // Hours to seconds
         cookie.setVersion(0);
         return cookie;
     }
 
     /**
-     * Parser for the Accept-Language header sent from browsers. The language entries in the
-     * string can be weighted and the parser generates a list of the languages sorted by the
-     * weight value.
+     * Parser for the Accept-Language header sent from browsers. The language entries in the string can be weighted and
+     * the parser generates a list of the languages sorted by the weight value.
      *
      * @param acceptLang the accept language header, cannot be null or ""
      * @return a string array of language names, sorted by the browsers weight preferences
@@ -286,7 +280,7 @@ public final class RequestUtil {
      * @param config   the web modules configuration
      * @param element  the sub element of the configuration to process
      * @param language the language to generate institution names on
-     * @return         a TreeMap of institution names with full name as key and id as value object
+     * @return a TreeMap of institution names with full name as key and id as value object
      */
     static TreeMap parseConfig(final Properties config, final String element, final String language) {
         /* Validate parameters */
@@ -334,9 +328,8 @@ public final class RequestUtil {
     }
 
     /**
-     * Replaces a given token with hyperlinks. The URL and name of the hyperlink
-     * is given as parameters. Every occurance of the token in the data string is
-     * replaced by a hyperlink.
+     * Replaces a given token with hyperlinks. The URL and name of the hyperlink is given as parameters. Every occurance
+     * of the token in the data string is replaced by a hyperlink.
      *
      * @param token the token to replace with link
      * @param data  the data containing text and token(s)
@@ -365,8 +358,8 @@ public final class RequestUtil {
     }
 
     /**
-     * Get the config from the context. The configuration is expected to be set
-     * by the controller before requests are sent to this servlet.
+     * Get the config from the context. The configuration is expected to be set by the controller before requests are
+     * sent to this servlet.
      *
      * @param context ServletContext containing the configuration.
      * @return the configuration
@@ -384,7 +377,8 @@ public final class RequestUtil {
         try {
             config = (Properties) context.getAttribute("no.feide.moria.web.config");
         } catch (ClassCastException e) {
-            throw new IllegalStateException("Config is not correctly set in context. Not a java.util.Properties object.");
+            throw new IllegalStateException(
+                    "Config is not correctly set in context. Not a java.util.Properties object.");
         }
 
         if (config == null) {
