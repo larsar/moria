@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>$header_title</title>
+<style type="text/css">
+  body {font-family: verdana, arial;}
+  input {font-family: verdana, arial;}
+</style>
+<script type="text/javascript" language="JavaScript">
+<!--
+function fokuser(){document.loginform.username.focus();}
+// -->
+</script>
+</head>
+<body onload="fokuser()">
+
+<table cellpadding="5" cellspacing="5" border="0" width="100%">
+  <tr valign="top">
+    <td width="5%" rowspan="3">&nbsp;</td> 
+    <td colspan="2">
+      <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tr>
+          <td valign="middle">
+            <a href="http://www.feide.no/"><img src="http://folk.uio.no/tommae/feide/feidelogo.png" alt="feide-logo" border="0"/></a>
+          </td>
+          <td valign="middle">
+            <table cellspacing="0" cellpadding="0" border="0" >
+              <tr>
+                <td valign="top">-&nbsp;</td>
+                <td><font size="-1"><b>$body_title</b></font></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td width="5%" rowspan="2">&nbsp;</td>
+  </tr>
+
+#if ($errorMessage)
+  <tr>
+   <td colspan="2">
+   <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+    <td valign="top">
+    <img src="http://folk.uio.no/tommae/feide/varseltrekant.png" alt="feilmelding"/>
+    </td>
+    <td valign="middle" width="99%">
+    <b>$errorMessage</b><br/>
+    $errorDescription
+    </td>
+    </tr>
+    </table>
+    </td>
+   </tr>
+#end
+
+#if ($loginURL)	  
+  <tr valign="top"> 
+    <td width="20%">
+      <table cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF">
+        <tr>
+          <td>
+            <form action="$loginURL" method="POST" name="loginform" autocomplete="off">
+              <table cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
+                <tbody>
+                  <tr>
+                    <td align="left"><font size="">
+                      $form_username<br>
+                      <input type="text" size="16" value="" name="username"><br>
+                      $form_password<br>
+                      <input type="password" size="16" value="" name="password"></font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="top"> 
+                    <input type="submit" value="$form_login">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+    <td width="70%">
+      <table cellspacing="3" cellpadding="3" border="0" >
+      <tr valign="top">
+        <td><img src="http://folk.uio.no/tommae/feide/listepunkt.gif" alt="-"/></td>
+        <td>$expl_ws_prefix <A href=$ws_homepage_url>$ws_name</A>$expl_ws_postfix</td>
+      </tr>
+      <tr valign="top">
+        <td><img src="http://folk.uio.no/tommae/feide/listepunkt.gif" alt="-"/></td>
+        <td>$expl_user</td>
+      </tr>
+      <tr valign="top">
+        <td><img src="http://folk.uio.no/tommae/feide/listepunkt.gif" alt="-"/></td>
+        <td>$expl_data_prefix <A href=$ws_homepage_url>$ws_name</A>$expl_data_postfix</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><hr noshade="noshade" size="1"/></td>
+      </tr>
+      <tr valign="top">
+        <td></td>
+        <td>
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td width="90%"><a href=$feide_url>$feide_url_label</a>&nbsp;<img src="http://folk.uio.no/tommae/feide/pil.gif" alt="pil" /></td>
+              <td width="10%"><a href="http://www.uninett.no"><img src="http://folk.uio.no/tommae/feide/uninett.png" alt="uninett-logo" align="right" border="0"/></a></td>
+            </tr>
+          </table>
+      </tr>
+    </table>
+  </td>
+
+#else 
+&nbsp;
+#end
+
+
+</tr>
+</table>
+</body>
+</html>
