@@ -119,9 +119,9 @@ public class AuthorizationData {
     private Map webServicesFromXML(String xmlFile) throws Exception{
         log.finer("webServicesFromXML(String)");
 
-        HashMap attributes = null;
-        HashMap profiles = null;
-        Map newWebServices = null;
+        HashMap attributes = new HashMap();
+        HashMap profiles = new HashMap();
+        Map newWebServices = new HashMap();
 
         /* Try to parse the xml file. If it doesn't parse, abort. */
         DOMParser parser = new DOMParser();
@@ -148,14 +148,17 @@ public class AuthorizationData {
         NodeList wsElems = root.getElementsByTagName("WebServices");
 
         /* Generate a hashmap of all registered attributes. */
-        attributes = getAttributes((Element) attributeElems.item(0), null);
+        if (attributeElems.getLength() > 0) 
+            attributes = getAttributes((Element) attributeElems.item(0), null);
 
         /* Generate a hashmap of all registered profiles. */
-        profiles   = getProfiles((Element) profileElems.item(0), attributes, true);
+        if (profileElems.getLength() > 0)
+            profiles   = getProfiles((Element) profileElems.item(0), attributes, true);
         
         /* Generate a hashmap of all web services. The WebService
          * objects contains profiles, legal and illegal attributes. */
-        newWebServices = getWebServices((Element) wsElems.item(0), attributes, profiles);
+        if (wsElems.getLength() > 0)
+            newWebServices = getWebServices((Element) wsElems.item(0), attributes, profiles);
 
         /* Flatten datastructure for all web service objects. */
         for (Iterator iterator = newWebServices.keySet().iterator(); iterator.hasNext();) {
@@ -234,10 +237,9 @@ public class AuthorizationData {
         HashMap profiles = new HashMap();
         NodeList profileElems = profilesElem.getElementsByTagName("Profile");
 
-
         for (int i = 0; i < profileElems.getLength(); i++) { 
             Element profileElem = (Element) profileElems.item(i);
-            
+
             /* Generate new profile objects and store in hash. */
             if (newProfiles) {
                 Profile profile = new Profile(profileElem.getAttribute("name"));
@@ -249,8 +251,9 @@ public class AuthorizationData {
             else {
                 String name = profileElem.getAttribute("name");
 
-                if (existing.containsKey(name)) 
+                if (existing.containsKey(name)) {
                     profiles.put(name, existing.get(name));
+                }
                 else 
                     log.warning("No such profile: "+name);
             }
@@ -296,7 +299,7 @@ public class AuthorizationData {
              * profiles */
             NodeList aaElems = wsElem.getElementsByTagName("AllowedAttributes");
             NodeList daElems = wsElem.getElementsByTagName("DeniedAttributes");
-            NodeList profileElems = wsElem.getElementsByTagName("Profiles");
+            NodeList profileElems = wsElem.getElementsByTagName("WSProfiles");
             
             if (aaElems.getLength() > 0) 
                 ws.setAllowedAttributes(getAttributes((Element) aaElems.item(0), attributes));
