@@ -123,10 +123,10 @@ public class ConfigurationManager {
         /* Read configuration manager properties file */
         Properties cmProps = new Properties();
         String cmPropsFile = System.getProperty(PROPS_PREFIX + MODULE_CM);
-        String filePrefix  = new File(cmPropsFile).getParent()+"/";
+        String filePrefix = new File(cmPropsFile).getParent() + "/";
 
         if (cmPropsFile == null || cmPropsFile.equals("")) {
-            throw new BaseConfigException("System property '"+PROPS_PREFIX+MODULE_CM+"' must be a non-empty string.");
+            throw new BaseConfigException("System property '" + PROPS_PREFIX + MODULE_CM + "' must be a non-empty string.");
         }
 
         /* Read configuration manager's properties file */
@@ -146,16 +146,16 @@ public class ConfigurationManager {
 
         /* Timer delay */
         int timerDelay = 0;
-        String timerDelayStr = cmProps.getProperty(TIMER_DELAY);
+        String timerDelayStr = cmProps.getProperty(PROPS_PREFIX + TIMER_DELAY);
         if (timerDelayStr == null || timerDelayStr.equals("")) {
-            String message = "'" + TIMER_DELAY + "' in configuration manager properties cannot be a null value.";
+            String message = "'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties cannot be a null value.";
             // TODO: Log
             // MessageLogger.logCritical(message);
             throw new ConfigurationManagerException(message);
         }
         timerDelay = new Integer(timerDelayStr).intValue();
         if (timerDelay < 1) {
-            String message = "'" + TIMER_DELAY + "' in configuration manager properties must be >= 1.";
+            String message = "'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties must be >= 1.";
             // TODO: Log
             // MessageLogger.logCritical(message);
             throw new ConfigurationManagerException(message);
@@ -167,7 +167,7 @@ public class ConfigurationManager {
             String fileName = cmProps.getProperty(PROPS_PREFIX + module);
 
             try {
-                addFileChangeListener(filePrefix+fileName, module, timerDelay);
+                addFileChangeListener(filePrefix + fileName, module, timerDelay);
             } catch (FileNotFoundException e) {
                 // TODO: Log
                 // MessageLogger.logCritical("Configuration file not found: " + fileName, e);
