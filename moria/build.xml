@@ -1,24 +1,22 @@
-<project name="W3LS (Mellon/Moria)"
-         default="all:build"
+<project name="W3LS (Moria)"
+         default="build"
          basedir=".">
 
   <!-- User's properties override project defaults. -->
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
 
-  <!-- Tomcat deploy/undeploy custom tasks. -->
-  <taskdef name="deploy"
-           classname="org.apache.catalina.ant.DeployTask"
-           classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
-
-  <taskdef name="undeploy"
-           classname="org.apache.catalina.ant.UndeployTask"
-           classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
-
-
-  <!-- Common Mellon/Moria targets. -->
-  <target name="all:prepare" >
-     <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
+  <target name="clean"
+          description="Remove build files">
+    <delete dir="dist"/>
+    <delete dir="build"/>
+    <delete file="FeideAuthentication.wsdl"/>
+  </target>
+  
+  <target name="prepare"
+          description="Prepare build directory">
+ 
+      <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
         <os family="windows"/>
      </condition>
      <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.sh">
@@ -26,79 +24,55 @@
            <os family="windows"/>
         </not>
      </condition>
-  </target>
-
-
-  <target name="all:clean"
-          description="All: Clean up everything"
-          depends="mellon:clean,moria:clean,mellon:demo:clean">
-    <delete dir="dist"/>
-  </target>
-
-  <target name="all:build"
-          description="All: Build Moria and Mellon API, no deployment"
-          depends="moria:build,mellon:build"/>
-
-
-  <!-- Targets to build/deploy Moria. -->
-  <target name="moria:prepare"
-          description="Moria: Prepare build directory"
-          depends="all:prepare">
+ 
     <mkdir dir="dist"/>
-    <mkdir dir="build.moria/WEB-INF/classes/templates"/>
-    <copy file="moria/jaxrpc-ri-runtime.xml"
-          todir="build.moria/WEB-INF"/>
-    <copy todir="build.moria/WEB-INF/classes/templates">      
-      <fileset dir="moria/templates">
+    <mkdir dir="build/WEB-INF/classes/templates"/>
+    <copy file="jaxrpc-ri-runtime.xml"
+          todir="build/WEB-INF"/>
+    <copy todir="build/WEB-INF/classes/templates">      
+      <fileset dir="templates">
         <include name="**/*.vtl"/>
       </fileset>
     </copy>  
-    <copy todir="build.moria/WEB-INF/classes">
-      <fileset dir="moria/templates">
+    <copy todir="build/WEB-INF/classes">
+      <fileset dir="templates">
         <include name="**/*.properties"/>
       </fileset>
     </copy>
-    <copy file="build.moria/WEB-INF/classes/login_nb.properties"
-          tofile="build.moria/WEB-INF/classes/login_no.properties"/>
-    <copy file="build.moria/WEB-INF/classes/logout_nb.properties"
-          tofile="build.moria/WEB-INF/classes/logout_no.properties"/>
-    <copy file="${web_xml}" todir="build.moria/WEB-INF"/>
-    <delete file="build.moria/WEB-INF/classes/moria.properties"/>
+    <copy file="build/WEB-INF/classes/login_nb.properties"
+          tofile="build/WEB-INF/classes/login_no.properties"/>
+    <copy file="build/WEB-INF/classes/logout_nb.properties"
+          tofile="build/WEB-INF/classes/logout_no.properties"/>
+    <copy file="${web_xml}" todir="build/WEB-INF"/>
+    <delete file="build/WEB-INF/classes/moria.properties"/>
     <echo message="Using config: ${moria_config}"/>
-    <copy file="${moria_config}" tofile="build.moria/WEB-INF/classes/moria.properties"/>
-    <copy todir="build.moria/WEB-INF/lib">
-      <fileset dir="moria/lib/">
+    <copy file="${moria_config}" tofile="build/WEB-INF/classes/moria.properties"/>
+    <copy todir="build/WEB-INF/lib">
+      <fileset dir="${include_libs}">
         <include name="**/*.jar"/>
-      </fileset>
-      <fileset dir="lib/">
-        <include name="**/*.jar"/>
-        <exclude name="servlet.jar"/>
       </fileset>
     </copy>  
   </target>
 
-  <target name="moria:wsdl"
-          description="Moria: Prepare WSDL file">
-    <mkdir dir="build.moria/WEB-INF/classes"/>
+  <target name="wsdl"
+          description="Prepare WSDL file">
+    <mkdir dir="build/WEB-INF/classes"/>
     <copy file="Authentication.wsdl"
-          todir="build.moria/WEB-INF"/>
-    <exec executable="sed" output="build.moria/WEB-INF/Authentication.wsdl">
+          todir="build/WEB-INF"/>
+    <exec executable="sed" output="build/WEB-INF/Authentication.wsdl">
       <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! Authentication.wsdl"/>
     </exec>
   </target>
 
-  <target name="moria:compile"
-          description="Moria: Compile source"
-          depends="moria:prepare">
+  <target name="compile"
+          description="Compile source"
+          depends="prepare">
     <javac srcdir="src"
            debug="true"
-           destdir="build.moria/WEB-INF/classes"
+           destdir="build/WEB-INF/classes"
            includes="no/feide/moria/**">
       <classpath>
-        <fileset dir="lib/">
-          <include name="*.jar"/>
-        </fileset>
-        <fileset dir="moria/lib/">
+        <fileset dir="${include_libs}">
           <include name="*.jar"/>
         </fileset>
         <fileset file="${servlet_jar}"/>
@@ -106,258 +80,53 @@
     </javac>
   </target>
 
-  <target name="moria:wscompile"
-          description="Moria: Generate JAX-RPC server ties"
-          depends="moria:wsdl,moria:compile">
+  <target name="wscompile"
+          description="Generate JAX-RPC server ties"
+          depends="wsdl,compile">
     <exec executable="${wscompile}">
       <arg line="-gen:server"/>
-      <arg line="-d build.moria/WEB-INF/classes"/>
-      <arg line="-model build.moria/WEB-INF/Authentication_model.xml"/>
+      <arg line="-d build/WEB-INF/classes"/>
+      <arg line="-model build/WEB-INF/Authentication_model.xml"/>
       <arg line="-verbose"/>
-      <arg line="moria/config/jaxrpc.xml"/>
+      <arg line="config/jaxrpc.xml"/>
     </exec>
     <exec executable="gzip">
-      <arg line="build.moria/WEB-INF/Authentication_model.xml"/>
+      <arg line="build/WEB-INF/Authentication_model.xml"/>
     </exec>
   </target>
 
-  <target name="moria:war"
-          description="Moria: Create WAR"
-          depends="moria:wscompile">
+  <target name="build"
+          description="Create WAR"
+          depends="wscompile">
     <delete file="dist/feide-moria.war"/>
     <jar jarfile="dist/feide-moria.war">
-      <fileset dir="build.moria">
+      <fileset dir="build">
         <include name="WEB-INF/**"/>
         <include name="templates/**"/>
       </fileset>
     </jar>
-  </target>
-
-  <target name="moria:build"
-          description="Moria: Build deployable WAR"
-          depends="moria:war">
+ 
+ 	<!-- Authorization database check -->
     <delete file="dist/feide-moria-authorization.jar"/>
     <jar jarfile="dist/feide-moria-authorization.jar">
-      <fileset dir="build.moria/WEB-INF/classes">
+      <fileset dir="build/WEB-INF/classes">
         <include name="no/feide/moria/authorization/**"/>
       </fileset>
     </jar>
   </target>
 
-  <target name="moria:javadoc"
-          description="Moria: Generate JavaDoc">
+  <target name="javadoc"
+          description="Generate JavaDoc">
     <javadoc sourcepath="src"
-             destdir="build.moria/javadoc"
+             destdir="build/javadoc"
              packagenames="no.feide.moria.*"
              source="1.4">
       <classpath>
-        <fileset dir="lib/">
-          <include name="*.jar"/>
-        </fileset>
-        <fileset dir="moria/lib/">
+        <fileset dir="${include_libs}">
           <include name="*.jar"/>
         </fileset>
       </classpath>
     </javadoc>
   </target>
 
-  <target name="moria:clean"
-          description="Moria: Clean up">
-    <delete dir="build.moria"/>
-    <delete file="FeideAuthentication.wsdl"/>
-  </target>
-
-
-  <!-- Targets to build the Mellon API. -->
-  <target name="mellon:prepare"
-          description="Mellon API: Prepare build directory"
-          depends="all:prepare">
-    <mkdir dir="build.mellon/api"/>
-    <mkdir dir="build.mellon/filter"/>
-    <mkdir dir="build.mellon/demo/WEB-INF/classes"/>
-    <copy todir="build.mellon/demo/WEB-INF/lib">
-      <!--
-      <fileset dir="moria/lib/">
-        <include name="**/*.jar"/>
-      </fileset> 
-      -->
-      <fileset dir="lib/">
-        <include name="**/*.jar"/>
-      </fileset>
-    </copy>  
-    <mkdir dir="dist"/>
-  </target>
-
-  <target name="mellon:wscompile"
-          description="Mellon API: Generate JAX-RPC client stubs"
-          depends="moria:wsdl,mellon:prepare">
-    <exec executable="${wscompile}">
-      <arg line="-gen:client"/>
-      <arg line="-d build.mellon/api"/>
-      <arg line="-verbose"/>
-      <arg line="mellon/config/jaxrpc.xml"/>
-    </exec>
-  </target>
-
-  <target name="mellon:compile"
-          description="Mellon API: Compile source"
-          depends="mellon:wscompile">
-    <javac srcdir="src"
-           debug="true"
-           destdir="build.mellon/api"
-           includes="no/feide/mellon/*"
-           excludes="no/feide/mellon/servlet/*,no/feide/mellon/test/*">
-      <classpath>
-        <fileset dir="lib/" includes="*.jar"/>
-      </classpath>
-    </javac>
-  </target>
-  
-  <target name="mellon:jar"
-          description="Mellon API: Create JAR file"
-          depends="mellon:compile">
-    <delete file="dist/feide-mellon-api*.jar"/>
-    <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build.mellon/api"/>
-  </target>
-
-  <target name="mellon:build"
-          description="Mellon API: All steps necessary to build the JAR"
-          depends="mellon:jar"/>
-
-  <target name="mellon:javadoc"
-          description="Mellon API: Generate JavaDoc">
-    <javadoc sourcepath="src"
-             destdir="build.mellon/javadoc"
-             packagenames="no.feide.mellon,no.feide.mellon.filter"
-             source="1.4"> 
-      <classpath>
-        <fileset dir="lib/">
-          <include name="*.jar"/>
-        </fileset>
-        <fileset dir="moria/lib/">
-          <include name="*.jar"/>
-        </fileset>
-        <fileset file="${servlet_jar}"/>
-      </classpath>
-    </javadoc>
-  </target>
-
-  <target name="mellon:clean"
-          description="Mellon API: Clean up">
-    <delete dir="build.mellon"/>
-    <delete file="dist/feide-mellon-filter*.jar"/>
-    <delete file="dist/feide-mellon-api*.jar"/>
-  </target>
-    
-
-  <!-- Targets to build the Mellon servlet filter. -->
-  <target name="mellon:filter:compile"
-          description="Mellon filter: Compile source"
-          depends="mellon:jar">
-    <javac srcdir="src"
-           debug="true"
-           destdir="build.mellon/filter"
-           includes="no/feide/mellon/filter/*">
-      <classpath>
-        <fileset dir="lib/" includes="*.jar"/>
-        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
-        <fileset file="${servlet_jar}"/>        
-      </classpath>
-    </javac>
-  </target>
-
-  <target name="mellon:filter:jar"
-          description="Mellon filter: Create JAR file"
-          depends="mellon:filter:compile">
-    <delete file="dist/feide-mellon-filter*.jar"/>
-    <jar destfile="dist/feide-mellon-filter-${mellon_tag}.jar" basedir="build.mellon/filter"/>
-  </target>
-
-  
-  <!-- Targets to build a Mellon servlet demo. -->
-  <target name="mellon:demo:prepare"
-          description="Mellon demo: Prepare build directory">
-    <mkdir dir="build.mellon/demo"/>
-    <mkdir dir="dist"/>
-    <delete file="build.mellon/demo/WEB-INF/web.xml"/>
-    <delete file="build.mellon/demo/WEB-INF/classes/mellon.properties"/>
-    <delete file="dist/feide-mellon-demo.war"/>
-    <copy file="mellon/config/web.xml" toFile="build.mellon/demo/WEB-INF/web.xml"/>
-    <echo message="Using config: ${mellon_config}"/>
-    <copy file="${mellon_config}"
-          toFile="build.mellon/demo/WEB-INF/classes/mellon.properties"/>
-    <copy todir="build.mellon/demo/WEB-INF/lib">
-      <fileset dir="dist" includes="**/feide-mellon*.jar"/>
-    </copy>      
-  </target>
-  
-  <target name="mellon:demo:compile"
-          description="Mellon demo: Compile source"
-          depends="mellon:filter:jar,mellon:demo:prepare,mellon:jar,mellon:filter:jar">
-    <javac srcdir="src"
-           debug="true"
-           destdir="build.mellon/demo/WEB-INF/classes"
-           includes="no/feide/mellon/servlet/*">
-      <classpath>
-        <fileset dir="lib/" includes="*.jar"/>
-        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
-        <fileset file="${servlet_jar}"/>
-      </classpath>
-    </javac>
-  </target>
-
-  <target name="mellon:demo:war"
-          description="Mellon demo: Create WAR file"
-          depends="mellon:demo:compile">
-    <jar destfile="dist/feide-mellon-demo.war" basedir="build.mellon/demo"/>
-  </target>
-  
-  <target name="mellon:demo:build"
-          description="Mellon demo: All steps necessary to build the WAR"
-          depends="mellon:demo:war"/>
-  
-  <target name="mellon:demo:deploy"
-          description="Mellon demo: Deploy to Tomcat">
-    <deploy url="${jwsdp_manager_url}"
-            username="${jwsdp_manager_username}"
-            password="${jwsdp_manager_password}"
-            path="/feide-mellon-demo"
-            war="file:dist/feide-mellon-demo.war"/>
-  </target>
-
-  <target name="mellon:demo:undeploy"
-          description="Mellon demo: Undeploy from Tomcat">
-    <undeploy url="${jwsdp_manager_url}"
-              username="${jwsdp_manager_username}"
-              password="${jwsdp_manager_password}"
-              path="/feide-mellon-demo"/>
-  </target>
-
-  <target name="mellon:demo:redeploy"
-          description="Mellon demo: Redeploy"
-          depends="mellon:demo:undeploy,mellon:demo:deploy"/>
-
-  <target name="mellon:demo:clean"
-          description="Mellon demo: Clean up">
-    <delete dir="build.mellon/demo"/>
-  </target>
-
-  <target name="mellon:zip"
-          description="Mellon jars, docs and example code in zip-file.">
-    <copy todir="build.mellon/zip">
-      <fileset dir="dist" includes="**/feide-mellon-api-${mellon_tag}.jar"/>
-      <fileset dir="mellon/config" includes="mellon.properties"/>
-      <fileset dir="doc" includes="SimpleCreateAuthSession.java"/>
-      <fileset dir="lib">
-        <include name="**/*.jar"/>
-      </fileset>
-     </copy>   
-     <copy todir="build.mellon/zip/javadoc">
-       <fileset dir="build.mellon/javadoc"/>
-     </copy>
-
-     <zip destfile="dist/mellon.zip">
-       <fileset dir="build.mellon/zip"/>
-     </zip>
-  </target>
 </project>
