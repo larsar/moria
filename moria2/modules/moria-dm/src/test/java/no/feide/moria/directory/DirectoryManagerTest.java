@@ -29,7 +29,7 @@ extends TestCase {
     private Properties config;
     
     /** The user credentials used. */
-    private static final Credentials goodCredentials = new Credentials("test@feide.no", "test");
+    private static Credentials goodCredentials;
     
     /** The attribute request used. */
     private static final String[] goodRequest = {"eduPersonAffiliation"};
@@ -55,6 +55,11 @@ extends TestCase {
 
         config = new Properties();
         config.setProperty("directoryConfiguration", "src/test/conf/DirectoryManagerConfiguration.xml");
+        try {
+            goodCredentials = new Credentials("test@feide.no", "test");
+        } catch (IllegalCredentialsException e) {
+            Assert.fail("Unexpected IllegalCredentialsException");
+        }
 
     }
 
@@ -65,6 +70,7 @@ extends TestCase {
     public void tearDown() {
 
         config = null;
+        goodCredentials = null;
 
     }
 
