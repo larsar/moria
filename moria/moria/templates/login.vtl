@@ -88,6 +88,19 @@ $availableLanguages.get($lang)
             <form action="$loginURL" method="POST" name="loginform" autocomplete="off">
               <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
                 <tbody>
+
+                  <tr>
+                    <td align="left" nowrap ="nowrap">
+		      $form_username<br/>
+                      <input type="text" size="16" value="" name="username"></td>
+ </tr>
+<tr>
+<td>
+                      $form_password<br>
+                      <input type="password" size="16" value="" name="password">
+                    </td>
+                  </tr>
+
 		<tr>
 		<td>$form_org
 		<select name="realm">
@@ -101,17 +114,9 @@ $availableLanguages.get($lang)
 		  </select>
 		</td>
 		</tr>
-                  <tr>
-                    <td align="left" nowrap ="nowrap">
-		      $form_username<br/>
-                      <input type="text" size="16" value="" name="username"></td>
- </tr>
-<tr>
-<td>
-                      $form_password<br>
-                      <input type="password" size="16" value="" name="password">
-                    </td>
-                  </tr>
+
+
+
                   <tr>
                     <td colspan="3" valign="top"> 
                     <input type="submit" value="$form_login">
