@@ -7,7 +7,7 @@
     tie='no.feide.moria.service.AuthenticationIF_Tie'
     model='/WEB-INF/Authentication_model.xml.gz'
     wsdl='/WEB-INF/Authentication.wsdl'
-    service='{https://login.feide.no/moria/Authentication}Authentication'
-    port='{https://login.feide.no/moria/Authentication}AuthenticationIFPort'
+    service='{https://login.feide.no/moria/v1_0/Authentication}Authentication'
+    port='{https://login.feide.no/moria/v1_0/Authentication}AuthenticationIFPort'
     urlpattern='/v1_0/Authentication'/>
 </endpoints>
