@@ -21,6 +21,7 @@ import javax.naming.AuthenticationException;
 import javax.naming.CommunicationException;
 import javax.naming.ConfigurationException;
 import javax.naming.Context;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.TimeLimitExceededException;
@@ -67,10 +68,14 @@ implements DirectoryManagerBackend {
      * @param timeout
      *            The number of seconds before a connection attempt through this
      *            backend times out.
+     * @param ssl
+     *            <code>true</code> if SSL is to be used, otherwise
+     *            <code>false</code>.
      * @throws IllegalArgumentException
      *             If <code>config</code> is <code>null</code>.
      */
-    protected JNDIBackend(int timeout) throws IllegalArgumentException {
+    protected JNDIBackend(int timeout, boolean ssl)
+    throws IllegalArgumentException {
 
         // Sanity check.
         if (timeout < 0)
@@ -87,8 +92,9 @@ implements DirectoryManagerBackend {
         // Due to OpenSSL problems.
         defaultEnv.put("java.naming.ldap.derefAliases", "never");
 
-        // SSL enabled by default.
-        defaultEnv.put(Context.SECURITY_PROTOCOL, "ssl");
+        // Should we enable SSL?
+        if (ssl)
+            defaultEnv.put(Context.SECURITY_PROTOCOL, "ssl");
 
     }
 
@@ -103,7 +109,7 @@ implements DirectoryManagerBackend {
      *             If <code>reference</code> is <code>null</code>, or an
      *             empty array.
      */
-    public void open(IndexedReference[] references) {
+    public void open(IndexedReference[] references) throws BackendException {
 
         // Sanity check.
         if ((references == null) || (references.length == 0))
@@ -123,10 +129,12 @@ implements DirectoryManagerBackend {
      * @param username
      * @return <code>true</code> if the user can be looked up through JNDI,
      *         otherwise <code>false</code>.
+     * @throws IllegalStateException
+     *             If this method is used before the backend has been opened.
      */
     public boolean userExists(final String username) throws BackendException {
 
-        // Sanity check.
+        // Sanity checks.
         if ((username == null) || (username.length() == 0))
             return false;
 
@@ -309,10 +317,8 @@ implements DirectoryManagerBackend {
 
     /**
      * Do a subtree search for an element given a pattern. Only the first
-     * element found is considered. Implemented as a separate method due to
-     * recursive referral support (temporarily disabled). <em>Note:</em> The
-     * default timeout when searching is 15 seconds, unless
-     * <code>no.feide.moria.backend.ldap.timeout</code> is set.
+     * element found is considered, and all references are searched in order
+     * until either a match is found or no more references are left to search.
      * @param pattern
      *            The search pattern. Must not include the character '*' or the
      *            substring '\2a' due to possible LDAP exploits.
@@ -331,35 +337,76 @@ implements DirectoryManagerBackend {
             if (pattern.indexOf(illegals[i]) > -1)
                 return null;
 
-        NamingEnumeration results;
+        // Go through all references until a match is found.
+        for (int i = 0; i < myReferences.length; i++) {
+            String[] references = myReferences[i].getReferences();
+            for (int j = 0; j < references.length; j++) {
 
-        // Start counting the (milli)seconds.
-        long searchStart = System.currentTimeMillis();
-        try {
+                // Connect to this reference.
+                InitialLdapContext ldap = connect(references[j]);
 
-            results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000 * myTimeout, new String[] {}, false, false));
-            if (!results.hasMore()) {
-                log.logWarn("No match for " + pattern + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL));
-                return null;
+                // Start counting the (milli)seconds.
+                long searchStart = System.currentTimeMillis();
+                NamingEnumeration results;
+                try {
+
+                    // Perform the search.
+                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000 * myTimeout, new String[] {}, false, false));
+                    if (!results.hasMore()) {
+                        log.logWarn("No match for " + pattern + " on " + references[j]);
+                        continue; // Skip to next reference.
+                    }
+
+                } catch (TimeLimitExceededException e) {
+
+                    // The search timed out.
+                    throw new BackendException("Search timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
+
+                } catch (NameNotFoundException e) {
+
+                    // Element not found. Possibly non-existing reference.
+                    log.logWarn("No match for " + pattern + " on " + references[j]);
+                    continue; // Skip to next reference.
+
+                } catch (NamingException e) {
+
+                    // All other exceptions.
+                    throw new BackendException("Unable to complete search for " + pattern, e);
+
+                }
+
+                // We just found an element.
+                SearchResult entry = null;
+                try {
+                    entry = (SearchResult) results.next();
+                } catch (NamingException e) {
+                    throw new BackendException("Unable to read search results", e);
+                }
+                return entry.getName(); // Relative DN (to the reference).
+
             }
-
-            // We just found an element.
-            SearchResult entry = null;
-            try {
-                entry = (SearchResult) results.next();
-            } catch (NamingException e) {
-                throw new BackendException("Unexpected NamingException caught", e);
-            }
-            String rdn = entry.getName();
-            log.logWarn("Matched " + pattern + " on " + ldap.getEnvironment().get(Context.PROVIDER_URL) + " to element " + rdn);
-            return rdn;
-
-        } catch (TimeLimitExceededException e) {
-            throw new BackendException("Connection timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
-        } catch (NamingException e) {
-            throw new BackendException("Unexpected NamingException caught", e);
         }
+
+        // Gone through all references and still no match.
+        return null;
 
     }
 
+
+    /**
+     * @param url
+     * @return
+     */
+    private InitialLdapContext connect(String url) throws BackendException {
+
+        //  Prepare connection to the given URL.
+        Hashtable env = new Hashtable(defaultEnv);
+        env.put(Context.PROVIDER_URL, url);
+        try {
+            return new InitialLdapContext(env, null);
+        } catch (NamingException e) {
+            throw new BackendException("Unable to connect to " + env.get(Context.PROVIDER_URL));
+        }
+
+    }
 }
