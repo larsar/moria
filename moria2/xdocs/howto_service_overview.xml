@@ -254,10 +254,7 @@ $Id$
 					</li>
 				</ul>
 			</subsection>
-			
-			<subsection name="Error Handling">
-			</subsection>
-			
+					
 			<subsection name="SOAP Implementations">
 				<p>
 				The following SOAP implementations have been tested and shown to
