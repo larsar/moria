@@ -180,7 +180,7 @@
   
   <target name="test:compile"
           description="Mellon test: Compile source"
-          depends="test:prepare,jar">
+          depends="test:prepare">
     <javac srcdir="src"
            debug="true"
            destdir="build/test"
