@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.net.URI;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -88,7 +87,7 @@ extends HttpServlet {
     /**
      * The organization the test user comes from.
      */
-    private static final String STATUS_ATTRIBUTE = "eduPersonAffiliation";
+    private static final String STATUS_ATTRIBUTE = "eduPersonAffiliation";    
     
     /**
      * The name of the service.
@@ -111,7 +110,7 @@ extends HttpServlet {
             try {
                String filename = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATUS_XML);
                SAXParser saxParser = factory.newSAXParser();
-               saxParser.parse(new File(new URI (filename)), handler);
+               saxParser.parse(new File(filename), handler);
                statusFileMonitor = new FileMonitor(filename);
             } catch (Throwable t) {
               log.logCritical("Error parsing status.xml");

@@ -22,9 +22,6 @@ package no.feide.moria.store;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -164,11 +161,9 @@ implements MoriaStore {
             FileInputStream cacheConfigFile;
 
             try {
-                cacheConfigFile = new FileInputStream(new File(new URI(cacheConfigProperty)));
+                cacheConfigFile = new FileInputStream(cacheConfigProperty);
             } catch (FileNotFoundException fnnf) {
                 throw new MoriaStoreConfigurationException("Configuration file '" + cacheConfigProperty + "' not found", fnnf);
-            } catch (URISyntaxException uris) {
-                throw new MoriaStoreConfigurationException("Illegal configuration property "+ CACHE_CONFIG_PROPERTY_NAME + " (" + cacheConfigProperty + ")", uris);
             }
 
             PropertyConfigurator configurator = new PropertyConfigurator();

@@ -49,7 +49,7 @@ extends TestCase {
     private DirectoryManager dm;
 
     /** The dummy configuration file. */
-    private static final String goodConfiguration = "file:/" + System.getProperty("user.dir").replace('\\', '/') + "/src/test/conf/DummyConfiguration.xml";
+    private static final String goodConfiguration = "src/test/conf/DummyConfiguration.xml";
 
 
     /**
