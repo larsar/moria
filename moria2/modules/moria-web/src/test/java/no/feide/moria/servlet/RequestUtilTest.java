@@ -3,7 +3,6 @@ package no.feide.moria.servlet;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
-import junit.framework.Assert;
 
 import javax.servlet.http.Cookie;
 import java.util.ResourceBundle;
