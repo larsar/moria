@@ -19,8 +19,8 @@
     <mkdir dir="build.moria/WEB-INF/classes"/>
     <mkdir dir="build.mellon/WEB-INF/classes"/>
     <mkdir dir="dist"/>
-    <mkdir dir="build.moria/templates"/>
-    <copy todir="build.moria/templates">
+    <mkdir dir="build.moria/WEB-INF/classes/templates"/>
+    <copy todir="build.moria/WEB-INF/classes/templates">
       <fileset dir="moria/templates">
 	<include name="**/*.vtl"/>
       </fileset>
@@ -57,7 +57,7 @@
           description="Cleans Mellon/Moria target directories">
     <delete dir="build.moria"/>
     <delete dir="build.mellon"/>
-    <delete dir="build"/>
+    <delete dir="build.mellon-test"/>
     <delete dir="dist"/>
     <delete file="FeideAuthentication.wsdl"/>
   </target>
@@ -233,7 +233,7 @@
   <!-- Old Mellon JAX-RPC test -->
   <target name="mellon-test:prepare"
           description="Prepare Mellon test target directory">
-    <mkdir dir="build"/>
+    <mkdir dir="build.mellon-test"/>
     <mkdir dir="dist"/>
   </target>
 
@@ -242,8 +242,8 @@
           depends="mellon-test:prepare">
     <exec executable="${jaxrpc_home}/bin/wscompile.sh">
       <arg line="-gen:client"/>
-      <arg line="-d build"/>
-      <arg line="build.mellon/config.xml"/>
+      <arg line="-d build.mellon-test"/>
+      <arg line="mellon/config/jaxrpc.xml"/>
     </exec>
   </target>
 
@@ -251,17 +251,26 @@
           description="Compile Mellon test"
           depends="mellon-test:prepare">
     <javac srcdir="src"
-           destdir="build"
+           destdir="build.mellon-test"
            classpath="${jwsdp_jars}"
-           includes="no/feide/mellon/test/**"/>
+           includes="no/feide/mellon/test/**">
+      <classpath>
+        <fileset dir="lib/">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="mellon/lib/">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
   </target>
 
   <target name="mellon-test:jar"
           description="Create Mellon test JAR file"
           depends="mellon-test:prepare">
-    <delete file="dist/AuthenticationServiceClient.jar"/>
-    <jar destfile="dist/AuthenticationServiceClient.jar"
-         basedir="build"
+    <delete file="build.mellon-test/AuthenticationServiceClient.jar"/>
+    <jar destfile="build.mellon-test/AuthenticationServiceClient.jar"
+         basedir="build.mellon-test"
          includes="no/feide/mellon/test/* no/feide/moria/service/*"/>
   </target>
 
@@ -272,8 +281,18 @@
   <target name="mellon-test:run"
           description="Run Mellon test">
     <java fork="on" 
-          classpath="dist/AuthenticationServiceClient.jar:${jwsdp_jars}" 
           classname="no.feide.mellon.test.AuthenticationServiceClient">
+      <classpath>
+        <fileset dir="build.mellon-test/">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="lib/">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="mellon/lib/">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
     </java>
   </target> 
 
