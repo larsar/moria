@@ -43,25 +43,6 @@ public final class Attribute implements Serializable {
     /** The values of this Attribute. */
     private String[] values = null;
 
-    /** Type metadata. */
-    private static TypeDesc typeDesc = new TypeDesc(Attribute.class);
-
-    static {
-        typeDesc.setXmlType(new QName("http://localhost:8080/moria/v2_0/Authentication", "Attribute"));
-        ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-
-        elemField.setFieldName("name");
-        elemField.setXmlName(new QName("", "name"));
-        elemField.setXmlType(new QName("http://www.w3.org/2001/XMLSchema", "string"));
-        typeDesc.addFieldDesc(elemField);
-
-        elemField = new ElementDesc();
-        elemField.setFieldName("values");
-        elemField.setXmlName(new QName("", "values"));
-        elemField.setXmlType(new QName("http://www.w3.org/2001/XMLSchema", "string"));
-        typeDesc.addFieldDesc(elemField);
-    }
-
     /**
      * Gets the name of this attribute.
      *
@@ -97,39 +78,4 @@ public final class Attribute implements Serializable {
     public void setValues(final String[] values) {
         this.values = values;
     }
-
-    /**
-     * Returns type metadata object.
-     *
-     * @return The metadata
-     */
-    public static TypeDesc getTypeDesc() {
-        return typeDesc;
-    }
-
-    /**
-     * Gets custom serializer.
-     *
-     * @param mechType XML processing mechanism type.
-     * @param javaType Class of the Java type.
-     * @param xmlType Qualified name of the XML data type.
-     * @return A serializer for the specified XML processing mechanism type.
-     */
-    public static Serializer getSerializer(final String mechType, final Class javaType, final QName xmlType) {
-        return new BeanSerializer(javaType, xmlType, typeDesc);
-    }
-
-    /**
-     * Gets custom Deserializer.
-     *
-     * @param mechType XML processing mechanism type.
-     * @param javaType Class of the Java type.
-     * @param xmlType Qualified name of the XML data type.
-     * @return A deserializer for the specified XML processing mechanism type.
-     */
-    public static Deserializer getDeserializer(final String mechType, final Class javaType, final QName xmlType) {
-        return new BeanDeserializer(javaType, xmlType, typeDesc);
-    }
 }
-
-

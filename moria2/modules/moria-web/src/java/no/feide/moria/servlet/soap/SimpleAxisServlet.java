@@ -26,6 +26,7 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,7 +64,7 @@ public final class SimpleAxisServlet extends AxisServlet {
     /**
      * Initializes the servlet. Called by the container.
      */
-    public void init() {
+    public void init() throws ServletException {
         super.init();
     }
 
@@ -396,6 +397,7 @@ public final class SimpleAxisServlet extends AxisServlet {
 
         /* Save the real path. */
         String realPath = getServletContext().getRealPath(request.getServletPath());
+
         if (realPath != null)
             messageContext.setProperty(Constants.MC_REALPATH, realPath);
 
@@ -427,52 +429,50 @@ public final class SimpleAxisServlet extends AxisServlet {
         /* We're not able to recover from this */
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        // Get the exception cause.
+        /* Get the exception cause. */
         final Throwable cause = exception.getCause();
 
-        // Used later to get the JSP for handling HTML output.
+        /* Used later to get the JSP for handling HTML output. */
         RequestDispatcher requestDispatcher;
 
-        // Set up the error response specially for SOAP requests.
+        /* Set up the error response specially for SOAP requests. */
         if (request.getMethod().equals("POST") && request.getHeader("SOAPAction") != null) {
 
-            // Set the faultCode and faultString elements, depending on exception.
+            /* Set the faultCode and faultString elements, depending on exception. */
             if (cause instanceof SOAPException) {
                 
-                // A known type of exception.
-                request.setAttribute("faultCode", ((SOAPException)cause).getFaultcode());
-                request.setAttribute("faultString", ((SOAPException)cause).getFaultstring());
+                /* A known type of exception. */
+                request.setAttribute("faultCode", ((SOAPException) cause).getFaultcode());
+                request.setAttribute("faultString", ((SOAPException) cause).getFaultstring());
                 
-            }
-            else if (cause instanceof RemoteException) {
+            } else if (cause instanceof RemoteException) {
                 
                 // An older type of exception handling, replaced by the v2.1 SOAP interface onwards.
                 request.setAttribute("faultCode", "Server");
                 request.setAttribute("faultString", cause.getMessage());
                 
-            }
-            else {
+            } else {
                 
-                // An unknown type of exception. Should not happen.
+                /* An unknown type of exception. Should not happen. */
                 InternalException internal = new InternalException("");
                 request.setAttribute("faultCode", internal.getFaultcode());
                 request.setAttribute("faultString", internal.getFaultstring());
-                messageLogger.logCritical("Unknown internal exception", (Exception)cause);
+                messageLogger.logCritical("Unknown internal exception", (Exception) cause);
                 
             }
             
-            // Log what we're doing.
+            /* Log what we're doing. */
             messageLogger.logWarn("Replying with SOAP Fault - faultCode: '" + 
                                    request.getAttribute("faultCode") + 
                                    "' faultString: '" + 
                                    request.getAttribute("faultString") + "'");
             
-            // Get the request dispatcher.
+            /* Get the request dispatcher. */
             requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-SOAP-Error.JSP");
             
         } else {
             
-            // Not a SOAP request?
+            /* Not a SOAP request? */
             request.setAttribute("logMessage", message);
             requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-Error.jsp");
             

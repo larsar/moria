@@ -6,10 +6,15 @@
 			session="false" 
 			contentType="text/html; charset=ISO-8859-1" 
 			pageEncoding="ISO-8859-1" 
-			import="java.util.ResourceBundle, java.util.Properties, no.feide.moria.servlet.RequestUtil, no.feide.moria.controller.*" %>
+			import="java.util.ResourceBundle, java.util.Properties, no.feide.moria.servlet.*, no.feide.moria.controller.*, no.feide.moria.log.*" %>
 
 
-<% response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE); %>
+<%
+   response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+	 MessageLogger messageLogger = new MessageLogger(JSPLogIdentifier.class);
+   messageLogger.logCritical("Showing error page", exception);
+%>
 
 <%
 Properties pconfig;

@@ -32,7 +32,7 @@ import no.feide.moria.log.MessageLogger;
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
-public class MoriaLifeCycleListener implements ServletContextListener {
+public final class MoriaLifeCycleListener implements ServletContextListener {
 
     /** Logger used by this class. */
     private MessageLogger messageLogger = null;
@@ -42,13 +42,15 @@ public class MoriaLifeCycleListener implements ServletContextListener {
      * @param event The notification event.
      * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
      */
-    public final void contextInitialized(final ServletContextEvent event) {
+    public synchronized void contextInitialized(final ServletContextEvent event) {
         if (messageLogger == null)
             messageLogger = new MessageLogger(MoriaLifeCycleListener.class);
 
+        messageLogger.logWarn("Starting initialization of Moria.");
+
         try {
             MoriaController.initController(event.getServletContext());
-            messageLogger.logInfo("New servlet context. Controller initialized.");
+            messageLogger.logWarn("New servlet context created. Controller initialized.");
         } catch (InoperableStateException ise) {
             final String message = "New servlet context. Unable to start controller.";
             messageLogger.logCritical(message);
@@ -61,11 +63,11 @@ public class MoriaLifeCycleListener implements ServletContextListener {
      * @param event The notification event.
      * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
      */
-    public final void contextDestroyed(final ServletContextEvent event) {
+    public synchronized void contextDestroyed(final ServletContextEvent event) {
         if (messageLogger == null)
             messageLogger = new MessageLogger(MoriaLifeCycleListener.class);
 
         MoriaController.stopController();
-        messageLogger.logInfo("Servlet context destroyed. Controller stopped.");
+        messageLogger.logWarn("Servlet context destroyed. Controller stopped.");
     }
 }

@@ -88,6 +88,7 @@ public final class LogoutServlet extends HttpServlet {
         }
 
         if (cookieValue == null) {
+            // TODO: Check for redir parameter first
             showPage(request, response);
         }
 
