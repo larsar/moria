@@ -6,10 +6,8 @@
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
 
-  <!-- Targets to build the Mellon API. -->
   <target name="prepare"
-          description="Mellon API: Prepare build directory">
- 
+          description="Mellon API: Prepare build directory"> 
     <mkdir dir="build"/>
     <mkdir dir="dist"/>
   </target>
@@ -27,11 +25,8 @@
         <fileset dir="../common/dist" includes="*.jar"/>
       </classpath>
     </javac>
-      
-      <jar destfile="dist/moriaAxisConnector.jar" basedir="build"/>
+    <jar destfile="dist/moriaAxisConnector.jar" basedir="build"/>
   </target>
-
-
 
   <target name="javadoc"
           description="Mellon API: Generate JavaDoc">
@@ -45,10 +40,10 @@
     </javadoc>
   </target>
 
-
   <target name="clean"
           description="Mellon API: Clean up">
     <delete dir="build"/>
     <delete dir="dist"/>
   </target>
+
 </project>
