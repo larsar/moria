@@ -49,12 +49,6 @@ import org.w3c.dom.Document;
  */
 public final class SimpleAxisServlet extends AxisServlet {
 
-    /**
-     * Identifies the directory containing the jsp-files. Assigned a value in
-     * init().
-     */
-    private String jspLocation;
-
     /** Logger for this class. */
     private MessageLogger messageLogger = new MessageLogger(SimpleAxisServlet.class);
 
@@ -70,13 +64,6 @@ public final class SimpleAxisServlet extends AxisServlet {
      */
     public void init() {
         super.init();
-        /* Read value from context-param set in web.xml. */
-        jspLocation = getServletContext().getInitParameter("jsp.location");
-
-        /* */
-        if (jspLocation == null) {
-            throw new IllegalStateException("jsp.location init parameter must be set.");
-        }
     }
 
     /**
@@ -207,7 +194,7 @@ public final class SimpleAxisServlet extends AxisServlet {
 
         } else {
             /* Get JSP for handling HTML output */
-            RequestDispatcher requestDispatcher = request.getRequestDispatcher(jspLocation + "/axis.jsp");
+            RequestDispatcher requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis.JSP");
 
             /* Set the service name as attribute for the JSP */
             request.setAttribute("serviceName", serviceName);
@@ -435,8 +422,6 @@ public final class SimpleAxisServlet extends AxisServlet {
      */
     private void handleException(final String message, final Exception exception, final HttpServletRequest request,
             final HttpServletResponse response) {
-        // TODO: Implement. Remove throwing of ServletException, print sane
-        // message and log exception.
 
         /* We're not able to recover from this */
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -448,23 +433,21 @@ public final class SimpleAxisServlet extends AxisServlet {
 
         /* Set up the error response specially for SOAP requests */
         if (request.getMethod().equals("POST") && request.getHeader("SOAPAction") != null) {
-            requestDispatcher = request.getRequestDispatcher(jspLocation + "/axis-soap-error.jsp");
-            response.setContentType("application/soap+xml; charset=utf-8");
-            response.setCharacterEncoding("UTF-8");
+            // TODO: Possibly extend this crude exception handling to differentiate
+            // between server and client faults.
+            request.setAttribute("faultCode", "Server");
+            request.setAttribute("faultString", exception.getMessage());
+            requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-SOAP-Error.JSP");
         } else {
-            requestDispatcher = request.getRequestDispatcher(jspLocation + "/axis-error.jsp");
-
-            /* Set the attributs for the response and the JSP */
-            response.setContentType("text/html; charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
             request.setAttribute("logMessage", message);
+            requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-Error.jsp");
         }
 
         /* Log and return if dispatch fails */
         try {
             requestDispatcher.forward(request, response);
         } catch (Exception e) {
-            messageLogger.logCritical("Unable to process axis-soap-error.jsp", e);
+            messageLogger.logCritical("Unable to dispatch to Axis error jsp", e);
             return;
         }
     }
