@@ -102,7 +102,7 @@ extends HttpServlet {
     // parameters.
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
-
+       
         // Get current configuration.
         final Properties config = getConfig();
 
@@ -283,13 +283,10 @@ extends HttpServlet {
             request.setAttribute(RequestUtil.ATTR_SEC_LEVEL, "" + MoriaController.getSecLevel(loginTicketId));
 
         } catch (UnknownTicketException e) {
-            log.logCritical("UnknownTicketException");
             errorType = RequestUtil.ERROR_UNKNOWN_TICKET;
         } catch (IllegalInputException e) {
-            log.logCritical("IllegalInputException");
             errorType = RequestUtil.ERROR_UNKNOWN_TICKET;
         } catch (InoperableStateException e) {
-            log.logCritical("InoperableStateException");
             errorType = RequestUtil.ERROR_MORIA_DOWN;
         }
 
