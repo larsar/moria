@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD Simplified DocBook XML V1.0//EN"
+"http://www.oasis-open.org/docbook/xml/simple/1.0/sdocbook.dtd">
+<article>
+  <title>Bruk av Axis mot Moria HOWTO</title>
+
+  <articleinfo>
+    <date>07.11.2003</date>
+
+    <author>
+      <firstname>Lars Preben S.</firstname>
+
+      <surname>Arnesen</surname>
+    </author>
+  </articleinfo>
+
+  <section>
+    <title>Introduksjon</title>
+
+    <para>Moria er implementert som en Web Service og kan med andre ord
+    aksesseres over SOAP-protokollen (Simple Object Access Protocol). For å
+    forenkle SOAP-kommunikasjonen finnes det SOAP-implementasjoner for de
+    fleste programmeringsspråk. Denne artikkelen forutsetter kjennskap til
+    SOAP og gir kun et kort eksempel på hvordan det er mulig å bruke
+    Axis-SOAP-implementasjonen for å bruke Moria fra en Java-applikasjon.
+    </para>
+  </section>
+
+  <section>
+    <title>Hent Axis</title>
+
+    <para>Axis er Apaches Web Service-prosjekt. Programvaren kan hentes ned
+    fra <ulink url="http://ws.apache.org/axis/">deres website</ulink>.
+    Installer Axis etter installasjonsinstruksene som følger med programvaren.</para>
+  </section>
+
+  <section>
+    <title>Generering av stubs</title>
+
+    <para>Den vanligste måten å benytte distribuerte SOAP-objekter, er å
+    generere såkalte &#34;stubs&#34;. Stubs-objektene er lokale
+    representasjoner av de distribuerte objektene, og all kommunikasjon mellom
+    klient og tjener skjer transparent. Stubsklassene genereres basert på
+    WSDL-filen (Web Service Definition Language), av programvare som medfølger
+    SOAP-implementasjonen. I dette tilfellet brukes Axis sitt
+    &#34;wsdl2java&#34;-program.</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Legg jar-filene i Axis sin lib-katalog i CLASSPATH-en.</para>
+      </listitem>
+
+      <listitem>
+        <para>Hent ned Morias WSDL-fil, og lagre den på disk: <ulink
+        url="https://demo:demo@login.feide.no/moria/Authentication?WSDL">https://demo:demo@login.feide.no/moria/Authentication?WSDL</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>Generer stubs: java org.apache.axis.wsdl.WSDL2Java FILNAVN.wsdl</para>
+      </listitem>
+    </orderedlist>
+
+    <para>WSDL2Java har nå generert stubs som kan brukes til å aksessere
+    Moria. Mest praktisk er det å pakke klassene i en jar-fil (&#39;jar cf
+    moria-axis.jar STI_TIL_GENERERTE_KLASSER&#39;) og legge denne jar-filen
+    til CLASSPATH-en.</para>
+  </section>
+
+  <section>
+    <title>Kodeeksempler</title>
+
+    <para></para>
+  </section>
+</article>
