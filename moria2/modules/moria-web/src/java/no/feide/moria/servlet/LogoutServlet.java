@@ -174,7 +174,11 @@ public final class LogoutServlet extends HttpServlet {
      */
     private void showPage(final HttpServletRequest request, final HttpServletResponse response) {
         /* Resource bundle. */
-        ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), request.getCookies(), null,
+        String langFromCookie = null;
+        if (request.getCookies() != null) {
+            langFromCookie = RequestUtil.getCookieValue((String)RequestUtil.getConfig(getServletContext()).get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
+        }
+        ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), langFromCookie, null,
                 request.getHeader("Accept-Language"), "en");
         request.setAttribute("bundle", bundle);
 
