@@ -41,7 +41,9 @@ public class AuthorizationManager {
      */
     private Map authzClients = Collections.synchronizedMap(new HashMap());
 
-    /** True if the authorization manager is ready to be used */
+    /**
+     * True if the authorization manager is ready to be used
+     */
     private boolean activated = false;
 
     /**
@@ -270,7 +272,7 @@ public class AuthorizationManager {
     /**
      * Validates a request for access to attributes for a given client/service.
      *
-     * @param clientID the indentifier of the client
+     * @param clientID            the indentifier of the client
      * @param requestedAttributes the list of requested attributes
      * @return true if the service is allowed access, false if not or the client does not exist
      */
@@ -288,7 +290,7 @@ public class AuthorizationManager {
     /**
      * Validates a request for access to SSO for a given client/service.
      *
-     * @param clientID the indentifier of the client
+     * @param clientID            the indentifier of the client
      * @param requestedAttributes the list of requested attributes
      * @return true if the service is allowed access, false if not or the client does not exist
      */
@@ -306,7 +308,7 @@ public class AuthorizationManager {
     /**
      * Validates a request for access to operations for a given client/service.
      *
-     * @param clientID the indentifier of the client
+     * @param clientID            the indentifier of the client
      * @param requestedOperations the list of requested operations
      * @return true if the service is allowed access, false if not or the client does not exist
      */
@@ -358,9 +360,7 @@ public class AuthorizationManager {
         try {
             Document doc = builder.build(new File(fileName));
             HashMap newClients = parseRootElem(doc.getRootElement());
-            synchronized (authzClients) {
-                authzClients = newClients;
-            }
+            setAuthzClients(newClients);
         } catch (JDOMException e) {
             // TODO: Log
             System.out.println("Error during parsing of authorization database file. Still using old database.");
