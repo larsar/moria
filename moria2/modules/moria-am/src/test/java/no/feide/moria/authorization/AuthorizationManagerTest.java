@@ -859,12 +859,109 @@ public class AuthorizationManagerTest extends TestCase {
         } catch (UnknownServicePrincipalException e) {
         }
 
-        String[] expected = new String[]{"attr1", "attr2", "attr3"};
-        String[] actual = authMan.getAttributes("test");
+        HashSet expected = new HashSet();
+        expected.add("attr1");
+        expected.add("attr2");
+        expected.add("attr3");
 
-        assertEquals("Attribute size differs", expected.length, actual.length);
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals("Attribute list differs", expected[i], actual[i]);
+        HashSet actual = authMan.getAttributes("test");
+        compareHashSets("Attribute", expected, actual);
+    }
+
+    /**
+     * Test the getSubsystems method.
+     *
+     * @see AuthorizationManager#getSubsystems(java.lang.String)
+     * @throws UnknownServicePrincipalException
+     */
+    public void testGetSubsystems() throws UnknownServicePrincipalException {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        Properties props = new Properties();
+        props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
+        authMan.setConfig(props);
+
+        /* Invalid arguments */
+        try {
+            authMan.getSubsystems(null);
+            fail("IllegalArgumentException should be raised, servicePrincipal is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            authMan.getSubsystems("");
+            fail("IllegalArgumentException should be raised, servicePrincipal is empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Non-existing principal */
+        try {
+            authMan.getSubsystems("doesNotExist");
+            fail("UnknownServicePrincipalException should be raised, invalid servicePrincipal");
+        } catch (UnknownServicePrincipalException e) {
+        }
+
+        HashSet expected = new HashSet();
+        expected.add("sub1");
+        expected.add("sub2");
+
+        HashSet actual = authMan.getSubsystems("test");
+        compareHashSets("Subsystem", expected, actual);
+    }
+
+    /**
+     * Test the getOperations method.
+     *
+     * @see AuthorizationManager#getOperations(java.lang.String) 
+     * @throws UnknownServicePrincipalException
+     */
+    public void testGetOperations() throws UnknownServicePrincipalException {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        Properties props = new Properties();
+        props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
+        authMan.setConfig(props);
+
+        /* Invalid arguments */
+        try {
+            authMan.getOperations(null);
+            fail("IllegalArgumentException should be raised, servicePrincipal is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            authMan.getOperations("");
+            fail("IllegalArgumentException should be raised, servicePrincipal is empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Non-existing principal */
+        try {
+            authMan.getOperations("doesNotExist");
+            fail("UnknownServicePrincipalException should be raised, invalid servicePrincipal");
+        } catch (UnknownServicePrincipalException e) {
+        }
+        HashSet expected = new HashSet();
+        expected.add("LocalAuth");
+        expected.add("InteractiveAuth");
+
+        HashSet actual = authMan.getOperations("test");
+        compareHashSets("Operation", expected, actual);
+    }
+
+    /**
+     * Compares two HashSets and expects them to contain equal set of strings.
+     *
+     * @param type The name of the element in the HashSet.
+     * @param expected The HashSet to compare to 'actual'
+     * @param actual The HashSet to compare to 'expected'
+     */
+    private void compareHashSets(String type, HashSet expected, HashSet actual) {
+        assertEquals("HashSet size differs", expected.size(), actual.size());
+        Iterator it = expected.iterator();
+        while (it.hasNext()) {
+            String element = (String) it.next();
+            assertTrue(type+" differs. '"+element+"' was not found.", actual.contains(element));
         }
     }
+
+
 }

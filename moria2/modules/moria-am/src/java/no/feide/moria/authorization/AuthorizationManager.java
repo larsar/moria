@@ -432,7 +432,7 @@ public class AuthorizationManager {
      *          if the servicePrincipal does not exist
      * @see AuthorizationClient#getAttributes()
      */
-    public String[] getAttributes(String servicePrincipal) throws UnknownServicePrincipalException {
+    public HashSet getAttributes(String servicePrincipal) throws UnknownServicePrincipalException {
         /* Validate argument */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
             throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
@@ -443,7 +443,52 @@ public class AuthorizationManager {
             throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
         }
 
-        HashMap attributes = authzClient.getAttributes();
-        return (String[]) attributes.keySet().toArray(new String[attributes.size()]);
+        return new HashSet(authzClient.getAttributes().keySet());
+    }
+
+    /**
+     * Returns the configured subsystems for a given service.
+     *
+     * @param servicePrincipal
+     * @return A string array with the subsystem names that is configured for the service.
+     * @throws UnknownServicePrincipalException
+     *          if the servicePrincipal does not exist
+     * @see AuthorizationClient#getSubsystems()
+     */
+    public HashSet getSubsystems(String servicePrincipal) throws UnknownServicePrincipalException {
+        /* Validate argument */
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
+
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+        if (authzClient == null) {
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
+        }
+
+        return authzClient.getSubsystems();
+    }
+
+    /**
+     * Returns the configured operations for a given service.
+     *
+     * @param servicePrincipal
+     * @return A string array with the operation names that is configured for the service.
+     * @throws UnknownServicePrincipalException
+     *          if the servicePrincipal does not exist
+     * @see AuthorizationClient#getOperations()
+     */
+    public HashSet getOperations(String servicePrincipal) throws UnknownServicePrincipalException {
+        /* Validate argument */
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
+
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+        if (authzClient == null) {
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
+        }
+
+        return authzClient.getOperations();
     }
 }
