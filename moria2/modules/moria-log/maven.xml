@@ -5,10 +5,10 @@
 <!-- Module: moria-log -->
 
 <project
-  xmlns:j="jelly:core"
-  xmlns:m="jelly:maven"
-  xmlns:u="jelly:util"
-  default="project:install">
+   xmlns:j="jelly:core"
+   xmlns:m="jelly:maven"
+   xmlns:u="jelly:util"
+   default="project:install">
 
   <postGoal
      name="test:prepare-filesystem">
@@ -16,13 +16,13 @@
   </postGoal>
 
   <goal
-    name="project:install"
-    prereqs="jar:install"
-    description="Build and install jar in local repository"/>
+     name="project:install"
+     prereqs="jar:install"
+     description="Build and install jar in local repository"/>
 
   <goal
-    name="project:deploy"
-    prereqs="jar:deploy"
-    description="Build and deploy jar in remote repository"/>
+     name="project:deploy"
+     prereqs="jar:deploy"
+     description="Build and deploy jar to remote repository"/>
 
 </project>

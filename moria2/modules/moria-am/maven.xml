@@ -18,11 +18,11 @@
   <goal
      name="project:install"
      prereqs="jar:install"
-     description="Build and install this project in the local repository"/>
+     description="Build and install jar in local repository"/>
   
   <goal
      name="project:deploy"
      prereqs="jar:deploy"
-     description="Build and deploy jar in remote repository"/>
+     description="Build and deploy jar to remote repository"/>
 
 </project>
