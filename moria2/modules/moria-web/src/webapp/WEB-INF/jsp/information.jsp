@@ -69,7 +69,9 @@
           String description = (String) tabledata.get(i+1);
           String userstring = (String) tabledata.get(i+2);
           String relevance = (String) tabledata.get(i+3);
-          
+          if (userstring.equals("p_yes")) {
+          userstring=bundle.getString("p_yes");
+          }
           if (userstring == null || userstring.equals("")) {	
 		    if (relevance.equals("fd_mandatory")) {
                 userstring = "<FONT COLOR=\"#ff0000\">" + bundle.getString("m_missing") + " " + userorg + "</FONT>";

@@ -174,7 +174,7 @@ public class InformationServlet extends HttpServlet {
         int n = temp.size();
         for (int i = 0; i < n; i++) {
             AttribsData adata = (AttribsData) attribsArray[i];
-            String key2 = (String) adata.getData("key");
+            String key2 = (String) adata.getData("key");  
             boolean hasuserdata = userData.containsKey(key2);
             String[] userdata = (String[]) userData.get(key2);
 
@@ -207,6 +207,12 @@ public class InformationServlet extends HttpServlet {
                 // set to bundle name
                 relevanceString = "fd_optional";
             }
+            //Check if a user has picture
+            if (key2.equals("jpegPhoto")) {
+                if (userdata != null) {
+                    userstring = "p_yes";                    
+                }
+               }
             out.add(link);
             out.add(description);
             out.add(userstring);
