@@ -3,16 +3,18 @@ package no.feide.moria.directory.index;
 import java.util.List;
 
 /**
- * The interface to an underlying index implementation.
+ * This is the interface used to access an underlying index implementation.
  */
 public interface DirectoryManagerIndex {
 
     /**
-     * Looks up the backend reference from a given logical ID.
+     * Looks up one or more backend references from a given logical ID,
+     * typically a username.
      * @param id
      *            The logical ID.
-     * @return A list of backend references, or <code>null</code> if no such
-     *         reference was found.
+     * @return A <code>List</code> object containing one or more backend
+     *         references as <code>String</code> objects, or <code>null</code>
+     *         if no such reference was found.
      */
     public List lookup(String id);
 

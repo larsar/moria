@@ -13,33 +13,53 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 /**
- * Configuration handler for the directory manager.
+ * Configuration handler for the Directory Manager. Parses the configuration
+ * file.
  */
 public class DirectoryManagerConfiguration {
-   
-    /** Holds the index file location. */
+
+    /** The message logger. */
+    private final MessageLogger log = new MessageLogger(DirectoryManagerConfiguration.class);
+
+    /** The location of the index file. */
     private String indexFilename;
-    
+
     /** The index update frequency, in milliseconds. */
     private long indexUpdateFrequency;
 
     /** Internal representation of the backend class. */
     private Class backendFactoryClass;
 
-    /** The message logger. */
-    private final MessageLogger log = new MessageLogger(DirectoryManagerConfiguration.class);
-    
-    /** The required configuration file property, for external reference. */
+    /**
+     * The required configuration file property, for external reference.
+     * Currently contains the value
+     * <code>no.feide.moria.directory.configuration</code>.
+     */
     public final static String CONFIGURATION_PROPERTY = "no.feide.moria.directory.configuration";
 
 
     /**
-     * Constructor. Creates a new configuration object and reads the
-     * configuration file(s).
+     * Constructor. Creates a new configuration object and reads the Directory
+     * Manager configuration file. <br>
+     * <br>
+     * Note that the actual parsing of the configuration file is done by
+     * <code>parseIndexConfig(Element)</code> and
+     * <code>parseBackendConfig(Element)</code>.
      * @param config
      *            The Directory Manager configuration passed on from
      *            <code>DirectoryManager.setConfig(Properties)</code>. Must
-     *            include the property <code>no.feide.moria.directory.configuration</code>.
+     *            include the property given by
+     *            <code>DirectoryManagerConfiguration.CONFIGURATION_PROPERTY</code>.
+     * @throws IllegalArgumentException
+     *             If <code>config</code> is <code>null</code>, or if the
+     *             property given by
+     *             <code>DirectoryManagerConfiguration.CONFIGURATION_PROPERTY</code>
+     *             is not set or is an empty string. Also thrown if unable to
+     *             read from or parse the configuration file.
+     * @see DirectoryManager#setConfig(Properties)
+     * @see #CONFIGURATION_PROPERTY
+     * @see #parseBackendConfig(Element)
+     * @see #parseIndexConfig(Element)
      */
     public DirectoryManagerConfiguration(final Properties config) {
 
@@ -50,7 +70,7 @@ public class DirectoryManagerConfiguration {
         // Preparing to read configuration from file.
         final String configFile = (String) config.get(CONFIGURATION_PROPERTY);
         if (configFile == null || configFile.equals(""))
-            throw new DirectoryManagerConfigurationException("Property no.feide.moria.directory.configuration not set)");
+            throw new DirectoryManagerConfigurationException("Property " + DirectoryManagerConfiguration.CONFIGURATION_PROPERTY + " not set)");
 
         // Read index (not the index files themselves, mind you) and backend
         // configuration.
@@ -71,11 +91,24 @@ public class DirectoryManagerConfiguration {
     /**
      * Look up a given child element from a root element, and make sure the
      * child element is unique (that is, there is one and only one existence).
+     * Used by <code>parseBackendConfig(Element)</code> and
+     * <code>parseIndexConfig(Element)</code> to make sure the configuration
+     * file is non-ambiguous.
      * @param rootElement
-     *            The root element. Cannot be <code>null</code>.
+     *            The root element of the configuration, as parsed from file.
+     *            Cannot be <code>null</code>.
      * @param name
      *            The child element's name. Cannot be <code>null</code>.
-     * @return The child element itself.
+     * @return The child element itself, as per the
+     *         <code>org.jdom.Element.getChild(String)</code> method.
+     * @throws IllegalArgumentException
+     *             If <code>rootElement</code> or <code>name</code> is
+     *             <code>null</code>.
+     * @throws DirectoryManagerConfigurationException
+     *             If more than one child node with the given name was found.
+     * @see #parseBackendConfig(Element)
+     * @see #parseIndexConfig(Element)
+     * @see org.jdom.Element#getChild(java.lang.String)
      */
     private Element getUniqueElement(final Element rootElement, final String name)
     throws DirectoryManagerConfigurationException {
@@ -86,11 +119,16 @@ public class DirectoryManagerConfiguration {
         if (name == null)
             throw new IllegalArgumentException("Element name cannot be NULL");
 
-        // Get the element, with sanity checks.
+        // Get any child elements matching the given name.
         List elements = rootElement.getChildren(name);
-        if (elements.size() != 1) { throw new DirectoryManagerConfigurationException('\"' + name + "\" element not unique in configuration file"); }
-        elements = null; // Cleanup.
+        if (elements.size() != 1) {
 
+            // The element was not unique.
+            throw new DirectoryManagerConfigurationException('\"' + name + "\" element not unique in configuration file");
+
+        }
+
+        // Return the element.
         return rootElement.getChild(name);
 
     }
@@ -111,44 +149,44 @@ public class DirectoryManagerConfiguration {
         // Get the index element, with sanity checks.
         final Element indexElement = getUniqueElement(rootElement, "Index");
         HashMap indexConfig = new HashMap();
-        
+
         // Get index filename, with sanity checks.
         Attribute a = indexElement.getAttribute("file");
         if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
             throw new DirectoryManagerConfigurationException("Index file not set in configuration file");
         indexFilename = a.getValue();
-        
+
         // Get index update frequency, with sanity checks.
         a = indexElement.getAttribute("update");
         if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
             throw new DirectoryManagerConfigurationException("Index update frequency not set in configuration file");
-        indexUpdateFrequency = 1000*Integer.parseInt(a.getValue());
+        indexUpdateFrequency = 1000 * Integer.parseInt(a.getValue());
         if (indexUpdateFrequency <= 0)
             throw new DirectoryManagerConfigurationException("Index update frequency must be greater than zero");
 
     }
-    
-    
+
+
     /**
      * Get the serialized index file name.
      * @return The index file name.
      */
     public String getIndexFilename() {
-        
+
         return indexFilename;
-        
+
     }
-    
-    
+
+
     /**
      * Get the index update frequency.
      * @return The index update frequency, in milliseconds.
      */
     public long getIndexUpdateFrequency() {
-        
+
         return indexUpdateFrequency;
-        
-    }    
+
+    }
 
 
     /**
