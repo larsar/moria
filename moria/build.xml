@@ -115,7 +115,14 @@
 
   <target name="moria:build"
           description="Moria: Build deployable WAR"
-          depends="moria:wsdl"/>
+          depends="moria:wsdl">
+    <delete file="dist/feide-moria-authorization.jar"/>
+    <jar jarfile="dist/feide-moria-authorization.jar">
+      <fileset dir="build.moria/WEB-INF/classes">
+        <include name="no/feide/moria/authorization/**"/>
+      </fileset>
+    </jar>
+  </target>
 
   <target name="moria:deploy"
           description="Moria: Deploy to Tomcat">
