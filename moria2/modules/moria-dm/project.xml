@@ -18,6 +18,14 @@
   <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-dm</siteDirectory>
 
   <dependencies>
+    <dependency>
+      <groupId>moria</groupId>
+      <artifactId>moria-log</artifactId>
+      <version>1.0-b1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
   </dependencies>
 
   <build>
