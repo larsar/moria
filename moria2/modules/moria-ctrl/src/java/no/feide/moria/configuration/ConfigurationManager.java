@@ -34,14 +34,24 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * ConfigurationManager watches configuration files and reloads them when the
- * are changed. The constructor requires the
- * <code>no.feide.moria.configuration.cm</code> property to be set, and the
- * property has to point to the configuration file for the ConfigurationManager
- * module. The file can be referenced by either full file path or as a resource
- * in the classpath. <br/><br/>The configuration file has to contain properties
- * that points to the other modules properties files. These files kan be
- * referenced by either full file path or as a resource in the classpath. The
+ * The configuration manager's task is to load and monitor the configuration
+ * files for changes. Each module (authorization, web, store and directory)
+ * has a configuration file which is read and passed as a Properties object 
+ * to the module at startup. The authorization module does its own file
+ * parsing, so for that module the Properties object just contains the 
+ * file name of configuration file, which is then read and parsed by the 
+ * authorization module.
+ * 
+ * If a configuration file is changed, the entire file is reread and the
+ * updated configuration is passed to the corresponding module.
+ *  
+ * The constructor requires the <code>no.feide.moria.configuration.cm</code>
+ * property to be set, and the property has to point to the configuration file
+ * for the ConfigurationManager module. The file can be referenced by either
+ * full file path or as a resource in the classpath. <br/><br/>The
+ * configuration file has to contain properties that points to the other modules
+ * properties files. These files kan be referenced by either full file path or
+ * as a resource in the classpath. The
  * <code>no.feide.moria.configuration.fileListenerIntervalSeconds</code>
  * attribute specifies the interval between each file poll. <br/><p/>
  * 
@@ -49,11 +59,17 @@ import java.util.TimerTask;
  * 
  *  
  *   
- *    # Example content for ConfigurationManager properties
- *    no.feide.moria.configuration.fileListenerIntervalSeconds=1
- *    no.feide.moria.configuration.sm=/sm-test-valid.properties
- *    no.feide.moria.configuration.dm=/dm-test-valid.properties
- *    no.feide.moria.configuration.am=/am-data.xml
+ *    
+ *     
+ *      
+ *       # Example content for ConfigurationManager properties
+ *       no.feide.moria.configuration.fileListenerIntervalSeconds=1
+ *       no.feide.moria.configuration.sm=/sm-test-valid.properties
+ *       no.feide.moria.configuration.dm=/dm-test-valid.properties
+ *       no.feide.moria.configuration.am=/am-data.xml
+ *       
+ *      
+ *     
  *    
  *   
  *  
@@ -61,6 +77,7 @@ import java.util.TimerTask;
  * 
  * <p/>When a configuration file is changed the content is read into a
  * properties object which is sent to the MoriaController.
+ * 
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  * @see no.feide.moria.controller.MoriaController

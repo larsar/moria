@@ -36,10 +36,19 @@ import java.util.Properties;
 /**
  * The AuthorizationManager class is used to parse and store authorization data.
  * The authorization data source is XML which is passed as a properties object
- * through the setConfig method. When a new set of data arrives the
- * authorization manager parses it and replaces the old dataset if the parsing
- * was successful. The authorization manager can then be used to answer
- * authorization questions, most likely from the Moria controller.
+ * through the setConfig method. The config data must contain information about
+ * every web service allowed to access Moria, and which attributes operations
+ * and subsystems the service can access.
+ * 
+ * When a new set of data arrives the authorization manager parses it and
+ * replaces the old dataset if the parsing was successful. The authorization
+ * manager can then be used to answer authorization questions, most likely from
+ * the Moria controller.
+ * 
+ * When the controller receives a request it asks the authorization manager if
+ * the web service is authorized to perform the request. Every request is
+ * supplied with the service principal.
+ * 
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
