@@ -28,10 +28,21 @@ public class DemoServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         response.setContentType("text/html");
 
+
+
         /* Fetch userdata from the HttpSession. */
         HttpSession httpSession = request.getSession(true);
         HashMap userData = (HashMap) httpSession.getAttribute("userData");
 
+
+        /* Logout */
+        if (request.getParameter("logout") != null) {
+            httpSession.removeAttribute("userData");
+            ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
+            ((HttpServletResponse)response).setHeader("Location", "http://demo.feide.no/");
+        }
+
+        System.out.println("URL: "+request.getQueryString());
         
         /* HTML header */
         out.println("<HTML>");
@@ -60,7 +71,10 @@ public class DemoServlet extends HttpServlet {
 
         /* Create a table with the contents of the userData hash. */
         else {
-            out.println("<B>The user has been authenticated and the following attributes are now stored in the HttpSession:</B></BR></BR>");
+            /* Logout link */
+            out.println("[<a href=\""+request.getRequestURL().toString()+"?logout"+"\">Logout</a>]<BR>");
+
+            out.println("<B>You have been authenticated and the following attributes are now stored in the HttpSession of the web service:</B></BR></BR>");
             
             out.println("<TABLE border=1>");
             out.println("<TR><TH>Key</TH><TH>Value</TH></TR>");
