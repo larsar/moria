@@ -18,7 +18,6 @@
 					<Value>value3</Value>
 				</Attribute>										
 			</User>
-			
 			<User name="user1@some.realm" password="password">
 				<Attribute name="eduPersonPrincipalName">
 					<Value>user1@some.realm</Value>
@@ -62,7 +61,15 @@
 				<Attribute name="eduPersonAffiliation">
 					<Value>staff</Value>									
 				</Attribute>											
-			</User>											
+			</User>
+			<User name="user@any.realm" password="password">
+				<Attribute name="eduPersonPrincipalName">
+					<Value>user@any.realm</Value>
+				</Attribute>	
+				<Attribute name="eduPersonAffiliation">
+					<Value>student</Value>									
+				</Attribute>											
+			</User>										
 		</Dummy>
 	</Backend>
 

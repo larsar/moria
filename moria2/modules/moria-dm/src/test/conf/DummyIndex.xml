@@ -8,5 +8,6 @@
 	<Exception id="user3@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="some.realm"/>	
 	<Exception id="user4@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="another.realm"/>	
 	<Exception id="user5@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="another.realm"/>				
+	<Exception id="user@any.realm" reference="ldap://another.ldap.server:636/dc=search,dc=base" realm="any.realm"/>				
 	
 </Index>
