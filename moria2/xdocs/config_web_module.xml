@@ -147,7 +147,13 @@ $Id$
                     The time to live, in hours, for the cookie used to store the 
                     user's previously selected organization.
                     </p>
-                    </li>           
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.faqlink</code>
+                    <p>
+                    The URL to the FAQ document.
+                    </p>
+                    </li>
                 </ul>
             </subsection>
             <subsection name="Demo Servlet Properties">
@@ -377,6 +383,11 @@ no.feide.moria.web.cookie.org.name=MoriaUserOrganizationCookie
 
 # Time to live, in hours, for cookies used to store user's previously selected organization.
 no.feide.moria.web.cookie.org.ttl=1
+
+# Link to the Moria2 FAQ.
+no.feide.moria.web.faqlink=http://localhost:8080/moria/faq
+
+
 
 
 #
