@@ -85,6 +85,11 @@
     <servlet-name>Information-About.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/information-about.jsp</jsp-file>
   </servlet>
+  
+  <servlet>
+    <servlet-name>Information-Welcome.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/information-welcome.jsp</jsp-file>
+  </servlet>
  
  <servlet>
     <servlet-name>Faq.JSP</servlet-name>
@@ -116,6 +121,11 @@
     <url-pattern>/Logout</url-pattern>
   </servlet-mapping>
  
+  <servlet-mapping>
+    <servlet-name>Information-Welcome.JSP</servlet-name>
+    <url-pattern>/Information-Welcome</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>Status</servlet-name>
     <url-pattern>/Status</url-pattern>

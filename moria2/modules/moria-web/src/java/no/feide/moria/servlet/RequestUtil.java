@@ -201,6 +201,11 @@ public final class RequestUtil {
      * Current value is <code>"login"</code>.
      */
     public static final String BUNDLE_LOGIN = "login";
+     
+    /**
+     * Bundle for the Welcome page for the Information Service.
+     */
+    public static final String BUNDLE_INFOWELCOME = "infowelcome";
 
     /**
      * Configuration property for the InformationServlet feideattribs xml file
