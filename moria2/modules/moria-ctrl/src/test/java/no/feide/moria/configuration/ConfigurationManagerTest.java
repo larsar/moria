@@ -47,7 +47,6 @@ public class ConfigurationManagerTest extends TestCase {
      * @throws ConfigurationManagerException should not be thrown
      */
     public void testCreateConfigurationManager() throws ConfigurationManagerException {
-        ConfigurationManager confMan;
 
         /* No base config property */
         System.setProperty(configBaseProperty, "");
