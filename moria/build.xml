@@ -52,7 +52,7 @@
     <echo message="Using config: ${moria_config}"/>
     <copy file="${moria_config}" tofile="build/WEB-INF/classes/moria.properties"/>
     <copy todir="build/WEB-INF/lib">
-      <fileset dir="${include_libs}">
+      <fileset dir="${jaxrpc_libs}">
         <include name="**/*.jar"/>
       </fileset>
     </copy>  
@@ -76,7 +76,7 @@
            destdir="build/WEB-INF/classes"
            includes="no/feide/moria/**">
       <classpath>
-        <fileset dir="${include_libs}">
+        <fileset dir="${jaxrpc_libs}">
           <include name="*.jar"/>
         </fileset>
         <fileset file="${servlet_jar}"/>
@@ -144,7 +144,7 @@
              packagenames="no.feide.moria.*"
              source="1.4">
       <classpath>
-        <fileset dir="${include_libs}">
+        <fileset dir="${jaxrpc_libs}">
           <include name="*.jar"/>
         </fileset>
       </classpath>
