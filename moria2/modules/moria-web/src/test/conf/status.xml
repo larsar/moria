@@ -5,11 +5,15 @@
    <User>
       <Name>test@uninett.no</Name>
       <Password>test</Password>
+      <Organization>Uninett</Organization>
+      <Contact>moria-drift@uninett.no</Contact>
    </User>
 
    <User>
-      <Name>tull@tull.no</Name>
-      <Password>tull</Password>
+      <Name>test@test.no</Name>
+      <Password>test</Password>
+      <Organization>Test</Organization>
+      <Contact>test-drift@test.no</Contact>
    </User>
 
 </Testuserlist>
