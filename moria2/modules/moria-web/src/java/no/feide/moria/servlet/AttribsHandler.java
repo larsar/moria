@@ -15,6 +15,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *
+ * $Id$
  */
 
 package no.feide.moria.servlet;
@@ -27,7 +28,7 @@ import java.util.HashMap;
 /**
  *
  * @author Eva Indal
- * @version %I%
+ * @version $Revision$
  *
  * The AttribsHandler class extends the xml DefaultHandler
  * to read the simple feideattribs xml file.
@@ -40,7 +41,6 @@ public class AttribsHandler extends DefaultHandler {
      */
     public AttribsHandler()  {
         currentattribute = null;
-        currentitem = null;
         adata = new HashMap();
         indexcounter = 0;
     }
@@ -48,7 +48,6 @@ public class AttribsHandler extends DefaultHandler {
     private HashMap adata;
     private AttribsData currentattribute;
     private String currentchars;
-    private String currentitem;
     private int indexcounter;
 
     /**
@@ -91,10 +90,8 @@ public class AttribsHandler extends DefaultHandler {
         if (eName.equals("attribute")) {
             currentattribute = new AttribsData(indexcounter);
             indexcounter++;
-            currentitem = null;
             currentchars = null;
         } else if (currentattribute != null) {
-            currentitem = eName;
             currentchars = "";
         }
     }
