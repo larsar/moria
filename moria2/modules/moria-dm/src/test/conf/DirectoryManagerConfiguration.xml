@@ -7,7 +7,7 @@
   </Index>
   
   <Backend>
-    <Class name="no.feide.moria.directory.backend.DummyBackend"/>
+    <Class name="no.feide.moria.directory.backend.DummyBackendFactory"/>
   </Backend>
 
 </DirectoryManagerConfiguration>
