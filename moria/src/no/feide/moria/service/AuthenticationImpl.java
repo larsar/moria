@@ -112,7 +112,7 @@ implements AuthenticationIF, ServiceLifecycle {
             catch (InterruptedException e) { 
                 /* We didn't get any sleep. Don't care. If this is the
                  * case, the first web service authorization request will
-                 * end in an exception. After that everythin will be all
+                 * end in an exception. After that everything will be all
                  * right.
                  */
             }
@@ -177,7 +177,7 @@ implements AuthenticationIF, ServiceLifecycle {
      *                         URL, or if a <code>ConfigurationException<code>
      *                         is caught.
      */
-    public String requestSession(String[] attributes, String prefix, String postfix, boolean denySSO)
+    public String requestSession(String[] attributes, String prefix, String postfix, boolean denySso)
     throws RemoteException {
         log.finer("requestSession(String[], String, String, boolean)");
         
@@ -208,7 +208,12 @@ implements AuthenticationIF, ServiceLifecycle {
         }
 
         try {
-            Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);           
+            Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);      
+            
+            /* Turn of SSO if required by web service. */
+            if (!denySso) 
+                session.denySso();
+
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");

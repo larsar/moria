@@ -393,6 +393,15 @@ public class Session {
         return allowSso;
     }
 
+
+    /** 
+     * Prohibit the session from using SSO.
+     */
+    public void denySso() {
+        allowSso = false;
+    }
+
+
     /**
      * Return true if session is locked and cannot be used to retreive
      * attributes.
