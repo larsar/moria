@@ -621,7 +621,7 @@ public final class MoriaController {
      *             If <code>attributes</code> or <code>returnURLPostfix</code>
      *             is <code>null</code>, or <code>returnURLPrefix</code> or
      *             <code>servicePrincipal</code> is
-     *             <code>null<code> or an empty string.
+     *             <code>null</code> or an empty string.
      * @throws InoperableStateException
      *             If the controller is not yet ready for use, or if the store cannot be accessed at this time.
      */
@@ -696,8 +696,8 @@ public final class MoriaController {
         final AccessStatusType statusType;
 
         /* Validate arguments */
-        if (servicePrincipal == null ||servicePrincipal == "") {
-            throw new IllegalArgumentException("'servicePrincipal' must be a non-empty string."); 
+        if (servicePrincipal == null || servicePrincipal == "") {
+            throw new IllegalArgumentException("'servicePrincipal' must be a non-empty string.");
         }
 
         /* Set logging status type */
@@ -885,7 +885,7 @@ public final class MoriaController {
         if (userId == null || userId.equals("")) { throw new IllegalInputException("UserId must be a non-empty string"); }
         if (password == null || password.equals("")) { throw new IllegalInputException("password must be a non-empty string"); }
         if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalInputException("servicePrincipal must be a non-empty string"); }
-        
+
         //TODO doc and test later when the getUserOrg method is fixed
         String org = getUserOrg(userId, password);
 

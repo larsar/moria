@@ -183,7 +183,7 @@ implements MoriaStore {
             }
 
             ticketTTLs = new HashMap();
-            TicketTTLEvictionPolicy.RegionValue regionValues[] = ticketTTLEvictionPolicy.getRegionValues();
+            TicketTTLEvictionPolicy.RegionValue[] regionValues = ticketTTLEvictionPolicy.getRegionValues();
 
             for (Iterator ticketTypeIterator = MoriaTicketType.TICKET_TYPES.iterator(); ticketTypeIterator.hasNext();) {
                 Long ttl = null;

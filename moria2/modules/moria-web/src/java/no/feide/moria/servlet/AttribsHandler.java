@@ -135,7 +135,7 @@ public class AttribsHandler extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#characters
      *          for information about the parameters
      */
-    public void characters(char buf[], int offset, int len) throws SAXException {
+    public void characters(char[] buf, int offset, int len) throws SAXException {
         String s = new String(buf, offset, len);
         currentchars += s;
     }
