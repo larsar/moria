@@ -31,9 +31,7 @@
        value="${project.test.templates.dir}">
       <include name="*.properties"/>
     </replace>
-
   </postGoal>
-
 
   <goal
      name="project:install"
