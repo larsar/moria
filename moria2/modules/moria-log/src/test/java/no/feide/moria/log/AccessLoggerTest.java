@@ -68,105 +68,91 @@ public class AccessLoggerTest extends TestCase {
     public final void testLogUser() {
         String servicePrincipal = null;
         String userId = null;
-        String userIpAddr = null;
         String incomingTicketId = null;
         String outgoingTicketId = null;
 
-        accessLogger.logUser(null, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
 
         /* ServicePrincipal */
         servicePrincipal = "no.feide.test";
 
-        accessLogger.logUser(null, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
 
         /* userId */
         userId = "demo@feide.no";
 
-        accessLogger.logUser(null, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-
-        /* userIpAddr */
-        userIpAddr = "10.3.12.75";
-
-        accessLogger.logUser(null, null, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
 
         /* incomingTicketId */
         incomingTicketId = new Integer(random.nextInt(maxRandomNumber)).toString();
 
-        accessLogger.logUser(null, null, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, null, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, null, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, userId, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(null, servicePrincipal, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, userIpAddr, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
 
         /* outgoingTicketId */
         outgoingTicketId = new Integer(random.nextInt(maxRandomNumber)).toString();
 
-        accessLogger.logUser(null, null, null, null, null, outgoingTicketId);
-        accessLogger.logUser(null, null, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, null, null, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(null, null, null, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, null, null, outgoingTicketId);
+        accessLogger.logUser(null, null, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, null, null, outgoingTicketId);
+        accessLogger.logUser(null, null, null, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(null, null, userId, null, null, outgoingTicketId);
-        accessLogger.logUser(null, null, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, null, userId, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(null, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, userId, null, outgoingTicketId);
+        accessLogger.logUser(null, null, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, null, userId, null, outgoingTicketId);
+        accessLogger.logUser(null, null, userId, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(null, servicePrincipal, null, null, null, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, null, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, null, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, null, null, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, null, null, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, null, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(null, servicePrincipal, userId, null, null, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, userId, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(null, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, null, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, null, outgoingTicketId);
+        accessLogger.logUser(null, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, null, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, null, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, null, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, incomingTicketId, outgoingTicketId);
 
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, null, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, null, incomingTicketId, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, userIpAddr, null, outgoingTicketId);
-        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, null, outgoingTicketId);
+        accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, userId, incomingTicketId, outgoingTicketId);
     }
 
     /**
