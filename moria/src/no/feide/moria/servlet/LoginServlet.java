@@ -490,6 +490,7 @@ public class LoginServlet extends VelocityServlet {
 
                         if (session.allowSso()) {
                             log.info("Redirect to WebService (SSO), "+session.getWebService().getName());
+                            stats.loginAttempt(session.getWebService().getId(), "SSO");
                             session.setCachedAttributes(cachedAttributes);
                             sessionStore.deleteSession(existingSession);
                             session.unlock(existingSession.getUser());
@@ -575,6 +576,7 @@ public class LoginServlet extends VelocityServlet {
             Credentials c = new Credentials(username, password);
             if (!session.authenticateUser(c)) {
                 log.info(log_prefix+"FAILED");
+                stats.loginAttempt(session.getWebService().getId(), "FAILED");
         
                 /* If the user has exceeded the maximum login
                 attempts, the session is now gone. */
@@ -606,6 +608,7 @@ public class LoginServlet extends VelocityServlet {
          * include the updated session ID in URL and HttpSession. */
         
         log.info(log_prefix+"SUCCESS");
+        stats.loginAttempt(session.getWebService().getId(), "SUCCESS");
 
         HttpSession httpSession = 
             ((HttpServletRequest)request).getSession(true);
