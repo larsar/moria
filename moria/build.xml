@@ -16,6 +16,7 @@
            classpath="${jwsdp_home}/server/lib/catalina-ant.jar"/>
 
 
+  <!-- Common Mellon/Moria targets. -->
   <target name="all:prepare" >
      <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
         <os family="windows"/>
@@ -28,7 +29,6 @@
   </target>
 
 
-  <!-- Common Mellon/Moria targets. -->
   <target name="all:clean"
           description="All: Clean up everything"
           depends="mellon:clean,moria:clean,mellon:demo:clean">
