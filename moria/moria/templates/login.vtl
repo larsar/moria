@@ -91,7 +91,13 @@ $availableLanguages.get($lang)
 		<tr>
 		<td>$form_org
 		<select name="realm">
-		  $orgListOptions
+		<option value="null">$form_selectOrg</option>
+		#foreach ($orgName in $sortedOrgNames) 
+		 #if (!$orgShorts.get($orgName) == $selectedRealm)
+		    <option value="$orgShorts.get($orgName)">$orgName</option>
+		 #else
+		    <option selected="true" value="$orgShorts.get($orgName)">$orgName</option>   #end
+		#end
 		  </select>
 		</td>
 		</tr>
