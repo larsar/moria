@@ -104,7 +104,7 @@
   <target name="filter:compile"
           description="Mellon filter: Compile source"
           depends="jar">
-    <javac srcdir="."
+    <javac srcdir="src"
            debug="true"
            destdir="build/filter"
            includes="no/feide/mellon/filter/*">
@@ -144,7 +144,7 @@
   <target name="demo:compile"
           description="Mellon demo: Compile source"
           depends="filter:jar,demo:prepare,jar,filter:jar">
-    <javac srcdir="."
+    <javac srcdir="src"
            debug="true"
            destdir="build/demo/WEB-INF/classes"
            includes="no/feide/mellon/servlet/*">
