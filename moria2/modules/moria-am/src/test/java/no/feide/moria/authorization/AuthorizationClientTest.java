@@ -101,7 +101,6 @@ public class AuthorizationClientTest extends TestCase {
         }
 
         /* URL */
-        // TODO: Test for illegal URL for instance ftp://foobar
         try {
             new AuthorizationClient("foo", "foo", "", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (url = null)");
