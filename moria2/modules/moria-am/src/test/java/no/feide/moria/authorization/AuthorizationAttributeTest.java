@@ -56,20 +56,20 @@ public class AuthorizationAttributeTest extends TestCase {
 
 		/* Invalid secLevel */
 		try {
-			attribute = new AuthorizationAttribute("attr2", true, -1);
+			new AuthorizationAttribute("attr2", true, -1);
 			fail("IllegalArgumentException should be raised.");
 		} catch (IllegalArgumentException success) {
 		}
 
 		/* Invalid name */
 		try {
-			attribute = new AuthorizationAttribute("", true, 2);
+			new AuthorizationAttribute("", true, 2);
 			fail("Should raise IllegalArgumentException (name = empty string");
 		} catch (IllegalArgumentException success) {
 		}
 
 		try {
-			attribute = new AuthorizationAttribute("", true, 2);
+		    new AuthorizationAttribute("", true, 2);
 			fail("Should raise IllegalArgumentException (name = empty string");
 		} catch (IllegalArgumentException success) {
 		}
