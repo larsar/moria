@@ -568,8 +568,6 @@ public final class MoriaController {
             serviceTicketId = store.createServiceTicket(loginTicketId);
             store.setTicketUserorg(serviceTicketId, MoriaTicketType.SERVICE_TICKET, userorg);
 
-            String userorg2 = store.getTicketUserorg(serviceTicketId, MoriaTicketType.SERVICE_TICKET);
-            messageLogger.logInfo("XXX: Set tickets userorg: " + userorg + ", " + userorg2);
         } catch (NonExistentTicketException e) {
             /* Should not happen due to previous validation in this method */
             messageLogger.logWarn(CAUGHT_NONEXISTENT_TICKET + ", should not happen (already validated)", loginTicketId, e);
@@ -1430,14 +1428,21 @@ public final class MoriaController {
         return authnAttempt.getReturnURLPrefix() + serviceTicketId + authnAttempt.getReturnURLPostfix();
     }
     
-    // TODO: get userorg from DirectoryManager
-    private static String getUserOrg(String userId, String password) throws AuthorizationException {
-        String org = null;
-        if (userId.indexOf("@") != -1) {
-            org = userId.substring(userId.indexOf("@") + 1, userId.length());
-        }
+    /**
+     * Get the userorg from the directoryManager.
+     * 
+     * @param userId 
+     * 				the userId for a user
+     * @param password
+     * 				the password for a user
+     * @return a <code>String</code> containing the user's organization
+     * @throws AuthenticationException
+     * 				if the user's organization is not found
+     */
+    private static String getUserOrg(String userId, String password) throws AuthenticationException {
+        String org = directoryManager.getRealm(userId);
         if (org == null) {
-            throw new AuthorizationException("Userorg is unknown"); 
+            throw new AuthenticationException(); 
         }
         return org;
     }
