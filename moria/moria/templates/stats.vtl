@@ -31,7 +31,7 @@
 <tr>
 <th>Allowed login attempts</th><td class="num">$properties.getProperty("no.feide.moria.MaxFailedLogins")</td>
 <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-<th>Session timeout (user)</th><td class="num">$properties.getProperty("no.feide.sessionLifetime.login") seconds</td>
+<th>Session timeout (user)</th><td class="num">$properties.getProperty("no.feide.moria.sessionLifetime.login") seconds</td>
 </tr>
 
 <tr>
@@ -50,20 +50,41 @@
 
 <br/><br/>
 
-<h1>Mellon statistics</h1>
+<h1>Session statistics</h1>
 
-Login attempts by unauthorized clients:
-$deniedSessionsAuthN
+<table>
+<tr>
+<td>Login attempts by unauthorized clients:</td><td class="tdstat_warn">$globalCounters.get("deniedSessionAuthN")</td></tr>
+</table>
 
 <br/>
+
+<h2>SSO</h2>
+<table>
+<tr>
+ <th class="thstat">Logout</th>
+ <th class="thstat">Timeout</th>
+ <td class="thstat">Active</th>
+</tr>
+
+<tr>
+ <td class="tdstat">$globalCounters.get("sessionsSSOLogout")</td>
+ <td class="tdstat">$globalCounters.get("sessionsSSOTimeout")</td>
+ <td class="tdstat">$globalCounters.get("sessionsSSOActive")</td>
+</tr>
+</table>
+
+
 <br/>
+
+<h2>Clients</h2>
 
 <table>
 
 <tr>
 <th>&nbsp;</th>
-<th class="thstat" colspan="3">Sessions</th>
-<th class="thstat" colspan="3">Timeout</th>
+<th class="thstat" colspan="2">Sessions</th>
+<th class="thstat" colspan="2">Timeout</th>
 <th class="thstat" colspan="3">Authentications</th>
 <th class="thstat" colspan="2">Not created</th>
 </tr>
@@ -71,37 +92,32 @@ $deniedSessionsAuthN
 <tr>
 <th class="thstat">Client</th>
 
-<th class="thstat_ok">Created</th>
-<th class="thstat_ok">Active</th>
-<th class="thstat_ok">Logout</th>
+<th class="thstat">Created</th>
+<th class="thstat">Active</th>
 
-<th class="thstat_ok">User</th>
-<th class="thstat_ok">SSO</th>
-<th class="thstat_ok">Mellon</th>
+<th class="thstat">User</th>
+<th class="thstat">Mellon</th>
 
-<th class="thstat_ok">Sucsessful</th>
-<th class="thstat_ok">SSO</th> 
-<th class="thstat_warn">Failed</th>
+<th class="thstat">Sucsessful</th>
+<th class="thstat">SSO</th> 
+<th class="thstat">Failed</th>
 
-<th class="thstat_warn">Invalid URL</th>
-<th class="thstat_warn">Attributes</th>
+<th class="thstat">Invalid URL</th>
+<th class="thstat">Attributes</th>
 </tr>
 
 #foreach( $wsName in $sortedWsNames)
 <tr>
 <td>$wsName</td>
 
-<td class="tdstat_ok">$wsStats.get($wsName).get("createdSessions")</td>
-<td class="tdstat_ok">$wsStats.get($wsName).get("activeSessions")</td>
+<td class="tdstat">$wsStats.get($wsName).get("createdSessions")</td>
+<td class="tdstat">$wsStats.get($wsName).get("activeSessions")</td>
 
-<td class="tdstat_ok">$wsStats.get($wsName).get("logout")</td>
+<td class="tdstat">$wsStats.get($wsName).get("timeoutUser")</td>
+<td class="tdstat">$wsStats.get($wsName).get("timeoutMellon")</td>
 
-<td class="tdstat_ok">$wsStats.get($wsName).get("timeoutUser")</td>
-<td class="tdstat_ok">$wsStats.get($wsName).get("timeoutSSO")</td>
-<td class="tdstat_ok">$wsStats.get($wsName).get("timeoutMellon")</td>
-
-<td class="tdstat_ok">$wsStats.get($wsName).get("loginSuccessful")</td>
-<td class="tdstat_ok">$wsStats.get($wsName).get("loginSSO")</td>
+<td class="tdstat">$wsStats.get($wsName).get("loginSuccessful")</td>
+<td class="tdstat">$wsStats.get($wsName).get("loginSSO")</td>
 <td class="tdstat_warn">$wsStats.get($wsName).get("loginFailed")</td>
 
 <td class="tdstat_warn">$wsStats.get($wsName).get("sessionDeniedURL")</td>
