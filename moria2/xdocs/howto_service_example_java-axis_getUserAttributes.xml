@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Service Integration - getUserAttributes Java/Axis Example</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Example getUserAttributes Java/Axis Code">
+		<p>
+		In this example the Moria2-enabled service retrieves the previously
+		requested (through <code>initiateAuthentication</code>; see separate
+		<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>)
+		attributes from Moria2.
+		</p>
+		<p>
+		The session ID (here hardcoded as
+		<code>MDA3AAABAU2f8til3qYaexoDNWirZ94ozBGVyVgF8xN2cAKy1XKMP9dvGZe4YR-7Lg3lOIJtvft4O7E</code>)
+		sent as parameter is the substring <i>session</i> included in the URL
+		<source>
+http://www.service.org/?STARTID=<i>session</i>STOPID</source>
+		described in the <code>initiateAuthentication</code> example when the
+		user is redirected back to the service after successful authentication.
+		</p>
+		<p>
+		The SOAP implementation used in this example is
+		<a href="http://ws.apache.org/axis/">Axis</a>.
+		</p>
+		<source>
+import javax.xml.namespace.QName;
+import no.feide.moria.webservices.v2_0.Attribute;
+import org.apache.axis.client.Call;
+import org.apache.axis.encoding.ser.VectorDeserializerFactory;
+import org.apache.axis.encoding.ser.VectorSerializerFactory;
+
+...
+
+Call call = new Call("http://localhost:8080/moria/v2_1/Authentication?WSDL"));
+call.setUsername("service_username");
+call.setPassword("service_password");
+final QName attributeQName = new QName("https://login.feide.no/moria/v2_1/Authentication", 
+                                       "Attribute");
+call.setReturnType(attributeQName);
+VectorSerializerFactory serializer = new VectorSerializerFactory(Attribute.class, 
+                                                                 attributeQName);
+VectorDeserializerFactory deserializer = new VectorDeserializerFactory(Attribute.class, 
+                                                                       attributeQName);
+call.registerTypeMapping(Attribute.class,
+                         attributeQName, 
+                         serializer, 
+                         deserializer);
+call.addParameter("serviceTicket", 
+                  new QName("http://www.w3.org/2001/XMLSchema", "string"), 
+                  String.class, 
+                  ParameterMode.IN);
+final Object[] parameters = {"MDA3AAABAU2f8til3qYaexoDNWirZ94ozBGVyVgF8xN2cAKy1XKMP9dvGZe4YR-7Lg3lOIJtvft4O7E"};
+final Object returnedAttributes = call.invoke(new QName("http://localhost:8080/moria/v2_1/Authentication"),
+                                                        "getUserAttributes"), 
+                                                        parameters);
+final Attribute convertedAttributes = (Attribute[]) returnedAttributes;</source>
+		<p>
+        The above code assumes that Moria2 is deployed locally.
+        </p>
+		</section>
+	</body>
+</document>

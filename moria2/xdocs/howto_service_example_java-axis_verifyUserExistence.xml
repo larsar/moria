@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Service Integration - verifyUserExistence Java/Axis Example</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Example verifyUserExistence Java/Axis Code">
+		<p>
+		The Moria2-enabled service asks Moria2 whether the user with the
+		username <code>somebody@my.org</code> exists.
+		</p>
+		<p>
+		The SOAP implementation used in this example is
+		<a href="http://ws.apache.org/axis/">Axis</a>.
+		</p>
+		<source>
+import javax.xml.namespace.QName;
+import org.apache.axis.client.Call;
+
+...
+
+Call call = new Call("http://localhost:8080/moria/v2_1/Authentication?WSDL"));
+call.setUsername("service_username");
+call.setPassword("service_password");
+final Object[] parameters = { "somebody@my.org" };
+final boolean userExists = (boolean) call.invoke(new QName("verifyUserExistence"), 
+                                                 parameters);</source>
+		<p>
+        The above code assumes that Moria2 is deployed locally.
+        </p>
+		</section>
+	</body>
+</document>

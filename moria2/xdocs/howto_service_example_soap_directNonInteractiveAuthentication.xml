@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Service Integration - directNonInteractiveAuthentication SOAP Example</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Example directNonInteractiveAuthentication SOAP Call">
+		<p>
+		In this example the Moria2-enabled service initiates a direct
+		non-interactive authentication session. "Non-interactive" means that
+		this authentication method does not require any input from the user;
+		the service must retrieve the user's credentials and forward them to
+		Moria2. This also eliminates any need for HTTP redirects during
+		authentication. The service requests the user attribute
+		<i>eduPersonAffiliation</i>, and authenticates the user with username
+		<code>username@my.org</code> and password <code>password</code>.
+		</p>
+		<source>
+&lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:m0="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+	&lt;SOAP-ENV:Body&gt;
+		&lt;m:directNonInteractiveAuthentication xmlns:m="http://v2_0.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+			&lt;attributes xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="m0:string[1]"&gt;
+				&lt;m0:item0 xsi:type="xsd:string"&gt;eduPersonAffiliation&lt;/m0:item0&gt;
+			&lt;/attributes&gt;
+			&lt;username xsi:type="xsd:string"&gt;username@my.org&lt;/username&gt;
+			&lt;password xsi:type="xsd:string"&gt;password&lt;/password&gt;
+		&lt;/m:directNonInteractiveAuthentication&gt;
+	&lt;/SOAP-ENV:Body&gt;
+&lt;/SOAP-ENV:Envelope&gt;</source>
+		</section>
+		<section name="Example directNonInteractiveAuthentication SOAP Reply">
+		<p>
+		Moria2 has checked the service's authorization data and found the above
+		request to be valid. The requested multi-valued attribute
+		<i>eduPersonAffiliation</i> is returned.
+		</p>
+		<source>
+&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+	&lt;soapenv:Body&gt;
+		&lt;ns1:directNonInteractiveAuthenticationResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://v2_0.webservices.moria.feide.no"&gt;
+			&lt;ns1:directNonInteractiveAuthenticationReturn xsi:type="soapenc:Array" soapenc:arrayType="ns2:Attribute[1]" xmlns:ns2="https://login.feide.no/moria/v2_0/Authentication" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+				&lt;item href="#id0"/&gt;
+			&lt;/ns1:directNonInteractiveAuthenticationReturn&gt;
+		&lt;/ns1:directNonInteractiveAuthenticationResponse&gt;
+		&lt;multiRef id="id0" soapenc:root="0" soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xsi:type="ns3:Attribute" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns3="https://login.feide.no/moria/v2_0/Authentication"&gt;
+			&lt;name xsi:type="xsd:string"&gt;eduPersonAffiliation&lt;/name&gt;
+			&lt;values xsi:type="soapenc:Array" soapenc:arrayType="xsd:string[4]"&gt;
+				&lt;item&gt;employee&lt;/item&gt;
+				&lt;item&gt;staff&lt;/item&gt;
+				&lt;item&gt;student&lt;/item&gt;
+				&lt;item&gt;test user&lt;/item&gt;
+			&lt;/values&gt;
+		&lt;/multiRef&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</source>
+		</section>
+	</body>
+</document>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Service Integration - getProxyTicket SOAP Example</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Example getProxyTicket SOAP Call">
+		<p>
+		In this example the Moria2-enabled service, having earlier aquired a
+		ticket granting ticket (<i>tgt</i> attribute), requests a proxy ticket
+		for a subservice identified in Moria2's configuration as
+		<code>subservice_username</code>.
+		</p>
+		<source>
+&lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+	&lt;SOAP-ENV:Body&gt;
+		&lt;m:getProxyTicket xmlns:m="http://v2_1.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+			&lt;ticketGrantingTicket xsi:type="xsd:string"&gt;MDA3AAABAVvsT52YvxxKM3yKATVbQtD*sREX80W7cUNXLIvPtvgIYrUc7IjNp9fXQkFpR3fRqkDi0T4&lt;/ticketGrantingTicket&gt;
+			&lt;proxyServicePrincipal xsi:type="xsd:string"&gt;subservice_username&lt;/proxyServicePrincipal&gt;
+		&lt;/m:getProxyTicket&gt;
+	&lt;/SOAP-ENV:Body&gt;
+&lt;/SOAP-ENV:Envelope&gt;</source>
+		</section>
+		<section name="Example getProxyTicket SOAP Reply">
+		<p>
+		Moria2 has checked the service's authorization data and found the above
+		request to be valid. A proxy ticket for the subservice
+		<code>subservice_username</code> is generated and returned.
+		</p>
+		<source>
+&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+	&lt;soapenv:Body&gt;
+		&lt;ns1:getProxyTicketResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://v2_1.webservices.moria.feide.no"&gt;
+			&lt;ns1:getProxyTicketReturn xsi:type="xsd:string"&gt;MDA3AAABAVwaUL6fRITMT0eux25M*s2yHbgbhQ3pWf8V8qWpYsaBfMFx-h0dafwwM7OgzxU4blCDgcY&lt;/ns1:getProxyTicketReturn&gt;
+		&lt;/ns1:getProxyTicketResponse&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</source>
+		</section>
+	</body>
+</document>

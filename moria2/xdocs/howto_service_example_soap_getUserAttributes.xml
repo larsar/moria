@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Service Integration - getUserAttributes SOAP Example</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Example getUserAttributes SOAP Call">
+		<p>
+		In this example the Moria2-enabled service retrieves the previously
+		requested (through <code>initiateAuthentication</code>; see separate
+		<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>)
+		attributes from Moria2.
+		</p>
+		<p>
+		The session ID sent as parameter is the substring <i>session</i>
+		included in the URL
+		<source>
+http://www.service.org/?STARTID=<i>session</i>STOPID</source>
+		described in the <code>initiateAuthentication</code> example when the
+		user is redirected back to the service after successful authentication.
+		</p>
+		<source>
+&lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+	&lt;SOAP-ENV:Body&gt;
+		&lt;m:getUserAttributes xmlns:m="http://v2_0.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+			&lt;serviceTicket xsi:type="xsd:string"&gt;MDA3AAABAU2f8til3qYaexoDNWirZ94ozBGVyVgF8xN2cAKy1XKMP9dvGZe4YR-7Lg3lOIJtvft4O7E&lt;/serviceTicket&gt;
+		&lt;/m:getUserAttributes&gt;
+	&lt;/SOAP-ENV:Body&gt;
+&lt;/SOAP-ENV:Envelope&gt;</source>
+		</section>
+		<section name="Example getUserAttributes SOAP Reply">
+			<p>
+			Following authentication, Moria2 was able to read the requested
+			attributes; these are now returned. Note the difference between the
+			single-valued <i>tgt</i> attribute and the multi-valued
+			<i>eduPersonAffiliation</i> attribute.
+			</p>
+			<source>
+&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+	&lt;soapenv:Body&gt;
+		&lt;ns1:getUserAttributesResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://v2_0.webservices.moria.feide.no"&gt;
+			&lt;ns1:getUserAttributesReturn xsi:type="soapenc:Array" soapenc:arrayType="ns2:Attribute[2]" xmlns:ns2="https://login.feide.no/moria/v2_0/Authentication" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+				&lt;item href="#id0"/&gt;
+				&lt;item href="#id1"/&gt;
+			&lt;/ns1:getUserAttributesReturn&gt;
+		&lt;/ns1:getUserAttributesResponse&gt;
+		&lt;multiRef id="id1" soapenc:root="0" soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xsi:type="ns3:Attribute" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns3="https://login.feide.no/moria/v2_0/Authentication"&gt;
+			&lt;name xsi:type="xsd:string"&gt;eduPersonAffiliation&lt;/name&gt;
+			&lt;values xsi:type="soapenc:Array" soapenc:arrayType="xsd:string[4]"&gt;
+				&lt;item&gt;employee&lt;/item&gt;
+				&lt;item&gt;staff&lt;/item&gt;
+				&lt;item&gt;student&lt;/item&gt;
+				&lt;item&gt;test user&lt;/item&gt;
+			&lt;/values&gt;
+		&lt;/multiRef&gt;
+		&lt;multiRef id="id0" soapenc:root="0" soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xsi:type="ns4:Attribute" xmlns:ns4="https://login.feide.no/moria/v2_0/Authentication" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"&gt;
+			&lt;name xsi:type="xsd:string"&gt;tgt&lt;/name&gt;
+			&lt;values xsi:type="soapenc:Array" soapenc:arrayType="xsd:string[1]"&gt;
+				&lt;item&gt;MDA3AAABAVvsT52YvxxKM3yKATVbQtD*sREX80W7cUNXLIvPtvgIYrUc7IjNp9fXQkFpR3fRqkDi0T4&lt;/item&gt;
+			&lt;/values&gt;
+		&lt;/multiRef&gt;
+	&lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;</source>
+		</section>
+	</body>
+</document>

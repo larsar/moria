@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Service Integration - getProxyTicket Java/Axis Example</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Example getProxyTicket Java/Axis Code">
+		<p>
+		In this example the Moria2-enabled service, having earlier aquired a
+		ticket granting ticket (<i>tgt</i> attribute; here hardcoded to be
+		<code>MDA3AAABAVvsT52YvxxKM3yKATVbQtD*sREX80W7cUNXLIvPtvgIYrUc7IjNp9fXQkFpR3fRqkDi0T4</code>),
+		requests a proxy ticket for a subservice identified in Moria2's
+		configuration as <code>subservice_username</code>.
+		</p>
+		<p>
+		The SOAP implementation used in this example is
+		<a href="http://ws.apache.org/axis/">Axis</a>.
+		</p>
+		<source>
+import javax.xml.namespace.QName;
+import org.apache.axis.client.Call;
+
+...
+
+Call call = new Call("http://localhost:8080/moria/v2_1/Authentication?WSDL"));
+call.setUsername("service_username");
+call.setPassword("service_password");
+final Object[] parameters = {"MDA3AAABAVvsT52YvxxKM3yKATVbQtD*sREX80W7cUNXLIvPtvgIYrUc7IjNp9fXQkFpR3fRqkDi0T4", 
+                             "subservice_username"};
+final String proxyTicket (String) call.invoke(new QName("getProxyTicket"), parameters);</source>
+		<p>
+		The above code assumes that Moria2 is deployed locally. The proxy ticket
+		<code>proxyTicket</code> may now be passed on to the subservice
+		<code>subservice_username</code>.
+		</p>
+		</section>
+	</body>
+</document>

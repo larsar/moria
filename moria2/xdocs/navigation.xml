@@ -21,36 +21,36 @@ $Id$
 -->
 
 <project name="Moria">
+	<title>Moria</title>
+	<body>
 
-  <title>Moria</title>
+		<search/>
 
-  <body>
+		<links>
+	    	<item name="UNINETT" href="http://www.uninett.no/"/>
+	    	<item name="FEIDE" href="http://www.feide.no/"/>
+	    </links>
 
-    <search/>
+	    <menu name="Overview">
+			<item name="Usage" href="howto_service_overview.html"/>
+	    	<item name="Design" href="design.html"/>
+	    	<item name="Configuration" href="configuration.html"/>
+	    	<item name="Building" href="building.html"/>
 
-    <links>
-      <item name="UNINETT" href="http://www.uninett.no/"/>
-      <item name="FEIDE" href="http://www.feide.no/"/>
-    </links>
-
-    <menu name="Overview">
-      <item name="Usage" href="usage.html"/>
-      <item name="Design" href="design.html"/>
-      <item name="Configuration" href="configuration.html"/>
-      <item name="Building" href="building.html"/>
-
-      <item name="Modules" href="design.html#Moria_Internals" collapse="false">
-	<item name="Controller" href="/moria-ctrl/index.html"/>
-	<item name="Authorization manager" href="/moria-am/index.html"/>
-	<item name="Directory manager" href="/moria-dm/index.html"/>
-	<item name="Log API" href="/moria-log/index.html"/>
-	<item name="Store manager" href="/moria-sm/index.html"/>
-	<item name="Web application" href="/moria-web/index.html"/>
-      </item>
-    </menu>
-    <menu name="SourceForge">
-      <item href="http://sourceforge.net"
-	    img="http://sourceforge.net/sflogo.php?group_id=78969&amp;type=1"/>
-    </menu>
-  </body>
+	    	<item name="Modules" href="design.html#Moria_Internals" collapse="false">
+				<item name="Controller" href="/moria-ctrl/index.html"/>
+				<item name="Authorization manager" href="/moria-am/index.html"/>
+				<item name="Directory manager" href="/moria-dm/index.html"/>
+				<item name="Log API" href="/moria-log/index.html"/>
+				<item name="Store manager" href="/moria-sm/index.html"/>
+				<item name="Web application" href="/moria-web/index.html"/>
+		    </item>
+	    </menu>
+	    
+	    <menu name="SourceForge">
+		    <item href="http://sourceforge.net"
+		          img="http://sourceforge.net/sflogo.php?group_id=78969&amp;type=1"/>
+	    </menu>
+	    
+	</body>
 </project>
