@@ -4,20 +4,41 @@
 
 <project>
   <extend>${basedir}/../../project.xml</extend>
-  <name>Moria NextGen controller</name>
+  <name>Moria Controller</name>
   <id>moria-ctrl</id>
+  <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
+  <package>no.feide.moria.controller</package>
 
-  <shortDescription>The core component of Moria, controlling all
-  operations related to data flow.</shortDescription>
+  <shortDescription>The core component of Moria</shortDescription>
+
+  <description/>
+
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-ctrl</siteDirectory>
 
   <dependencies>
+
+    <dependency>
+      <groupId>moria</groupId>
+      <artifactId>moria-sm</artifactId>
+      <version>1.0-b1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>moria</groupId>
+      <artifactId>moria-log</artifactId>
+      <version>1.0-b1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+
   </dependencies>
 
   <build>
-
     <resources>
     </resources>
-
   </build>
-
 </project>
