@@ -267,7 +267,7 @@
         <fileset dir="mellon/lib/" includes="*.jar"/>
         <fileset dir="test/lib/" includes="*.jar"/>
       </classpath>
-      <arg value="/home/cato/Mellon.xml"/>
+      <arg value="${mellon_config}"/>
     </java>
   </target> 
 
