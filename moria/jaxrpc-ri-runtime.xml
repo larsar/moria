@@ -9,5 +9,5 @@
     wsdl='/WEB-INF/Authentication.wsdl'
     service='{https://login.feide.no/moria/Authentication}Authentication'
     port='{https://login.feide.no/moria/Authentication}AuthenticationIFPort'
-    urlpattern='/Authentication'/>
+    urlpattern='/r001/Authentication'/>
 </endpoints>
