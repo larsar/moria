@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+Copyright (c) 2004 UNINETT FAS
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+
+<document>
+
+  <properties>
+    <title>Moria</title>
+    <author email="b.o@smievoll.no">Bjørn Ola Smievoll</author>
+  </properties>
+
+  <body>
+    
+    <section name="Moria">
+      <p>
+	Moria is the authentication service for the FEIDE-project. The
+	source code is distributed under the <a
+	href="/license.html">General Public
+	License</a>, and is located at <a
+	href="http://sourceforge.net/projects/moria/">Morias
+	SourceForge site</a>.
+      </p>
+      <p>
+	Moria design document: 
+	<ul>
+	  <li><a href="/doc/pdf/moria_design.pdf">PDF</a></li>
+	  <li><a href="/doc/html/moria_design/">HTML</a></li>
+	</ul>
+      </p>
+      <p>
+	Proxy authentication (SSO) extension draft:
+	<ul>
+	  <li><a href="/doc/pdf/proxy_authentication_draft.pdf">PDF</a></li>
+	  <li><a href="/doc/html/proxy_authentication_draft/">HTML</a></li>
+	</ul>
+      </p>
+    </section>
+  </body>
+</document>
