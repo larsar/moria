@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <name>Moria NextGen Log API</name>
+  <id>moria-log</id>
+
+  <shortDescription>The log component of Moria, handling all logging
+  in the system.</shortDescription>
+
+  <dependencies>
+  </dependencies>
+
+  <build>
+
+    <resources>
+    </resources>
+
+  </build>
+
+</project>
