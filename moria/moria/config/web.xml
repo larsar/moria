@@ -1,39 +1,34 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-
-<!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/dtd/web-app_2_3.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
     <display-name>Moria</display-name>
     <description>Moria login page servlet</description>
+    <listener>
+        <listener-class>com.sun.xml.rpc.server.http.JAXRPCContextListener</listener-class>
+    </listener>
 
     <servlet>
-        <servlet-name>
-	    Login
-        </servlet-name>
-        <servlet-class>
-	    no.feide.moria.servlet.LoginServlet
-        </servlet-class>
-    </servlet>   
+        <servlet-name>Login</servlet-name>
+        <servlet-class>no.feide.moria.servlet.LoginServlet</servlet-class>
+    </servlet>
 
     <servlet>
-        <servlet-name>
-	    Logout
-        </servlet-name>
-        <servlet-class>
-	    no.feide.moria.servlet.LogoutServlet
-        </servlet-class>
-    </servlet>   
+        <servlet-name>Logout</servlet-name>
+        <servlet-class>no.feide.moria.servlet.LogoutServlet</servlet-class>
+    </servlet>
 
     <servlet>
-        <servlet-name>
-	    Stats
-        </servlet-name>
-        <servlet-class>
-	    no.feide.moria.servlet.StatsServlet
-        </servlet-class>
-    </servlet>   
+        <servlet-name>Stats</servlet-name>
+        <servlet-class>no.feide.moria.servlet.StatsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Authentication</servlet-name>
+        <display-name>Authentication</display-name>
+        <description>JAX-RPC endpoint - Authentication</description>
+        <servlet-class>com.sun.xml.rpc.server.http.JAXRPCServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>Stats</servlet-name>
@@ -49,5 +44,10 @@
         <servlet-name>Login</servlet-name>
         <url-pattern>/Login</url-pattern>
     </servlet-mapping>
-    
+
+    <servlet-mapping>
+        <servlet-name>Authentication</servlet-name>
+        <url-pattern>/Authentication</url-pattern>
+    </servlet-mapping>
 </web-app>
+
