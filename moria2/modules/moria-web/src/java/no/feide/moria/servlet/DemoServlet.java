@@ -193,7 +193,7 @@ extends HttpServlet {
 
                     // Now get a proxy ticket for your subsystem (we're actually
                     // our own subsystem, to keep the code simple).
-                    final String proxyTicket = getProxyTicket(ticketGrantingTicket, "demo_subsystem");
+                    final String proxyTicket = getProxyTicket(ticketGrantingTicket, config.getProperty(RequestUtil.PROP_DEMO_SLAVE_USERNAME));
 
                     // We now have a proxy ticket; now let's fake our own
                     // subsystem. Retrieve and display some attributes.
