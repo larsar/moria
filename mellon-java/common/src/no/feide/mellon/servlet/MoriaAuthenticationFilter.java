@@ -42,26 +42,24 @@ import no.feide.mellon.MoriaUserData;
 
 
 public class MoriaAuthenticationFilter implements Filter {
-  
-    private FilterConfig config = null;
-
-    /** Initialize config. */
-    public void init(FilterConfig config) throws ServletException {
-        this.config = config;
-
-	// Read Mellon-side properties.
-	try {
-            System.getProperties().load(getClass().getResourceAsStream("/mellon.properties"));
-	} catch (IOException e) {
-	    throw new ServletException("IOException caught and re-thrown as ServletException");
-	}        
-    }
-    
-    /** Remove config. */
-    public void destroy() {
-        config = null;
-    }
-    
+	
+	private FilterConfig config = null;
+	
+	/** Initialize config. */
+	public void init(FilterConfig config) throws ServletException {
+		this.config = config;		
+		try {
+			System.getProperties().load(getClass().getResourceAsStream("/mellon.properties"));
+		} catch (IOException e) {
+			throw new ServletException("IOException caught and re-thrown as ServletException");
+		}        
+	}
+	
+	/** Remove config. */
+	public void destroy() {
+		config = null;
+	}
+	
     /** Perform authentication. If a requests already belongs to a
      * session and the session contains user data, the user alrady has
      * been authenticated and are let through. If no user data is
