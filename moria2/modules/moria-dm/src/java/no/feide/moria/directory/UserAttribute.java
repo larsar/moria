@@ -1,6 +1,7 @@
 package no.feide.moria.directory;
 
 import java.util.Vector;
+import no.feide.moria.log.MessageLogger;
 
 /**
  * ' Represents a user attribute and its list of values (if any).
@@ -12,6 +13,9 @@ public class UserAttribute {
 
     /** Internal representation of the attribute's values. */
     private Vector myValues;
+
+    /** Message logger. */
+    MessageLogger log = new MessageLogger(UserAttribute.class);
 
 
     /**
@@ -29,8 +33,9 @@ public class UserAttribute {
 
         // Sanity check.
         if ((name == null) || (name.length() == 0)) {
-        // TODO: Add logging.
-        throw new IllegalAttributeException("Attribute name cannot be NULL"); }
+            log.logWarn("Attribute name cannot be NULL");
+            throw new IllegalAttributeException("Attribute name cannot be NULL");
+        }
 
         // Set values.
         myName = name;
@@ -65,7 +70,7 @@ public class UserAttribute {
 
 
     /**
-     * Get a string representation of the user attribute.
+     * Get a string representation of the user attribute. Useful for debugging.
      * @return The user attribute as a <code>String</code>.
      */
     public String toString() {
