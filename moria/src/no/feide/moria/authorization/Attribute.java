@@ -1,3 +1,5 @@
+package no.feide.moria.authorization;
+
 public class Attribute {
 
     private String name;

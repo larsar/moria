@@ -1,21 +1,21 @@
+package no.feide.moria.authorization;
+
 import java.util.HashMap;
 
 public class Profile {
 
     private String name;
+    private String id;
     private HashMap attributes = new HashMap();
 
-    public Profile(String name) {
-        this.name = name;
-        System.out.println("Creating profile object: "+name);
+    public Profile(String id) {
+        this.id = id;
+        System.out.println("Creating profile object: "+id);
     }
 
-    protected void addAttribute(Attribute attribute, String sso) {
+    protected void addAttribute(Attribute attribute, boolean sso) {
         System.out.println("Adding attribute. Name = "+attribute.getName()+" SSO="+attribute.getSso());
-        if (sso.equals("true"))
-            attributes.put(attribute, new Boolean(true));
-        else
-            attributes.put(attribute, new Boolean(false));
+        attributes.put(attribute, new Boolean(sso));
 
     }
 

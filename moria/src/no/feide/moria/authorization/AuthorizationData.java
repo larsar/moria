@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Iterator;
 
 import java.util.logging.Logger;
 
@@ -26,8 +27,8 @@ public class AuthorizationData {
 
     private synchronized HashMap updateWebServices(String xml) {
         HashMap attributes = null;
-        HashMap profiles;
-        Map newWebservices = Collections.synchronizedMap(new HashMap());
+        HashMap profiles = null;
+        Map newWebservices = null;
 
         DOMParser parser = new DOMParser();
       
@@ -61,7 +62,8 @@ public class AuthorizationData {
             }
 
             if (nodeName.equals("WebServices")) {
-                System.out.println(nodeName);
+                System.out.println("Foobat");
+                newWebservices = Collections.synchronizedMap(getWebServices(node, attributes, profiles));
             }
 
         }
@@ -108,21 +110,16 @@ public class AuthorizationData {
                 profiles.put(profile.getName(), profile);
                 NodeList attrNodes = node.getChildNodes();
 
-                for (int j = 0; j < attrNodes.getLength(); j++) { 
-                    Node attrNode = attrNodes.item(j);
+                HashMap profAttributes = getAttributes(node);
 
-                    /* <Attribute> */
-                    if (attrNode.getNodeType() == Node.ELEMENT_NODE) {
-                        String attrName = attrNode.getAttributes().getNamedItem("name").getNodeValue();
-                        Attribute attr = (Attribute) attributes.get(attrName);
-                        
-                        if (attr == null) 
-                            log.severe("No such attribute: "+attrName);
-                        else
-                            profile.addAttribute(attr, attrNode.getAttributes().getNamedItem("SSO").getNodeValue());
-                    }
+                for (Iterator iterator = profAttributes.keySet().iterator(); iterator.hasNext();) {
+                    Attribute profAttribute = (Attribute) profAttributes.get((String) iterator.next());
+                    if (attributes.containsKey(profAttribute.getName())) 
+                        profile.addAttribute(profAttribute, profAttribute.getSso());
+                    else
+                        log.severe("No such attribute: "+profAttribute.getName());
                 }
-        
+                        
             }
         }
        
@@ -130,6 +127,49 @@ public class AuthorizationData {
 
     }
 
+
+    private HashMap getWebServices(Node wsNode, HashMap attributes, HashMap profiles) {
+        HashMap webServices = new HashMap();
+        NodeList wsNodes = wsNode.getChildNodes();
+
+        for (int i = 0; i < wsNodes.getLength(); i++) { 
+            Node node = wsNodes.item(i);
+
+            /* <WebService> */
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+
+                WebService ws = new WebService(node.getAttributes().getNamedItem("id").getNodeValue());
+                NodeList elements = node.getChildNodes();
+                
+
+          /* <WebService> */
+                for (int j = 0; j < elements.getLength(); j++) {
+                    Node element = elements.item(j);
+
+
+                    if (element.getNodeType() == Node.ELEMENT_NODE) {
+                        if (element.getNodeName().equals("name")) {
+                            ws.setName(element.getFirstChild().getNodeValue());
+                        }
+                        else if (element.getNodeName().equals("URL")) {
+                            //                          ws.setURL(element.getFirstChild().getNodeValue());
+                        }
+
+                    }
+
+                     
+                }
+                
+               
+
+
+            }
+
+        }
+
+        return webServices;
+        
+    }
 
 
    // Main Method
