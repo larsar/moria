@@ -9,17 +9,12 @@
    version="2.4">
 
   <description>Moria federated web authentication service</description>
+
   <display-name>Moria</display-name>
 
-  <context-param>
-    <param-name>jsp.location</param-name>
-    <param-value>/WEB-INF/jsp</param-value>
-  </context-param>
-
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.xml</welcome-file>
-  </welcome-file-list>
+  <listener>
+    <listener-class>no.feide.moria.servlet.MoriaLifeCycleListener</listener-class>
+  </listener>
 
   <servlet>
     <servlet-name>Login</servlet-name>
@@ -120,8 +115,14 @@
     <url-pattern>/Error</url-pattern>
   </servlet-mapping>
 
-  <!--error-page>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.xml</welcome-file>
+  </welcome-file-list>
+
+  <error-page>
     <exception-type>java.lang.Exception</exception-type>
     <location>/Error</location>
-  </error-page-->
+  </error-page>
+
 </web-app>
