@@ -101,15 +101,13 @@ public interface MoriaStore {
      *
      * @param loginTicketId
      *          a login ticket assosiated with an authentication attempt
-     * @param targetServicePrincipal
-     *          the id of the service that will use this ticket
      * @return a service ticket assosiated with the authentication attempt object
      * @throws InvalidTicketException
      *          thrown if the argument ticket is not a login-ticket
      * @throws MoriaStoreException
      *          thrown if the operation fails
      */
-    String createServiceTicket(final String loginTicketId, final String targetServicePrincipal)
+    String createServiceTicket(final String loginTicketId)
             throws InvalidTicketException, MoriaStoreException;
 
     /**
