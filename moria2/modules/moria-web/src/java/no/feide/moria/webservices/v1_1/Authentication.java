@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.AuthorizationException;
@@ -36,6 +37,8 @@ import no.feide.moria.controller.UnknownTicketException;
 import no.feide.moria.log.MessageLogger;
 
 import org.apache.axis.MessageContext;
+import org.apache.axis.session.Session;
+import org.apache.axis.transport.http.AxisHttpSession;
 
 /**
  * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
@@ -83,9 +86,19 @@ public final class Authentication implements AuthenticationIF {
         MessageContext messageContext = MessageContext.getCurrentContext();
         String servicePrincipal = messageContext.getUsername();
 
+        String urlPrefix = null;
+        Session genericSession = messageContext.getSession();
+
+        if (genericSession instanceof AxisHttpSession) {
+            AxisHttpSession axisHttpSession = (AxisHttpSession) genericSession;
+            urlPrefix = ((Properties) axisHttpSession.getRep().getServletContext().getAttribute("no.feide.moria.web.config"))
+                    .getProperty("no.feide.moria.web.login.url_prefix");
+        }
+
         try {
-            return MoriaController.initiateAuthentication(attributes, returnURLPrefix, returnURLPostfix,
-                    forceInteractiveAuthentication, servicePrincipal);
+            return urlPrefix
+                    + MoriaController.initiateAuthentication(attributes, returnURLPrefix, returnURLPostfix,
+                            forceInteractiveAuthentication, servicePrincipal);
         } catch (AuthorizationException ae) {
             messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
