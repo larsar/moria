@@ -1,0 +1,28 @@
+<!DOCTYPE ClientAuthorizationConfig [
+<!ELEMENT DisplayName (#PCDATA)>
+<!ELEMENT Client (DisplayName|URL|Home|Language|Affiliation|Attributes|Operations|Subsystems)>
+<!ATTLIST Client
+    name CDATA #REQUIRED>
+<!ELEMENT Attribute (#PCDATA)>
+<!ATTLIST Attribute
+    name CDATA #REQUIRED
+    secLevel CDATA #REQUIRED
+    sso CDATA #REQUIRED>
+<!ELEMENT Organization (#PCDATA)>
+<!ATTLIST Organization
+    name CDATA #REQUIRED>
+<!ELEMENT Subsystems (Subsystem)*>
+<!ELEMENT Language (#PCDATA)>
+<!ELEMENT Home (#PCDATA)>
+<!ELEMENT Operation (#PCDATA)>
+<!ATTLIST Operation
+    name CDATA #REQUIRED>
+<!ELEMENT ClientAuthorizationConfig (Client)*>
+<!ELEMENT Attributes (Attribute)*>
+<!ELEMENT URL (#PCDATA)>
+<!ELEMENT Affiliation (Organization)*>
+<!ELEMENT Operations (Operation)*>
+<!ELEMENT Subsystem (#PCDATA)>
+<!ATTLIST Subsystem
+    name CDATA #REQUIRED>
+]>
