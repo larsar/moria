@@ -83,7 +83,6 @@ public class InformationServlet extends HttpServlet {
      * <li><code>RequestUtil.PROP_COOKIE_LANG</code>
      * <li><code>RequestUtil.PROP_COOKIE_LANG_TTL</code>
      * <li><code>RequestUtil.PROP_COOKIE_DENYSSO</code>
-     * <li><code>RequestUtil.PROP_COMMON</code>
      * <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
      * <li><code>RequestUtil.PROP_INFORMATION_URL_PREFIX</code>
      * <li><code>RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML</code>
@@ -91,7 +90,6 @@ public class InformationServlet extends HttpServlet {
      * @see RequestUtil#PROP_COOKIE_LANG
      * @see RequestUtil#PROP_COOKIE_LANG_TTL
      * @see RequestUtil#PROP_COOKIE_DENYSSO
-     * @see RequestUtil#PROP_COMMON
      * @see RequestUtil#PROP_LOGIN_TICKET_PARAM
      * @see RequestUtil#PROP_INFORMATION_URL_PREFIX
      * @see RequestUtil#PROP_INFORMATION_FEIDEATTRIBS_XML
@@ -100,7 +98,6 @@ public class InformationServlet extends HttpServlet {
         RequestUtil.PROP_COOKIE_LANG,
         RequestUtil.PROP_COOKIE_LANG_TTL,
         RequestUtil.PROP_COOKIE_DENYSSO,
-        RequestUtil.PROP_COMMON,
         RequestUtil.PROP_LOGIN_TICKET_PARAM,
         RequestUtil.PROP_INFORMATION_URL_PREFIX,
         RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML
@@ -242,9 +239,10 @@ public class InformationServlet extends HttpServlet {
 
         // Are we missing some required properties?
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-            String requiredParameter = REQUIRED_PARAMETERS[i];
-            if ((requiredParameter == null) || (requiredParameter.equals(""))) {
-                    throw new IllegalStateException("Required parameter '" + requiredParameter + "' is not set");
+            String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
+            if ((parvalue == null) || (parvalue.equals(""))) {
+                	log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
+                    throw new IllegalStateException();
             }
         }
         return config;
