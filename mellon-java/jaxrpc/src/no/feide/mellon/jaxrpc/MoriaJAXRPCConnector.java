@@ -37,7 +37,7 @@ public class MoriaJAXRPCConnector extends MoriaConnector {
 	public String requestSession(String[] attributes, String urlPrefix, String urlPostfix, boolean denySso) throws RemoteException {
 		AuthenticationIF service = (AuthenticationIF)stub;
 
-		return service.requestSession(attributes, urlPrefix, urlPostfix, denySso);
+		return service.initiateAuthentication(attributes, urlPrefix, urlPostfix, denySso);
 	}
 
 	/* (non-Javadoc)
@@ -45,7 +45,7 @@ public class MoriaJAXRPCConnector extends MoriaConnector {
 	 */
 	public MoriaUserAttribute[] getAttributes(String ticket) throws RemoteException {
 		AuthenticationIF service = (AuthenticationIF)stub;	
-		Attribute[] attributes = service.getAttributes(ticket);
+		Attribute[] attributes = service.getUserAttributes(ticket);
 		Vector moriaUserAttributes = new Vector();
 		
 		for (int i = 0; i < attributes.length; i++) {
