@@ -42,6 +42,51 @@ $Id$
             <code>WARN</code>, so to disable access logging define the log level
             at a higher level than this.
             </p>
-        </section>
+            <p>
+            The format of the log-lines for the <code>AccessLogger</code> is the following:
+            </p>
+ 			<pre>
+[Timestamp] "STATUS" "service principal" "userid" "incoming ticket" "outgoing ticket"
+
+Example:
+[2004-04-30 17:10:19,046] "BAD USER CREDENTIALS" "no.feide.test" "demo@feide.no" "235892791" "350215527"
+ 			</pre>
+ 			<p>
+ 			The "STATUS" field can contain any of these messages:
+ 				<ul>
+ 					<li>BAD USER CREDENTIALS</li>
+ 					<li>BAD SERVICE CREDENTIALS</li>
+ 					<li>OPERATIONS NOT PERMITTED</li>
+ 					<li>ACCESS DENIED USERORG</li>
+ 					<li>ACCESS DENIED INITIATE AUTH</li>
+ 					<li>ACCESS DENIED DIRECT AUTH</li>
+ 					<li>ACCESS DENIED VERIFY USER EXISTENCE</li>
+ 					<li>ACCESS DENIED PROXY AUTH</li>
+ 					<li>SSO TICKET INVALIDATED</li>
+ 					<li>SUCCESSFUL VERIFY USER</li>
+ 					<li>SUCCESSFUL GET PROXY TICKET</li>
+ 					<li>SUCCESSFUL GET ATTRIBUTES</li>
+ 					<li>SUCCESSFUL AUTH INIT</li>
+ 					<li>SUCCESSFUL PROXY AUTHENTICATION</li>
+ 					<li>SUCCESSFUL DIRECT AUTHENTICATION</li>
+ 					<li>SUCCESSFUL INTERACTIVE AUTHENTICATION</li>
+ 					<li>SUCCESSFUL SSO AUTHENTICATION</li>
+ 					<li>PROXY TICKET GENERATION DENIED INVALID PRINCIPAL</li>
+ 					<li>PROXY TICKET GENERATION DENIED UNAUTHORIZED</li>
+ 					<li>PROXY AUTH DENIED UNCACHED ATTRIBUTES</li>
+ 					<li>INITIATE DENIED INVALID URL</li>
+ 					<li>NONEXISTENT TGT</li>
+ 					<li>INVALID TGT</li>
+ 					<li>NONEXISTENT PROXY TICKET</li>
+ 					<li>INVALID PROXY TICKET</li>
+ 					<li>NONEXISTENT SERVICE TICKET</li>
+ 					<li>INVALID SERVICE TICKET</li>
+ 					<li>NONEXISTENT LOGIN TICKET</li>
+ 					<li>INVALID LOGIN TICKET</li>
+ 					<li>NONEXISTENT SSO TICKET</li>
+ 					<li>INVALID SSO TICKET</li>
+ 				</ul>
+ 			</p>
+         </section>
     </body>
 </document>
