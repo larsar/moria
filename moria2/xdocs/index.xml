@@ -39,6 +39,12 @@ $Id$
 	SourceForge site</a>.
       </p>
       <p>
+        For web service developers:<br/>
+        <a href="usage.html">How to use Moria for authentication</a><br/>
+      </p>
+
+      <p>
+        For Moria administrators:<br/>
 	      <a href="design.html">Moria design document</a><br/>
         <a href="configuration.html">Moria configuration</a><br/>
         <a href="building.html">Build instructions</a><br/>
