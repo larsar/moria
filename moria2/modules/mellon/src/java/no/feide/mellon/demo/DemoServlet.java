@@ -152,8 +152,6 @@ extends HttpServlet {
      * Required parameters.
      */
     private static final String[] REQUIRED_PARAMETERS = {
-        CONFIG_MASTER_ATTRIBUTE_REQUEST,
-        CONFIG_SLAVE_ATTRIBUTE_REQUEST,
         CONFIG_SERVICE_ENDPOINT,
         CONFIG_SLAVE_USERNAME,
         CONFIG_SLAVE_PASSWORD,
