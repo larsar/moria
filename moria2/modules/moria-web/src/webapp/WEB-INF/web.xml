@@ -41,6 +41,17 @@
   </servlet>
 
   <servlet>
+    <servlet-name>InformationServlet</servlet-name>
+    <servlet-class>no.feide.moria.servlet.InformationServlet</servlet-class>
+    <load-on-startup>5</load-on-startup>
+  </servlet>
+  
+   <servlet>
+    <servlet-name>Information.JSP</servlet-name>
+    <jsp-file>/WEB-INF/jsp/information.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
     <servlet-name>Status.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/status.jsp</jsp-file>
   </servlet>
@@ -80,6 +91,11 @@
     <jsp-file>/WEB-INF/jsp/axis-soap-error.jsp</jsp-file>
   </servlet>
 
+  <servlet-mapping>
+    <servlet-name>InformationServlet</servlet-name>
+    <url-pattern>/Information</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>Login</servlet-name>
     <url-pattern>/Login</url-pattern>
