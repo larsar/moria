@@ -96,7 +96,7 @@ public class MoriaController {
                 configManager = new ConfigurationManager();
             } catch (ConfigurationManagerException e) {
                 //TODO: Handle exeption properly, should probably throw new
-                // MoriaControllerException
+                // IllegalInputException
                 System.out.println("ConfigurationManagerException caught.");
                 e.printStackTrace();
             }
@@ -189,11 +189,11 @@ public class MoriaController {
      * @param forceInteractiveAuthentication
      * @return
      * @throws AuthorizationException
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      */
     public static String initiateAuthentication(final String[] attributes, final String returnURLPrefix,
                                                 final String returnURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
-            throws AuthorizationException, MoriaControllerException {
+            throws AuthorizationException, IllegalInputException {
 
         if (!ready.booleanValue()) {
             throw new IllegalStateException("Controller not initialized");
@@ -201,16 +201,16 @@ public class MoriaController {
 
         /* Validate parameters */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new MoriaControllerException("servicePrincipal cannot be null or an empty string.");
+            throw new IllegalInputException("servicePrincipal cannot be null or an empty string.");
         }
         if (attributes == null) {
-            throw new MoriaControllerException("Attributes cannot be null.");
+            throw new IllegalInputException("Attributes cannot be null.");
         }
         if (returnURLPrefix == null || returnURLPrefix.equals("")) {
-            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
+            throw new IllegalInputException("URLPrefix cannot be null or an empty string.");
         }
         if (returnURLPostfix == null) {
-            throw new MoriaControllerException("URLPostfix cannot be null.");
+            throw new IllegalInputException("URLPostfix cannot be null.");
         }
 
         /* Authorization */
@@ -224,18 +224,18 @@ public class MoriaController {
 
         /* URL validation */
         if (returnURLPrefix == null || returnURLPrefix.equals("")) {
-            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
+            throw new IllegalInputException("URLPrefix cannot be null or an empty string.");
         }
         if (returnURLPostfix == null) {
-            throw new MoriaControllerException("URLPostfix cannot be null.");
+            throw new IllegalInputException("URLPostfix cannot be null.");
         }
         if (!(isLegalURL(returnURLPrefix + "FakeMoriaID" + "urlPostfix"))) {
-            throw new MoriaControllerException("URLPrefix and URLPostfix combined does not make a valid URL.");
+            throw new IllegalInputException("URLPrefix and URLPostfix combined does not make a valid URL.");
         }
 
         /* Create authentication attempt */
-        return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, servicePrincipal,
-                forceInteractiveAuthentication);
+        return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix,
+                forceInteractiveAuthentication, servicePrincipal);
     }
 
     /**
@@ -243,10 +243,10 @@ public class MoriaController {
      * @param servicePrincipal
      * @return Map containing user attributes in strings or string arrays
      * @throws AuthorizationException
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      */
     public static Map getUserAttributes(final String serviceTicket, final String servicePrincipal) throws AuthorizationException,
-            MoriaControllerException {
+            IllegalInputException {
         // TODO: Implement
         return null;
     }
@@ -258,10 +258,10 @@ public class MoriaController {
      * @param servicePrincipal
      * @return Map containing user attributes in strings or string arrays
      * @throws AuthorizationException
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      */
     public static Map directNonInteractiveAuthentication(final String[] attributes, final String userId, final String password,
-                                                         final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
+                                                         final String servicePrincipal) throws AuthorizationException, IllegalInputException {
         // TODO: Implement
         return null;
     }
@@ -272,10 +272,10 @@ public class MoriaController {
      * @param servicePrincipal
      * @return Map containing user attributes in strings or string arrays
      * @throws AuthorizationException
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      */
     public static Map proxyAuthentication(final String[] attributes, final String proxyTicket, final String servicePrincipal)
-            throws AuthorizationException, MoriaControllerException {
+            throws AuthorizationException, IllegalInputException {
         // TODO: Implement
         return null;
     }
@@ -286,10 +286,10 @@ public class MoriaController {
      * @param servicePrincipal
      * @return
      * @throws AuthorizationException
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      */
     public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal,
-                                        final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
+                                        final String servicePrincipal) throws AuthorizationException, IllegalInputException {
         // TODO: Implement
         return null;
     }
@@ -299,10 +299,10 @@ public class MoriaController {
      * @param servicePrincipal
      * @return
      * @throws AuthorizationException
-     * @throws MoriaControllerException
+     * @throws IllegalInputException
      */
     public static boolean verifyUserExistence(final String username, final String servicePrincipal) throws AuthorizationException,
-            MoriaControllerException {
+            IllegalInputException {
         // TOOD: Implement
         return false;
     }
@@ -371,14 +371,45 @@ public class MoriaController {
         return true;
     }
 
-    public static HashMap getServiceProperties(String ticketId) throws InvalidTicketException {
+    /**
+     * Returns the service properties for an authentication attempt.
+     *
+     * @param loginTicketId
+     * @return a HashMap with service properties
+     * @throws InvalidTicketException if the ticket does not point to a authentication attempt
+     */
+    public static HashMap getServiceProperties(String loginTicketId) throws InvalidTicketException {
         /* Validate arguments */
-        if (ticketId == null || ticketId.equals("")) {
-            throw new IllegalArgumentException("ticketId must be a non-empty string");
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId must be a non-empty string, was: " + loginTicketId);
         }
 
-        MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(ticketId, true);
+        MoriaAuthnAttempt authnAttempt = store.getAuthnAttempt(loginTicketId, true);
         // TODO: Finish implementation
         return authzManager.getServiceProperties(authnAttempt.getServicePrincipal());
+    }
+
+    /**
+     * Get the seclevel for an authentication attempt.
+     *
+     * @param loginTicketId the ticket associated with
+     * @return int describing the security level for the requested attributes in the authentication attempt
+     * @throws UnknownTicketException if the ticket does is invalid
+     */
+    public static int getSecLevel(String loginTicketId) throws UnknownTicketException {
+        /* Validate argument */
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId must be a non-empty string, was: " + loginTicketId);
+        }
+
+        MoriaAuthnAttempt authnAttempt;
+        try {
+            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
+        } catch (InvalidTicketException e) {
+            // TODO: Log?, should have been logged extensively in the store
+            throw new UnknownTicketException("Ticket does not exist.");
+        }
+
+        return authzManager.getSecLevel(authnAttempt.getServicePrincipal(), authnAttempt.getRequestedAttributes());
     }
 }
