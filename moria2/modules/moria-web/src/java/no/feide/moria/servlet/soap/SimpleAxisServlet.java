@@ -23,6 +23,7 @@ package no.feide.moria.servlet.soap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -441,6 +442,13 @@ public final class SimpleAxisServlet extends AxisServlet {
                 // A known type of exception.
                 request.setAttribute("faultCode", ((SOAPException)cause).getFaultcode());
                 request.setAttribute("faultString", ((SOAPException)cause).getFaultstring());
+                
+            }
+            else if (cause instanceof RemoteException) {
+                
+                // An older type of exception handling, replaced by the v2.1 SOAP interface onwards.
+                request.setAttribute("faultCode", "Server");
+                request.setAttribute("faultString", cause.getMessage());
                 
             }
             else {
