@@ -117,6 +117,7 @@ final class MoriaTicket implements Serializable {
         this.servicePrincipal = servicePrincipal;
 
         /* 107291520000L equals Thu Jan  1 00:00:00 UTC 2004. */
+        /* TODO: Any reason not to just check against current time with a suitable fuzz factor here? */
         if (expiryTime == null || expiryTime.longValue() < 1072915200000L)
             throw new IllegalArgumentException("expiryTime must a time in the future");
         this.expiryTime = expiryTime;
