@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
-import no.feide.moria.service.SessionDescriptor;
 import no.feide.moria.service.UserAttribute;
 
 public class Session {
@@ -68,7 +67,6 @@ public class Session {
 	this.urlPrefix = urlPrefix;
         this.urlPostfix = urlPostfix;
 	this.client = client;
-        redirectURL = prefs.get("LoginURL", null);
     }
     
 
@@ -97,7 +95,6 @@ public class Session {
         if (user != null) {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
-            redirectURL = prefs.get("SessionURL", null);
             log.fine("Good authN; new session ID is "+sessionID+", new URL is "+redirectURL);
             return true;
         }
@@ -134,17 +131,6 @@ public class Session {
     }
        
        
-    /**
-     * Returns the session descriptor.
-     * @return The session descriptor.
-     */
-    // TODO:
-    // Obsolete - remove.
-    public SessionDescriptor getDescriptor() {
-        log.finer("getDescriptor()");
-        return new SessionDescriptor(sessionID, redirectURL);
-    }    
-    
 
     /**
      * Returns the concatenated prefix/id/postfix string.
@@ -152,9 +138,7 @@ public class Session {
      *         where <code>[urlPrefix]</code> and <code>[urlPostfix]</code> are the
      *         parameter strings given to the constructor.
      */
-    // TODO:
-    // Change to getRedirectURL().
-    public String getPrefixPostfixCompound() {
+    public String getRedirectURL() {
         String retval = "";
         if (urlPrefix != null)
             retval = retval + urlPrefix;
@@ -174,9 +158,7 @@ public class Session {
      * @throws SessionException If a BackendException is caught, or if
      *                          the user has yet to be authenticated.
      */
-    // TODO:
-    // UserAttribute removed, replaced with HashMap containing Vectors (for values).
-    public UserAttribute[] getAttributes()
+    public HashMap getAttributes()
     throws SessionException {
         log.finer("getAttributes()");
         
@@ -189,7 +171,7 @@ public class Session {
         // If no attributes have been requested, return an empty array.
         if ( (request == null) ||
              (request.length == 0) )
-            return new UserAttribute[] {};
+            return new HashMap();
         
         // Look up through backend.
         try {
