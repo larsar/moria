@@ -29,13 +29,6 @@ package no.feide.moria.store;
 public class InvalidTicketException extends Exception {
 
     /**
-     * @see java.lang.Exception#Exception()
-     */
-    public InvalidTicketException() {
-        super();
-    }
-
-    /**
      * @see java.lang.Exception#Exception(java.lang.String)
      */
     public InvalidTicketException(final String message) {
@@ -43,16 +36,16 @@ public class InvalidTicketException extends Exception {
     }
 
     /**
-     * @see java.lang.Exception#Exception(java.lang.String, java.lang.Throwable)
-     */
-    public InvalidTicketException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
      * @see java.lang.Exception#Exception(java.lang.Throwable)
      */
     public InvalidTicketException(final Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * @see java.lang.Exception#Exception(java.lang.String, java.lang.Throwable)
+     */
+    public InvalidTicketException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
