@@ -204,7 +204,22 @@ public class Configuration {
         return props.getProperty(key);
     }
     
-    
+
+
+    /**
+     * Get all properties
+     * @return The properties read from the configuration file
+     * @throws ConfigurationException If there is a problem reading the
+     *                                property file, or during sanity checks.
+     */
+    public static Properties getProperties() throws ConfigurationException {
+        log.finer("getProperties()");
+        
+        init();
+        return props;
+    }
+        
+        
     /**
      * Get a configuration property, with a default value returned if the
      * key doesn't exist.
