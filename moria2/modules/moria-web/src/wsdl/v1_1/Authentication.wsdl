@@ -175,7 +175,7 @@
 
   </portType>
 
-  <binding name="AuthenticationIFBinding" type="tns:AuthenticationIF">
+  <binding name="AuthenticationIFPortSoapBinding" type="tns:AuthenticationIF">
 
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http"
                   style="rpc"/>
@@ -309,7 +309,7 @@
   </binding>
 
   <service name="Authentication">
-    <port name="AuthenticationIFPort" binding="tns:AuthenticationIFBinding">
+    <port name="AuthenticationIFPort" binding="tns:AuthenticationIFPortSoapBinding">
       <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
     </port>
   </service>
