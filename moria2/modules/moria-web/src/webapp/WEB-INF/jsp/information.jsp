@@ -104,7 +104,7 @@
             userstring = "";
             if (picarr != null) {
           	  for (int j = 0; j < picarr.length; j++) {
-			    userstring += "<A HREF=\"" + piclink + "?index=" + j + "\" TARGET=\"_blank\">Picture " + (j+1) + "</A><BR>"; 
+			    userstring += "<A HREF=\"" + piclink + "?index=" + j + "\" TARGET=\"_blank\">" + (j+1) + "</A><BR>"; 
 			  }
 			}
          }
