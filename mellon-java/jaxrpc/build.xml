@@ -74,7 +74,7 @@
 
   <target name="build"
           description="Mellon API: All steps necessary to build the JAR"
-          depends="jar,filter:jar,demo:war"/>
+          depends="jar,filter:jar,demo:war,test:compile"/>
 
   <target name="javadoc"
           description="Mellon API: Generate JavaDoc">
