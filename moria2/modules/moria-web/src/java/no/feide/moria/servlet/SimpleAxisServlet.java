@@ -117,7 +117,7 @@ public final class SimpleAxisServlet extends AxisServlet {
         MessageContext messageContext = createMessageContext(axisEngine, request, response);
 
         /* Set the username given in the request. */
-        messageContext.setUsername(request.getUserPrincipal().getName());
+        messageContext.setUsername(request.getRemoteUser());
 
         /* Identify service. */
         String serviceName = request.getServletPath();
@@ -258,7 +258,7 @@ public final class SimpleAxisServlet extends AxisServlet {
         MessageContext messageContext = createMessageContext(axisEngine, request, response);
 
         /* Set the username given in the request. */
-        messageContext.setUsername(request.getUserPrincipal().getName());
+        messageContext.setUsername(request.getRemoteUser());
 
         /* Identify service. */
         String serviceName = request.getServletPath();
