@@ -2,9 +2,12 @@
 <html>
 <head>
 <title>Moria Stats</title>
+<link rel="StyleSheet" href="/stats.css">
 </head>
 
 <body bgcolor="#FFFFFF">
+
+<img class="logo" src="/element/feidelogo.png" alt="FEIDE-logo" border="0"/>
 
 <h1>Moria</h1>
 
@@ -14,18 +17,90 @@
 <tr><th>Clients:</th><td>$numOfWebServices</td></tr>
 </table>
 
-<h2>Sessions</h2>
+<br/>
+
+<h2>Configuration</h2>
 <table>
-<tr><th>Created:</th><td>$createdSessions</td></tr>
-<tr><th>Active:</th><td>$activeSessions</td></tr>
-<tr><th>Failed auth.:</th><td>$loginAttemptFailed</td></tr>
-<tr><th>Sucsessful auth.:</th><td>$loginAttemptSuccess</td></tr>
-<tr><th>Denied clients:</th><td>$deniedSessionsAuthentication (Authentication)<br/>$deniedSessionsAuthorization (Authorization)</td></tr>
-<tr><th>Timeout (SSO):</th><td>$sessionsTimeoutSSO</td></tr>
-<tr><th>Timeout (AUTH):</th><td>$sessionsTimeoutAUTH</td></tr>
-<tr><th>Timeout (USER):</th><td>$sessionsTimeoutUSER</td></tr>
+
+<tr>
+<th>Default language</th><td class="num">$properties.getProperty("no.feide.moria.defaultLanguage")</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<th>Session timeout (SSO)</th><td class="num">$properties.getProperty("no.feide.moria.SessionSSOTimeout") minutes</td>
+</tr>
+
+<tr>
+<th>Allowed login attempts</th><td class="num">$properties.getProperty("no.feide.moria.MaxFailedLogins")</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<th>Session timeout (user)</th><td class="num">$properties.getProperty("no.feide.moria.SessionTimeout") seconds</td>
+</tr>
+
+<tr>
+<th>Auth. data timer delay</th><td class="num">$properties.getProperty("no.feide.moria.AuthorizationTimerDelay") seconds</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<th>Session timeout (auth.)</th><td class="num">$properties.getProperty("no.feide.moria.AuthenticatedSessionTimeout") seconds</td>
+</tr>
+
+<tr>
+<th>LDAP Timeout</th><td class="num">$properties.getProperty("no.feide.moria.backend.ldap.timeout") seconds</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<th>Session timer delay</th><td class="num">$properties.getProperty("no.feide.moria.SessionTimerDelay") seconds</td>
+</tr>
+
 </table>
 
+<br/><br/>
+
+<h1>Mellon statistics</h1>
+
+Login attempts by unauthorized clients:
+$deniedSessionsAuthentication
+
+<br/>
+<br/>
+
+<table>
+<tr>
+<th>Client</th>
+<th>Created</th>
+<th>Active</th>
+<th>Failed auth.</th>
+<th>Sucsessful auth.</th> 
+<th>Denied (URL)</th>
+<th>Denied (attr.)</th>
+<th>Timeout (SSO)</th>
+<th>Timeout (AUTH)</th>
+<th>Timeout (USER)</th>
+</tr>
+
+<tr>
+<td>All</td>
+<td class="num">$createdSessions</td>
+<td class="num">$activeSessions</td>
+<td class="num">$loginAttemptFailed</td>
+<td class="num">$loginAttemptSuccess</td>
+<td class="num">$deniedSessionsURL</td>
+<td class="num">$deniedSessionsAuthorization</td>
+<td class="num">$sessionsTimeoutSSO</td>
+<td class="num">$sessionsTimeoutAUTH</td>
+<td class="num">$sessionsTimeoutUSER</td>
+</tr>
+
+#foreach( $key in $wsStats.keySet() )
+<tr>
+<td>$key</td>
+<td class="num">$wsStats.get($key).getSessionStats("created")</td>
+<td class="num">$wsStats.get($key).getSessionStats("active")</td>
+<td class="num">$wsStats.get($key).getSessionStats("authFailed")</td>
+<td class="num">$wsStats.get($key).getSessionStats("authSuccess")</td>
+<td class="num">$wsStats.get($key).getSessionStats("deniedURL")</td>
+<td class="num">$wsStats.get($key).getSessionStats("deniedAuthorization")</td>
+<td class="num">$wsStats.get($key).getSessionStats("timeoutSSO")</td>
+<td class="num">$wsStats.get($key).getSessionStats("timeoutAuth")</td>
+<td class="num">$wsStats.get($key).getSessionStats("timeoutUser")</td>
+</tr>
+#end
+
+</table>
 
 
 </body>
