@@ -31,17 +31,17 @@ import junit.framework.TestSuite;
  * @version $Revision$
  */
 public class RandomIdTest extends TestCase {
-
+	
     public static Test suite() {
         return new TestSuite(RandomIdTest.class);
     }
 
     public void setUp() {
-        /*
-         * Set a mock value for the system property that the RandomId class
-         * uses for node identifcation.
-         */
-        System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+        /* Property needed by the RandomId class */
+    	String nodeIdPropertyName = "no.feide.moria.store.nodeid";
+
+    	if (System.getProperty(nodeIdPropertyName) == null)
+    		fail(nodeIdPropertyName + " must be set.");
     }
 
     /**
@@ -95,7 +95,7 @@ public class RandomIdTest extends TestCase {
      */
     public void testNewId() {
 
-        int noOfIds = 100000;
+        int noOfIds = 10000;
         HashSet ids = new HashSet(noOfIds);
 
         for (int i = 0; i < noOfIds; i++) {

@@ -21,6 +21,7 @@
 package no.feide.moria.store;
 
 import java.util.HashMap;
+import java.util.Properties;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -34,6 +35,13 @@ import junit.framework.TestSuite;
  */
 public class MoriaCacheStoreTest extends TestCase {
 
+    /** Property needed by the RandomId class. */
+    String nodeIdPropertyName = "no.feide.moria.store.nodeid";
+
+    /** Configuration property. */
+    String storeConfigurationPropertyName = "no.feide.moria.store.cachestoreconf";
+
+    /** The instance of the store. */
     MoriaCacheStore store;
 
     String[] attributes = {"eduPersonOrgDN", "eduPersonAffiliation"};
@@ -52,20 +60,73 @@ public class MoriaCacheStoreTest extends TestCase {
         return new TestSuite(MoriaCacheStoreTest.class);
     }
 
-    public void setUp() {
-        /* Property needed by the RandomId class */
-        if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
-            System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+    public void setUp() throws MoriaStoreException {
+        if (System.getProperty(nodeIdPropertyName) == null)
+            fail("System property: " + nodeIdPropertyName + " must be set.");
+
+        String storeConfigurationFileName = System.getProperty(storeConfigurationPropertyName);
+
+        if (storeConfigurationFileName == null)
+            fail("System property: " + storeConfigurationPropertyName + " must be set.");
+
+        Properties storeProperties = new Properties();
+
+        storeProperties.setProperty(storeConfigurationPropertyName, storeConfigurationFileName);
 
         store = new MoriaCacheStore();
+        store.setConfig(storeProperties);
     }
 
+    /**
+     * 
+     *
+     */
+    public void testSetConfig() throws MoriaStoreException {
+        /* Try with null-value argument. */
+        store = new MoriaCacheStore();
+
+        try {
+            store.setConfig(null);
+            fail("IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Try with missing property. */
+        store = new MoriaCacheStore();
+        Properties properties = new Properties();
+        
+        try {
+            store.setConfig(properties);
+            fail("MoriaStoreConfigurationException should have been thrown.");
+        } catch (MoriaStoreConfigurationException success) {
+        }
+
+        /* Try with valid property pointing to non-existent file. */
+        store = new MoriaCacheStore();
+        String fileName = "This file should not exist. If it does the test will return a false positive."; 
+        properties.setProperty(storeConfigurationPropertyName, fileName);
+        
+        try {
+            store.setConfig(properties);
+            fail("MoriaStoreConfigurationException should have been thrown.");
+        } catch (MoriaStoreConfigurationException success) {
+        }
+        
+        /* Try with vaild configuration file. Multiple calls should not fail. */
+        store = new MoriaCacheStore();
+        properties.setProperty(storeConfigurationPropertyName, System.getProperty(storeConfigurationPropertyName));
+        store.setConfig(properties);
+        store.setConfig(properties);
+        store.setConfig(properties);
+    }
+    
+    
     /**
      * Test creation + retrival and removal.
      *
      * @throws InvalidTicketException
      */
-    public void testCreateAuthnAttempt() throws InvalidTicketException {
+    public void testCreateAuthnAttempt() throws InvalidTicketException, MoriaStoreException {
 
         String loginTicketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, principal);
         MoriaTicket loginTicket = store.getTicketFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
@@ -85,8 +146,7 @@ public class MoriaCacheStoreTest extends TestCase {
         try {
             loginTicketId = store.createAuthnAttempt(null, prefix, postfix, forceAuthn, principal);
             fail("Null value for attributes did not cause exception to be thrown");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         /* Emtpy string array should work */
@@ -96,61 +156,53 @@ public class MoriaCacheStoreTest extends TestCase {
         try {
             loginTicketId = store.createAuthnAttempt(attributes, null, postfix, forceAuthn, principal);
             fail("Null value for prefix did not cause exception to be thrown");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         try {
             loginTicketId = store.createAuthnAttempt(attributes, prefix, null, forceAuthn, principal);
             fail("Null value for postfix did not cause exception to be thrown");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         try {
             loginTicketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, null);
             fail("Null value for pricipal did not cause exception to be thrown");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         try {
             loginTicketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, "");
             fail("Empty principal did not cause exception to be thrown");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
     }
 
     // TODO: getTicket() test
-    public void testGetTicket() {
+    public void testGetTicket() throws MoriaStoreException {
         /* Illegal parameters */
         try {
             store.getTicketFromStore(null, null);
             fail("IllegalArgumentException should be raised, null value");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         try {
             store.getTicketFromStore(null, "");
             fail("IllegalArgumentException should be raised, empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         try {
             store.getTicketFromStore(MoriaTicketType.LOGIN_TICKET, null);
             fail("IllegalArgumentException should be raised, empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         try {
             store.getTicketFromStore(MoriaTicketType.LOGIN_TICKET, "");
             fail("IllegalArgumentException should be raised, empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         /* Non-existing ticket */
@@ -167,19 +219,17 @@ public class MoriaCacheStoreTest extends TestCase {
         // TODO: test for all kinds of tickets
     }
 
-    public void testGetAuthnAttempt() throws InvalidTicketException {
+    public void testGetAuthnAttempt() throws InvalidTicketException, MoriaStoreException {
         /* Illegal arguments */
         try {
             store.getAuthnAttempt(null, false);
             fail("IllegalArgumentException should be raised, null value.");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.getAuthnAttempt("", false);
             fail("IllegalArgumentException should be raised, empty string.");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         /* Wrong ticket */
@@ -220,15 +270,14 @@ public class MoriaCacheStoreTest extends TestCase {
      * @throws InvalidTicketException
      * @see MoriaCacheStore#cacheUserData(java.util.HashMap)
      */
-    public void testCacheUserData() throws InvalidTicketException {
+    public void testCacheUserData() throws InvalidTicketException, MoriaStoreException {
         HashMap cachedAttrs = new HashMap();
 
         /* Invalid parameters */
         try {
             store.cacheUserData(null);
             fail("IllegalArgumentException should be raised, null value");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         cachedAttrs.put("a", "b");
@@ -244,32 +293,28 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testServiceTicketCreation() throws InvalidTicketException {
+    public void testServiceTicketCreation() throws InvalidTicketException, MoriaStoreException {
 
         /* Invalid arguments */
         try {
             store.createServiceTicket(null, principal);
             fail("IllegalArgumentException should be raised, ticket is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createServiceTicket("", principal);
             fail("IllegalArgumentException should be raised, ticket is empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createServiceTicket("foo", null);
             fail("IllegalArgumentException should be raised, principal is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createServiceTicket("foo", "");
             fail("IllegalArgumentException should be raised, principal is empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         String loginTicketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, principal);
@@ -287,21 +332,19 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testGetUserData() throws InvalidTicketException {
+    public void testGetUserData() throws InvalidTicketException, MoriaStoreException {
 
         /* Invalid arguments */
         try {
             store.getUserData(null);
             fail("IllegalArgumentException should be raised, ticketId is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         try {
             store.getUserData("");
             fail("IllegalArgumentException should be raised, ticketId is an empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         HashMap cachedAttrs = new HashMap();
@@ -327,31 +370,27 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testCreateTicketGrantingTicket() throws InvalidTicketException {
+    public void testCreateTicketGrantingTicket() throws InvalidTicketException, MoriaStoreException {
         /* Invalid arguments */
         try {
             store.createTicketGrantingTicket(null, principal);
             fail("IllegalArgumentException should be raised, ticketId is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createTicketGrantingTicket("", principal);
             fail("IllegalArgumentException should be raised, ticketId is an empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createTicketGrantingTicket("foo", null);
             fail("IllegalArgumentException should be raised, principal is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createTicketGrantingTicket("foo", "");
             fail("IllegalArgumentException should be raised, principal is an empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         HashMap cachedAttrs = new HashMap();
@@ -373,8 +412,7 @@ public class MoriaCacheStoreTest extends TestCase {
         try {
             tgTicketId = store.createTicketGrantingTicket(ssoTicketId, principal);
             fail("InvalidTicketException should have been thrown");
-        }
-        catch (InvalidTicketException success) {
+        } catch (InvalidTicketException success) {
         }
         assertNull("TGT should be null for an invalid ticket", tgTicketId);
     }
@@ -384,31 +422,27 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testCreateProxyTicket() throws InvalidTicketException {
+    public void testCreateProxyTicket() throws InvalidTicketException, MoriaStoreException {
         /* Invalid arguments */
         try {
             store.createTicketGrantingTicket(null, principal);
             fail("IllegalArgumentException should be raised, ticketId is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createTicketGrantingTicket("", principal);
             fail("IllegalArgumentException should be raised, ticketId is an empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createTicketGrantingTicket("foo", null);
             fail("IllegalArgumentException should be raised, principal is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.createTicketGrantingTicket("foo", "");
             fail("IllegalArgumentException should be raised, principal is an empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         /* Invalid ticket */
@@ -440,7 +474,7 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testSetTransientAttributes() throws InvalidTicketException {
+    public void testSetTransientAttributes() throws InvalidTicketException, MoriaStoreException {
         HashMap transAttributes = new HashMap();
         transAttributes.put("a", new String[] {"foo"});
         transAttributes.put("b", new String[] {"bar"});
@@ -449,28 +483,24 @@ public class MoriaCacheStoreTest extends TestCase {
         try {
             store.setTransientAttributes(null, transAttributes);
             fail("IllegalArgumentException should be raised, ticketId is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.setTransientAttributes("", transAttributes);
             fail("IllegalArgumentException should be raised, ticketId is an empty string");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
         try {
             store.setTransientAttributes("bar", null);
             fail("IllegalArgumentException should be raised, transientAttributes is null");
-        }
-        catch (IllegalArgumentException success) {
+        } catch (IllegalArgumentException success) {
         }
 
         /* Invalid ticket */
         try {
             store.setTransientAttributes("doesNotExist", transAttributes);
             fail("InvalidTicketException should be raised, ticket does not exist");
-        }
-        catch (InvalidTicketException success) {
+        } catch (InvalidTicketException success) {
         }
 
         HashMap cachedAttrs = new HashMap();
@@ -481,8 +511,7 @@ public class MoriaCacheStoreTest extends TestCase {
         try {
             store.setTransientAttributes(store.cacheUserData(cachedAttrs), transAttributes);
             fail("InvalidTicketException should be raised, ticketId is null");
-        }
-        catch (InvalidTicketException success) {
+        } catch (InvalidTicketException success) {
         }
 
         /* Normal use */

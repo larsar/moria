@@ -47,8 +47,10 @@ public class MoriaTicketTest extends TestCase {
 
     public void setUp() {
         /* Property needed by the RandomId class */
-        if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
-            System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+        String nodeIdPropertyName = "no.feide.moria.store.nodeid";
+
+        if (System.getProperty(nodeIdPropertyName) == null)
+        	fail(nodeIdPropertyName + " must be set.");
 
         id1 = MoriaTicket.newId();
         id2 = MoriaTicket.newId();

@@ -41,7 +41,7 @@ public class MoriaStoreFactoryTest extends TestCase {
      * Simple test that verifies the creation of a MoriaStore instance as the
      * result of the method tested. 
      */
-    public void testCreateMoriaStore() {
+    public void testCreateMoriaStore() throws MoriaStoreException {
         MoriaStore store = MoriaStoreFactory.createMoriaStore();
         assertFalse(store == null);
         assertTrue(store instanceof MoriaStore);
