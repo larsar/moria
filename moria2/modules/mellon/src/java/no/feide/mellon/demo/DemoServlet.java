@@ -18,7 +18,7 @@
  * $Id$
  */
 
-package no.feide.moria.demo;
+package no.feide.mellon.demo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

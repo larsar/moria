@@ -6,7 +6,7 @@
 <web-app>
     <servlet>
         <servlet-name>Demo</servlet-name>
-        <servlet-class>no.feide.moria.demo.DemoServlet</servlet-class>
+        <servlet-class>no.feide.mellon.demo.DemoServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

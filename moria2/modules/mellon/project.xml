@@ -9,15 +9,15 @@
 
 <project>
   <extend>${basedir}/../../project.xml</extend>
-  <name>Moria Demo Service</name>
-  <id>moria-demo</id>
+  <name>Mellon Demo Service</name>
+  <id>mellon</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
-  <package>no.feide.moria.*</package>
-  <shortDescription>Moria Demo Service (HTML and SOAP)</shortDescription>
+  <package>no.feide.mellon.*</package>
+  <shortDescription>Mellon API and Demo Service</shortDescription>
 
   <description/>
 
-  <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-web</siteDirectory>
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/mellon</siteDirectory>
 
   <dependencies>
 
