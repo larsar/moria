@@ -2,7 +2,6 @@ package no.feide.moria.directory;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 
@@ -198,12 +197,12 @@ public class DirectoryManager {
 
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
-        List references = index.lookup(userCredentials.getUsername());
+        String[] references = index.lookup(userCredentials.getUsername());
         if (references != null) {
 
             // Found a reference. Now open it.
             // TODO: Use secondary references as fallback if the first fails.
-            backend.open((String) references.get(0));
+            backend.open((String) references[0]);
 
         } else {
 
