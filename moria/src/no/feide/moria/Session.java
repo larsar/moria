@@ -28,7 +28,7 @@ public class Session {
     private int failedLogins = 0;
 
     /** The user for this session, set after a successful authentication. */
-    private static User user;
+    private User user;
 
     /** The identity of the client service requesting this session. */
     private Principal client;

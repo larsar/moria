@@ -146,12 +146,28 @@
           description="Moria: Redeploy"
           depends="moria:undeploy,moria:deploy"/>
 
+  <target name="moria:javadoc"
+          description="Moria: Generate JavaDoc">
+    <javadoc sourcepath="src"
+             destdir="build.moria/javadoc"
+             packagenames="no.feide.moria.*"
+             source="1.4">
+      <classpath>
+        <fileset dir="lib/">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="moria/lib/">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javadoc>
+  </target>
+
   <target name="moria:clean"
           description="Moria: Clean up">
     <delete dir="build.moria"/>
     <delete file="FeideAuthentication.wsdl"/>
   </target>
-
 
 
   <!-- Targets to build the Mellon API. -->
@@ -205,6 +221,23 @@
   <target name="mellon:build"
           description="Mellon API: All steps necessary to build the JAR"
           depends="mellon:jar"/>
+
+  <target name="mellon:javadoc"
+          description="Mellon API: Generate JavaDoc">
+    <javadoc sourcepath="src"
+             destdir="build.mellon/javadoc"
+             packagenames="no.feide.mellon,no.feide.mellon.filter"
+             source="1.4"> 
+      <classpath>
+        <fileset dir="lib/">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset dir="moria/lib/">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javadoc>
+  </target>
 
   <target name="mellon:clean"
           description="Mellon API: Clean up">

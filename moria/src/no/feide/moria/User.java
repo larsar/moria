@@ -14,6 +14,8 @@ import javax.naming.directory.*;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapReferralException;
 
+import java.io.File;
+
 
 /**
  * Represents a user in the backend. Used to authenticate users and retrieve
@@ -85,10 +87,10 @@ public class User {
             return null;
         
         // Get and verify properties.
-        String keyStore = System.getProperty("no.feide.moria.Backend.LDAP.Keystore");
-        String keyStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.KeystorePassword", null);
-        String trustStore = System.getProperty("no.feide.moria.Backend.LDAP.TrustStore");
-        String trustStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.TrustStorePassword", null);
+        String keyStore = System.getProperty("no.feide.moria.Backend.LDAP.keyStore");
+        String keyStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.keyStorePassword", null);
+        String trustStore = System.getProperty("no.feide.moria.Backend.LDAP.trustStore");
+        String trustStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.trustStorePassword", null);
         String ldapHost = System.getProperty("no.feide.moria.Backend.LDAP.Host");
         if (ldapHost == null)
             throw new BackendException("Required preference no.feide.moria.Backend.LDAP.Host not set");
@@ -101,18 +103,20 @@ public class User {
         String ldapUid = System.getProperty("no.feide.moria.Backend.LDAP.UIDAttribute");
         if (ldapUid == null)
             throw new BackendException("Required preference no.feide.moria.Backend.LDAP.UIDAttribute not set");
-        
+               
         // Only enable SSL if all necessary info is available.
         Hashtable env = new Hashtable();
-        if ( (keyStore != null) &&
-             (keyStorePassword != null) &&
+        if ( /*(keyStore != null) &&
+             (keyStorePassword != null) &&*/
              (trustStore != null) &&
-             (trustStorePassword != null) ){
+             (trustStorePassword != null) ) {
             log.config("SSL enabled");
             env.put(Context.SECURITY_PROTOCOL, "ssl");
             Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+            /*
             System.setProperty("javax.net.ssl.keyStore", keyStore);
             System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword); 
+            */
             System.setProperty("javax.net.ssl.trustStore", trustStore);
             System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
         }
@@ -171,11 +175,13 @@ public class User {
      */
     private static String findRDN(String pattern)
     throws BackendException {
-        log.finer("findRDN(String)");
+        log.finer("findRDN("+pattern+')');
         
         try {
             
+            log.info("DEBUG a");
             NamingEnumeration results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 0, new String[] {}, false, true));
+            log.info("DEBUG b");
             try {
                 
                 // Nothing matched the pattern.
@@ -215,11 +221,7 @@ public class User {
      * @param attributes User element attribute names.
      * @return The requested user attributes.
      * @throws BackendException If a NamingException occurs.
-     * @see javax.naming.directory.InitialDirContext.getAttributes(String, String[])
-     * @see javax.naming.directory.BasicAttributes
      */
-    // TODO:
-    // Should return a HashMap.
     public HashMap lookup(String[] attributes)
     throws BackendException {
         log.finer("lookup(String[])");
@@ -248,7 +250,6 @@ public class User {
      * Closes the connection to the LDAP server, as per
      * <code>javax.naming.InitialContext.close()</code>.
      * @throws BackendException If a NamingException occurs.
-     * @see javax.naming.InitialContext.close()
      */
     public void close()
     throws BackendException {

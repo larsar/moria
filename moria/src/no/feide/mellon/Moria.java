@@ -95,7 +95,8 @@ public class Moria {
     /**
      * Wrapper for same JAX-RPC stub of same name.
      * @param id
-     * @return
+     * @return The attributes requested when the session was established,
+     *         or an empty set if no attributes were requested.
      * @throws MoriaException If a RemoteException is caught.
      */
     public HashMap getAttributes(String id)
