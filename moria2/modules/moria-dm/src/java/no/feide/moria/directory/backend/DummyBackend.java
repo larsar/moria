@@ -35,7 +35,7 @@ implements DirectoryManagerBackend {
         // "Authentication", sort of.
         String username = userCredentials.getUsername();
         String password = userCredentials.getPassword();
-        if ((username == "test@feide.no") && (password == "test")) {
+        if ((username.equals("test@feide.no")) && (password.equals("test"))) {
 
             // Successful authentication.
             return prepareAttributes(attributeRequest);
@@ -57,18 +57,18 @@ implements DirectoryManagerBackend {
      *            considered. Not case-sensitive.
      * @return If the attribute is at all requested, will contain the attribute
      *         <code>eduPersonAffiliation</code> with the value
-     *         <code>Affiliation</code>. If not, will contain an empty array.
+     *         <code>Affiliate</code>. If not, will contain an empty array.
      */
     private UserAttribute[] prepareAttributes(String[] attributeRequest) {
 
         // Check whether eduPersonAffiliation exists in the attribute request.
         for (int i = 0; i < attributeRequest.length; i++)
-            if (attributeRequest[i].toUpperCase() == "eduPersonAffiliation") {
+            if (attributeRequest[i].equalsIgnoreCase("eduPersonAffiliation")) {
 
                 // Return the attribute value.
-                String[] attributeValues = new String[] {"eduPersonAffiliation"};
+                String[] attributeValues = new String[] {"Affiliate"};
                 try {
-                    return new UserAttribute[] {new UserAttribute("eduPersonAffiliation", new String[] {"eduPersonAffiliation"})};
+                    return new UserAttribute[] {new UserAttribute("eduPersonAffiliation", attributeValues)};
                 } catch (IllegalAttributeException e) {
                     // TODO: Add logging; unexpected exception.
                 }
