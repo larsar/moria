@@ -64,6 +64,7 @@ public class AuthorizationManagerTest extends TestCase {
 
         HashSet operations = new HashSet();
         operations.add("localAuth");
+        operations.add("directAuth");
 
         HashSet affiliation = new HashSet();
         affiliation.add("uninett.no");
@@ -699,11 +700,11 @@ public class AuthorizationManagerTest extends TestCase {
         Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("doesNotExist", new String[]{}));
 
         /* No operations requested */
-        Assert.assertTrue("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{}));
+        Assert.assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{}));
 
         /* Allowed operations */
-        Assert.assertTrue("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth"}));
-        Assert.assertTrue("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "directAuth"}));
+        Assert.assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth"}));
+        Assert.assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "directAuth"}));
 
         /* Illegal attributes */
         Assert.assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"localAuth", "illegal"}));
