@@ -128,6 +128,9 @@ public class LoginServlet extends MoriaServlet {
             /* Set default language */
             defaultLang = Configuration.getProperty("no.feide.moria.defaultLanguage");
 
+            /* Login URL */
+            loginURL = Configuration.getProperty("no.feide.moria.LoginURL");
+
             /* Initialize session timeout timer */
             int sessionDelaySec = new Integer(Configuration.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
             log.config("Starting time out service. Repeat every "+sessionDelaySec+" seconds.");
@@ -381,9 +384,12 @@ public class LoginServlet extends MoriaServlet {
 
                         if (session.allowSso()) {
                             log.info("Redirect to WebService (SSO), "+session.getWebService().getName());
-                            stats.loginAttempt(session.getWebService().getId(), "SSO");
+                            String wsID = session.getWebService().getId();
+                            stats.incStatsCounter(wsID, "loginSSO");
                             session.setCachedAttributes(cachedAttributes);
                             sessionStore.deleteSession(existingSession);
+                            stats.decStatsCounter(wsID, "activeSessions");
+                            stats.incStatsCounter(wsID, "timeoutSSO");
                             session.unlock(existingSession.getUser());
                             redirectToWebService(response, session);
                             return null;
@@ -477,7 +483,7 @@ public class LoginServlet extends MoriaServlet {
             Credentials c = new Credentials(username, password);
             if (!session.authenticateUser(c)) {
                 log.info(log_prefix+"FAILED");
-                stats.loginAttempt(session.getWebService().getId(), "FAILED");
+                stats.incStatsCounter(session.getWebService().getId(), "loginFailed");
         
                 /* If the user has exceeded the maximum login
                 attempts, the session is now gone. */
@@ -509,7 +515,7 @@ public class LoginServlet extends MoriaServlet {
          * include the updated session ID in URL and HttpSession. */
         
         log.info(log_prefix+"SUCCESS");
-        stats.loginAttempt(session.getWebService().getId(), "SUCCESS");
+        stats.incStatsCounter(session.getWebService().getId(), "loginSuccessful");
 
         HttpSession httpSession = 
             ((HttpServletRequest)request).getSession(true);

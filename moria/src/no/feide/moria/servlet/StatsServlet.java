@@ -139,7 +139,7 @@ public class StatsServlet extends VelocityServlet {
             Arrays.sort(sortedWsNames);
 
             context.put("sortedWsNames", sortedWsNames);
-            context.put("deniedSessionsAuthentication", new Integer(stats.getDeniedSessionsAuthentication()));
+            context.put("deniedSessionsAuthN", new Integer(stats.getDeniedSessionsAuthN()));
 
             return getTemplate("stats.vtl");
         }

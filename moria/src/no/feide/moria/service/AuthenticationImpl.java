@@ -201,21 +201,21 @@ implements AuthenticationIF, ServiceLifecycle {
             new URL(simulatedURL);
         } catch (MalformedURLException e) {
             log.warning(log_prefix+"DENIED, Invalid URL");
-            stats.createSessionAttempt(serviceName, "URL");
+            stats.incStatsCounter(serviceName, "sessionDeniedURL");
             throw new RemoteException("Malformed URL: "+simulatedURL);
         }
 
 
-        log.info("ServiceName: "+serviceName+", Attrs: "+attributes+", DenySSO: "+denySso+", URL: "+simulatedURL);
+        log.info("ServiceName: "+serviceName+", Attrs: "+attributes.toString()+", DenySSO: "+denySso+", URL: "+simulatedURL);
 
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
             log.warning(log_prefix+"DENIED, Unauthorized");
-            stats.createSessionAttempt(null, "AUTHN");
+            stats.incStatsCounter(serviceName, "sessionDeniedAuthN");
             throw new RemoteException("Web Service not authorized for use with Moria");
         } else if (!ws.allowAccessToAttributes(attributes)) {
             log.warning(log_prefix+"DENIED, Authorization faliure");
-            stats.createSessionAttempt(serviceName, "AUTHO");
+            stats.incStatsCounter(serviceName, "sessionDeniedAuthZ");
             throw new RemoteException("Access to one or more attributes prohibited");
         }
 
@@ -227,7 +227,9 @@ implements AuthenticationIF, ServiceLifecycle {
             if (denySso) 
                 session.denySso();
 
-            stats.createSessionAttempt(serviceName, "SUCCESS");
+            stats.incStatsCounter(serviceName, "createdSessions");
+            stats.incStatsCounter(serviceName, "activeSessions");
+
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");

@@ -221,14 +221,16 @@ public class SessionStore {
                     if (session.isLocked() && 
                         !session.isValid(now-timeoutSso)) {
                             log.info("Invalidating SSO session (timeout): "+session.getID());
-                            stats.sessionTimeout(wsName, "SSO");
+                            stats.incStatsCounter(wsName, "timeoutSSO");
+                            stats.decStatsCounter(wsName, "activeSessions");
                             invalidatedSessions.add(session);
                     }
 
                     /* Web service to slow to fetch user attributes */
                     else if (!session.isLocked() && !session.isValid(now-authTimeoutSec)) {
                             log.info("Invalidating authenticated session (Mellon timeout): "+session.getID());
-                            stats.sessionTimeout(wsName, "AUTH");
+                            stats.incStatsCounter(wsName, "timeoutMellon");
+                            stats.decStatsCounter(wsName, "activeSessions");
                             invalidatedSessions.add(session);
                     }
                 }
@@ -237,7 +239,8 @@ public class SessionStore {
                 else {
                     if (!session.isValid(now-timeout)) {
                         log.info("Invalidating session (user timeout): "+session.getID());
-                        stats.sessionTimeout(wsName, "USER");
+                        stats.incStatsCounter(wsName, "timeoutUser");
+                        stats.decStatsCounter(wsName, "activeSessions");
                         invalidatedSessions.add(session);
                     }
                 }

@@ -22,6 +22,7 @@ import no.feide.moria.SessionStore;
 import no.feide.moria.Session;
 import no.feide.moria.NoSuchSessionException;
 import no.feide.moria.SessionException;
+import no.feide.moria.stats.StatsStore;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -47,6 +48,9 @@ public class LogoutServlet extends MoriaServlet {
 
     /** Used for logging. */
     private static Logger log = Logger.getLogger(LoginServlet.class.toString());
+
+    /** Statistics */
+    private StatsStore stats = StatsStore.getInstance();
 
 
     /**
@@ -77,7 +81,10 @@ public class LogoutServlet extends MoriaServlet {
         /* Find and invalidate session */
         try {
             SessionStore sessionStore = SessionStore.getInstance();
-            sessionStore.deleteSession(sessionStore.getSession(existingSessionID));
+            Session session = sessionStore.getSession(existingSessionID);
+            stats.incStatsCounter(session.getWebService().getId(), "logout");
+            stats.decStatsCounter(session.getWebService().getId(), "activeSessions");
+            sessionStore.deleteSession(session);
             log.info("SSO Logout, SID="+existingSessionID);
         }
 

@@ -46,7 +46,7 @@ public class StatsStore {
 
     /** Number of failed attempts to create sesion (authentication of
      * web service failed */
-    int deniedSessionsAuthentication = 0;
+    int deniedSessionsAuthN = 0;
 
     /**
      * Constructor. 
@@ -158,57 +158,27 @@ public class StatsStore {
             
         }        
         
+
+
         return stats;
     }
 
-
-    
-    /**
-     * Log a login attempt for a given web service.
-     * @param wsname The name of the web service
-     * @param result The result of the login attempt: "SUCCESS",
-     * "FAILED" or "SSO"
-     */
-    public void loginAttempt(String wsID, String result) {
-        getWSStats(wsID).loginAttempt(result);
+    public void incDeniedSessionsAuthN() {
+        deniedSessionsAuthN++;
     }
     
-
-
-    /**
-     * Log a "create session" attempt for a given web service.
-     * @param wsname The name of the web service
-     * @param result The result of the attempt: "SUCCESS", "URL", "AUTHO"
-     */
-    public void createSessionAttempt(String wsID, String result) {
-        if (result.equals("AUTHN")) {
-            deniedSessionsAuthentication++;
-        }
-        else 
-            getWSStats(wsID).createSessionAttempt(result);
+    public int getDeniedSessionsAuthN() {
+        return deniedSessionsAuthN;
     }
 
 
-
-    /**
-     * Log when a session times out, for a given web service.
-     * @param wsname The name of the web service
-     * @param result Type of TIMEOUT: "SSO", "AUTH", "USER"
-     */
-    public void sessionTimeout(String wsID, String type) {
-        getWSStats(wsID).sessionTimeout(type);
+    public void incStatsCounter(String wsID, String counter) {
+        getWSStats(wsID).increaseCounter(counter);
     }
 
-
-
-    /**
-     * Returns the number of times unauthorized web services tries to
-     * access Moria. These web services has been let through the web
-     * server but arnen't configured in Moria.
-     * @return The number of denied (authentication) attempts to
-     * create a session.
-     */
-    public int getDeniedSessionsAuthentication() {
-        return deniedSessionsAuthentication;
+    public void decStatsCounter(String wsID, String counter) {
+        getWSStats(wsID).decreaseCounter(counter);
     }
+        
+
 }
