@@ -281,38 +281,17 @@ public class User {
                 // Start counting the (milli)seconds.
                 long searchStart = System.currentTimeMillis();
                 try {
-                    
-                    // Timeout hack, for real this time.    
-                    int attempts = 0;
-                    while (true) {
-                        try {
-                            attempts++;
-                            results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, false));
-                            break;
-                        } catch (TimeLimitExceededException e) {
-                            if (attempts < 5) {
-                                log.severe("Timeout, trying again after 500ms...");
-                                try {
-                                    Thread.currentThread().sleep(500);
-                                } catch (InterruptedException ee) {
-                                    // Ignored.
-                                }
-                            }
-                            else {
-                                log.severe("Too many timeouts, aborting...");
-                                throw new TimeLimitExceededException("Too many timeouts, aborting...");
-                            }
-                        }
+                    log.info("Starting search");
+                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, false));               
+                    log.info("Search completed");
+                    if (!results.hasMore()) {
+                        log.info("No results");
+                        log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+                        return null;
                     }
-
                 } catch (TimeLimitExceededException e) {
                     log.severe("TimelimitExceededException caught after "+(System.currentTimeMillis()-searchStart)+"ms and re-thrown as BackendException");
                     throw new BackendException(e);
-                }
-                
-                if (!results.hasMore()) {
-                    log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
-                    return null;
                 }
                 
             } catch (LdapReferralException e) {
@@ -325,21 +304,18 @@ public class User {
                 refEnv.put(Context.REFERRAL, "throw");  // To catch referrals.
                 refEnv.put(Context.SECURITY_PROTOCOL, "ssl");
                 try {
+                    log.info("Getting referral contest");
                     refEnv = e.getReferralContext(refEnv).getEnvironment();
-                } catch (TimeLimitExceededException ee) {
-                    log.severe("Time limit exceeded when getting referral context");
-                }
-                log.info("Matched "+pattern+" to referral "+refEnv.get(Context.PROVIDER_URL));
-                try {
+                    log.info("OK");
+                    log.info("Matched "+pattern+" to referral "+refEnv.get(Context.PROVIDER_URL));
+                    log.info("Closing old context");
                     ldap.close();
-                } catch (TimeLimitExceededException ee) {
-                    log.warning("Time limit exceeded when closing LIMS connection; ignored");
-                }
-                try {
+                    log.info("Reopening new context");
                     ldap = new InitialLdapContext(refEnv, null);
+                    log.info("Done");
                 } catch (TimeLimitExceededException ee) {
-                    log.severe("Time limit exceeded when creating LDAP context to "+refEnv.get(Context.PROVIDER_URL));
-                    throw new BackendException("Time limit exceeded when creating LDAP context");
+                    log.severe("Time limit exceeded when following referral");
+                    throw new BackendException("Time limit exceeded when following referral");
                 }
                 return ldapSearch(pattern);
                 
@@ -347,22 +323,20 @@ public class User {
             
             // We just found an element.
             try {
+                log.info("Looking for search results");
                 SearchResult entry = (SearchResult)results.next();
+                log.info("Getting entry name");
                 String rdn = entry.getName();
+                log.info("Done");
                 log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to element "+rdn);
+                log.info("All done");
                 return rdn;
             } catch (TimeLimitExceededException e) {
                 log.severe("TimeLimitExceededException caught (when reading search results) and re-thrown as BackendException");
                 throw new BackendException(e);
             }
-            
-        } 
-        catch (TimeLimitExceededException e) {
-                    log.severe("SATAN! TimelimitExceededException - re-thrown as BackendException");
-                    throw new BackendException(e);
-                }
                 
-        catch (ConfigurationException e) {
+        } catch (ConfigurationException e) {
             log.severe("ConfigurationException caught and re-thrown as BackendException");
             throw new BackendException(e);
         } catch (NamingException e) {
