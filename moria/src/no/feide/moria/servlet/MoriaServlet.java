@@ -233,7 +233,6 @@ public class MoriaServlet extends VelocityServlet {
                 value = value.substring(0, index)+"<A href=\""+wsURL+"\">"+wsName+"</A>"+value.substring(index+7, value.length());
             }
 
-            System.out.println("Key: "+key+"Value: "+value);
             context.put(key, value);
         }   
     }
