@@ -34,15 +34,15 @@ function fokuser(){document.loginform.username.focus();}
 <!-- TODO: Only show language selection if the ticket is valid -->
 <font size="-1">
         <%
-        TreeMap languages = (TreeMap) request.getAttribute("languages");
+        TreeMap languages = (TreeMap) request.getAttribute(RequestUtil.ATTR_LANGUAGES);
         Iterator it = languages.keySet().iterator();
         while(it.hasNext()) {
             String longName = (String) it.next();
             String shortName  = (String) languages.get(longName);
-            if (request.getAttribute("selectedLang").equals(shortName)) {%>
+            if (request.getAttribute(RequestUtil.ATTR_SELECTED_LANG).equals(shortName)) {%>
                 [<%=longName%>]
             <%} else {%>
-                <A href="<%= request.getAttribute("baseURL") + "&lang=" + shortName %>"><%=longName%></A>
+                <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>"><%=longName%></A>
             <%}%>
         <%}%>
 </font>
@@ -70,7 +70,7 @@ function fokuser(){document.loginform.username.focus();}
     <td width="5%" rowspan="2">&nbsp;</td>
   </tr>
 
-<% if (request.getAttribute("errorType") != null) { %>
+<% if (request.getAttribute(RequestUtil.ATTR_ERROR_TYPE) != null) { %>
   <tr>
    <td colspan="2">
    <table summary="" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -79,8 +79,8 @@ function fokuser(){document.loginform.username.focus();}
     <img src="/element/varseltrekant.png" alt="feilmelding"/>
     </td>
     <td valign="middle" width="99%">
-    <b><%=bundle.getString("error_" + (String) request.getAttribute("errorType"))%></b><br/>
-    <i><%=bundle.getString("error_" + (String) request.getAttribute("errorType") + "_desc")%></i>
+    <b><%=bundle.getString("error_" + (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE))%></b><br/>
+    <i><%=bundle.getString("error_" + (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE) + "_desc")%></i>
 
     </td>
     </tr>
@@ -89,25 +89,25 @@ function fokuser(){document.loginform.username.focus();}
    </tr>
 <%}%>
 
-<% if (request.getAttribute("errorType") == null || !request.getAttribute("errorType").equals("unknownTicket")) { %>
+<% if (request.getAttribute(RequestUtil.ATTR_ERROR_TYPE) == null || !request.getAttribute(RequestUtil.ATTR_ERROR_TYPE).equals(RequestUtil.ERROR_UNKNOWN_TICKET)) { %>
   <tr valign="top">
     <td width="20%">
       <table summary="" cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF">
         <tr>
           <td>
-            <form action="<%= request.getAttribute("baseURL")%>" method="POST" name="loginform" autocomplete="off">
+            <form action="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL)%>" method="POST" name="loginform" autocomplete="off">
               <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
                 <tbody>
 
                   <tr>
                     <td align="left" nowrap ="nowrap">
 		            <%=bundle.getString("form_username")%><br/>
-                    <input type="text" size="16" value="" name="username"></td>
+                    <input type="text" size="16" value="" name="username" autocomplete="off"></td>
                   </tr>
                   <tr>
                     <td>
                       <%=bundle.getString("form_password")%><br>
-                      <input type="password" size="16" value="" name="password">
+                      <input type="password" size="16" value="" name="password" autocomplete="off">
                     </td>
                   </tr>
 
@@ -116,13 +116,13 @@ function fokuser(){document.loginform.username.focus();}
 		<select name="org">
 		<option value="null"><%=bundle.getString("form_selectOrg")%></option>
         <%
-        TreeMap orgNames = (TreeMap) request.getAttribute("organizationNames");
+        TreeMap orgNames = (TreeMap) request.getAttribute(RequestUtil.ATTR_ORGANIZATIONS);
         it = orgNames.keySet().iterator();
         while(it.hasNext()) {
             String longName = (String) it.next();
             String shortName  = (String) orgNames.get(longName);
         %>
-	    <option <%if (request.getAttribute("selectedOrg").equals(shortName)) {%>selected=="true" <%}%>value="<%=shortName%>"><%=longName%></option>
+	    <option <%if (request.getAttribute(RequestUtil.ATTR_SELECTED_ORG).equals(shortName)) {%>selected=="true" <%}%>value="<%=shortName%>"><%=longName%></option>
         <%}%>
 		</select>
 		</td>
@@ -149,8 +149,8 @@ function fokuser(){document.loginform.username.focus();}
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
         <td><%=RequestUtil.insertLink("CLIENT_LINK",
                                          bundle.getString("expl_ws"),
-                                         (String) request.getAttribute("clientName"),
-                                         (String) request.getAttribute("clientURL"))%></td>
+                                         (String) request.getAttribute(RequestUtil.ATTR_CLIENT_NAME),
+                                         (String) request.getAttribute(RequestUtil.ATTR_CLIENT_URL))%></td>
       </tr>
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
@@ -159,9 +159,9 @@ function fokuser(){document.loginform.username.focus();}
       <tr valign="top">
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
         <td><%=RequestUtil.insertLink("CLIENT_LINK",
-                                         bundle.getString("expl_data_"+request.getAttribute("secLevel")),
-                                         (String) request.getAttribute("clientName"),
-                                         (String) request.getAttribute("clientURL"))%><BR/>
+                                         bundle.getString("expl_data_"+request.getAttribute(RequestUtil.ATTR_SEC_LEVEL)),
+                                         (String) request.getAttribute(RequestUtil.ATTR_CLIENT_NAME),
+                                         (String) request.getAttribute(RequestUtil.ATTR_CLIENT_URL))%><BR/>
 
 
        </td>
@@ -173,7 +173,7 @@ function fokuser(){document.loginform.username.focus();}
       <tr valign="top">
         <td>&nbsp;</td>
         <td>
-        <a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a><img src="/element/emblemS.png" border="0" valign="middle" ALT="Arrow" />
+        <a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a>
 	</td>
       </tr>
     </table>
@@ -181,7 +181,7 @@ function fokuser(){document.loginform.username.focus();}
 
 <%} else {%>
 
-<td><a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a><img src="/element/emblemS.png" border="0" valign="middle" ALT="Arrow" /></td>
+<td><a href="http://www.feide.no/moria/doc/user/faq.html"><%=bundle.getString("faq")%></a>
 <%}%>
 
 
