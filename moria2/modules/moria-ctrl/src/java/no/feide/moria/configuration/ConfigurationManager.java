@@ -20,8 +20,6 @@
 
 package no.feide.moria.configuration;
 
-//import no.feide.moria.controller.MoriaController;
-
 import no.feide.moria.log.MessageLogger;
 import no.feide.moria.controller.MoriaController;
 
@@ -30,6 +28,8 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Iterator;
+import java.util.Set;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.File;
@@ -105,11 +105,6 @@ public class ConfigurationManager {
     private static final String[] NEEDS_LISTENER = new String[]{MODULE_SM, MODULE_DM, MODULE_AM, MODULE_WEB};
 
     /**
-     * Initial value of StringBuffer used to read authorization database
-     */
-    private static final int AUTHZDB_STRINGBUFFER_SIZE = 10000;
-
-    /**
      * Timer for the configuration files
      */
     private Timer timer = new Timer(true);
@@ -180,6 +175,26 @@ public class ConfigurationManager {
     }
 
     /**
+     * Remove all file listeners.
+     */
+    public void stop() {
+        HashMap timers = new HashMap(timerEntries);
+        for (Iterator it = timers.keySet().iterator(); it.hasNext();) {
+            String entry = (String) it.next();
+            removeFileChangeListener(entry);
+        }
+    }
+
+    /**
+     * Number of active file listeners. Basicly needed for testing.
+     *
+     * @return the number of active file listeners
+     */
+    int numFileListeners() {
+        return timerEntries.size();
+    }
+
+    /**
      * Read properties from file. The fileURI can be absolute path to file or relative
      * to the classpath. If the fieleURI does not resolve to a readeble file, a
      * <code>ConfigurationManagerException</code> is thrown.
@@ -222,6 +237,7 @@ public class ConfigurationManager {
         FileListenerTask task = new FileListenerTask(fileName, module);
         timerEntries.put(fileName, task);
         timer.schedule(task, delay, delay);
+        // TODO: Log
     }
 
     /**
@@ -233,6 +249,7 @@ public class ConfigurationManager {
         FileListenerTask task = (FileListenerTask) timerEntries.remove(fileName);
         if (task != null) {
             task.cancel();
+            // TODO: Log
         }
     }
 
@@ -250,7 +267,7 @@ public class ConfigurationManager {
 
         try {
 
-           /* Authorization database */
+            /* Authorization database */
             if (module.equals(MODULE_AM)) {
                 props = new Properties();
                 props.put("authorizationDatabase", configurationFile.getAbsolutePath());
