@@ -3,7 +3,7 @@
 <DirectoryManagerConfiguration>
 
 	<Index file="src/test/conf/DummyIndex.object"
-         update="5"/>
+         update="120"/>
   
 	<Backend class="no.feide.moria.directory.backend.DummyBackendFactory">
 		<User name="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base">
