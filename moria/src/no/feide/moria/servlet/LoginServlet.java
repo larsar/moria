@@ -1,6 +1,5 @@
 package no.feide.moria.servlet;
 
-
 import java.util.Properties;
 import java.util.prefs.Preferences;
 import java.util.logging.Logger;
@@ -21,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import no.feide.moria.Credentials;
 import no.feide.moria.SessionException;
+import no.feide.moria.NoSuchSessionException;
 import no.feide.moria.SessionStore;
 import no.feide.moria.Session;
 import no.feide.moria.User;
@@ -50,7 +50,7 @@ public class LoginServlet extends VelocityServlet {
     private static String NOSESSION  = "nosession";
     private static String MAXLOGIN   = "maxlogin";
     private static String AUTHFAILED = "auth";
-    private static String UNKNOWN    = "unknown";
+    private static String GENERIC    = "generic";
 
     Preferences prefs, localPrefs;
     String loginURL;
@@ -139,7 +139,7 @@ public class LoginServlet extends VelocityServlet {
 
             else {
                 log.severe("Unsupported http request: "+request.getMethod());
-                return genLoginTemplate(request, response, context, null, UNKNOWN);
+                return genLoginTemplate(request, response, context, null, GENERIC);
             }
         }
 
@@ -229,8 +229,17 @@ public class LoginServlet extends VelocityServlet {
 
         // Set template-variables from properties
         for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
-            String value = (String) e.nextElement();
-            context.put(value, bundle.getString(value));
+            String key = (String) e.nextElement();
+            String value = bundle.getString(key);
+            int index;
+            
+            if ((index = value.indexOf("WS_NAME")) != -1) {
+                // TODO: Read name+url from web service data.
+                value = value.substring(0, index)+"<A href=\"http://www.uio.no\">Tjenestenavn</A>"+value.substring(index+7, value.length());
+            }
+                
+
+            context.put(key, value);
         }        
 
         // Set or reset error messages
@@ -291,7 +300,7 @@ public class LoginServlet extends VelocityServlet {
         
         catch (SessionException e) {
             
-            return genLoginTemplate(request, response, context, null, UNKNOWN);
+            return genLoginTemplate(request, response, context, null, GENERIC);
         }
     }
 
@@ -331,7 +340,7 @@ public class LoginServlet extends VelocityServlet {
         }
         
         catch (SessionException e) {
-            return genLoginTemplate(request, response, context, null, UNKNOWN);
+            return genLoginTemplate(request, response, context, null, GENERIC);
         }
 
 
@@ -341,29 +350,30 @@ public class LoginServlet extends VelocityServlet {
             if (!session.authenticateUser(c)) {
                 log.info("Authentication failed");
         
-                session = sessionStore.getSession(id);
-
-                if (session == null) {
-                    // Max login tries has been reached. Session is
-                    // terminated.
-                    return genLoginTemplate(request, response, context, null, MAXLOGIN);
+                /* If the user has exceeded the maximum login
+                attempts, the session is now gone. */
+                try {
+                    session = sessionStore.getSession(id);
+                }
+                catch (NoSuchSessionException e) {
+                    return genLoginTemplate(request, response, context, session.getID(), MAXLOGIN);
                 }
 
-                else
-                    return genLoginTemplate(request, response, context, session.getID(), AUTHFAILED);
+                return genLoginTemplate(request, response, context, 
+                                        session.getID(), AUTHFAILED);
             }
         } 
         
         catch (BackendException e) {
             // A user-friendly message would be preferable...
             log.severe("BackendException caught and re-thrown as ServletException");
-                return genLoginTemplate(request, response, context, null, UNKNOWN);
+                return genLoginTemplate(request, response, context, null, GENERIC);
         } 
 
         catch (SessionException e) {
             // A user-friendly message would be preferable...
             log.severe("SessionException caught and re-thrown as ServletException");
-                return genLoginTemplate(request, response, context, null, UNKNOWN);
+                return genLoginTemplate(request, response, context, null, GENERIC);
         }
 
 

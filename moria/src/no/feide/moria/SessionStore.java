@@ -104,7 +104,7 @@ public class SessionStore {
 
         if (!sessions.containsKey(sessionID)) {
             log.severe("No such session: "+sessionID);
-            throw new SessionException("No such session: "+sessionID);
+            throw new NoSuchSessionException("No such session: "+sessionID);
         } else
             return (Session)sessions.get(sessionID);
     }
