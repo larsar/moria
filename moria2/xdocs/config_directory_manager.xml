@@ -114,7 +114,7 @@ $Id$
                 <p>
                 For the JNDI backend, the <i>Backend</i> element must contain
                 one <i>JNDI</i> child element, with the attributes
-                <i>timeout</i> (giving the timeout used when accessing
+                <i>timeout</i> (giving the timeout, in seconds, used when accessing
                 authentication servers), <i>usernameAttribute</i> (used when
                 trying to match a username to a given user), and
                 <i>guessedAttribute</i> (used for guessing on the user
