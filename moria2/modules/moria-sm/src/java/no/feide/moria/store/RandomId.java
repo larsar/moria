@@ -26,7 +26,7 @@ import java.util.Date;
 
 /**
  * Returns an id that's random and unique across a cluster of JVMs. Each JVM
- * needs to be configured with an unique node id, identifying each node. This is
+ * needs to be configured with a unique node id, identifying each node. This is
  * done by setting the system property <code>no.feide.moria.store.nodeid</code>.
  * The value must be a ascii string of 3 character length. The returned id is an
  * encoded String (pseudo Base64, see method documentation for details)
@@ -48,7 +48,7 @@ public final class RandomId {
 
     static {
 
-        /* Initiate the node identificator */
+        /* Initiate the node identifier */
         String nodeIdPropertyName = "no.feide.moria.store.nodeid";
         String nodeIdProperty = System.getProperty(nodeIdPropertyName);
 

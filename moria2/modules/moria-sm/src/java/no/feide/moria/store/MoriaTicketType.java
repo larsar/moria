@@ -65,7 +65,7 @@ public final class MoriaTicketType implements Serializable {
     /** Initially issued to the requesting service for use by the client. */
     public static final MoriaTicketType LOGIN_TICKET = new MoriaTicketType("Login Ticket");
 
-    /** For use by the service upon retrival of user data. */
+    /** For use by the service upon retrieval of user data. */
     public static final MoriaTicketType SERVICE_TICKET = new MoriaTicketType("Service Ticket");
 
     /** To be set as a cookie in the client browser for later re-authentication. */

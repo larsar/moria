@@ -252,7 +252,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     }
 
     /**
-     * Parse the config retrived from TreeCache.getEvictionPolicyConfig(). Populates
+     * Parse the config retrieved from TreeCache.getEvictionPolicyConfig(). Populates
      * the regionValues array.
      * 
      * @param config configuration for this eviction policy
@@ -304,7 +304,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     }
 
     /**
-     * Retrives the value of the first occurance of the given
+     * Retrieves the value of the first occurance of the given
      * attribute in the given element. 
      * 
      * @param element the element containing an named attribute.
@@ -331,9 +331,9 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     }
 
     /**
-     * Retrives the textual content of an xml element.
+     * Retrieves the textual content of an xml element.
      * 
-     * @param element the element containing the data to be retrived.
+     * @param element the element containing the data to be retrieved.
      * @param trim whether or not to trim whitespace before returing.
      * @return a concatenated string of the text of the child nodes of the element
      */

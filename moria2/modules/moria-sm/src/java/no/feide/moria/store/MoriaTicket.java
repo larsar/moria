@@ -24,10 +24,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * This class represents the tickets used as identificators in Moria. Each
- * ticket has an unique key, a type and an assosiated service.
+ * This class represents the tickets used as identifiers in Moria. Each
+ * ticket has a unique key, a type and an associated service.
  *
- * These attributes are used for the validation and authorization of incoming
+ * These attributes are used for validation and authorization of incoming
  * requests.
  *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
@@ -41,10 +41,10 @@ final class MoriaTicket implements Serializable {
     /** The type of this ticket. */
     private final MoriaTicketType ticketType;
 
-    /** The id of the service assosiated with this ticket. */
+    /** The id of the service associated with this ticket. */
     private final String servicePrincipal;
 
-    /** The time when this ticket expires, stored as seconds since epoch. */
+    /** The time when this ticket expires, stored as milliseconds since epoch. */
     private final Long expiryTime;
 
     /** The data associated with this ticket. */
@@ -54,7 +54,7 @@ final class MoriaTicket implements Serializable {
     private String userorg;
 
     /**
-     * Construct a new ticket with auto-generated ticket id.
+     * Constructs a new ticket with auto-generated ticket id.
      *
      * @param ticketType
      *          the type of ticket
@@ -72,20 +72,28 @@ final class MoriaTicket implements Serializable {
     }
 
     /**
-     * Construct a new ticket with the given arguments.
+     * Constructs a new ticket with the given arguments.
      *
      * @param ticketId
-     *            a key identifying this ticket
+     *            A key identifying this ticket.
      * @param ticketType
-     *            the type of ticket
+     *            The type of ticket.
      * @param servicePrincipal
-     *            the id of the service this ticket relates to
+     *            The id of the service this ticket relates to. Must be null 
+     *            for SSO tickets, but not null or zero length for other 
+     *            ticket types.
      * @param expiryTime
-     *          the time when this ticket expires (in milliseconds since Epoch)
+     *          The time when this ticket expires (in milliseconds since Epoch).
      * @param data
-     *          the data object associated with this ticket. May be null
+     *          The data object associated with this ticket. May be null.
+     *          Must be MoriaAuthnAttempt for login and service tickets, and
+     *          CachedUserData for SSO, TGT and proxy tickets.
      * @param userorg
-     *          the userorg associated with this ticket. Can be null if unknownn.
+     *          The userorg associated with this ticket. Can be null if unknown.
+     * @throws IllegalArgumentException
+     *          If ticketId is null or zero length, if ticketType is null, if
+     *          servicePrincipal or data is inappropriate for the ticketType 
+     *          or if expiryTime is in the past.
      */
     MoriaTicket(final String ticketId, final MoriaTicketType ticketType, final String servicePrincipal, final Long expiryTime,
                 final MoriaStoreData data, final String userorg) {
@@ -104,7 +112,7 @@ final class MoriaTicket implements Serializable {
             throw new IllegalArgumentException("servicePrincipal cannot be null or empty string");
 
         if (ticketType.equals(MoriaTicketType.SSO_TICKET) && servicePrincipal != null)
-            throw new IllegalArgumentException("servicePrincipal must be null when creating a SSO ticket");
+            throw new IllegalArgumentException("servicePrincipal must be null when creating an SSO ticket");
         this.servicePrincipal = servicePrincipal;
 
         /* 107291520000L equals Thu Jan  1 00:00:00 UTC 2004. */
@@ -116,7 +124,7 @@ final class MoriaTicket implements Serializable {
         if (data != null) {
             if (ticketType.equals(MoriaTicketType.LOGIN_TICKET) || ticketType.equals(MoriaTicketType.SERVICE_TICKET)) {
                 if (!(data instanceof MoriaAuthnAttempt)) {
-                    throw new IllegalArgumentException("For login and service tickets data must be MoriaAuthAttempt");
+                    throw new IllegalArgumentException("For login and service tickets, data must be MoriaAuthnAttempt");
                 }
             } else {
                 if (!(data instanceof CachedUserData)) {
@@ -130,36 +138,36 @@ final class MoriaTicket implements Serializable {
     }
 
     /**
-     * Get the ticket identificator for a object.
+     * Gets the ticket identifier of this ticket.
      *
-     * @return the key identifying the ticket
+     * @return The key identifying the ticket.
      */
     String getTicketId() {
         return ticketId;
     }
 
     /**
-     * Get the the value of the ticket type of this ticket.
+     * Gets the the ticket type of this ticket.
      *
-     * @return the type of ticket
+     * @return The type of ticket.
      */
     MoriaTicketType getTicketType() {
         return ticketType;
     }
 
     /**
-     * Get the value of the service principal assosiated with this ticket.
+     * Gets the value of the service principal associated with this ticket.
      *
-     * @return the service principal
+     * @return The service principal.
      */
     String getServicePrincipal() {
         return servicePrincipal;
     }
 
     /**
-     * Checks the tickets expiry time versus the current time.
+     * Checks the ticket's expiry time versus the current time.
      *
-     * @return true if the ticket has exceeded its time to live
+     * @return True if the ticket has exceeded its time to live.
      */
     boolean hasExpired() {
         final long now = new Date().getTime();
@@ -175,39 +183,44 @@ final class MoriaTicket implements Serializable {
     }
 
     /**
-     * Get the the expiry time for this ticket.
+     * Gets the the expiry time for this ticket.
      *
-     * @return the expiry time in seconds since epoch
+     * @return The expiry time in milliseconds since epoch.
      */
     Long getExpiryTime() {
         return expiryTime;
     }
 
     /**
-     * Get the data object of this ticket.
+     * Gets the data object of this ticket.
      *
-     * @return an instance of MoriaStoreData or null if no data
-     *         object is assosiated with this ticket.
+     * @return An instance of MoriaStoreData, or null if no data
+     *         object is associated with this ticket.
      */
     MoriaStoreData getData() {
         return data;
     }
 
     /**
+     * Tests if ticket is equal to another ticket.
      * Equality is defined on basis of the ticketId value. Same id, same
      * ticket.
      *
-     * @see java.lang.Object#equals(java.lang.Object)
      * @param object
-     *          the object to compare with
-     * @return true if equal
+     *          The object to compare with.
+     * @return True if equal.
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals(final Object object) {
         return (object instanceof MoriaTicket && ((MoriaTicket) object).getTicketId().equals(this.ticketId));
     }
 
     /**
-     * The hashcode is the hashcode of the ticketId String.
+     * Gets the hash code of the ticket.
+     * The hash code is the hash code of the ticketId String.
+     *
+     * @return The hash code.
      *
      * @see java.lang.Object#hashCode()
      */
@@ -216,18 +229,18 @@ final class MoriaTicket implements Serializable {
     }
 
     /**
-     * Give a sensible output from toString().
+     * Gets a string representation of the ticket.
      *
-     * @return a comma separated string of all the internal values
+     * @return A comma separated string of all the internal values.
      */
     public String toString() {
         return "ticketId: " + ticketId + ", ticketType: " + ticketType + ", servicePrincipal: " + servicePrincipal;
     }
 
     /**
-     * Creates an new key that can be used as an identificator for a ticket.
+     * Creates a new key that can be used as an identifier of the ticket.
      *
-     * @return a new unique identificator
+     * @return A new unique identifier.
      */
     static String newId() {
         return RandomId.newId();
@@ -235,7 +248,7 @@ final class MoriaTicket implements Serializable {
     
     /**
      * Returns the userorg associated with this ticket, or null if none.
-     * @return the userorg
+     * @return The userorg.
      */
     public String getUserorg() {
         return userorg;
@@ -243,7 +256,7 @@ final class MoriaTicket implements Serializable {
     
     /**
      * Associates a userorg with this ticket.
-     * @param org the userorg
+     * @param org The userorg.
      */
     public void setUserorg(String org) {
         userorg = org;

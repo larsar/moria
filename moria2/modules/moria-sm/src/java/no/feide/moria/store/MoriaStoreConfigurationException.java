@@ -29,6 +29,9 @@ package no.feide.moria.store;
 public class MoriaStoreConfigurationException extends MoriaStoreException {
 
     /**
+     * Constructor. Creates a new exception with only an exception message.
+     * @param message
+     *            The exception message.
      * @see no.feide.moria.store.MoriaStoreException#MoriaStoreException(java.lang.String)
      */
     public MoriaStoreConfigurationException(final String message) {
@@ -36,6 +39,9 @@ public class MoriaStoreConfigurationException extends MoriaStoreException {
     }
 
     /**
+     * Constructor. Creates a new exception with only a cause.
+     * @param cause
+     *            The exception cause.
      * @see no.feide.moria.store.MoriaStoreException#MoriaStoreException(java.lang.Throwable)
      */
     public MoriaStoreConfigurationException(final Throwable cause) {
@@ -43,6 +49,12 @@ public class MoriaStoreConfigurationException extends MoriaStoreException {
     }
 
     /**
+     * Constructor. Creates a new exception with both an exception message and a
+     * cause.
+     * @param message
+     *            The exception message.
+     * @param cause
+     *            The exception cause.
      * @see no.feide.moria.store.MoriaStoreException#MoriaStoreException(java.lang.String, java.lang.Throwable)
      */
     public MoriaStoreConfigurationException(final String message, final Throwable cause) {

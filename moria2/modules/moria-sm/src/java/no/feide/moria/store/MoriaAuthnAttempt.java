@@ -23,8 +23,8 @@ package no.feide.moria.store;
 import java.util.HashMap;
 
 /**
- * This class is used for holding the state through an authentication. From
- * initiation by the service through to the final retrival of user data.
+ * This class is used for holding state through an authentication. From
+ * initialization by the service through to final retrieval of user data.
  *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
@@ -47,12 +47,13 @@ public final class MoriaAuthnAttempt implements MoriaStoreData {
     private final String returnURLPostfix;
 
     /**
-     * Wheter or not SSO is to be used when user arrives at login servlet.
+     * Whether or not single sign-on (SSO) is to be used when user arrives 
+     * at login servlet.
      */
     private final boolean forceInterativeAuthentication;
 
     /**
-     * Transient attributes returned from a directory that is not to be cached.
+     * Transient attributes returned from a directory that are not to be cached.
      */
     private HashMap transientAttributes;
 
@@ -62,7 +63,7 @@ public final class MoriaAuthnAttempt implements MoriaStoreData {
     private final String servicePrincipal;
 
     /**
-     * Construct an instance. Usually based on data given in an initial request
+     * Constructs an instance. Usually based on data given in an initial request
      * by a remote service.
      *
      * @param requestedAttributes
@@ -72,9 +73,9 @@ public final class MoriaAuthnAttempt implements MoriaStoreData {
      * @param returnURLPostfix
      *          the final part of the url the user is to be redirected to. May be null
      * @param forceInteractiveAuthentication
-     *          wheter or not SSO is to be used
+     *          whether or not SSO is to be used
      * @param servicePrincipal
-     *          the name of the service initiating this authnattempt
+     *          the name of the service initiating this authentication attempt.
      */
     public MoriaAuthnAttempt(final String[] requestedAttributes, final String returnURLPrefix, final String returnURLPostfix,
             final boolean forceInteractiveAuthentication, final String servicePrincipal) {
@@ -86,64 +87,65 @@ public final class MoriaAuthnAttempt implements MoriaStoreData {
     }
 
     /**
-     * Get the string array containing the requested attributes.
+     * Gets the string array containing the requested attributes.
      *
-     * @return the attributes requested by the invoking service
+     * @return The attributes requested by the invoking service.
      */
     public String[] getRequestedAttributes() {
         return (String[]) requestedAttributes.clone();
     }
 
     /**
-     * Get the transient attributes.
+     * Gets the transient attributes.
      *
-     * @return the short-lived user attributes
+     * @return The short-lived user attributes.
      */
     public HashMap getTransientAttributes() {
         return (HashMap) transientAttributes.clone();
     }
 
     /**
-     * Set the user data that have been retrived from a directory for this
+     * Sets the user data that have been retrieved from a directory for this
      * authentication attempt.
      *
-     * @param transientAttributes the short-lived user attributes
+     * @param transientAttributes The short-lived user attributes.
      */
     void setTransientAttributes(final HashMap transientAttributes) {
         this.transientAttributes = transientAttributes;
     }
 
     /**
-     * Get the initial part of the return url.
+     * Gets the initial part of the return url.
      *
-     * @return the return url prefix
+     * @return The return url prefix.
      */
     public String getReturnURLPrefix() {
         return returnURLPrefix;
     }
 
     /**
-     * Get the end part of the return url.
+     * Gets the end part of the return url.
      *
-     * @return the return url postfix
+     * @return The return url postfix.
      */
     public String getReturnURLPostfix() {
         return returnURLPostfix;
     }
 
     /**
-     * Get the servicePrincipal.
+     * Gets the servicePrincipal.
      *
-     * @return the service principal name
+     * @return The service principal name.
      */
     public String getServicePrincipal() {
         return servicePrincipal;
     }
 
     /**
-     * Check whether or not SSO should be refused even if possible.
+     * Checks whether or not single sign-on (SSO) should be refused even if 
+     * possible.
      *
-     * @return true for forced authentication
+     * @return True for forced authentication.
      */
     public boolean isForceInterativeAuthentication() {
         return forceInterativeAuthentication;

@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 
 /**
+ * Base class for all data which can be stored in the Moria store.
  *
  * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$

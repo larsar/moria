@@ -21,9 +21,9 @@
 package no.feide.moria.store;
 
 /**
- * Class implementing simple factory pattern returning implementation
- * of MoriaStore interface.  Somewhat redundant as we only have one
- * implemenetation at the moment.
+ * Class implementing simple factory pattern returning implementations
+ * of the MoriaStore interface.  Somewhat redundant as we only have one
+ * implementation at the moment.
  *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
@@ -39,7 +39,7 @@ public final class MoriaStoreFactory {
     /**
      * Static factory method creates an instance of MoriaStore.
      *
-     * @return instance of MoriaStore implementation
+     * @return Instance of a MoriaStore implementation
      * @throws MoriaStoreException
      *         the constructor of returned implementation may throw this
      */

@@ -21,28 +21,38 @@
 package no.feide.moria.store;
 
 /**
+ * Used to signal an exception regarding eviction policy configuration.
+ *
  * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public class EvictionConfigurationException extends RuntimeException {
 
     /**
+     * Constructor. Creates a new exception with only an exception message.
      * @param message
+     *            The exception message.
      */
     public EvictionConfigurationException(String message) {
         super(message);
     }
 
     /**
+     * Constructor. Creates a new exception with only a cause.
      * @param cause
+     *            The exception cause.
      */
     public EvictionConfigurationException(Throwable cause) {
         super(cause);
     }
 
     /**
+     * Constructor. Creates a new exception with both an exception message and a
+     * cause.
      * @param message
+     *            The exception message.
      * @param cause
+     *            The exception cause.
      */
     public EvictionConfigurationException(String message, Throwable cause) {
         super(message, cause);

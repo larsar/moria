@@ -54,7 +54,7 @@ implements MoriaStore {
     /** The logger used by this class. */
     private MessageLogger log = new MessageLogger(MoriaCacheStore.class);
 
-    /** Map to contain the ticket ttl vaules. */
+    /** Map to contain the ticket ttl values. */
     private Map ticketTTLs;
 
     /** Map containing the default ttl values. */
@@ -80,7 +80,7 @@ implements MoriaStore {
      */
     private static final String USERORG_ATTRIBUTE = "Userorg";
 
-    /** The name of configuration file property. */
+    /** The name of the configuration file property. */
     private static final String CACHE_CONFIG_PROPERTY_NAME = "no.feide.moria.store.cachestoreconf";
 
     /** The name of the ttl percentage property. */
@@ -90,7 +90,7 @@ implements MoriaStore {
     /**
      * Constructs a new instance.
      * @throws MoriaStoreException
-     *             thrown if creation of JBoss TreeCache fails.
+     *             If creation of JBoss TreeCache fails.
      */
     public MoriaCacheStore() throws MoriaStoreException {
 
@@ -117,16 +117,18 @@ implements MoriaStore {
      * Configures the store. This method expects the properties
      * <code>no.feide.moria.store.cacheconf</code> and
      * <code>no.feide.moria.store.real_ttl_percentage</code> to be set. The
-     * former must point to a JBossCache spesific configuration file, the latter
+     * former must point to a JBossCache specific configuration file, the latter
      * contain a value between 1 and 100. The method will return without
-     * actually executing and thus maintaining the current state if called more
+     * actually executing and thus maintain the current state if called more
      * than once per object instance.
      * @param properties
-     *            the properties used to configure the store
+     *            The properties used to configure the store.
      * @throws MoriaStoreConfigurationException
-     *             if something fails during the process of starting the store
+     *             If something fails during the process of starting the store.
      * @throws IllegalArgumentException
-     *             if properties is null
+     *             If properties is null.
+     * @throws NullPointerException
+     *             If defaultTTL is null.
      * @see no.feide.moria.store.MoriaStore#setConfig(java.util.Properties)
      */
     public synchronized void setConfig(Properties properties)
@@ -219,6 +221,7 @@ implements MoriaStore {
 
 
     /**
+     * Stops this instance of the store.
      * @see no.feide.moria.store.MoriaStore#stop()
      */
     public synchronized void stop() {
@@ -233,6 +236,24 @@ implements MoriaStore {
 
 
     /**
+     * Creates an authentication attempt based on a service request.
+     *
+     * @param requestAttributes
+     *          The user attributes the requesting service asks for.
+     * @param responseURLPrefix
+     *          The forward part of the url the client is to be redirected to.
+     * @param responseURLPostfix
+     *          The end part of the url the client is to be redirected to.
+     * @param forceInteractiveAuthentication
+     *          If the user should be forced to login interactively. I.e. disable
+     *          support for single sign-on.
+     * @param servicePrincipal
+     *          The id of the service doing the request.
+     * @return A login ticket identifying the authentication attempt.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If any of the arguments are null, and if responseURLPrefix or servicePrincipal are zero length.
      * @see no.feide.moria.store.MoriaStore#createAuthnAttempt(java.lang.String[],
      *      java.lang.String, java.lang.String, boolean, java.lang.String)
      */
@@ -262,6 +283,7 @@ implements MoriaStore {
 
 
     /**
+     * Gets the authentication attempt associated with the ticket given as argument.
      * @param ticketID
      *            The ticket ID. Must be a non-empty string.
      * @param keep
@@ -324,16 +346,21 @@ implements MoriaStore {
 
 
     /**
+     * Creates a new CachedUserData object in the store and associates it with an SSO
+     * ticket which is returned.
+     *
      * @param attributes
-     *            Cannot be <code>null</code>.
+     *          The attribute map to be cached.
      * @param userorg
-     *            Must be a non-empty string.
-     * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
+     *          The userorg that is to be associated with the ticket.
+     * @return The SSO ticket that identifies the cached user data.
      * @throws MoriaStoreException
+     *          If the operation fails.
      * @throws IllegalArgumentException
-     *             If <code>attributes</code> is <code>null</code>, or
-     *             <code>userorg</code> is <code>null</code> or an empty
-     *             string.
+     *             If attributes is null, or
+     *             userorg is null or an empty  string.
+     *
+     * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
      */
     public String cacheUserData(final HashMap attributes, final String userorg)
     throws MoriaStoreException {
@@ -355,6 +382,24 @@ implements MoriaStore {
 
 
     /**
+     * Returns the userdata associated with the incoming ticket, which must be either a
+     * proxy ticket, an SSO ticket or ticket granting ticket.
+     *
+     * @param proxyTicketId
+     *          A ticket to identify a userdata object (SSO, TGT or PROXY).
+     * @param servicePrincipal
+     *          The name of the service requesting the data,
+     * @return A clone of the object containing the userdata.
+     * @throws InvalidTicketException
+     *          If the incoming ticket is not of the correct type or
+     *          has an invalid principal.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If ticketId is null or zero length, or SSO ticket principal 
+     *          is null or zero length.
      * @see no.feide.moria.store.MoriaStore#getUserData(java.lang.String,
      *      java.lang.String)
      */
@@ -393,6 +438,20 @@ implements MoriaStore {
 
 
     /**
+     * Creates a service ticket that the service will use when requesting user attributes after a
+     * successful authentication.
+     *
+     * @param loginTicketId
+     *          A login ticket associated with an authentication attempt.
+     * @return A service ticket associated with the authentication attempt object.
+     * @throws InvalidTicketException
+     *          If the supplied ticket is not a login ticket.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If loginTicketId is null or zero length.
      * @see no.feide.moria.store.MoriaStore#createServiceTicket(java.lang.String)
      */
     public String createServiceTicket(final String loginTicketId)
@@ -434,6 +493,22 @@ implements MoriaStore {
 
 
     /**
+     * Creates a new ticket granting ticket, using an sso ticket.
+     *
+     * @param ssoTicketId
+     *          An sso ticket that is already associated with a cached userdata object.
+     * @param targetServicePrincipal
+     *          The id of the service that will use the TGT.
+     * @return A ticket-granting ticket that the requesting service may use for later proxy
+     *          authentication.
+     * @throws InvalidTicketException
+     *          If the argument ticket is not an SSO ticket or has an invalid principal.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If any of the arguments are null or zero length.
      * @see no.feide.moria.store.MoriaStore#createTicketGrantingTicket(java.lang.String,
      *      java.lang.String)
      */
@@ -484,6 +559,24 @@ implements MoriaStore {
 
 
     /**
+     * Creates a new proxy ticket from a TGT and associates the new ticket with the same user data as
+     * the TGT.
+     *
+     * @param tgTicketId
+     *          A TGT issued earlier to a service.
+     * @param servicePrincipal
+     *          The id of the service making the request.
+     * @param targetServicePrincipal
+     *          The id of the service that will use the proxy ticket.
+     * @return Proxy ticket that may be used by the requesting service.
+     * @throws InvalidTicketException
+     *          If the incoming ticket is not a TGT or has an invalid principal.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If any of the arguments are null or zero length.
      * @see no.feide.moria.store.MoriaStore#createProxyTicket(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
@@ -528,6 +621,21 @@ implements MoriaStore {
 
 
     /**
+     * Sets transient attributes stored with authentication attempt.
+     *
+     * @param loginTicketId
+     *          Ticket that identifies the AuthnAttempt that the attributes will be
+     *          associated with.
+     * @param transientAttributes
+     *          Attributes to store with the AuthnAttempt.
+     * @throws InvalidTicketException
+     *          If ticket is found invalid.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If loginTicketId is null or zero length, or transientAttributes is null.
      * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String,
      *      java.util.HashMap)
      */
@@ -565,6 +673,22 @@ implements MoriaStore {
 
 
     /**
+     * Sets transient attributes stored with authentication attempt,
+     * copied from a cached user data object.
+     *
+     * @param loginTicketId
+     *          Ticket that identifies the AuthnAttempt that the attributes will be
+     *          associated with.
+     * @param ssoTicketId
+     *          Ticket associated with a set of cached user data.
+     * @throws InvalidTicketException
+     *          If either ticket is found invalid.
+     * @throws NonExistentTicketException
+     *          If either ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If either ticket id is null or zero length.
      * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String,
      *      java.lang.String)
      */
@@ -617,11 +741,20 @@ implements MoriaStore {
 
 
     /**
+     * Removes an SSO ticket from the store.
+     *
+     * @param ssoTicketId
+     *          the ticketId of the ticket to remove
+     * @throws NonExistentTicketException
+     *          If ticket does not exist
+     * @throws MoriaStoreException
+     *          If the operation fails
+     * @throws IllegalArgumentException
+     *          If ssoTicketId is null or zero length
      * @see no.feide.moria.store.MoriaStore#removeSSOTicket(java.lang.String)
      */
     public void removeSSOTicket(final String ssoTicketId)
-    throws InvalidTicketException, NonExistentTicketException,
-    MoriaStoreException {
+    throws NonExistentTicketException, MoriaStoreException {
 
         /* Validate parameter. */
         if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
@@ -637,9 +770,21 @@ implements MoriaStore {
 
 
     /**
+     * Returns the service principal for the ticket
+     * 
+     * @param ticketId The ticket id.
+     * @param ticketType The ticket type.
+     * @return Service principal.
+     * @throws InvalidTicketException
+     *          If the ticket is invalid.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If ticketId is null or zero length.
      * @see no.feide.moria.store.MoriaStore#getServicePrincipal(java.lang.String)
      */
-
     public String getTicketServicePrincipal(final String ticketId, MoriaTicketType ticketType)
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
@@ -658,6 +803,19 @@ implements MoriaStore {
     }
 
     /**
+     * Sets the userorg of a ticket.
+     *
+     * @param ticketId The ticket id.
+     * @param ticketType The ticket type.
+     * @param userorg The userorg of the user creating the ticket.
+     * @throws InvalidTicketException
+     *          if the ticket is invalid.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If ticketId is null or zero length.
      *  @see no.feide.moria.store.MoriaStore#setTicketUserorg(String, MoriaTicketType, String)
      */
     public void setTicketUserorg(final String ticketId, MoriaTicketType ticketType, String userorg)
@@ -680,7 +838,20 @@ implements MoriaStore {
     }
 
     /**
-     *  @see no.feide.moria.store.MoriaStore#getTicketUserorg(String, MoriaTicketType)
+     * Gets the userorg of a ticket.
+     *
+     * @param ticketId the ticket id.
+     * @param ticketType the ticket type.
+     * @return the organization of the user creating the ticket, or null if not set.
+     * @throws InvalidTicketException
+     *          If the ticket is invalid.
+     * @throws NonExistentTicketException
+     *          If ticket does not exist.
+     * @throws MoriaStoreException
+     *          If the operation fails.
+     * @throws IllegalArgumentException
+     *          If ticketId is null or zero length.
+     * @see no.feide.moria.store.MoriaStore#getTicketUserorg(String, MoriaTicketType)
      */
     public String getTicketUserorg(final String ticketId, MoriaTicketType ticketType)
     throws InvalidTicketException, NonExistentTicketException,
@@ -701,17 +872,17 @@ implements MoriaStore {
 
 
     /**
-     * Check validity of ticket against type and expiry time.
+     * Checks validity of ticket against type and expiry time.
      * @param ticket
-     *            ticket to be checked
+     *            Ticket to be checked.
      * @param ticketType
-     *            the expected type of the ticket
+     *            The expected type of the ticket.
      * @param servicePrincipal
-     *            the service expected to be associated with this ticket
+     *            The service expected to be associated with this ticket.
      * @throws IllegalArgumentException
-     *             if ticket is null, or ticketType is null or zero length
+     *             If ticket is null, or ticketType is null or zero length.
      * @throws InvalidTicketException
-     *             thrown if ticket is found invalid
+     *             If ticket is found invalid.
      */
     private void validateTicket(final MoriaTicket ticket, final MoriaTicketType ticketType, final String servicePrincipal)
     throws InvalidTicketException {
@@ -723,16 +894,16 @@ implements MoriaStore {
     /**
      * Check validity of ticket against a set of types and expiry time.
      * @param ticket
-     *            ticket to be checked
+     *            Ticket to be checked.
      * @param ticketTypes
-     *            array of valid types for the ticket
+     *            Array of valid types for the ticket.
      * @param servicePrincipal
-     *            the service that is using the ticket. May be null if no
+     *            The service that is using the ticket. May be null if no
      *            service is available.
      * @throws IllegalArgumentException
-     *             if ticket is null, or ticketType is null or zero length
+     *             If ticket is null, or ticketType is null or zero length.
      * @throws InvalidTicketException
-     *             thrown if the ticket is found to be invalid
+     *             If the ticket is found to be invalid.
      */
     private void validateTicket(final MoriaTicket ticket, final MoriaTicketType[] ticketTypes, final String servicePrincipal)
     throws InvalidTicketException {
@@ -768,16 +939,16 @@ implements MoriaStore {
 
 
     /**
-     * Retrives a ticket instance which may be one of a number of types.
+     * Retrieves a ticket instance which may be one of a number of types.
      * @param ticketTypes
-     *            array of potential ticket types for the ticket id
+     *            Array of potential ticket types for the ticket id.
      * @param ticketId
-     *            id of the ticket to be retrived
-     * @return a ticket or null of none found
+     *            Id of the ticket to be retrieved.
+     * @return A ticket, or null if none found.
      * @throws IllegalArgumentException
-     *             if the any of arguments are null value or zero length
+     *             If the any of arguments are null value or zero length.
      * @throws MoriaStoreException
-     *             if access to the store failed in some way.
+     *             If access to the store failed in some way.
      */
     MoriaTicket getFromStore(final MoriaTicketType[] ticketTypes, final String ticketId)
     throws MoriaStoreException {
@@ -801,19 +972,19 @@ implements MoriaStore {
 
 
     /**
-     * Retrives a ticket instance from the store.
+     * Retrieves a ticket instance from the store.
      * @param ticketType
      *            The type of ticket.
      * @param ticketId
      *            The ID of the ticket.
-     * @return The ticket.
+     * @return The ticket, or null if none found.
      * @throws IllegalArgumentException
      *             If <code>ticketType</code> is <code>null</code>, or if
      *             <code>ticketId</code> is <code>null</code> or an empty
      *             string.
      * @throws MoriaStoreException
      *             If operations on the underlying <code>TreeCache</code>
-     *             fails; acts as a wrapper.
+     *             fail; acts as a wrapper.
      */
     MoriaTicket getFromStore(final MoriaTicketType ticketType, final String ticketId)
     throws MoriaStoreException {
@@ -824,7 +995,7 @@ implements MoriaStore {
         if (ticketId == null || ticketId.equals(""))
             throw new IllegalArgumentException("Ticket ID must be a non-empty string");
 
-        // The name of the TreeCache node to be retrived.
+        // The name of the TreeCache node to be retrieved.
         Fqn fqn = new Fqn(new Object[] {ticketType, ticketId});
 
         // Does the node exist at all?
@@ -854,14 +1025,14 @@ implements MoriaStore {
 
 
     /**
-     * Insert a authentication attempt or cached user data into the cache.
+     * Inserts an authentication attempt or cached user data into the cache.
      * Either authnAttempt or cachedUserData must be null.
      * @param ticket
-     *            the ticket to connect to the inserted object
+     *            The ticket to connect to the inserted object.
      * @throws IllegalArgumentException
-     *             if ticket is null
+     *             If ticket is null.
      * @throws MoriaStoreException
-     *             thrown if operations on the TreeCache fails
+     *             If operations on the TreeCache fail.
      */
     private void insertIntoStore(final MoriaTicket ticket)
     throws MoriaStoreException {
@@ -892,13 +1063,13 @@ implements MoriaStore {
      * Removes a ticket, and possibly a connected userdata or authnAttempt from
      * the cache.
      * @param ticket
-     *            the ticket to be removed
+     *            The ticket to be removed.
      * @throws IllegalArgumentException
-     *             if ticket is null
+     *             If ticket is null.
      * @throws NonExistentTicketException
-     *             if the ticket does not exist
+     *             If the ticket does not exist.
      * @throws MoriaStoreException
-     *             if an exception is thrown when operating on the store
+     *             If an exception is thrown when operating on the store.
      */
     private void removeFromStore(final MoriaTicket ticket)
     throws NonExistentTicketException, MoriaStoreException {
