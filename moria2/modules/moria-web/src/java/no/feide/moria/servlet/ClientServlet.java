@@ -49,14 +49,13 @@ public class ClientServlet extends HttpServlet {
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
-        // TODO: Do not throw exceptions, set INTERNAL SERVER ERRROR status
-        String jspLocation = getServletContext().getInitParameter("jsp.location");
 
-        // Do not have ticket
+       // Do not have ticket
         // - Contact dsssfsd
         if (request.getParameter(RequestUtil.PROP_LOGIN_TICKET_PARAM) == null) {
-            RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/client.jsp");
-            rd.include(request, response);
+            /* Process jsp */
+            RequestDispatcher rd = getServletContext().getNamedDispatcher("Client.JSP");
+            rd.forward(request, response);
         }
 
 

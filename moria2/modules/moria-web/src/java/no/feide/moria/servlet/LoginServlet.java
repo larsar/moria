@@ -188,7 +188,7 @@ public class LoginServlet extends HttpServlet {
         /* Authentication has been successful. Remember SSO ticket and organization. */
         Cookie orgCookie =
                 RequestUtil.createCookie(RequestUtil.PROP_COOKIE_ORG,
-                                         request.getParameter((String) config.get(RequestUtil.PARAM_ORG)),
+                                         request.getParameter(RequestUtil.PARAM_ORG),
                                          new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue());
         Cookie ssoTicketCookie =
                 RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO),
@@ -300,7 +300,6 @@ public class LoginServlet extends HttpServlet {
             request.setAttribute(RequestUtil.ATTR_CLIENT_URL, serviceProperties.get(RequestUtil.CONFIG_URL));
         }
 
-        // TODO: Include instead of forward
         /* Process jsp */
         RequestDispatcher rd = getServletContext().getNamedDispatcher("Login.JSP");
         rd.forward(request, response);
@@ -320,11 +319,9 @@ public class LoginServlet extends HttpServlet {
         try {
             config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
         } catch (ClassCastException e) {
-            // TODO: Log
             throw new IllegalStateException("Config is not correctly set in context.");
         }
         if (config == null) {
-            // TODO: Log
             throw new IllegalStateException("Config is not set in context.");
         }
 
