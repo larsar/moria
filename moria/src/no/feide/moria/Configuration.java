@@ -39,16 +39,23 @@ public class Configuration {
     /** Private property container. */
     private static Properties props = null;
 
-    /** Organization list, indexed on organization name */
+    /** Organization list, indexed on organization name. The HashMap
+     * will contain language as index an a new HashMap for every
+     * entry. */
     private static HashMap orgNameList = new HashMap();
     
-    /** Organization list, indexed on organization short */
+    /** Organization list, indexed on organization short. The HashMap
+     * will contain language as index an a new HashMap for every
+     * entry.*/
     private static HashMap orgShortList = new HashMap();
     
+    /** Available languages for the login page */
+    private static HashMap languages = new HashMap();
+
     /** Have we already initialized? */
     private static boolean initialized = false;  
     
-    
+    /** Properties that cannot be null */
     private final static String[] notNullProperties = new String[] {
         "no.feide.moria.SessionStoreInitMapSize",
         "no.feide.moria.SessionStoreMapLoadFactor",
@@ -98,6 +105,18 @@ public class Configuration {
                 log.config("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
                 props.load((new Configuration()).getClass().getResourceAsStream("no.feide.moria.config.file"));
             }
+
+
+            /* Languages */
+            String[] langStrings = getProperty("no.feide.moria.availableLanguages").split(",");
+            languages = new HashMap();
+
+            for (int i = 0; i < langStrings.length; i++) {
+                String[] lang = langStrings[i].split(":");
+                languages.put(lang[0], lang[1]);
+            }
+
+
         } catch (FileNotFoundException e) {
             log.severe("FileNotFoundException during system properties import");
             throw new ConfigurationException("FileNotFoundException caught", e);
@@ -107,13 +126,13 @@ public class Configuration {
         }
         log.config("Configuration file read, contents are:\n"+props.toString());
 
-        // All Moria configuration sanity checks should go here.
+        /* Sanity checks of attributes */
         for (int i = 0; i < notNullProperties.length; i++) {
             checkPropertyNotNull(notNullProperties[i]);
         }
 
 
-        // Read organization list
+        /* Read organization list */
         try {
             Properties orgList = new Properties();
             String filename = Configuration.getProperty("no.feide.moria.organizationNames");
@@ -121,6 +140,7 @@ public class Configuration {
             updateOrgLists(orgList);
         }
         
+
         catch (FileNotFoundException e) {
             log.severe("FileNotFoundException while reading organization list.");
             throw new ConfigurationException("FileNotFoundException caught", e);
@@ -140,10 +160,17 @@ public class Configuration {
 
 
 
+    /**
+     * Update the of all organization names for all languages.
+     * orgNameList and orgShortList are generated from a set of
+     * properties. Each HashMaps are indexed on languages and each
+     * entry contains a HashMap of shortName->fullName or
+     * fullName->shortName. Double set of HashMaps are required for
+     * lookup by both full name and short name.
+     * @param orgList The properties containing the data
+     */
     private static void updateOrgLists(Properties orgList) {
-        String default_lang = "nb";
 
-        // Insert into two HashMaps (need lookup both ways)
         for (Enumeration e = orgList.propertyNames(); e.hasMoreElements(); ) {
             String orgShort = (String) e.nextElement();
             String orgName  = (String) orgList.getProperty(orgShort);
@@ -173,9 +200,11 @@ public class Configuration {
         }
     }
 
+
     
     /**
-     * Verify that a property is not null.
+     * Verify that a property is not null. Throw exception if null.
+     * @param propertyName Name of the property that cannot be null.
      */
     private static void checkPropertyNotNull(String propertyName)
     throws ConfigurationException {
@@ -186,6 +215,7 @@ public class Configuration {
             throw new ConfigurationException(errorMessage);
         }
     }
+
 
 
     /**
@@ -237,7 +267,15 @@ public class Configuration {
         init();
         return props.getProperty(key, value); 
     }
+    
 
+
+    /**
+     * Return the short name of an organization.
+     * @param orgName The name of the organization
+     * @param language The language for the given organization name
+     * @return The short name for the organization
+     */
     public static String getOrgShort(String orgName, String language) {
         String orgShort = (String) orgShortList.get(orgName+"_"+language);
 
@@ -246,6 +284,14 @@ public class Configuration {
         return orgShort;
     }
 
+
+
+    /**
+     * Return the full name of an organization.
+     * @param orgShort The short for the organization
+     * @param language What language should be used for the full name
+     * @return Full organization name in the selected language
+     */
     public static String getOrgName(String orgShort, String language) {
         String orgName = (String) orgNameList.get(orgShort+"_"+language);
 
@@ -254,7 +300,24 @@ public class Configuration {
         return orgName;
     }
 
+
+
+    /**
+     * Return all organization names.
+     * @param lanugage Language for the organization names
+     * @return A HashMap of all organization names for the requested language
+     */
     public static HashMap getOrgNames(String language) {
         return (HashMap) orgShortList.get(language);
+    }
+
+
+
+    /**
+     * Return all configured languages (for the login page)
+     * @return HashMap of all languages indexed on language code
+     */
+    public static HashMap getLanguages() {
+        return languages;
     }
 }
