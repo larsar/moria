@@ -168,8 +168,7 @@ public class DirectoryManager {
      *             <code>setConfig(Properties)</code> first.
      * @see DirectoryManagerBackend#userExists(String)
      */
-    public boolean userExists(final String username)
-    throws BackendException {
+    public boolean userExists(final String username) throws BackendException {
 
         // Sanity check.
         if (configuration == null)
@@ -229,15 +228,19 @@ public class DirectoryManager {
      *             <code>setConfig(Properties)</code> first.
      * @throws BackendException
      *             If there was a problem accessing the backend.
+     * @throws IllegalStateException
+     *             If the index has not been initialized prior to usage.
      * @see setConfig(Properties)
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
     public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException {
 
-        // Sanity check.
+        // Sanity checks.
         if (configuration == null)
             throw new DirectoryManagerConfigurationException("Configuration not set");
+        if (index == null)
+            throw new IllegalStateException("Index has not been initialized");
 
         // TODO: Implement a backend pool.
 
