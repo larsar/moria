@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Moria Stats</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>Moria</h1>
+
+<table>
+<tr><th>Started:</th><td>$upStartDate</td></tr>
+<tr><th>Uptime:</th><td>$upDays days, $upHours hours, $upMin minutes</td></tr>
+<tr><th>Clients:</th><td>$numOfWebServices</td></tr>
+</table>
+
+<h2>Sessions</h2>
+<table>
+<tr><th>Created:</th><td>$createdSessions</td></tr>
+<tr><th>Active:</th><td>$activeSessions</td></tr>
+<tr><th>Failed auth.:</th><td>$loginAttemptFailed</td></tr>
+<tr><th>Sucsessful auth.:</th><td>$loginAttemptSuccess</td></tr>
+<tr><th>Denied clients:</th><td>$deniedSessionsAuthentication (Authentication)<br/>$deniedSessionsAuthorization (Authorization)</td></tr>
+<tr><th>Timeout (SSO):</th><td>$sessionsTimeoutSSO</td></tr>
+<tr><th>Timeout (AUTH):</th><td>$sessionsTimeoutAUTH</td></tr>
+<tr><th>Timeout (USER):</th><td>$sessionsTimeoutUSER</td></tr>
+</table>
+
+
+
+</body>
+</html>
