@@ -453,7 +453,7 @@ implements DirectoryManagerBackend {
         } catch (LimitExceededException e) {
          
             // We hit some configured limit on the server's part.
-            log.logInfo("Search on " + url + " for " + pattern + " exceeded limit", e);
+            log.logInfo("Search on " + url + " for " + pattern + " exceeded some configured limit");
             return null;
             
         } catch (NamingException e) {
