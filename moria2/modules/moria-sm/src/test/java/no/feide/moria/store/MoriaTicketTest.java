@@ -170,7 +170,7 @@ public class MoriaTicketTest extends TestCase {
         /* Test for expiry. */
         {
             MoriaTicket ticket = new MoriaTicket(id1, MoriaTicketType.LOGIN_TICKET, principal1, new Long(new Date().getTime() + 1000), authnAttempt, dummyOrg);
-            Thread.sleep(1001);
+            Thread.sleep(1500);
             assertTrue("Ticket should have expired", ticket.hasExpired());
         }
 
