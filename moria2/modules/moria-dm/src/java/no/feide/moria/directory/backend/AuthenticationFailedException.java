@@ -4,7 +4,7 @@ package no.feide.moria.directory.backend;
  * Used to signal a failed authentication attempt.
  */
 public class AuthenticationFailedException
-extends DirectoryManagerBackendException {
+extends BackendException {
 
     /**
      * Constructor.
