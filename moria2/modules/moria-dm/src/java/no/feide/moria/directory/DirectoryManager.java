@@ -117,12 +117,7 @@ public class DirectoryManager {
 
         // Update the index and (re-)start the index update timer.
         IndexUpdater indexUpdater = new IndexUpdater(this, configuration.getIndexFilename());
-        if (indexTimer != null) {
-
-            // Stop the currently running index update timer.
-            indexTimer.cancel();
-
-        } else {
+        if (indexTimer == null) {
 
             // The first time we set the configuration we manually force an
             // index update to ensure we have a working index.
