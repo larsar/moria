@@ -32,13 +32,8 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import no.feide.moria.log.MessageLogger;
 
 /**
  * This class is a toolkit for the servlets and it's main functionality is to retrieve
