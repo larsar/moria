@@ -720,7 +720,12 @@ public class AuthorizationManagerTest extends TestCase {
         assertFalse("Should not be allowed access to operations", authMan.allowOperations("test", new String[]{"illegal"}));
     }
 
-    public void testGetClientProperties() {
+    /**
+     * Test the getServiceProperties method.
+     *
+     * @see AuthorizationManager#getServiceProperties(java.lang.String)
+     */
+    public void testGetServiceProperties() {
         AuthorizationManager authMan = new AuthorizationManager();
 
         Properties props = new Properties();
@@ -743,6 +748,11 @@ public class AuthorizationManagerTest extends TestCase {
         assertNotNull("Properties should not be null", authMan.getServiceProperties("test"));
     }
 
+    /**
+     * Test the getSecLevel method.
+     *
+     * @see AuthorizationManager#getSecLevel(java.lang.String, java.lang.String[])
+     */
     public void testGetSecLevel() {
         AuthorizationManager authMan = new AuthorizationManager();
 
@@ -786,4 +796,44 @@ public class AuthorizationManagerTest extends TestCase {
         assertEquals("SecLevel differs", 2, authMan.getSecLevel("test", requestedAttributes));
     }
 
+    /**
+     * Test the getAttributes method.
+     *
+     * @see AuthorizationManager#getAttributes(java.lang.String)
+     * @throws UnknownServicePrincipalException
+     */
+    public void testGetAttributes() throws UnknownServicePrincipalException {
+        AuthorizationManager authMan = new AuthorizationManager();
+
+        Properties props = new Properties();
+        props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
+        authMan.setConfig(props);
+
+        /* Invalid arguments */
+        try {
+            authMan.getAttributes(null);
+            fail("IllegalArgumentException should be raised, servicePrincipal is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            authMan.getAttributes("");
+            fail("IllegalArgumentException should be raised, servicePrincipal is empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Non-existing principal */
+        try {
+            authMan.getAttributes("doesNotExist");
+            fail("UnknownServicePrincipalException should be raised, invalid servicePrincipal");
+        } catch (UnknownServicePrincipalException e) {
+        }
+
+        String[] expected = new String[]{"attr1", "attr2", "attr3"};
+        String[] actual = authMan.getAttributes("test");
+
+        assertEquals("Attribute size differs", expected.length, actual.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals("Attribute list differs", expected[i], actual[i]);
+        }
+    }
 }

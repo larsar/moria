@@ -397,6 +397,7 @@ public class AuthorizationManager {
 
         AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) {
+            // TODO: Should propably trow exception instead
             return null;
         } else {
             return authzClient.getProperties();
@@ -435,4 +436,26 @@ public class AuthorizationManager {
         return authzClient.getSecLevel(requestedAttributes);
     }
 
+    /**
+     * Returns the configured attributes for a given service.
+     *
+     * @param servicePrincipal
+     * @return A string array with the attribute names that is configured for the service.
+     * @throws UnknownServicePrincipalException if the servicePrincipal does not exist
+     * @see AuthorizationClient#getAttributes()
+     */
+    public String[] getAttributes(String servicePrincipal) throws UnknownServicePrincipalException{
+        /* Validate argument */
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
+
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+        if (authzClient == null) {
+            throw new UnknownServicePrincipalException("Service principal does not exist: '"+servicePrincipal+"'");
+        }
+
+        HashMap attributes = authzClient.getAttributes();
+        return (String[]) attributes.keySet().toArray(new String[attributes.size()]);
+    }
 }
