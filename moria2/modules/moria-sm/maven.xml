@@ -22,8 +22,6 @@
     <property file="${windowsFixFile}"/>
     <delete file="${windowsFixFile}"
             deleteonexit="true"/>  
-    <echo message="${no.feide.moria.store.cachestoreconf.raw}"/>
-    <echo message="${no.feide.moria.store.cachestoreconf}"/>
   </preGoal>
 
   <postGoal
