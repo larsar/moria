@@ -35,6 +35,22 @@
     <copy file="mellon/config/web.xml"      todir="build.mellon/WEB-INF"/>
     <copy file="moria/config/preferences_dev.xml" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
     <copy file="mellon/config/preferences_dev.xml" tofile="build.mellon/WEB-INF/classes/Mellon.xml"/>
+    <copy todir="build.moria/WEB-INF/lib">
+      <fileset dir="moria/lib/">
+	<include name="**/*.jar"/>
+      </fileset>
+      <fileset dir="lib/">
+	<include name="**/*.jar"/>
+      </fileset>
+    </copy>  
+    <copy todir="build.mellon/WEB-INF/lib">
+      <fileset dir="mellon/lib/">
+	<include name="**/*.jar"/>
+      </fileset>
+      <fileset dir="lib/">
+	<include name="**/*.jar"/>
+      </fileset>
+    </copy>  
   </target>
 
   <target name="all:clean"
@@ -43,7 +59,6 @@
     <delete dir="build.mellon/WEB-INF/classes"/>
     <delete dir="build"/>
     <delete dir="dist"/>
-    <delete file="FeideAuthentication?WSDL"/>
     <delete file="FeideAuthentication.wsdl"/>
   </target>
 
@@ -76,7 +91,6 @@
                 <fileset dir="moria/lib/">
                   <include name="*.jar"/>
                 </fileset>
-	      <pathelement path="${moria_jars}"/>
 	   </classpath>
     </javac>
 
@@ -173,7 +187,6 @@
                 <fileset dir="mellon/lib/">
                   <include name="*.jar"/>
                 </fileset>
-	      <pathelement path="${moria_jars}"/>
 	   </classpath>
     </javac>
   </target>
