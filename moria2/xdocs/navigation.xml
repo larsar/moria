@@ -32,7 +32,8 @@ $Id$
 	    </links>
 
 	    <menu name="Overview">
-			<item name="Usage" href="howto_service_overview.html"/>
+	        <item name="Introduction" href="index.html"/>
+			<item name="Service Integration" href="howto_service_overview.html"/>
 	    	<item name="Design" href="design.html"/>
 	    	<item name="Configuration" href="configuration.html"/>
 	    	<item name="Building" href="building.html"/>
