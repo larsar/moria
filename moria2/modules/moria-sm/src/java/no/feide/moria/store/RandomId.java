@@ -39,15 +39,19 @@ import java.util.Date;
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public class RandomId {
+public final class RandomId {
 
+    /**
+     * The id of this instance (JVM).  Used to guaratee unique
+     * ids across the cluster.
+     */
     private static byte[] nodeId;
 
+    /** The random generator. */
     private static SecureRandom random;
 
     static {
 
-        // TODO: Should be set dynamically with SM.setConfig()
         /* Initiate the node identificator */
         String property = System.getProperty("no.feide.moria.store.randomid.nodeid");
 
@@ -65,12 +69,23 @@ public class RandomId {
         }
     }
 
-    /* The characters used in our version of base64 */
+    /** The characters used in our version of base64. */
     private static final byte[] CHAR_64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*-".getBytes();
 
-    /* The number of random bits to get from the PRNG */
+    /** The number of random bits to get from the PRNG. */
     private static final int NO_OF_RANDOM_BITS = 384;
 
+    /**
+     * Default private constructor.
+     */
+    private RandomId() {
+    }
+
+    /**
+     * Generate a new random id.
+     *
+     * @return a 79 character random string
+     */
     public static String newId() {
 
         /* Get timestamp */
@@ -108,10 +123,10 @@ public class RandomId {
      * &lt;shh@thathost.com&gt;
      *
      * @param bytes
-     *            the data to convert
+     *          the data to convert
      * @return the encoded version of the input
      */
-    static String pseudoBase64Encode(byte[] bytes) {
+    static String pseudoBase64Encode(final byte[] bytes) {
 
         /* The final id string, initial size is 4/3 larger than input */
         StringBuffer finalId = new StringBuffer((bytes.length * 4) / 3);
@@ -170,14 +185,14 @@ public class RandomId {
      * array.
      *
      * @param in
-     *            the long value to be converted
+     *          the long value to be converted
      * @return a byte array representation of the long value given as input
      */
     static byte[] longToByteArray(long in) {
 
         /* Java long is 64 bits, 8 byte */
-        final int LONG_SIZE = 8;
-        byte[] out = new byte[LONG_SIZE];
+        final int longSize = 8;
+        byte[] out = new byte[longSize];
 
         /*
          * "And" the long value with 255 to effectively reduce it to a byte,
