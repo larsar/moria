@@ -18,7 +18,6 @@ import java.util.HashMap;
 public class AuthenticationFilter implements Filter {
   
     private FilterConfig config = null;
-    
 
     /** Initialize config. */
     public void init(FilterConfig config) throws ServletException {
@@ -29,7 +28,7 @@ public class AuthenticationFilter implements Filter {
             System.getProperties().load(getClass().getResourceAsStream("/mellon.properties"));
 	} catch (IOException e) {
 	    throw new ServletException("IOException caught and re-thrown as ServletException");
-	}
+	}        
     }
     
     /** Remove config. */
@@ -93,7 +92,7 @@ public class AuthenticationFilter implements Filter {
                  * session. The user should be redirected to this
                  * URL. */
                 try {
-                    redirectURL = moria.requestSession(new String[] {"cn", "uid"}, backToMellonURL, "");
+                     redirectURL = moria.requestSession(System.getProperty("no.feide.mellon.requestedAttributes").split(","), backToMellonURL, "");
                 }
                 
                 catch (MoriaException e) {
