@@ -52,7 +52,7 @@ public class Session {
     private int failedLogins = 0;
 
     /** The user for this session, set after a successful authentication. */
-    private User user;
+    private Backend user;
 
     /** The identity of the client service requesting this session. */
     private Principal client;
@@ -159,7 +159,7 @@ public class Session {
         timestamp = new Date().getTime();
                 
         // Authenticate user.
-        user = User.getInstance();
+        user = Backend.getInstance();
         if (user.authenticate(c)) {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
@@ -256,8 +256,8 @@ public class Session {
 
         // Check for authentication.
         if (user == null) {
-            log.warning("User attribute request without previous authentication");
-            throw new SessionException("User attribute request without previous authentication");
+            log.warning("Backend attribute request without previous authentication");
+            throw new SessionException("Backend attribute request without previous authentication");
         }
         
         // If no attributes have been requested, return an empty array.
@@ -438,7 +438,7 @@ public class Session {
      * @param user The user attribute that is assosiated with a
      * session.
      */
-    public void unlock(User user) {
+    public void unlock(Backend user) {
         this.user = user;
         locked = false;
     }
@@ -446,7 +446,7 @@ public class Session {
     /**
      * Return the user object that is authenticated.
      */
-    public User getUser() {
+    public Backend getUser() {
         return user;
     }
 

@@ -42,10 +42,10 @@ import javax.naming.ldap.InitialLdapContext;
  * Represents a user in the backend. Used to authenticate users and retrieve
  * the associated attributes.
  */
-public class User {
+public class Backend {
     
     /** Used for logging. */
-    private static Logger log = Logger.getLogger(User.class.toString());
+    private static Logger log = Logger.getLogger(Backend.class.toString());
     
     /**
      * The LDAP context, initialized by
@@ -85,9 +85,9 @@ public class User {
      * Constructor. Initializes the list of initial LDAP server URLs.
      * @throws ConfigurationException If unable to read from configuration.
      **/
-    private User()
+    private Backend()
     throws ConfigurationException {
-        log.finer("User()");
+        log.finer("Backend()");
         
         // Create initial context environment.
         defaultEnv = new Hashtable();
@@ -111,19 +111,19 @@ public class User {
     
     /**
      * Factory method.
-     * @return A new instance of <code>User</code>.
+     * @return A new instance of <code>Backend</code>.
      * @throws BackendException If a new instance couldn't be created, or
      *                          if a <code>ConfigurationException</code> is
      *                          caught.
      */
-    public static User getInstance() 
+    public static Backend getInstance() 
     throws BackendException {
         log.finer("getInstance()");
         
         try {
             if (!initialized)
                 init();
-            return new User();
+            return new Backend();
         } catch (ConfigurationException e) {
             log.severe("ConfigurationException caught and re-thrown as BackendException");
             throw new BackendException("ConfigurationException caught", e);
