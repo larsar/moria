@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- $Id$ -->
 
@@ -82,6 +82,15 @@
       <id>larsar</id>
       <email>lars.preben.arnesen@conduct.no</email>
       <organization>Conduct AS</organization>
+      <role>Java Developer</role>
+      <timezone>+1</timezone>
+    </developer>
+    
+    <developer>
+      <name>Eva Indal</name>
+      <id>indal</id>
+      <email>eva.indal@uninett.no</email>
+      <organization>UNINETT AS</organization>
       <role>Java Developer</role>
       <timezone>+1</timezone>
     </developer>
