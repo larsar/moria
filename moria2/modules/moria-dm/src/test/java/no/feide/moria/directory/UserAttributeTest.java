@@ -67,7 +67,7 @@ extends TestCase {
      */
     public void testGetName() {
 
-        Assert.assertEquals("Attribute name is incorrect", legalName, attribute.getName());
+        Assert.assertEquals("Attribute name is incorrect", attribute.getName(), legalName);
 
     }
     
@@ -78,9 +78,9 @@ extends TestCase {
     public void testGetAttributes() {
         
         String[] values = attribute.getValues();
-        Assert.assertEquals("Returned attribute array of different length", legalValues.length, values.length);
+        Assert.assertEquals("Returned attribute array of different length", values.length, legalValues.length);
         for (int i=0; i<values.length; i++)
-            Assert.assertEquals("Value "+i+" differs", values[i], legalValues[i]);
+            Assert.assertEquals("Value "+i+" differs", legalValues[i], values[i]);
                 
         
     }
