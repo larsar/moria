@@ -31,7 +31,6 @@ function fokuser(){document.loginform.username.focus();}
       <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td colspan="2" style="text-align:right">
-<!-- TODO: Only show language selection if the ticket is valid -->
 <font size="-1">
         <%
         TreeMap languages = (TreeMap) request.getAttribute(RequestUtil.ATTR_LANGUAGES);
@@ -102,12 +101,12 @@ function fokuser(){document.loginform.username.focus();}
                   <tr>
                     <td align="left" nowrap ="nowrap">
 		            <%=bundle.getString("form_username")%><br/>
-                    <input type="text" size="16" value="" name="username" autocomplete="off"></td>
+                    <input type="text" size="16" value="" name="<%= RequestUtil.PARAM_USERNAME %>" autocomplete="off"></td>
                   </tr>
                   <tr>
                     <td>
                       <%=bundle.getString("form_password")%><br>
-                      <input type="password" size="16" value="" name="password" autocomplete="off">
+                      <input type="password" size="16" value="" name="<%= RequestUtil.PARAM_PASSWORD %>" autocomplete="off">
                     </td>
                   </tr>
 
@@ -127,10 +126,16 @@ function fokuser(){document.loginform.username.focus();}
 		</select>
 		</td>
 		</tr>
+                          <tr>
+                            <td>
+                                <input type="checkbox" <% if (((Boolean)request.getAttribute(RequestUtil.ATTR_SELECTED_DENYSSO)).booleanValue()) {%> CHECKED <%}%>" value="true" name="<%= RequestUtil.PARAM_DENYSSO %>">
+                                <font size="-2"><%=bundle.getString("form_denySSO")%></font><br>
+                            </td>
+                          </tr>
 
 
 
-                  <tr>
+                  <tr>    
                     <td colspan="3" valign="top">
                     <input type="submit" value="<%=bundle.getString("form_login")%>">
                     </td>

@@ -26,6 +26,7 @@ import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.UnknownTicketException;
 import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.DirectoryUnavailableException;
+import no.feide.moria.controller.MoriaControllerException;
 import no.feide.moria.log.MessageLogger;
 
 import javax.servlet.RequestDispatcher;
@@ -74,6 +75,43 @@ public class LoginServlet extends HttpServlet {
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
+        Properties config = getConfig();
+
+        /* Public computer (deny SSO)? */
+        String denySSOChoice = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_DENYSSO),
+                                                          request.getCookies());
+        boolean denySSO;
+        if (denySSOChoice == null || denySSOChoice.equals("false") || denySSOChoice.equals("")) {
+            request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(false));
+            denySSO = true;
+        } else {
+            request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(true));
+            denySSO = false;
+        }
+
+        /* Single Sign On */
+        if (!denySSO) {
+            String serviceTicket;
+            try {
+                String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
+                String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM),
+                                                                request.getCookies());
+                serviceTicket = MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
+
+                /* Redirect back to web service */
+                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                response.setHeader("Location", MoriaController.getRedirectURL(serviceTicket));
+
+                /* Single Sign On succeeded, we're finished. */
+                return;
+            } catch(UnknownTicketException e) {
+                /* Single Sing On failed, continue with normal authentication */
+            } catch(MoriaControllerException e) {
+                /* Do not handle this exception here. Will be handeled by the showLoginPage method. */
+            }
+        }
+
+        /* Display login page */
         showLoginPage(request, response, null);
     }
 
@@ -91,6 +129,22 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter(RequestUtil.PARAM_PASSWORD);
         String org = request.getParameter(RequestUtil.PARAM_ORG);
 
+        /* Wash SSO selection input */
+        String denySSOStr = request.getParameter(RequestUtil.PARAM_DENYSSO);
+        boolean denySSO = (denySSOStr != null && denySSOStr.equals("true"));
+        if (denySSO) {
+            denySSOStr = "true";
+        } else {
+            denySSOStr = "false";
+        }
+
+        /* Set cookie and mark request for SSO denial */
+        Cookie denySSOCookie =
+                RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO), denySSOStr,
+                                         new Integer((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO_TTL)).intValue());
+        response.addCookie(denySSOCookie);
+        request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(denySSO));
+
         /* Parse username */
         if (username.indexOf("@") != -1) {
             org = username.substring(username.indexOf("@") + 1, username.length());
@@ -100,7 +154,8 @@ public class LoginServlet extends HttpServlet {
         if (org == null || org.equals("") || org.equals("null")) {
             showLoginPage(request, response, RequestUtil.ERROR_NO_ORG);
             return;
-        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE))
+        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG,
+                                            (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE))
                 .containsValue(org)) {
             showLoginPage(request, response, RequestUtil.ERROR_INVALID_ORG);
             return;
@@ -119,15 +174,12 @@ public class LoginServlet extends HttpServlet {
             showLoginPage(request, response, RequestUtil.ERROR_UNKNOWN_TICKET);
             return;
         } catch (DirectoryUnavailableException e) {
-            // TODO: Create error message
             showLoginPage(request, response, RequestUtil.ERROR_DIRECTORY_DOWN);
             return;
         } catch (InoperableStateException e) {
-            // TODO: Create error message
             showLoginPage(request, response, RequestUtil.ERROR_MORIA_DOWN);
             return;
         } catch (IllegalInputException e) {
-            // TODO: Create error message
             showLoginPage(request, response, RequestUtil.ERROR_NO_CREDENTIALS);
             return;
             /* This should not happen. Programming error. */
@@ -136,14 +188,14 @@ public class LoginServlet extends HttpServlet {
         /* Authentication has been successful. Remember SSO ticket and organization. */
         Cookie orgCookie =
                 RequestUtil.createCookie(RequestUtil.PROP_COOKIE_ORG,
-                                         request.getParameter(RequestUtil.PARAM_ORG),
+                                         request.getParameter((String) config.get(RequestUtil.PARAM_ORG)),
                                          new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue());
-        Cookie ssoCookie =
+        Cookie ssoTicketCookie =
                 RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO),
                                          (String) tickets.get(MoriaController.SSO_TICKET),
                                          new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
         response.addCookie(orgCookie);
-        response.addCookie(ssoCookie);
+        response.addCookie(ssoTicketCookie);
 
         /* Redirect back to web service */
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -161,20 +213,19 @@ public class LoginServlet extends HttpServlet {
     private void showLoginPage(final HttpServletRequest request, final HttpServletResponse response, String errorType)
             throws IOException, ServletException {
 
-        // TODO: Do not throw exceptions, set INTERNAL SERVER ERRROR status
-        String jspLocation = getServletContext().getInitParameter("jsp.location");
         Properties config = getConfig();
         HashMap serviceProperties = null;
+
 
         /* Ticket */
         String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
 
         /* Base URL */
         request.setAttribute(RequestUtil.ATTR_BASE_URL,
-                             config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" +
-                             config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) +
-                             "=" +
-                             loginTicketId);
+                             config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?"
+                             + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM)
+                             + "="
+                             + loginTicketId);
 
         try {
             /* Service properties */
@@ -199,7 +250,8 @@ public class LoginServlet extends HttpServlet {
         }
         String langFromCookie = null;
         if (request.getCookies() != null) {
-            langFromCookie = RequestUtil.getCookieValue((String)config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
+            langFromCookie = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG),
+                                                        request.getCookies());
         }
         ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN,
                                                       request.getParameter(RequestUtil.PARAM_LANG),
@@ -250,7 +302,7 @@ public class LoginServlet extends HttpServlet {
 
         // TODO: Include instead of forward
         /* Process jsp */
-        RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/login.jsp");
+        RequestDispatcher rd = getServletContext().getNamedDispatcher("Login.JSP");
         rd.forward(request, response);
     }
 
