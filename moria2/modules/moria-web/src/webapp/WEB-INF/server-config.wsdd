@@ -34,7 +34,7 @@
     <parameter name="wsdlServicePort"
 	       value="AuthenticationIFPort"/>
     <parameter name="className"
-	       value="no.feide.login.moria.v1_0.Authentication.AuthenticationIFBindingSkeleton"/>
+	       value="no.feide.moria.webservices.v1_0.Authentication"/>
     <parameter name="wsdlPortType"
 	       value="AuthenticationIF"/>
     <parameter name="allowedMethods"
@@ -73,7 +73,7 @@
     <parameter name="wsdlServicePort"
 	       value="AuthenticationIFPort"/>
     <parameter name="className"
-	       value="no.feide.login.moria.v1_1.Authentication.AuthenticationIFBindingSkeleton"/>
+	       value="no.feide.moria.webservices.v1_1.Authentication"/>
     <parameter name="wsdlPortType"
 	       value="AuthenticationIF"/>
     <parameter name="allowedMethods"
