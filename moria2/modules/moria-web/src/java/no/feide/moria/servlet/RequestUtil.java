@@ -324,4 +324,39 @@ public abstract class RequestUtil extends HttpServlet {
 
         return names;
     }
+
+    /**
+     * Replaces a given token with hyperlinks. The URL and name of the hyperlink
+     * is given as parameters. Every occurance of the token in the data string is
+     * replaced by a hyperlink.
+     *
+     * @param token the token to replace with link
+     * @param data  the data containing text and token(s)
+     * @param name  the link text
+     * @param url   the URL to link to
+     * @return a string with hyperlinks in stead of tokens
+     */
+    public static String insertLink(String token, String data, String name, String url) {
+        /* Validate parameters */
+        if (token == null || token.equals("")) {
+            // TODO: Log
+            throw new IllegalArgumentException("token must be a non-empty string");
+        }
+        if (data == null || data.equals("")) {
+            // TODO: Log
+            throw new IllegalArgumentException("data must be a non-empty string");
+        }
+        if (name == null || name.equals("")) {
+            // TODO: Log
+            throw new IllegalArgumentException("name must be a non-empty string");
+        }
+        if (url == null || url.equals("")) {
+            // TODO: Log
+            throw new IllegalArgumentException("url must be a non-empty string");
+        }
+
+        String link = "<a href=\"" + url + "\">" + name + "</a>";
+
+        return data.replaceAll(token, link);
+    }
 }

@@ -271,8 +271,8 @@ public class RequestUtilTest extends TestCase {
     /**
      * Test the organizationNames method.
      *
-     * @see RequestUtil#parseConfig(java.util.Properties, java.lang.String, java.lang.String)
      * @throws IOException
+     * @see RequestUtil#parseConfig(java.util.Properties, java.lang.String, java.lang.String)
      */
     public void testParseConfig() throws IOException {
         Properties props = new Properties();
@@ -347,5 +347,86 @@ public class RequestUtilTest extends TestCase {
             fail("Should raise IllegalStateException, config separation error ','");
         } catch (IllegalStateException success) {
         }
+    }
+
+    /**
+     * Test the insertLink method.
+     *
+     * @see RequestUtil#insertLink(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void testInsertLink() {
+        /* Illegal parameters */
+        try {
+            RequestUtil.insertLink(null, "data string", "Client", "http://moria.sf.net/");
+            fail("IllegalArgumentException should be raised, token is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.insertLink("", "data string", "Client", "http://moria.sf.net/");
+            fail("IllegalArgumentException should be raised, token is an empty string");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.insertLink("FOO", null, "Client", "http://moria.sf.net/");
+            fail("IllegalArgumentException should be raised, data is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.insertLink("FOO", "", "Client", "http://moria.sf.net/");
+            fail("IllegalArgumentException should be raised, data is an empty string");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.insertLink("FOO", "data string", null, "http://moria.sf.net/");
+            fail("IllegalArgumentException should be raised, clientName is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.insertLink("FOO", "data string", "", "http://moria.sf.net/");
+            fail("IllegalArgumentException should be raised, clientName is an empty string");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.insertLink("FOO", "data string", "Client", null);
+            fail("IllegalArgumentException should be raised, clientURL is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            RequestUtil.insertLink("FOO", "data string", "Client", "");
+            fail("IllegalArgumentException should be raised, clientURL is an empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        String link = "<a href=\"http://moria.sf.net/\">Client</a>";
+        String url = "http://moria.sf.net/";
+        String name = "Client";
+        String token = "CLIENT_LINK";
+        String data;
+        String expected;
+
+        /* Token in the middle */
+        data = "Foo CLIENT_LINK bar";
+        expected = "Foo " + link + " bar";
+        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+
+        /* Token first */
+        data = "CLIENT_LINK foobar";
+        expected = link + " foobar";
+        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+
+        /* Token last */
+        data = "Foobar CLIENT_LINK";
+        expected = "Foobar " + link;
+        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+
+        /* Multiple tokens */
+        data = "Foo CLIENT_LINK bar CLIENT_LINK foobar";
+        expected = "Foo " + link + " bar " + link + " foobar";
+        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
+
+        /* No tokens */
+        data = "Foo bar";
+        expected = data;
+        Assert.assertEquals("Hyperlink differs", expected, RequestUtil.insertLink(token, data, name, url));
     }
 }
