@@ -268,10 +268,10 @@ public class MoriaController {
         } catch (AuthenticationFailedException e) {
             // TODO: Access log
             throw new AuthenticationException("Wrong username/password");
-        } catch (BackendException e) {
+        } //catch (BackendException e) {
             // TODO: Access log
-            throw new DirectoryUnavailableException("Directory unavailable. Authentication failed.");
-        }
+            //throw new DirectoryUnavailableException("Directory unavailable. Authentication failed.");
+        //}
 
         /* Remove existing SSO ticket */
         try {
