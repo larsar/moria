@@ -24,12 +24,17 @@ package no.feide.moria.authorization;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import no.feide.moria.log.MessageLogger;
+
 /**
  * Represents a web service. A web service has a name, id, url and attributes.
  * The attributes are flattened (for optimization) from a set of profiles,
  * allowed and denied attributes.
  */
 final class AuthorizationClient {
+
+    /** Used for logging. */
+    private final MessageLogger log = new MessageLogger(AuthorizationClient.class);
 
     /**
      * Cached hashCode.
@@ -239,22 +244,35 @@ final class AuthorizationClient {
 
 
     /**
-     * Returns true if all elements in the requestedOperations array is
-     * represented in the objects operations set.
+     * Used to decide whether subsystems are allowed for this particular client,
+     * based on its configuration
      * @param requestedSubsystems
-     *            A string array of operation names
-     * @return True if all operations are allowed, else false.
+     *            A string array of subsystem names. Cannot be <code>null</code>.
+     * @return <code>true</code> if subsystems are allowed, otherwise
+     *         <code>false</code>.
+     * @throws IllegalArgumentException
+     *             If <code>requestedSubsystems</code> is <code>null</code>.
      */
     boolean allowSubsystems(final String[] requestedSubsystems) {
 
-        if (requestedSubsystems == null) { throw new IllegalArgumentException("RequestedSubsystems cannot be null"); }
-
-        if (requestedSubsystems.length == 0) { return true; }
-
-        for (int i = 0; i < requestedSubsystems.length; i++) {
-            if (!subsystems.contains(requestedSubsystems[i])) { return false; }
+        // Sanity checks.
+        if (requestedSubsystems == null) {
+            log.logInfo("requestedSubsystems = " + requestedSubsystems);
+            throw new IllegalArgumentException("RequestedSubsystems cannot be null");
         }
 
+        // No subsystems requested or defined? Then we won't allow 'em!
+        if ((requestedSubsystems.length == 0) || (subsystems == null)) {
+            log.logInfo("requestedSubsystems.length = " + requestedSubsystems.length);
+            log.logInfo("subsystems = " + subsystems);
+            return false;
+        }
+
+        // If all the requested subsystems are defined for this service, we're
+        // allowing it.
+        for (int i = 0; i < requestedSubsystems.length; i++)
+            if (!subsystems.contains(requestedSubsystems[i]))
+                return false; // Ouch! A requested subsystem wasn't defined!
         return true;
     }
 
@@ -384,11 +402,15 @@ final class AuthorizationClient {
 
 
     /**
-     * Returns the subsystems for this client.
-     * @return Returns the operations.
+     * Returns the subsystems for this client, if any are defined.
+     * @return A new <code>HashSet</code> object containing the defined
+     *         subsystems, or <code>null</code> if no subsystems are defined
+     *         for this client.
      */
     HashSet getSubsystems() {
 
+        if (subsystems == null)
+            return null;
         return new HashSet(subsystems);
     }
 
