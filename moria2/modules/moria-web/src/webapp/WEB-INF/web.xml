@@ -34,7 +34,7 @@
   <servlet>
     <servlet-name>AxisServlet</servlet-name>
     <display-name>Moria Axis Servlet</display-name>
-    <servlet-class>no.feide.moria.servlet.AxisServlet</servlet-class>
+    <servlet-class>no.feide.moria.servlet.SimpleAxisServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
