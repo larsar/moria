@@ -2,6 +2,7 @@ package no.feide.moria.directory.index;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -82,6 +83,13 @@ implements Serializable, DirectoryManagerIndex {
         if (id == null)
             return null;
 
+        // Do we have an explicit match? That is, an exception from the association rule?
+        if (exceptions.containsKey(id)) {
+            LinkedList list = new LinkedList();
+            list.add((String)exceptions.get(id));
+            return (List)list;
+        }
+        
         // Extract the realm.
         String realm = id.substring(id.lastIndexOf('@'));
         return (List) associations.get(realm);
