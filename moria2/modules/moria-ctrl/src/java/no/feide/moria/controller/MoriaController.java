@@ -482,8 +482,6 @@ public final class MoriaController {
             }
         }
 
-        messageLogger.logInfo("DEBUG: parsedRequestAttributes=" + parsedRequestAttributes);
-
         // Authenticate and read requested attributes.
         final HashMap fetchedAttributes;
         try {
