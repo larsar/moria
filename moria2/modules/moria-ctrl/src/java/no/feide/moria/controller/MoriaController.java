@@ -26,6 +26,9 @@ import java.util.Properties;
 import no.feide.moria.store.MoriaStore;
 import no.feide.moria.store.MoriaStoreFactory;
 import no.feide.moria.store.UnknownTicketException;
+import no.feide.moria.store.MoriaTicket;
+import no.feide.moria.store.InvalidTicketException;
+import no.feide.moria.store.MoriaAuthnAttempt;
 import no.feide.moria.configuration.ConfigurationManager;
 import no.feide.moria.configuration.ConfigurationManagerException;
 import no.feide.moria.authorization.AuthorizationManager;
@@ -54,7 +57,6 @@ public class MoriaController {
      */
     private static AuthorizationManager authzManager;
 
-    // TODO: Should probably be implemented otherwise
     /**
      * Flag set to true if the controller has been initialized
      */
@@ -81,7 +83,10 @@ public class MoriaController {
             store = MoriaStoreFactory.createMoriaStore();
 
             // TODO: Should use value specified on the command line, in startup servlet or something like that
-            System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
+            if (System.getProperty("no.feide.moria.configuration.cm") == null)
+                System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
+            if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
+                System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
 
             /* Authorization manager */
             authzManager = new AuthorizationManager();
@@ -119,8 +124,29 @@ public class MoriaController {
      * @return
      */
     public static boolean validateLoginTicket(String loginTicketId) {
-        // TODO: Implement
-        return false;
+
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller is not initialized.");
+        }
+
+        /* Valdiate parameter */
+        if (loginTicketId == null || loginTicketId.equals("")) {
+            throw new IllegalArgumentException("loginTicketId cannot be null or an empty string.");
+        }
+
+        MoriaAuthnAttempt authnAttempt = null;
+        try {
+            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
+        } catch (InvalidTicketException e) {
+            // TODO: Log
+            return false;
+        }
+
+        if (authnAttempt != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -157,16 +183,56 @@ public class MoriaController {
 
     /**
      * @param attributes
-     * @param returnURLPrefix
-     * @param returnURLPostfix
+     * @param urlPrefix
+     * @param urlPostfix
      * @param forceInteractiveAuthentication
      * @return
      */
-    public static String initiateMoriaAuthentication(String[] attributes,
-                                                     String returnURLPrefix, String returnURLPostfix,
-                                                     boolean forceInteractiveAuthentication) {
-        // TODO: Implement
-        return null;
+    public static String initiateMoriaAuthentication(String principal, String[] attributes,
+                                                     String urlPrefix, String urlPostfix,
+                                                     boolean forceInteractiveAuthentication)
+            throws AuthorizationException, MoriaControllerException {
+
+        if (!ready.booleanValue()) {
+            throw new IllegalStateException("Controller not initialized");
+        }
+
+        /* Validate parameters */
+        if (principal == null || principal.equals("")) {
+            throw new MoriaControllerException("Principal cannot be null or an empty string.");
+        }
+        if (attributes == null) {
+            throw new MoriaControllerException("Attributes cannot be null.");
+        }
+        if (urlPrefix == null || urlPrefix.equals("")) {
+            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
+        }
+        if (urlPostfix == null || urlPostfix.equals("")) {
+            throw new MoriaControllerException("URLPostfix cannot be null.");
+        }
+
+        /* Authorization */
+        if (!authzManager.allowAccessTo(principal, attributes)) {
+            // TODO: Access log
+            throw new AuthorizationException("Access to the requested attributes is denied.");
+        }
+        if (!authzManager.allowOperations(principal, new String[]{"InteractiveAuth"})) {
+            throw new AuthorizationException("Access to the requested operations is denied.");
+        }
+
+        /* URL validation */
+        if (urlPrefix == null || urlPrefix.equals("")) {
+            throw new MoriaControllerException("URLPrefix cannot be null or an empty string.");
+        }
+        if (urlPostfix == null) {
+            throw new MoriaControllerException("URLPostfix cannot be null.");
+        }
+        if (!(isLegalURL(urlPrefix + "FakeMoriaID" + "urlPostfix"))) {
+            throw new MoriaControllerException("URLPrefix and URLPostfix combined does not make a valid URL.");
+        }
+
+        /* Create authentication attempt */
+        return store.createAuthnAttempt(attributes, urlPrefix, urlPostfix, principal, forceInteractiveAuthentication);
     }
 
     /**
@@ -226,4 +292,37 @@ public class MoriaController {
         // TODO: Finish implementation, the init() method will change
     }
 
+    /**
+     * Validate URL. Uses blacklist to indicate whether the URL should
+     * be accepted or not.
+     *
+     * @param url the URL to validate
+     * @return true if the URL is valid, else false
+     */
+    static boolean isLegalURL(String url) {
+        // TODO: Implement a more complete URL validator
+
+        if (url == null || url.equals("")) {
+            throw new IllegalArgumentException("url must be a non-empty string.");
+        }
+
+        String[] illegal = new String[]{
+            "\n",
+            "\r"
+        };
+
+        /* Protocol */
+        if (url.indexOf("http://") != 0 && url.indexOf("https://") != 0)
+            return false;
+
+        /* Illegal characters */
+        for (int i = 0; i < illegal.length; i++) {
+            if (url.indexOf(illegal[i]) != -1) {
+                System.out.println("Contains: " + illegal[i]);
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
