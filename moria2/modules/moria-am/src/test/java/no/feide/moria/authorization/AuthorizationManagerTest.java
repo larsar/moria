@@ -561,7 +561,7 @@ public class AuthorizationManagerTest extends TestCase {
      *
      * @see AuthorizationManager#allowAccessTo(java.lang.String, java.lang.String[])
      */
-    public void testAllowAccessTo() {
+    public void testAllowAccessTo() throws UnknownServicePrincipalException {
         AuthorizationManager authMan = new AuthorizationManager();
 
         /* No configuration set */
@@ -596,7 +596,12 @@ public class AuthorizationManagerTest extends TestCase {
 
 
         /* Nonexisting client */
-        assertFalse("Should not be allowed to access", authMan.allowAccessTo("doesNotExist", new String[]{}));
+        try {
+            authMan.allowAccessTo("doesNotExist", new String[]{});
+            fail("UnknownServicePrincipalException should be raised, non-existing principal");
+        } catch (UnknownServicePrincipalException success) {
+        }
+        //assertFalse("Should not be allowed to access", authMan.allowAccessTo("doesNotExist", new String[]{}));
 
         /* No attributes requested */
         assertTrue("Should be allowed to get access", authMan.allowAccessTo("test", new String[]{}));
@@ -616,7 +621,7 @@ public class AuthorizationManagerTest extends TestCase {
      *
      * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
      */
-    public void testAllowSSOForAttributes() {
+    public void testAllowSSOForAttributes() throws UnknownServicePrincipalException {
         AuthorizationManager authMan = new AuthorizationManager();
 
         /* No configuration set */
@@ -651,7 +656,12 @@ public class AuthorizationManagerTest extends TestCase {
 
 
         /* Nonexisting client */
-        assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("doesNotExist", new String[]{}));
+        try {
+            authMan.allowSSOForAttributes("doesNotExist", new String[]{});
+            fail("UnknownServicePrincipalException should be raised, non-existing principal");
+        } catch (UnknownServicePrincipalException success) {
+        }
+        //assertFalse("SSO should not be allowed", authMan.allowSSOForAttributes("doesNotExist", new String[]{}));
 
         /* No attributes requested */
         assertTrue("SSO should be allowed", authMan.allowSSOForAttributes("test", new String[]{}));
@@ -671,7 +681,7 @@ public class AuthorizationManagerTest extends TestCase {
      *
      * @see AuthorizationManager#allowSSOForAttributes(java.lang.String, java.lang.String[])
      */
-    public void testAllowOperations() {
+    public void testAllowOperations() throws UnknownServicePrincipalException {
         AuthorizationManager authMan = new AuthorizationManager();
 
         /* No configuration set */
@@ -706,7 +716,12 @@ public class AuthorizationManagerTest extends TestCase {
 
 
         /* Nonexisting client */
-        assertFalse("Should not be allowed access to operations", authMan.allowOperations("doesNotExist", new String[]{}));
+        try {
+            authMan.allowOperations("doesNotExist", new String[]{});
+            fail("UnknownServicePrincipalException should be raised, non-existing principal");
+        } catch (UnknownServicePrincipalException success) {
+        }
+        //assertFalse("Should not be allowed access to operations", authMan.allowOperations("doesNotExist", new String[]{}));
 
         /* No operations requested */
         assertTrue("Should be allowed access to operations", authMan.allowOperations("test", new String[]{}));
@@ -725,7 +740,7 @@ public class AuthorizationManagerTest extends TestCase {
      *
      * @see AuthorizationManager#getServiceProperties(java.lang.String)
      */
-    public void testGetServiceProperties() {
+    public void testGetServiceProperties() throws UnknownServicePrincipalException {
         AuthorizationManager authMan = new AuthorizationManager();
 
         Properties props = new Properties();
@@ -744,7 +759,13 @@ public class AuthorizationManagerTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        assertNull("Properties should be null", authMan.getServiceProperties("DoesNotExist"));
+        /* Illegal principal */
+        try {
+            authMan.getServiceProperties("doesNotExist");
+            fail("UnknownServicePrincipalException should be raised, non-existing principal");
+        } catch (UnknownServicePrincipalException success) {
+        }
+
         assertNotNull("Properties should not be null", authMan.getServiceProperties("test"));
     }
 
@@ -753,7 +774,7 @@ public class AuthorizationManagerTest extends TestCase {
      *
      * @see AuthorizationManager#getSecLevel(java.lang.String, java.lang.String[])
      */
-    public void testGetSecLevel() {
+    public void testGetSecLevel() throws UnknownServicePrincipalException {
         AuthorizationManager authMan = new AuthorizationManager();
 
         Properties props = new Properties();
@@ -776,6 +797,16 @@ public class AuthorizationManagerTest extends TestCase {
             fail("IllegalArgumentException should be raised, attributes is null");
         } catch (IllegalArgumentException success) {
         }
+
+        /* Illegal principal */
+        try {
+            authMan.getSecLevel("doesNotExist", new String[]{});
+            fail("UnknownServicePrincipalException should be raised, non-existing principal");
+        } catch (UnknownServicePrincipalException success) {
+        }
+
+        /* Illegal attribute */
+        // TODO: Implement test for illegal attribute?
 
         /* SecLevel 0 */
         String[] requestedAttributes = new String[]{"attr1"};

@@ -248,82 +248,73 @@ public class AuthorizationManager {
     /**
      * Return a client object for a given identifier.
      *
-     * @param clientID the client object identifier
+     * @param servicePrincipal the client object identifier
      * @return the client object for the identifier
      * @throws IllegalArgumentException if the client identifier is null or ""
      */
-    private AuthorizationClient getAuthzClient(String clientID) {
+    private AuthorizationClient getAuthzClient(String servicePrincipal) {
         /* Is the manager activated? */
         if (activated == false) {
-            String message = "Authorization manager is not configured";
-            // TODO: Log
-            // MessageLogger.logCritical(message);
-            throw new NoConfigException(message);
+            throw new NoConfigException("Authorization manager is not configured");
         }
 
         /* Validate input parameters */
-        if (clientID == null || clientID.equals("")) {
-            String message = "clientID must be a non-empty string.";
-            // TODO: Log
-            // MessageLogger.logWarning(message);
-            throw new IllegalArgumentException(message);
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string.");
         }
 
-        return (AuthorizationClient) authzClients.get(clientID);
+        return (AuthorizationClient) authzClients.get(servicePrincipal);
     }
 
     /**
      * Validates a request for access to attributes for a given client/service.
      *
-     * @param clientID            the indentifier of the client
+     * @param servicePrincipal            the indentifier of the client
      * @param requestedAttributes the list of requested attributes
      * @return true if the service is allowed access, false if not or the client does not exist
      */
-    public boolean allowAccessTo(String clientID, String[] requestedAttributes) {
-        AuthorizationClient authzClient = getAuthzClient(clientID);
+    public boolean allowAccessTo(String servicePrincipal, String[] requestedAttributes) throws UnknownServicePrincipalException {
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
 
         if (authzClient == null) {
-            // TODO: Log
-            return false;
-        } else {
-            return authzClient.allowAccessTo(requestedAttributes);
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
         }
+
+        return authzClient.allowAccessTo(requestedAttributes);
     }
 
     /**
      * Validates a request for access to SSO for a given client/service.
      *
-     * @param clientID            the indentifier of the client
+     * @param servicePrincipal    the indentifier of the client
      * @param requestedAttributes the list of requested attributes
      * @return true if the service is allowed access, false if not or the client does not exist
      */
-    public boolean allowSSOForAttributes(String clientID, String[] requestedAttributes) {
-        AuthorizationClient authzClient = getAuthzClient(clientID);
+    public boolean allowSSOForAttributes(String servicePrincipal, String[] requestedAttributes) throws UnknownServicePrincipalException {
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
 
         if (authzClient == null) {
-            // TODO: Log
-            return false;
-        } else {
-            return authzClient.allowSSOForAttributes(requestedAttributes);
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
         }
+
+        return authzClient.allowSSOForAttributes(requestedAttributes);
     }
 
     /**
      * Validates a request for access to operations for a given client/service.
      *
-     * @param clientID            the indentifier of the client
+     * @param servicePrincipal    the indentifier of the client
      * @param requestedOperations the list of requested operations
      * @return true if the service is allowed access, false if not or the client does not exist
      */
-    public boolean allowOperations(String clientID, String[] requestedOperations) {
-        AuthorizationClient authzClient = getAuthzClient(clientID);
+    public boolean allowOperations(String servicePrincipal, String[] requestedOperations) throws UnknownServicePrincipalException {
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
 
         if (authzClient == null) {
-            // TODO: Log
-            return false;
-        } else {
-            return authzClient.allowOperations(requestedOperations);
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
         }
+
+        return authzClient.allowOperations(requestedOperations);
     }
 
     /**
@@ -333,7 +324,6 @@ public class AuthorizationManager {
      */
     synchronized void setAuthzClients(HashMap newClients) {
         if (newClients == null) {
-            // TODO: Log
             throw new IllegalArgumentException("newClients to be set cannot be null");
         }
         synchronized (authzClients) {
@@ -389,20 +379,18 @@ public class AuthorizationManager {
      * @return a hashmap with properties for a given service
      * @see AuthorizationClient#getProperties()
      */
-    public HashMap getServiceProperties(String servicePrincipal) {
-       /* Validate parameters */
+    public HashMap getServiceProperties(String servicePrincipal) throws UnknownServicePrincipalException {
+        /* Validate parameters */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
             throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
         }
 
         AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) {
-            // TODO: Should propably trow exception instead
-            return null;
-        } else {
-            return authzClient.getProperties();
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
         }
 
+        return authzClient.getProperties();
     }
 
     /**
@@ -413,7 +401,7 @@ public class AuthorizationManager {
      * @return integer >= 0
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
      */
-    public int getSecLevel(String servicePrincipal, String[] requestedAttributes) {
+    public int getSecLevel(String servicePrincipal, String[] requestedAttributes) throws UnknownServicePrincipalException {
         /* Validate arguments */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
             throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
@@ -422,15 +410,14 @@ public class AuthorizationManager {
             throw new IllegalArgumentException("requestedAttributes cannot be null");
         }
 
+        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
+        if (authzClient == null) {
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
+        }
+
         /* Return lowest seclevel if no attributes are requested */
         if (requestedAttributes.length == 0) {
             return 0;
-        }
-
-        AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
-        if (authzClient == null) {
-            // TODO: Should propably throw exception instead
-            return -1;
         }
 
         return authzClient.getSecLevel(requestedAttributes);
@@ -441,10 +428,11 @@ public class AuthorizationManager {
      *
      * @param servicePrincipal
      * @return A string array with the attribute names that is configured for the service.
-     * @throws UnknownServicePrincipalException if the servicePrincipal does not exist
+     * @throws UnknownServicePrincipalException
+     *          if the servicePrincipal does not exist
      * @see AuthorizationClient#getAttributes()
      */
-    public String[] getAttributes(String servicePrincipal) throws UnknownServicePrincipalException{
+    public String[] getAttributes(String servicePrincipal) throws UnknownServicePrincipalException {
         /* Validate argument */
         if (servicePrincipal == null || servicePrincipal.equals("")) {
             throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
@@ -452,7 +440,7 @@ public class AuthorizationManager {
 
         AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) {
-            throw new UnknownServicePrincipalException("Service principal does not exist: '"+servicePrincipal+"'");
+            throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'");
         }
 
         HashMap attributes = authzClient.getAttributes();
