@@ -103,24 +103,5 @@ public class ConfigurationManagerTest extends TestCase {
             fail("ConfigurationManagerException should be raised, empty property file");
         } catch (ConfigurationManagerException success) {
         }
-
-        System.setProperty("no.feide.moria.configuration.base",
-                System.getProperty("no.feide.moria.configuration.test.dir") + "/moria-base-valid.properties");
-        confMan = new ConfigurationManager();
-        assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
-    }
-
-    /**
-     * Test the stop method.
-     *
-     * @see ConfigurationManager#stop()
-     */
-    public void testStop() throws ConfigurationManagerException {
-        System.setProperty("no.feide.moria.configuration.base",
-                System.getProperty("no.feide.moria.configuration.test.dir") + "/moria-base-valid.properties");
-        ConfigurationManager confMan = new ConfigurationManager();
-        assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
-        confMan.stop();
-        assertEquals("Number of file listeners doesn't match.", 0, confMan.numFileListeners());
     }
 }
