@@ -147,6 +147,23 @@ $Id$
                     The URL to the FAQ document.
                     </p>
                     </li>
+                    <li>
+                    <code>no.feide.moria.web.faq.status</code>
+                    <p>
+                    Link to the Moria2 Status servlet (used in the FAQ
+                    document).
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.faq.owner</code>
+                    <p>
+                    Organization name of the Moria2 owner; that is, the
+                    organization responsible for the Moria2 service (used in the
+                    FAQ document). <em>This property is optional; if not set,
+                    a text similar to "the Moria organization" will be used
+                    instead.</em>
+                    </p>
+                    </li>
                 </ul>
             </subsection>
             <subsection name="Information Servlet Properties">
@@ -283,6 +300,12 @@ no.feide.moria.web.cookie.org.ttl=1
 
 # Link to the Moria2 FAQ.
 no.feide.moria.web.faqlink=http://localhost:8080/moria/faq
+
+# Link to the Moria2 Status servlet (used in the FAQ).
+no.feide.moria.web.faq.status=http://localhost:8080/moria/Status
+
+# Organization name of the Moria2 owner (used in the FAQ).
+no.feide.moria.web.faq.owner=My Moria Organization
 
 
 #
