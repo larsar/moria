@@ -70,6 +70,37 @@ final ResourceBundle bundle = RequestUtil.getBundle(
   else if (eclass == NullPointerException.class) {%>
     <p><%=bundle.getString("error_nullpointer")%></p><br/><%;
   }
+  else if (eclass == ServletException.class) {
+  ServletException se = (ServletException) exception;
+  Throwable servletThrowable = se.getRootCause();
+  	if (servletThrowable.getClass() == AuthenticationException.class) { %>
+		<p><%=bundle.getString("error_authentication")%></p><br/><%;
+  	}
+  	else if (servletThrowable.getClass() == AuthorizationException.class) { %>
+		<p><%=bundle.getString("error_authorization")%></p><br/><%;
+	}
+	else if (servletThrowable.getClass() == DirectoryUnavailableException.class) { %>
+		<p><%=bundle.getString("error_directory")%></p><br/><%;
+	}
+	else if (servletThrowable.getClass() == IllegalInputException.class) { %>
+		<p><%=bundle.getString("error_illegalinput")%></p><br/><%;
+	}
+	else if (servletThrowable.getClass() == InoperableStateException.class) { %>
+		<p><%=bundle.getString("error_inoperable")%></p><br/><%;
+	}
+	else if (servletThrowable.getClass() == MoriaControllerException.class) { %>
+		<p><%=bundle.getString("error_moriacontroller")%></p><br/><%;
+	}
+	else if (servletThrowable.getClass() == UnknownTicketException.class) { %>
+		<p><%=bundle.getString("error_unknownticket")%></p><br/><%;
+	}
+	else if (servletThrowable.getClass() == IllegalArgumentException.class) { %>
+		<p><%=bundle.getString("error_illegalargument")%></p><br/><%;
+	}
+	else if (servletThrowable.getClass() == NullPointerException.class) { %>
+		<p><%=bundle.getString("error_nullpointer")%></p><br/><%;
+	}
+	}
   else { %>
    <p><%=bundle.getString("error_rest")%></p><br/><%;
    }

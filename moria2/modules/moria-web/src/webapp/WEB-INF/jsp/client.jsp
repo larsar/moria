@@ -10,14 +10,8 @@
 
 <body>
 
-<!-- Do we have an error message? -->
-<%if (request.getAttribute("error") != null) {%>
-
-	<!-- Display error message. -->
-	<font color="red"><%=request.getAttribute("error")%></font>
-
 <!-- Do we have attributes to show? -->	
-<%} else if (request.getAttribute("attributes") != null) {%>
+<% if (request.getAttribute("attributes") != null) {%>
   
 	<!-- Show table with attribute values. -->
 	<%Map attributes = (Map) request.getAttribute("attributes");

@@ -80,7 +80,7 @@ extends HttpServlet {
 
             } catch (MoriaControllerException e) {
                 log.logCritical("Exception caught reading attributes", e);
-                request.setAttribute("error", e);
+                throw new ServletException(e);
             }
         }
 
@@ -124,17 +124,14 @@ extends HttpServlet {
             log.logCritical("Moria ID is now " + moriaID);
 
         } catch (IllegalInputException e) {
-            error = true;
             log.logCritical("IllegalInputException");
-            request.setAttribute("error", e);
+            throw new ServletException (e);
         } catch (AuthorizationException e) {
-            error = true;
             log.logCritical("AuthorizationException");
-            request.setAttribute("error", e);
+            throw new ServletException (e);
         } catch (InoperableStateException e) {
-            error = true;
             log.logCritical("InoperableStateException");
-            request.setAttribute("error", e);
+            throw new ServletException (e);
         }
 
         if (!error) {
