@@ -107,7 +107,7 @@
            destdir="build/test"
            includes="no/feide/mellon/jaxrpc/test/*">
       <classpath>
-        <fileset dir="${include_libs}" includes="*.jar"/>
+        <fileset dir="${jaxrpc_libs}" includes="*.jar"/>
         <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
       </classpath>
     </javac>
@@ -120,7 +120,7 @@
       <classpath>
         <pathelement location="build/test"/>
         <pathelement location="dist/feide-mellon-api-${mellon_tag}.jar"/>        
-        <fileset dir="${include_libs}">
+        <fileset dir="${jaxrpc_libs}">
           <include name="**/*.jar"/>
         </fileset>  		        
       </classpath>
