@@ -72,17 +72,23 @@ public final class AccessStatusType implements Serializable {
     /**
      * Access log type used to indicate that the service requests illegal attributes.
      */
-    public static final AccessStatusType ATTRIBUTES_ACCESS_DENIED_INITIATE = new AccessStatusType(
-            "ATTRIBUTES ACCESS DENIED (INITIATE)");
+    public static final AccessStatusType ACCESS_DENIED_INITIATE_AUTH = new AccessStatusType(
+            "ACCESS DENIED INITIATE AUTH");
 
     /**
      * Access log type used to indicate that the service requests illegal attributes.
      */
-    public static final AccessStatusType ATTRIBUTES_ACCESS_DENIED_DIRECT = new AccessStatusType(
-            "ATTRIBUTES ACCESS DENIED (DIRECT)");
+    public static final AccessStatusType ACCESS_DENIED_DIRECT_AUTH = new AccessStatusType("ACCESS DENIED DIRECT AUTH");
 
     /**
-     * Access log type used to indicate that the service requests illegal subsystems.
+     * Access log type used to indicate that the service requests illegal attributes.
      */
-    public static final AccessStatusType SUBSYSTEM_ACCESS_DENIED = new AccessStatusType("SUBSYSTEM ACCESS DENIED");
+    public static final AccessStatusType ACCESS_DENIED_VERIFY_USER_EXISTENCE = new AccessStatusType(
+            "ACCESS DENIED VERIFY USER EXISTENCE");
+
+    /**
+     * Access log type used to indicate that the service requests illegal proxy authentication.
+     */
+    public static final AccessStatusType ACCESS_DENIED_PROXY_AUTH = new AccessStatusType(
+            "ACCESS DENIED PROXY AUTH");
 }
