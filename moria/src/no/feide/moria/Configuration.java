@@ -277,7 +277,6 @@ public class Configuration {
      * @return The short name for the organization
      */
     public static String getOrgShort(String orgName, String language) {
-        init();
         String orgShort = (String) orgShortList.get(orgName+"_"+language);
 
         if (orgShort == null)
@@ -294,7 +293,6 @@ public class Configuration {
      * @return Full organization name in the selected language
      */
     public static String getOrgName(String orgShort, String language) {
-        init();
         String orgName = (String) orgNameList.get(orgShort+"_"+language);
 
         if (orgName == null)
@@ -310,7 +308,6 @@ public class Configuration {
      * @return A HashMap of all organization names for the requested language
      */
     public static HashMap getOrgNames(String language) {
-        init();
         return (HashMap) orgNameList.get(language);
     }
 
@@ -323,7 +320,6 @@ public class Configuration {
      * requested language
      */
     public static HashMap getOrgShorts(String language) {
-        init();
         return (HashMap) orgShortList.get(language);
     }
 
@@ -334,7 +330,6 @@ public class Configuration {
      * @return HashMap of all languages indexed on language code
      */
     public static HashMap getLanguages() {
-        init();
         return languages;
     }
 }
