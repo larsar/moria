@@ -2,9 +2,12 @@ package no.feide.moria;
 
 import java.security.Principal;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Timer;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Vector;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 import java.io.FileNotFoundException;
@@ -19,10 +22,9 @@ public class SessionStore {
     static private SessionStore me;
     
     /** Contains all active session objects. Key is current session ID. */
-    private Hashtable sessions = new Hashtable();
+    //private Hashtable sessions = new Hashtable();
+    Map sessions = Collections.synchronizedMap(new HashMap());
     
-    /** Used to handle session store timeouts. */
-    private Timer sessionTimer = new Timer(true);
     
     
     /**
@@ -31,7 +33,7 @@ public class SessionStore {
      */
     public SessionStore() {
         log.finer("SessionStore()");
-        
+        log.info("Read properties");
         // Read properties.
         try {
             if (System.getProperty("no.feide.moria.config.file") == null) {
@@ -51,22 +53,9 @@ public class SessionStore {
         }
 
 
-        // Initialize periodical session sessionStore checks.
-        int delay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
-        log.info("Starting time out service with delay= "+delay+"ms");
-        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), delay);
     }
     
     
-    /**
-     * Stops the background maintenance thread.
-     */
-    public void destroy() {
-        log.finer("destroy()");
-        
-        sessionTimer.cancel();
-    }
-   
     
     /** 
      * Returns a pointer to the SessionStore singelton object.
@@ -77,7 +66,7 @@ public class SessionStore {
     public static SessionStore getInstance() {
         log.finer("getInstance()");
         
-        if (me == null)
+        if (me == null) 
             me = new SessionStore();
         return me;
     }
@@ -95,7 +84,7 @@ public class SessionStore {
         log.finer("generateSessionID()");
 
         // Try 20 times to generate a unique session ID, then give up.
-        SessionStore store = SessionStore.getInstance();
+        //SessionStore sessionStore = SessionStore.getInstance();
         String generated = null;
         int count = 0;
         do {
@@ -132,7 +121,10 @@ public class SessionStore {
         
         String sessionID = generateSessionID();
         Session session = new Session(sessionID, attributes, prefix, postfix, client);
-        sessions.put(sessionID, session);
+        synchronized (sessions) {
+            sessions.put(sessionID, session);
+        }
+
         return session;
     }
 
@@ -166,7 +158,9 @@ public class SessionStore {
     public synchronized void deleteSession(Session session) {
         log.finer("deleteSession(Session)");
         
-        sessions.remove(session.getID());
+        synchronized (sessions) {
+            sessions.remove(session.getID());
+        }
     } 
     
     
@@ -182,28 +176,43 @@ public class SessionStore {
         
         // Generate a new session ID.
         String oldID = session.getID();
-        session.setID(generateSessionID());
-        
-        // Remove old session.
-        sessions.remove(oldID);
-        sessions.put(session.getID(), session);
-        
+
+        synchronized (sessions) {
+            session.setID(generateSessionID());
+            
+            // Remove old session.
+            sessions.remove(oldID);
+            sessions.put(session.getID(), session);
+        }
+
         log.fine("Session renamed to "+session.getID());
     }
 
     
     protected void checkTimeout(int timeout) {
 
-        for (Iterator iterator = sessions.keySet().iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
-            Session session = (Session) sessions.get(key);
+        Vector invalidatedSessions = new Vector();
+        Date start = new Date();
+               
+        // Find all timedout sessions.
+        synchronized (sessions) {
+            for (Iterator iterator = sessions.keySet().iterator(); iterator.hasNext();) {
+                String key = (String) iterator.next();
+                Session session = (Session) sessions.get(key);
             
-            if (!session.isValid(new Date().getTime()-timeout)) {
-                log.info("Invalidating session (timeout): "+session.getID());
-                deleteSession(session);
+                if (!session.isValid(new Date().getTime()-timeout)) {
+                    log.info("Invalidating session (timeout): "+session.getID());
+                    invalidatedSessions.add(session);
+                }
             }
         }
-            
+
+        // Invalidate sessions
+        for (Enumeration enum = invalidatedSessions.elements(); enum.hasMoreElements(); ) {
+            deleteSession((Session)enum.nextElement());
+        }
+
+        log.info(invalidatedSessions.size()+" sessions invalidated in "+(new Date().getTime()-start.getTime())+ " ms.");
 
     }
 
