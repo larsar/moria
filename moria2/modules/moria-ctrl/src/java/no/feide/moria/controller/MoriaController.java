@@ -1,20 +1,21 @@
 /*
  * Copyright (c) 2004 UNINETT FAS
- * 
- * This program is free software; you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program; if
- * not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
- * 
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  * $Id$
- *  
  */
 
 package no.feide.moria.controller;
@@ -117,20 +118,20 @@ public class MoriaController {
     /* For Login Servlet */
 
     /**
-     * @param loginTicketId
+     * @param loginTicket
      * @return
      */
-    public static boolean validateLoginTicket(String loginTicketId) {
+    public static boolean validateLoginTicket(final String loginTicket) {
 
         if (!ready.booleanValue()) { throw new IllegalStateException("Controller is not initialized."); }
 
         /* Valdiate parameter */
-        if (loginTicketId == null || loginTicketId.equals("")) { throw new IllegalArgumentException(
-                "loginTicketId cannot be null or an empty string."); }
+        if (loginTicket == null || loginTicket.equals("")) { throw new IllegalArgumentException(
+                "loginTicket cannot be null or an empty string."); }
 
         MoriaAuthnAttempt authnAttempt = null;
         try {
-            authnAttempt = store.getAuthnAttempt(loginTicketId, true);
+            authnAttempt = store.getAuthnAttempt(loginTicket, true);
         } catch (InvalidTicketException e) {
             // TODO: Log
             return false;
@@ -144,28 +145,32 @@ public class MoriaController {
     }
 
     /**
-     * @param loginTicketId
-     * @param ssoTicketId
-     * @return @throws UnknownTicketException
+     * @param loginTicket
+     * @param ssoTicket
+     * @return
+     * @throws UnknownTicketException
      */
-    public static String attemptSingleSignOn(String loginTicketId, String ssoTicketId) throws UnknownTicketException {
+    public static String attemptSingleSignOn(final String loginTicket, final String ssoTicket) throws UnknownTicketException {
 
         // If the login ticket is invalid throw exception
-        if (!validateLoginTicket(loginTicketId))
-                throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicketId);
+        if (!validateLoginTicket(loginTicket))
+                throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
         // TODO: Implement
         return null;
     }
 
     /**
-     * @param urlId
-     * @param cookieId
+     * 
+     * @param loginTicket
+     * @param ssoTicket
      * @param userId
      * @param password
-     * @param domain
+     * @param servicePrincipal
      * @return
+     * @throws UnknownTicketException
      */
-    public static boolean attemptLogin(String urlId, String cookieId, String userId, String password, String domain) {
+    public static boolean attemptLogin(final String loginTicket, final String ssoTicket, final String userId,
+            final String password, final String servicePrincipal) throws UnknownTicketException {
         // TODO: Implement
         return false;
     }
@@ -200,7 +205,7 @@ public class MoriaController {
         if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
         // TODO: Access log
         throw new AuthorizationException("Access to the requested attributes is denied."); }
-        if (!authzManager.allowOperations(servicePrincipal, new String[] { "InteractiveAuth"})) { throw new AuthorizationException(
+        if (!authzManager.allowOperations(servicePrincipal, new String[] {"InteractiveAuth"})) { throw new AuthorizationException(
                 "Access to the requested operations is denied."); }
 
         /* URL validation */
@@ -216,13 +221,13 @@ public class MoriaController {
     }
 
     /**
-     * @param ticketId
+     * @param serviceTicket
      * @param servicePrincipal
-     * @return map containing user attributes in strings or string arrays
+     * @return Map containing user attributes in strings or string arrays
      * @throws AuthorizationException
      * @throws MoriaControllerException
      */
-    public static Map getUserAttributes(final String ticketId, final String servicePrincipal) throws AuthorizationException,
+    public static Map getUserAttributes(final String serviceTicket, final String servicePrincipal) throws AuthorizationException,
             MoriaControllerException {
         // TODO: Implement
         return null;
@@ -255,6 +260,35 @@ public class MoriaController {
             throws AuthorizationException, MoriaControllerException {
         // TODO: Implement
         return null;
+    }
+
+    /**
+     *
+     * @param ticketGrantingTicket
+     * @param proxyServicePrincipal
+     * @param servicePrincipal
+     * @return
+     * @throws AuthorizationException
+     * @throws MoriaControllerException
+     */
+    public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal,
+            final String servicePrincipal) throws AuthorizationException, MoriaControllerException {
+        // TODO: Implement
+        return null;
+    }
+
+    /**
+     *
+     * @param username
+     * @param servicePrincipal
+     * @return
+     * @throws AuthorizationException
+     * @throws MoriaControllerException
+     */
+    public static boolean verifyUserExistence(final String username, final String servicePrincipal) throws AuthorizationException,
+            MoriaControllerException {
+        // TOOD: Implement
+        return false;
     }
 
     /* For Configuration Manager */
@@ -303,7 +337,7 @@ public class MoriaController {
 
         if (url == null || url.equals("")) { throw new IllegalArgumentException("url must be a non-empty string."); }
 
-        String[] illegal = new String[] { "\n", "\r"};
+        String[] illegal = new String[] {"\n", "\r"};
 
         /* Protocol */
         if (url.indexOf("http://") != 0 && url.indexOf("https://") != 0) return false;
