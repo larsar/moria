@@ -526,7 +526,7 @@ public class MoriaController {
      * @see AuthorizationManager#setConfig(java.util.Properties)
      * @return
      */
-    public final HashMap getStatus() {
+    public final static HashMap getStatus() {
         HashMap totalStatus = new HashMap();
         totalStatus.put("init", isInitialized);
         totalStatus.put("dm", new Boolean(dmReady));
