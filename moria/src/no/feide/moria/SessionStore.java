@@ -140,10 +140,7 @@ public class SessionStore {
     throws SessionException {
         log.finer("getSession(String)");
         
-        if (sessionID == null) 
-            return null;
-
-        if (!sessions.containsKey(sessionID)) {
+        if (sessionID == null || !sessions.containsKey(sessionID)) {
             log.severe("No such session: "+sessionID);
             throw new NoSuchSessionException("No such session: "+sessionID);
         } else
