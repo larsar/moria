@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.HashMap;
 import java.util.Enumeration;
+import java.util.Locale;
 
 
 /**
@@ -85,6 +86,7 @@ public class Configuration {
         if (props != null)
             return;
             
+
         /* Read properties from file. */
         props = new Properties();
         try {
@@ -127,6 +129,11 @@ public class Configuration {
             throw new ConfigurationException("IOException caught", e);
         }
         
+
+        /* Set default locale */
+        Locale.setDefault(new Locale(getProperty("no.feide.moria.defaultLanguage")));
+
+
         // Done.
         initialized = true;
     }
