@@ -54,6 +54,12 @@ implements DirectoryManagerBackend {
     /** Default initial LDAP context environment. */
     private Hashtable defaultEnv;
 
+    /** The attribute name holding the username. */
+    private String usernameAttribute;
+
+    /** The attribute name used to guess a user's (R)DN. */
+    private String guessedAttribute;
+
 
     /**
      * Protected constructor. Will create an initial default context environment
@@ -65,13 +71,33 @@ implements DirectoryManagerBackend {
      * @param ssl
      *            <code>true</code> if SSL is to be used, otherwise
      *            <code>false</code>.
+     * @param usernameAttributeName
+     *            The name of the attribute holding the username. Cannot be
+     *            <code>null</code>.
+     * @param guessedAttributeName
+     *            If we search but cannot find a user element (for example, if
+     *            it is not searchable), we will guess that the (R)DN starts
+     *            with the substring
+     *            <code><i>guessedAttributeName</i>=<i>usernamePrefix</i></code>,
+     *            where <code><i>usernamePrefix</i></code> is the part of the
+     *            username preceding the 'at' character. Cannot be
+     *            <code>null</code>.
      * @throws IllegalArgumentException
-     *             If <code>config</code> is <code>null</code>.
+     *             If <code>timeout</code> is less than zero.
+     * @throws NullPointerException
+     *             If <code>guessedAttributeName</code> or
+     *             <code>usernameAttribute</code> is <code>null</code>.
      */
-    protected JNDIBackend(int timeout, boolean ssl)
+    protected JNDIBackend(final int timeout, final boolean ssl, final String usernameAttributeName, final String guessedAttributeName)
     throws IllegalArgumentException {
 
-        // Sanity check.
+        // Assignments, with sanity checks.
+        if (usernameAttributeName == null)
+            throw new NullPointerException("Username attribute name cannot be NULL");
+        usernameAttribute = usernameAttributeName;
+        if (guessedAttributeName == null)
+            throw new NullPointerException("Guessed attribute name cannot be NULL");
+        guessedAttribute = guessedAttributeName;
         if (timeout < 0)
             throw new IllegalArgumentException("Timeout must be greater than zero");
         myTimeout = timeout;
@@ -132,9 +158,8 @@ implements DirectoryManagerBackend {
         if ((username == null) || (username.length() == 0))
             return false;
 
-        // TODO: Get eduPersonPrincipalName attribute name from
-        // configuration.
-        String pattern = "eduPersonPrincipalName=" + username;
+        // The search pattern.
+        String pattern = usernameAttribute + '=' + username;
 
         // Go through all references.
         for (int i = 0; i < myReferences.length; i++) {
@@ -195,19 +220,16 @@ implements DirectoryManagerBackend {
                     } else {
 
                         // Anonymous search using the implicit reference.
-                        // TODO: Get eduPersonPrincipalName attribute name from
-                        // configuration.
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
                         ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-                        String pattern = "eduPersonPrincipalName=" + userCredentials.getUsername();
+                        String pattern = usernameAttribute + '=' + userCredentials.getUsername();
                         rdn = ldapSearch(ldap, pattern);
                         if (rdn == null) {
 
                             // No user element found. Try to guess the RDN.
                             log.logWarn("No subtree match for " + pattern + " on " + references[j]);
                             rdn = userCredentials.getUsername();
-                            // TODO: Get uid attribute name from configuration.
-                            rdn = "uid=" + rdn.substring(0, rdn.indexOf('@'));
+                            rdn = guessedAttribute + '=' + rdn.substring(0, rdn.indexOf('@'));
                             log.logWarn("Guessing on RDN " + rdn);
 
                         }

@@ -24,6 +24,15 @@ implements DirectoryManagerBackendFactory {
      */
     private boolean useSSL = false;
 
+    /** The name of the attribute containing the username. */
+    private String usernameAttribute;
+
+    /**
+     * The name of the attribute used to guess the user element's (R)DN, if it
+     * cannot be found by searching.
+     */
+    private String guessedAttribute;
+
 
     /**
      * Used to set the factory-specific configuration. Must be called before
@@ -46,6 +55,14 @@ implements DirectoryManagerBackendFactory {
      *            number of seconds before a backend connection should time out.
      *            If this value is a negative number, the timeout value will be
      *            set to zero (meaning the connection will never time out).
+     *            Also, the <code>JNDI</code> element may contain an attribute
+     *            <code>guessedAttribute</code>, which should give the name of an
+     *            attribute used to construct "guessed" user element (R)DNs if
+     *            the actual element cannot be found by searching (the default
+     *            value is <code>uid</code>). Finally the <code>JNDI</code>
+     *            element must contain an attribute
+     *            <code>usernameAttribute</code>, which should give the name
+     *            of the attribute holding the username.
      * @throws IllegalArgumentException
      *             If <code>config</code> is null.
      * @throws DirectoryManagerConfigurationException
@@ -54,7 +71,8 @@ implements DirectoryManagerBackendFactory {
      *             is found, but without either of the <code>filename</code>
      *             or <code>password</code> attributes. Also thrown if the
      *             <code>timeout</code> attribute contains an illegal timeout
-     *             value, or if the <code>filename</code> file does not exist.
+     *             value, if the <code>guess</code> attribute does not exist,
+     *             or if the <code>filename</code> file does not exist.
      * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
     public synchronized void setConfig(final Element config)
@@ -81,6 +99,12 @@ implements DirectoryManagerBackendFactory {
             }
         if (backendTimeouts < 0)
             backendTimeouts = 0;
+        
+        // Get username attribute and guessed attribute.
+        usernameAttribute = jndiElement.getAttributeValue("usernameAttribute");
+        if (usernameAttribute == null)
+            throw new DirectoryManagerConfigurationException("Attribute \"usernameAttribute\" not found in JNDI element");
+        guessedAttribute = jndiElement.getAttributeValue("guessedAttribute", "uid");
 
         // TODO: Add support for javax.net.ssl.keystore.
 
@@ -97,7 +121,7 @@ implements DirectoryManagerBackendFactory {
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"filename\" not found in Truststore element");
                 if (!(new File(value).exists()))
-                    throw new DirectoryManagerConfigurationException("Truststore file "+value+" does not exist");
+                    throw new DirectoryManagerConfigurationException("Truststore file " + value + " does not exist");
                 System.setProperty("javax.net.ssl.trustStore", value);
 
                 // Get truststore password.
@@ -105,14 +129,14 @@ implements DirectoryManagerBackendFactory {
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"password\" not found in Truststore element");
                 System.setProperty("javax.net.ssl.trustStorePassword", value);
-                
+
                 // Now we're ready to use SSL.
                 Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
                 useSSL = true;
 
             }
 
-        }        
+        }
 
     }
 
@@ -123,7 +147,7 @@ implements DirectoryManagerBackendFactory {
      */
     public DirectoryManagerBackend createBackend() {
 
-        return new JNDIBackend(backendTimeouts, useSSL);
+        return new JNDIBackend(backendTimeouts, useSSL, usernameAttribute, guessedAttribute);
 
     }
 
