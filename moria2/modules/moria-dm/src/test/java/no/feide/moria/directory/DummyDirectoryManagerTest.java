@@ -25,17 +25,17 @@ import junit.framework.TestSuite;
 public class DummyDirectoryManagerTest
 extends TestCase {
 
-    /** Internal representation of the configuration properties. */
-    private Properties config;
-
     /** The user credentials used. */
-    private static Credentials goodCredentials;
+    private static Credentials goodCredentials = new Credentials("user@some.realm", "password");
 
     /** The attribute request used. */
     private static final String[] goodRequest = {"someAttribute"};
 
     /** The expected attribute values. */
     private static final String[] goodValues = {"someValue"};
+    
+    /** The Directory Manager instance. */
+    private DirectoryManager dm;
 
 
     /**
@@ -53,9 +53,7 @@ extends TestCase {
      */
     public void setUp() {
 
-        config = new Properties();
-        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
-        goodCredentials = new Credentials("user@some.realm", "password");
+        dm = new DirectoryManager();
 
     }
 
@@ -65,18 +63,7 @@ extends TestCase {
      */
     public void tearDown() {
 
-        config = null;
-        goodCredentials = null;
-
-    }
-
-
-    /**
-     * Test the <code>setConfig(Properties)</code> method.
-     */
-    public void testSetConfig() {
-
-        DirectoryManager.setConfig(config);
+        dm = null;
 
     }
 
@@ -84,12 +71,15 @@ extends TestCase {
     /**
      * Test the <code>authenticate(Credentials, String[])</code> method.
      */
-    public void testAuthenticate() {
+    public void testAuthentication() {
 
         // Authenticate.
+        Properties config = new Properties();
+        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
         UserAttribute[] attributes = null;
         try {
-            attributes = DirectoryManager.authenticate(goodCredentials, goodRequest);
+            dm.setConfig(config);
+            attributes = dm.authenticate(goodCredentials, goodRequest);
         } catch (DirectoryManagerException e) {
             e.printStackTrace();
             Assert.fail("Unexpected DirectoryManagerException");
