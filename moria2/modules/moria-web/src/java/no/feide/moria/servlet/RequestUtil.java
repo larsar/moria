@@ -42,7 +42,13 @@ import javax.servlet.http.Cookie;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class RequestUtil {
+public final class RequestUtil {
+
+    /**
+     * Default private constructor.
+     */
+    private RequestUtil() {
+    }
 
     /**
      * Generate a resource bundle. The language of the resource bundle is selected
@@ -278,6 +284,7 @@ public class RequestUtil {
      * Reads institution names from the servlet config and generates a TreeMap with the result.
      *
      * @param config   the web modules configuration
+     * @param element  the sub element of the configuration to process
      * @param language the language to generate institution names on
      * @return         a TreeMap of institution names with full name as key and id as value object
      */
@@ -337,7 +344,7 @@ public class RequestUtil {
      * @param url   the URL to link to
      * @return a string with hyperlinks in stead of tokens
      */
-    public static String insertLink(String token, String data, String name, String url) {
+    public static String insertLink(final String token, final String data, final String name, final String url) {
         /* Validate parameters */
         if (token == null || token.equals("")) {
             throw new IllegalArgumentException("token must be a non-empty string");
@@ -361,10 +368,11 @@ public class RequestUtil {
      * Get the config from the context. The configuration is expected to be set
      * by the controller before requests are sent to this servlet.
      *
+     * @param context ServletContext containing the configuration.
      * @return the configuration
      * @throws IllegalStateException if the config is not set in the context
      */
-    static Properties getConfig(ServletContext context) {
+    static Properties getConfig(final ServletContext context) {
         /* Validate parameters */
         if (context == null) {
             throw new IllegalArgumentException("context must be a non-empty string");
