@@ -24,7 +24,7 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example initiateAuthentication Java/Axis Code">
+		<section name="initiateAuthentication Java/Axis Example">
 		<p>
 		In this example the Moria2-enabled service initiates an authentication
 		session, requesting the user attributes <i>tgt</i> and

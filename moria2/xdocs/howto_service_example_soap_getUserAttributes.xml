@@ -24,22 +24,25 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example getUserAttributes SOAP Call">
-		<p>
-		In this example the Moria2-enabled service retrieves the previously
-		requested (through <code>initiateAuthentication</code>; see separate
-		<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>)
-		attributes from Moria2.
-		</p>
-		<p>
-		The session ID sent as parameter is the substring <i>session</i>
-		included in the URL
-		<source>
+		<section name="getUserAttributes SOAP Example">
+		
+		<subsection name="Client SOAP Request">
+			<p>
+			In this example the Moria2-enabled service retrieves the previously
+			requested (through <code>initiateAuthentication</code>; see separate
+			<a href="howto_service_example_soap_initiateAuthentication.html">SOAP example</a>)
+			attributes from Moria2.
+			</p>
+			<p>
+			The session ID sent as parameter is the substring <i>session</i>
+			included in the URL
+			<source>
 http://www.service.org/?STARTID=<i>session</i>STOPID</source>
-		described in the <code>initiateAuthentication</code> example when the
-		user is redirected back to the service after successful authentication.
-		</p>
-		<source>
+			described in the <code>initiateAuthentication</code> example when
+			the user is redirected back to the service after successful
+			authentication.
+			</p>
+			<source>
 &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
 	&lt;SOAP-ENV:Body&gt;
 		&lt;m:getUserAttributes xmlns:m="http://v2_0.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
@@ -47,8 +50,9 @@ http://www.service.org/?STARTID=<i>session</i>STOPID</source>
 		&lt;/m:getUserAttributes&gt;
 	&lt;/SOAP-ENV:Body&gt;
 &lt;/SOAP-ENV:Envelope&gt;</source>
-		</section>
-		<section name="Example getUserAttributes SOAP Reply">
+		</subsection>
+		
+		<subsection name="Moria2 SOAP Reply">
 			<p>
 			Following authentication, Moria2 was able to read the requested
 			attributes; these are now returned. Note the difference between the
@@ -81,6 +85,8 @@ http://www.service.org/?STARTID=<i>session</i>STOPID</source>
 		&lt;/multiRef&gt;
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</source>
+		</subsection>
+		
 		</section>
 	</body>
 </document>

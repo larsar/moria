@@ -24,7 +24,7 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example verifyUserExistence Java/Axis Code">
+		<section name="verifyUserExistence Java/Axis Example">
 		<p>
 		The Moria2-enabled service asks Moria2 whether the user with the
 		username <code>somebody@my.org</code> exists.

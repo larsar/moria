@@ -24,23 +24,25 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example initiateAuthentication SOAP Call">
-		<p>
-		In this example the Moria2-enabled service initiates an authentication
-		session, requesting the user attributes <i>tgt</i> and
-		<i>eduPersonAffiliation</i>. Note that the service does not force the
-		user to to go through interactive authentication, that is, does not deny
-		the use of SSO; this would result in Moria2 not returning the <i>tgt</i>
-		(ticket granting ticket) attribute, which is exclusively used for SSO.
-		Once the user has been authenticated by Moria2, the user should be
-		redirected back to the service URL
-		<source>
+		<section name="initiateAuthentication SOAP Example">
+		
+		<subsection name="Client SOAP Request">
+			<p>
+			In this example the Moria2-enabled service initiates an
+			authentication session, requesting the user attributes <i>tgt</i>
+			and <i>eduPersonAffiliation</i>. Note that the service does not
+			force the user to to go through interactive authentication, that is,
+			does not deny the use of SSO; this would result in Moria2 not
+			returning the <i>tgt</i> (ticket granting ticket) attribute, which
+			is exclusively used for SSO. Once the user has been authenticated by
+			Moria2, the user should be redirected back to the service URL
+			<source>
 http://www.service.org/STARTID<i>session</i>STOPID</source>
-		where <i>session</i> is the session ID assigned to this authentication
-		attempt by Moria2. This session ID may then be used by the service to
-		retrieve the requested attributes.
-		</p>
-		<source>
+			where <i>session</i> is the session ID assigned to this
+			authentication attempt by Moria2. This session ID may then be used
+			by the service to retrieve the requested attributes.
+			</p>
+			<source>
 &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:m0="http://schemas.xmlsoap.org/soap/encoding/"&gt;
 	&lt;SOAP-ENV:Body&gt;
 		&lt;m:initiateAuthentication xmlns:m="http://v2_0.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
@@ -54,18 +56,19 @@ http://www.service.org/STARTID<i>session</i>STOPID</source>
 		&lt;/m:initiateAuthentication&gt;
 	&lt;/SOAP-ENV:Body&gt;
 &lt;/SOAP-ENV:Envelope&gt;</source>
-		</section>
-		<section name="Example initiateAuthentication SOAP Reply">
-		<p>
-		Moria2 has checked the service's authorization data and found the above
-		request to be valid. The service should now redirect the user to the
-		URL
-		<source>
+		</subsection>
+		
+		<subsection name="Moria2 SOAP Reply">
+			<p>
+			Moria2 has checked the service's authorization data and found the
+			above request to be valid. The service should now redirect the user
+			to the URL
+			<source>
 http://localhost:8080/moria/Login?moriaID=MDA3AAABAU2EOeFxmQe9pqmhMwGXlj2KKLMJEwtTU9VtNauOPK7inGB25RYaFIhLyUBVrPJRe6LYLYo</source>
-		for authentication. Note that in this example Moria2 is deployed
-		locally.
-		</p>
-		<source>
+			for authentication. Note that in this example Moria2 is deployed
+			locally.
+			</p>
+			<source>
 &lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
 	&lt;soapenv:Body&gt;
 		&lt;ns1:initiateAuthenticationResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://v2_0.webservices.moria.feide.no"&gt;
@@ -73,6 +76,8 @@ http://localhost:8080/moria/Login?moriaID=MDA3AAABAU2EOeFxmQe9pqmhMwGXlj2KKLMJEw
 		&lt;/ns1:initiateAuthenticationResponse&gt;
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</source>
+		</subsection>
+		
 		</section>
 	</body>
 </document>

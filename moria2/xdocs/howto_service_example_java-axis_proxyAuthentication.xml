@@ -24,14 +24,17 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example proxyAuthentication Java/Axis Code">
+		<section name="proxyAuthentication Java/Axis Example">
 		<p>
-		Using a proxy ticket (here hardcoded to be
-		<code>MDA3AAABAVwaUL6fRITMT0eux25M*s2yHbgbhQ3pWf8V8qWpYsaBfMFx-h0dafwwM7OgzxU4blCDgcY</code>) 
-		supplied by the parent Moria2-enabled service, the subservice request an
-		authentication confirmation for the user belonging to the authentication
-		session pointed to by the proxy ticket. In addition, the subservice
-		requests the attribute <i>eduPersonAffiliation</i>.
+		Using a proxy ticket (here
+		<code>MDA3AAABAVwaUL6fRITMT0eux25M*s2yHbgbhQ3pWf8V8qWpYsaBfMFx-h0dafwwM7OgzxU4blCDgcY</code>
+		supplied by the parent Moria2-enabled service (through
+		<code>getProxyTicket</code>, see separate
+		<a href="howto_service_example_java-axis_getProxyTicket.html">Java/Axis example</a>),
+		the subservice request an authentication confirmation for the user
+		belonging to the authentication session pointed to by the proxy ticket.
+		In addition, the subservice requests the attribute
+		<i>eduPersonAffiliation</i>.
 		</p>
 		<p>
 		The SOAP implementation used in this example is

@@ -24,7 +24,7 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example directNonInteractiveAuthentication Java/Axis Code">
+		<section name="directNonInteractiveAuthentication Java/Axis Example">
 		<p>
 		In this example the Moria2-enabled service initiates a direct
 		non-interactive authentication session. "Non-interactive" means that

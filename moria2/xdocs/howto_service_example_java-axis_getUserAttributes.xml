@@ -24,11 +24,11 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example getUserAttributes Java/Axis Code">
+		<section name="getUserAttributes Java/Axis Example">
 		<p>
 		In this example the Moria2-enabled service retrieves the previously
 		requested (through <code>initiateAuthentication</code>; see separate
-		<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>)
+		<a href="howto_service_example_java-axis_initiateAuthentication.html">Java/Axis example</a>)
 		attributes from Moria2.
 		</p>
 		<p>

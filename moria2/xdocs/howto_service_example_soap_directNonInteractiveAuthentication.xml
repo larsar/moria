@@ -24,18 +24,21 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example directNonInteractiveAuthentication SOAP Call">
-		<p>
-		In this example the Moria2-enabled service initiates a direct
-		non-interactive authentication session. "Non-interactive" means that
-		this authentication method does not require any input from the user;
-		the service must retrieve the user's credentials and forward them to
-		Moria2. This also eliminates any need for HTTP redirects during
-		authentication. The service requests the user attribute
-		<i>eduPersonAffiliation</i>, and authenticates the user with username
-		<code>username@my.org</code> and password <code>password</code>.
-		</p>
-		<source>
+		<section name="directNonInteractiveAuthentication SOAP Example">
+		
+		<subsection name="Client SOAP Request">
+			<p>
+			In this example the Moria2-enabled service initiates a direct
+			non-interactive authentication session. "Non-interactive" means that
+			this authentication method does not require any input from the user;
+			the service must retrieve the user's credentials and forward them to
+			Moria2. This also eliminates any need for HTTP redirects during
+			authentication. The service requests the user attribute
+			<i>eduPersonAffiliation</i>, and authenticates the user with
+			username
+			<code>username@my.org</code> and password <code>password</code>.
+			</p>
+			<source>
 &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:m0="http://schemas.xmlsoap.org/soap/encoding/"&gt;
 	&lt;SOAP-ENV:Body&gt;
 		&lt;m:directNonInteractiveAuthentication xmlns:m="http://v2_0.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
@@ -47,14 +50,15 @@ $Id$
 		&lt;/m:directNonInteractiveAuthentication&gt;
 	&lt;/SOAP-ENV:Body&gt;
 &lt;/SOAP-ENV:Envelope&gt;</source>
-		</section>
-		<section name="Example directNonInteractiveAuthentication SOAP Reply">
-		<p>
-		Moria2 has checked the service's authorization data and found the above
-		request to be valid. The requested multi-valued attribute
-		<i>eduPersonAffiliation</i> is returned.
-		</p>
-		<source>
+		</subsection>
+		
+		<subsection name="Moria2 SOAP Reply">
+			<p>
+			Moria2 has checked the service's authorization data and found the
+			above request to be valid. The requested multi-valued attribute
+			<i>eduPersonAffiliation</i> is returned.
+			</p>
+			<source>
 &lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
 	&lt;soapenv:Body&gt;
 		&lt;ns1:directNonInteractiveAuthenticationResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://v2_0.webservices.moria.feide.no"&gt;
@@ -73,6 +77,8 @@ $Id$
 		&lt;/multiRef&gt;
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</source>
+			</subsection>
+			
 		</section>
 	</body>
 </document>

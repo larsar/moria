@@ -24,11 +24,13 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example getProxyTicket Java/Axis Code">
+		<section name="getProxyTicket Java/Axis Example">
 		<p>
 		In this example the Moria2-enabled service, having earlier aquired a
-		ticket granting ticket (<i>tgt</i> attribute; here hardcoded to be
-		<code>MDA3AAABAVvsT52YvxxKM3yKATVbQtD*sREX80W7cUNXLIvPtvgIYrUc7IjNp9fXQkFpR3fRqkDi0T4</code>),
+		ticket granting ticket (<i>tgt</i> attribute, here
+		<code>MDA3AAABAVvsT52YvxxKM3yKATVbQtD*sREX80W7cUNXLIvPtvgIYrUc7IjNp9fXQkFpR3fRqkDi0T4</code>)
+		through <code>initiateAuthentication</code>, see separate
+		<a href="howto_service_example_java-axis_initiateAuthentication.html">Java/Axis example</a>),
 		requests a proxy ticket for a subservice identified in Moria2's
 		configuration as <code>subservice_username</code>.
 		</p>

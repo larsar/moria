@@ -24,15 +24,21 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example proxyAuthentication SOAP Call">
-		<p>
-		Using a proxy ticket supplied by the parent Moria2-enabled service, the
-		subservice request an authentication confirmation for the user belonging
-		to the authentication session pointed to by the proxy ticket. In
-		addition, the subservice requests the attribute
-		<i>eduPersonAffiliation</i>.
-		</p>
-		<source>
+		<section name="proxyAuthentication SOAP Example">
+		
+		<subsection name="Client SOAP Request">
+			<p>
+			Using a proxy ticket (here
+			<code>MDA3AAABAVwaUL6fRITMT0eux25M*s2yHbgbhQ3pWf8V8qWpYsaBfMFx-h0dafwwM7OgzxU4blCDgcY</code>
+			supplied by the parent Moria2-enabled service (through
+			<code>getProxyTicket</code>, see separate
+			<a href="howto_service_example_soap_getProxyTicket.html">SOAP example</a>),
+			the subservice request an authentication confirmation for the user
+			belonging to the authentication session pointed to by the proxy
+			ticket. In addition, the subservice requests the attribute
+			<i>eduPersonAffiliation</i>.
+			</p>
+			<source>
 &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:m0="http://schemas.xmlsoap.org/soap/encoding/"&gt;
 	&lt;SOAP-ENV:Body&gt;
 		&lt;m:proxyAuthentication xmlns:m="http://v2_1.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
@@ -43,14 +49,15 @@ $Id$
 		&lt;/m:proxyAuthentication&gt;
 	&lt;/SOAP-ENV:Body&gt;
 &lt;/SOAP-ENV:Envelope&gt;</source>
-		</section>
-		<section name="Example proxyAuthentication SOAP Reply">
-		<p>
-		Moria2 has checked the subservice's authorization data and found the
-		above request to be valid. The requested multi-valued attribute
-		<i>eduPersonAffiliation</i> is returned.
-		</p>
-		<source>
+		</subsection>
+		
+		<subsection name="Moria2 SOAP Reply">
+			<p>
+			Moria2 has checked the subservice's authorization data and found the
+			above request to be valid. The requested multi-valued attribute
+			<i>eduPersonAffiliation</i> is returned.
+			</p>
+			<source>
 &lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
 	&lt;soapenv:Body&gt;
 		&lt;ns1:proxyAuthenticationResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://v2_1.webservices.moria.feide.no"&gt;
@@ -69,6 +76,8 @@ $Id$
 		&lt;/multiRef&gt;
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</source>
+		</subsection>
+		
 		</section>
 	</body>
 </document>

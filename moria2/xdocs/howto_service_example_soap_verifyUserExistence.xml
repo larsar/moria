@@ -24,12 +24,14 @@ $Id$
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Example verifyUserExistence SOAP Call">
-		<p>
-		The Moria2-enabled service asks Moria2 whether the user with the
-		username <code>somebody@my.org</code> exists.
-		</p>
-		<source>
+		<section name="verifyUserExistence SOAP Example">
+		
+		<subsection name="Client SOAP Request">
+			<p>
+			The Moria2-enabled service asks Moria2 whether the user with the
+			username <code>somebody@my.org</code> exists.
+			</p>
+			<source>
 &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
 	&lt;SOAP-ENV:Body&gt;
 		&lt;m:verifyUserExistence xmlns:m="http://v2_0.webservices.moria.feide.no" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"&gt;
@@ -37,14 +39,15 @@ $Id$
 		&lt;/m:verifyUserExistence&gt;
 	&lt;/SOAP-ENV:Body&gt;
 &lt;/SOAP-ENV:Envelope&gt;</source>
-		</section>
-		<section name="Example verifyUserExistence SOAP Reply">
-		<p>
-		Moria2 has checked the service's authorization data and found the above
-		request to be valid. In this case, the user <code>somebody@my.org</code>
-		could not be found.
-		</p>
-		<source>
+		</subsection>
+		
+		<subsection name="Moria2 SOAP Reply">
+			<p>
+			Moria2 has checked the service's authorization data and found the
+			above request to be valid. In this case, the user
+			<code>somebody@my.org</code> could not be found.
+			</p>
+			<source>
 &lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
 	&lt;soapenv:Body&gt;
 		&lt;ns1:verifyUserExistenceResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns1="http://v2_0.webservices.moria.feide.no"&gt;
@@ -52,6 +55,8 @@ $Id$
 		&lt;/ns1:verifyUserExistenceResponse&gt;
 	&lt;/soapenv:Body&gt;
 &lt;/soapenv:Envelope&gt;</source>
+		</subsection>
+		
 		</section>
 	</body>
 </document>
