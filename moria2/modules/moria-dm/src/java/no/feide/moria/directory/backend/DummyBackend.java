@@ -22,9 +22,9 @@ implements DirectoryManagerBackend {
      */
     private HashMap users;
 
-
+    
     /**
-     * Set the configuration used by this instance.
+     * Protected constructor. Sets the configuration used by this instance.
      * @param config
      *            A <code>Backend</code> configuration element. Must contain a
      *            <code>Dummy</code> element (if more than one only the first
@@ -38,7 +38,7 @@ implements DirectoryManagerBackend {
      *            user names are case-insensitive, while attribute values are
      *            stored as specified in the configuration.
      */
-    protected void setConfig(final Element config) {
+    protected DummyBackend(final Element config) {
 
         // Get Dummy element.
         final Element dummy = config.getChild("Dummy");

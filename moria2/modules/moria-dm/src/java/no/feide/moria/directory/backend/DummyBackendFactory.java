@@ -51,8 +51,7 @@ implements DirectoryManagerBackendFactory {
      */
     public DirectoryManagerBackend createBackend() {
 
-        DummyBackend newBackend = new DummyBackend();
-        newBackend.setConfig(myConfig);
+        DummyBackend newBackend = new DummyBackend(myConfig);
         return newBackend;
 
     }
