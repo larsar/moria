@@ -24,7 +24,7 @@
    	      depends="prepare,jaxrpc">
    	      <ant dir="common" target="common:build"/>
    	      <ant dir="axis" target="axis:build"/>
-   	      <ant dir="common" target="servlet"/>
+   	      <ant dir="common" target="common:servlet"/>
    	      <copy todir="dist">
    	        <fileset dir="common/dist" includes="*"/>
    	        <fileset dir="axis/dist" includes="*"/>
