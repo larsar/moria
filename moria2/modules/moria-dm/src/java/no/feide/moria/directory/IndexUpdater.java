@@ -24,9 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.TimerTask;
-
 import no.feide.moria.directory.index.DirectoryManagerIndex;
-import no.feide.moria.log.MessageLogger;
 
 /**
  * This is the task responsible for periodically checking for a new index file,
@@ -39,9 +37,6 @@ import no.feide.moria.log.MessageLogger;
  */
 public class IndexUpdater
 extends TimerTask {
-
-    /** The message logger. */
-    private final static MessageLogger log = new MessageLogger(IndexUpdater.class);
 
     /** The location of the index file. */
     private final String filename;

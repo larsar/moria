@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
-import no.feide.moria.log.MessageLogger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -34,9 +33,6 @@ import org.jdom.input.SAXBuilder;
  * file.
  */
 public class DirectoryManagerConfiguration {
-
-    /** The message logger. */
-    private final MessageLogger log = new MessageLogger(DirectoryManagerConfiguration.class);
 
     /** The location of the index file. */
     private String indexFilename;
