@@ -3,12 +3,18 @@ package no.feide.moria.directory.backend;
 import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.IllegalAttributeException;
 import no.feide.moria.directory.UserAttribute;
+import no.feide.moria.log.MessageLogger;
 
 /**
- * 
+ * Hard-coded dummy backend, for testing. Does not require an actual backend
+ * source.
  */
 public class DummyBackend
 implements DirectoryManagerBackend {
+
+    /** Message logger. */
+    private MessageLogger log = new MessageLogger(DummyBackend.class);
+
 
     /**
      * Pro-forma implementation of the <code>open()</code> method. Does
@@ -31,13 +37,14 @@ implements DirectoryManagerBackend {
      */
     public UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
     throws BackendException {
-        
+
         // Sanity check.
         if (userCredentials == null) {
-            
+
             // Bad authentication.
+            log.logWarn("Attempt to authenticate anonymous user");
             throw new AuthenticationFailedException("Anonymous user cannot be authenticated");
-            
+
         }
 
         // "Authentication", sort of.
@@ -51,7 +58,8 @@ implements DirectoryManagerBackend {
         } else {
 
             // Bad authentication.
-            throw new AuthenticationFailedException(username + " failed authentication");
+            log.logWarn('\"' + username + "\" failed authentication");
+            throw new AuthenticationFailedException('\"' + username + "\" failed authentication");
 
         }
 
@@ -68,7 +76,7 @@ implements DirectoryManagerBackend {
      *         <code>Affiliate</code>. If not, will contain an empty array.
      */
     private UserAttribute[] prepareAttributes(String[] attributeRequest) {
-        
+
         // Sanity check.
         if (attributeRequest == null)
             return new UserAttribute[] {};
@@ -82,7 +90,8 @@ implements DirectoryManagerBackend {
                 try {
                     return new UserAttribute[] {new UserAttribute("eduPersonAffiliation", attributeValues)};
                 } catch (IllegalAttributeException e) {
-                    // TODO: Add logging; unexpected exception.
+                    // Unexpected exception.
+                    log.logCritical("Unexpected exception when creating user attribute", e);
                 }
 
             }
