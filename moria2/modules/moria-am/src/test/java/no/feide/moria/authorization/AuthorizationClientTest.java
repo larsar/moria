@@ -28,13 +28,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
+ * This class tests the AuthorizationClient class.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class AuthorizationClientTest extends TestCase {
+public final class AuthorizationClientTest extends TestCase {
 
-    HashSet emptySet;
-    HashMap emptyMap;
+    private HashSet emptySet;
+    private HashMap emptyMap;
 
     /**
      * Initiate all tests.
@@ -46,7 +48,7 @@ public class AuthorizationClientTest extends TestCase {
     }
 
     /**
-     * Create common test data
+     * Create common test data.
      */
     public void setUp() {
         emptySet = new HashSet();
@@ -54,7 +56,7 @@ public class AuthorizationClientTest extends TestCase {
     }
 
     /**
-     * Remove common testdata
+     * Remove common testdata.
      */
     public void tearDown() {
         emptySet = null;
@@ -167,10 +169,12 @@ public class AuthorizationClientTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        HashMap attrs = new HashMap();
+        final HashMap attrs = new HashMap();
         attrs.put("attr1", new AuthorizationAttribute("attr1", false, 2));
 
-        HashSet oper = new HashSet(), affil = new HashSet(), subsys = new HashSet();
+        final HashSet oper = new HashSet();
+        final HashSet affil = new HashSet();
+        final HashSet subsys = new HashSet();
         oper.add("oper1");
         oper.add("oper2");
         affil.add("org1");
@@ -180,7 +184,7 @@ public class AuthorizationClientTest extends TestCase {
 
 
         /* Verify a valid object */
-        AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", affil, oper, subsys, attrs);
+        final AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", affil, oper, subsys, attrs);
 
         assertEquals("Name differs", "name", client.getName());
         assertEquals("Display name differs", "display", client.getDisplayName());
@@ -192,7 +196,7 @@ public class AuthorizationClientTest extends TestCase {
         assertEquals("Subsystems differs", subsys, client.getSubsystems());
         assertEquals("Attributes differs", attrs, client.getAttributes());
 
-        HashMap properties = client.getProperties();
+        final HashMap properties = client.getProperties();
         assertNotNull("Properties should not be null", properties);
         assertEquals("Number of elements is incorrect", 5, properties.size());
         assertEquals("Display name differs", "display", properties.get("displayName"));
@@ -220,7 +224,7 @@ public class AuthorizationClientTest extends TestCase {
         /* No registered attributes */
         assertFalse("Non existing attributes", client.allowSSOForAttributes(new String[]{"foo", "bar"}));
 
-        HashMap attributes = new HashMap();
+        final HashMap attributes = new HashMap();
         attributes.put("attr1", new AuthorizationAttribute("attr1", false, 2));
         attributes.put("attr2", new AuthorizationAttribute("attr2", true, 2));
         attributes.put("attr3", new AuthorizationAttribute("attr3", true, 2));
@@ -243,7 +247,7 @@ public class AuthorizationClientTest extends TestCase {
         /* No registered attributes */
         assertFalse("Non existing attributes", client.allowAccessTo(new String[]{"foo", "bar"}));
 
-        HashMap attributes = new HashMap();
+        final HashMap attributes = new HashMap();
         attributes.put("attr1", new AuthorizationAttribute("attr1", false, 2));
         attributes.put("attr2", new AuthorizationAttribute("attr2", true, 2));
 
@@ -263,12 +267,17 @@ public class AuthorizationClientTest extends TestCase {
         assertFalse("Should not get access", client.allowAccessTo(new String[]{"attr2", "attr3"}));
     }
 
+    /**
+     * Test the allowOperations method.
+     *
+     * @see AuthorizationClient#allowOperations(java.lang.String[])
+     */
     public void testAllowOperations() {
-        HashSet operations = new HashSet();
+        final HashSet operations = new HashSet();
         operations.add("localAuth");
         operations.add("directAuth");
 
-        AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, operations, emptySet, emptyMap);
+        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, operations, emptySet, emptyMap);
 
         /* Illegal arguments */
         try {
@@ -284,12 +293,17 @@ public class AuthorizationClientTest extends TestCase {
         assertFalse("Should not be allowed", client.allowOperations(new String[]{"directAuth", "illegalOper"}));
     }
 
+    /**
+     * Test the allowSubsystems method.
+     *
+     * @see AuthorizationClient#allowSubsystems(java.lang.String[])
+     */
     public void testAllowSubsystems() {
-        HashSet subsystems = new HashSet();
+        final HashSet subsystems = new HashSet();
         subsystems.add("sub2");
         subsystems.add("sub1");
 
-        AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, subsystems, emptyMap);
+        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, subsystems, emptyMap);
 
         /* Illegal arguments */
         try {
@@ -306,12 +320,16 @@ public class AuthorizationClientTest extends TestCase {
         assertFalse("Should not be allowed", client.allowSubsystems(new String[]{"sub1", "illegalSubsystem"}));
     }
 
+    /** Tests the hasAffiliation() method.
+     *
+     * @see AuthorizationClient#hasAffiliation(java.lang.String)
+     */
     public void testHasAffiliation() {
-        HashSet affiliation = new HashSet();
+        final HashSet affiliation = new HashSet();
         affiliation.add("uio.no");
         affiliation.add("uninett.no");
 
-        AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affiliation, emptySet, emptySet, emptyMap);
+        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affiliation, emptySet, emptySet, emptyMap);
 
         /* Illegal arguments */
         try {
@@ -331,11 +349,18 @@ public class AuthorizationClientTest extends TestCase {
         assertFalse("Should not be affiliated with", client.hasAffiliation("wrong.no"));
     }
 
+    /**
+     * Test the hashCode method.
+     *
+     * @see AuthorizationClient#hashCode()
+     */
     public void testHashCode() {
-        HashMap attrs = new HashMap();
+        final HashMap attrs = new HashMap();
         attrs.put("attr1", new AuthorizationAttribute("attr1", false, 2));
 
-        HashSet oper = new HashSet(), affil = new HashSet(), subsys = new HashSet();
+        final HashSet oper = new HashSet();
+        final HashSet affil = new HashSet();
+        final HashSet subsys = new HashSet();
         oper.add("oper1");
         oper.add("oper2");
         affil.add("org1");
@@ -343,7 +368,7 @@ public class AuthorizationClientTest extends TestCase {
         subsys.add("sub1");
         subsys.add("sub2");
 
-        AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
+        final AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
 
         /* Identical */
         assertEquals("Should be identical", master.hashCode(),
@@ -386,11 +411,18 @@ public class AuthorizationClientTest extends TestCase {
                 master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, emptyMap).hashCode());
     }
 
+    /**
+     * Test the equals() method.
+     *
+     * @see AuthorizationClient#equals(java.lang.Object)
+     */
     public void testEquals() {
-        HashMap attrs = new HashMap();
+        final HashMap attrs = new HashMap();
         attrs.put("attr1", new AuthorizationAttribute("attr1", false, 2));
 
-        HashSet oper = new HashSet(), affil = new HashSet(), subsys = new HashSet();
+        final HashSet oper = new HashSet();
+        final HashSet affil = new HashSet();
+        final HashSet subsys = new HashSet();
         oper.add("oper1");
         oper.add("oper2");
         affil.add("org1");
@@ -398,7 +430,7 @@ public class AuthorizationClientTest extends TestCase {
         subsys.add("sub1");
         subsys.add("sub2");
 
-        AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
+        final AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
 
         /* Identical */
         assertTrue("Should be identical",
@@ -445,6 +477,7 @@ public class AuthorizationClientTest extends TestCase {
      * Test the getSecLevel method.
      *
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
+     * @throws UnknownAttributeException
      */
     public void testGetSecLevell() throws UnknownAttributeException {
         /* Invalid arguments */
@@ -456,7 +489,7 @@ public class AuthorizationClientTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        HashMap attrs = new HashMap();
+        final HashMap attrs = new HashMap();
         attrs.put("attr0", new AuthorizationAttribute("attr0", false, 0));
         attrs.put("attr1", new AuthorizationAttribute("attr1", true, 1));
         attrs.put("attr2", new AuthorizationAttribute("attr2", false, 2));

@@ -29,10 +29,10 @@ package no.feide.moria.authorization;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class AuthorizationAttribute {
+final class AuthorizationAttribute {
 
     /**
-     * Cached hashCode
+     * Cached hashCode.
      */
     private volatile int hashCode = 0;
 
@@ -59,7 +59,6 @@ public class AuthorizationAttribute {
      * @param name     Name of attribute
      * @param secLevel The attributes security level
      * @param allowSSO Allow use of SSO with this attribute
-     * @throws IllegalArgumentException if name is null or "", or if seclevel is < 0
      */
     AuthorizationAttribute(final String name, final boolean allowSSO, final int secLevel) {
 
@@ -68,7 +67,7 @@ public class AuthorizationAttribute {
         }
 
         if (secLevel < 0) {
-            throw new IllegalArgumentException("SecLevel must be >= 0, was: "+secLevel);
+            throw new IllegalArgumentException("SecLevel must be >= 0, was: " + secLevel);
         }
 
         this.secLevel = secLevel;
@@ -83,12 +82,12 @@ public class AuthorizationAttribute {
      * @return false if any of the attributes are different from the supplied
      *         object.
      */
-    public final boolean equals(final Object object) {
+    public boolean equals(final Object object) {
         if (object == this) {
             return true;
         }
         if (object instanceof AuthorizationAttribute) {
-            AuthorizationAttribute attr = (AuthorizationAttribute) object;
+            final AuthorizationAttribute attr = (AuthorizationAttribute) object;
             if (attr.getName().equals(name) && attr.getAllowSSO() == getAllowSSO() && attr.getSecLevel() == secLevel) {
                 return true;
             }
@@ -114,9 +113,11 @@ public class AuthorizationAttribute {
     }
 
     /**
+     * Return the secLevel of this attribute.
+     *
      * @return secLevel
      */
-    public final int getSecLevel() {
+    public int getSecLevel() {
         return secLevel;
     }
 
@@ -125,16 +126,16 @@ public class AuthorizationAttribute {
      *
      * @return Name of the attribute
      */
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
     /**
-     * Is the attribute allowed in use with SSO?
+     * Returns true if the attribute allowed in use with SSO.
      *
      * @return True if the attribute can be used with SSO, else false
      */
-    public final boolean getAllowSSO() {
+    public boolean getAllowSSO() {
         return allowSSO;
     }
 
@@ -143,7 +144,7 @@ public class AuthorizationAttribute {
      *
      * @return the string representation of this object
      */
-    public final String toString() {
+    public String toString() {
         return ("Attribute name: " + name + " secLevel: " + secLevel + " allowSSO: " + allowSSO);
     }
 }

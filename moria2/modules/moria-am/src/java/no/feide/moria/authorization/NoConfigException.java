@@ -21,17 +21,19 @@
 package no.feide.moria.authorization;
 
 /**
+ * RuntimeException to signal that the configuration is missing.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class NoConfigException extends RuntimeException {
+final class NoConfigException extends RuntimeException {
 
     /**
      * Basic constructor.
      *
      * @param message Exception message.
      */
-    public NoConfigException(String message) {
+    public NoConfigException(final String message) {
         super(message);
     }
 }

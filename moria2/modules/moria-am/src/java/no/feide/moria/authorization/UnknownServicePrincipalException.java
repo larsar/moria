@@ -21,17 +21,19 @@
 package no.feide.moria.authorization;
 
 /**
+ * Exception to signal that the service principal is invalid.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class UnknownServicePrincipalException extends Exception {
+public final class UnknownServicePrincipalException extends Exception {
 
     /**
      * Basic constructor.
      *
      * @param message Exception message.
      */
-    public UnknownServicePrincipalException(String message) {
+    public UnknownServicePrincipalException(final String message) {
         super(message);
     }
 }

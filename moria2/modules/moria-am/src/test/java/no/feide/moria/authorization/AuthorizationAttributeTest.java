@@ -25,10 +25,13 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
+ * Class for testing AuthorizationAttribute.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
+ * @see AuthorizationAttribute
  */
-public class AuthorizationAttributeTest extends TestCase {
+public final class AuthorizationAttributeTest extends TestCase {
 
     /**
      * Initiate all tests.
@@ -44,8 +47,8 @@ public class AuthorizationAttributeTest extends TestCase {
      *
      * @see AuthorizationAttribute#AuthorizationAttribute(java.lang.String, boolean, int)
      */
-    public void testNewAuthorizationAttribute() {
-        AuthorizationAttribute attribute;
+    public static void testNewAuthorizationAttribute() {
+        final AuthorizationAttribute attribute;
 
         attribute = new AuthorizationAttribute("attr1", true, 1);
 
@@ -78,8 +81,8 @@ public class AuthorizationAttributeTest extends TestCase {
     /**
      * Test equality of objects.
      */
-    public void testEquals() {
-        AuthorizationAttribute masterAttr = new AuthorizationAttribute("foo", false, 2);
+    public static void testEquals() {
+        final AuthorizationAttribute masterAttr = new AuthorizationAttribute("foo", false, 2);
 
         assertTrue("Object should be identical", masterAttr.equals(new AuthorizationAttribute("foo", false, 2)));
         assertFalse("Name differs", masterAttr.equals(new AuthorizationAttribute("bar", false, 2)));
@@ -90,8 +93,8 @@ public class AuthorizationAttributeTest extends TestCase {
     /**
      * Test equality of objects.
      */
-    public void testHashCode() {
-        AuthorizationAttribute masterAttr = new AuthorizationAttribute("foo", false, 2);
+    public static void testHashCode() {
+        final AuthorizationAttribute masterAttr = new AuthorizationAttribute("foo", false, 2);
 
         assertEquals("Object should be identical", masterAttr.hashCode(), new AuthorizationAttribute("foo", false, 2).hashCode());
         assertFalse("Name differs", masterAttr.hashCode() == new AuthorizationAttribute("bar", false, 2).hashCode());

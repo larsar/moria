@@ -21,17 +21,19 @@
 package no.feide.moria.authorization;
 
 /**
+ * Exception to signal that the attribute is invalid.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class UnknownAttributeException extends Exception {
+public final class UnknownAttributeException extends Exception {
 
     /**
      * Basic constructor.
      *
      * @param message Exception message.
      */
-    public UnknownAttributeException(String message) {
+    public UnknownAttributeException(final String message) {
         super(message);
     }
 }

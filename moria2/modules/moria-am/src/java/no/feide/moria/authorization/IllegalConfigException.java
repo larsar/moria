@@ -21,17 +21,19 @@
 package no.feide.moria.authorization;
 
 /**
+ * Exception to signal that the configuration is invalid.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class IllegalConfigException extends Exception {
+final class IllegalConfigException extends Exception {
 
     /**
      * Basic constructor.
      *
      * @param message Exception message.
      */
-    public IllegalConfigException(String message) {
+    public IllegalConfigException(final String message) {
         super(message);
     }
 }

@@ -29,7 +29,7 @@ import java.util.HashSet;
  * The attributes are flattened (for optimization) from a set of profiles,
  * allowed and denied attributes.
  */
-class AuthorizationClient {
+final class AuthorizationClient {
 
     /**
      * Cached hashCode.
@@ -86,10 +86,10 @@ class AuthorizationClient {
     /**
      * The properties of this object. Used to transport internal data outside of the package.
      */
-    private HashMap properties = new HashMap();
+    private final HashMap properties = new HashMap();
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param name        serviceID
      * @param displayName full name of service
@@ -110,7 +110,7 @@ class AuthorizationClient {
         }
 
         if (displayName == null || displayName.equals("")) {
-             throw new IllegalArgumentException("displayName must be a non empty string.");
+            throw new IllegalArgumentException("displayName must be a non empty string.");
         }
 
         if (url == null || url.equals("")) {
@@ -118,7 +118,7 @@ class AuthorizationClient {
         }
 
         if (language == null || language.equals("")) {
-           throw new IllegalArgumentException("Language must be a non empty string.");
+            throw new IllegalArgumentException("Language must be a non empty string.");
         }
 
         if (home == null || home.equals("")) {
@@ -166,7 +166,7 @@ class AuthorizationClient {
      * @param requestedAttributes Names of all requested attributes.
      * @return true if access to the attributes is granted, else false
      */
-    boolean allowAccessTo(final String requestedAttributes[]) {
+    boolean allowAccessTo(final String[] requestedAttributes) {
         boolean allow = true;
 
         if (requestedAttributes == null) {
@@ -194,7 +194,7 @@ class AuthorizationClient {
      * @param requestedAttributes The names of all requested attributes
      * @return true if the attributes can be used with SSO, else false
      */
-    final boolean allowSSOForAttributes(final String requestedAttributes[]) {
+    boolean allowSSOForAttributes(final String requestedAttributes[]) {
         boolean allow = true;
 
         if (requestedAttributes == null) {
@@ -202,7 +202,7 @@ class AuthorizationClient {
         }
 
         for (int i = 0; i < requestedAttributes.length; i++) {
-            String attrName = requestedAttributes[i];
+            final String attrName = requestedAttributes[i];
             if (!attributes.containsKey(attrName) || !((AuthorizationAttribute) attributes.get(attrName)).getAllowSSO()) {
                 allow = false;
                 break;
@@ -219,7 +219,7 @@ class AuthorizationClient {
      * @return True if the supplied organization name is affiliated with the
      *         client
      */
-    final boolean hasAffiliation(final String organization) {
+    boolean hasAffiliation(final String organization) {
         if (organization == null || organization.equals("")) {
             throw new IllegalArgumentException("Organization must be a non empty string");
         }
@@ -234,7 +234,7 @@ class AuthorizationClient {
      * @param requestedOperations A string array of operation names
      * @return True if all operations are allowed, else false.
      */
-    final boolean allowOperations(final String[] requestedOperations) {
+    boolean allowOperations(final String[] requestedOperations) {
 
         if (requestedOperations == null) {
             throw new IllegalArgumentException("RequestedOperations cannot be null");
@@ -260,7 +260,7 @@ class AuthorizationClient {
      * @param requestedSubsystems A string array of operation names
      * @return True if all operations are allowed, else false.
      */
-    final boolean allowSubsystems(final String[] requestedSubsystems) {
+    boolean allowSubsystems(final String[] requestedSubsystems) {
 
         if (requestedSubsystems == null) {
             throw new IllegalArgumentException("RequestedSubsystems cannot be null");
@@ -285,12 +285,12 @@ class AuthorizationClient {
      * @param object The object to compare with
      * @return True if objects are equal
      */
-    public final boolean equals(final Object object) {
+    public boolean equals(final Object object) {
         if (object == this) {
             return true;
         }
         if (object instanceof AuthorizationClient) {
-            AuthorizationClient client = (AuthorizationClient) object;
+            final AuthorizationClient client = (AuthorizationClient) object;
             if (client.getName().equals(name)
                     && client.getDisplayName().equals(displayName)
                     && client.getURL().equals(url)
@@ -299,8 +299,9 @@ class AuthorizationClient {
                     && client.getAffiliation().equals(affiliation)
                     && client.getOperations().equals(operations)
                     && client.getSubsystems().equals(subsystems)
-                    && client.getAttributes().equals(attributes))
+                    && client.getAttributes().equals(attributes)) {
                 return true;
+            }
         }
         return false;
     }
@@ -311,7 +312,7 @@ class AuthorizationClient {
      *
      * @return The hash code
      */
-    public final int hashCode() {
+    public int hashCode() {
         if (hashCode == 0) {
             int result = 17;
             result = 37 * result + name.hashCode();
@@ -329,11 +330,18 @@ class AuthorizationClient {
 
     }
 
+    /**
+     * Returns a string representation of this object.
+     *
+     * @return A string representation of this object: "Name: NAME DisplayName: DISPLAYNAME URL: URL Language: LANGUAGE Home: HOME Affiliations: AFFILIATION Operations: OPERATIONS Attributes: ATTRIBUTES
+     */
     public final String toString() {
         return "Name: " + name + " DisplayName: " + displayName + " URL: " + url + " Language: " + language + " Home: " + home + " Affiliation: " + affiliation + " Operations: " + operations + "Attributes: " + attributes;
     }
 
     /**
+     * Returns the URL for this client.
+     *
      * @return The URL for the main page of the client service.
      */
     public final String getURL() {
@@ -341,6 +349,8 @@ class AuthorizationClient {
     }
 
     /**
+     * Returns the principal of this client.
+     *
      * @return Clients principal.
      */
     public final String getName() {
@@ -348,6 +358,8 @@ class AuthorizationClient {
     }
 
     /**
+     * Returns the display name for this client.
+     *
      * @return Name of the client, to be displayed to the user.
      */
     public final String getDisplayName() {
@@ -355,6 +367,8 @@ class AuthorizationClient {
     }
 
     /**
+     * Returns the language for this client.
+     *
      * @return Language of the client service.
      */
     public final String getLanguage() {
@@ -362,6 +376,8 @@ class AuthorizationClient {
     }
 
     /**
+     * Returns the home organization for this client.
+     *
      * @return The short for the home organization of the client service.
      */
     public final String getHome() {
@@ -369,30 +385,38 @@ class AuthorizationClient {
     }
 
     /**
+     * Returns the affiliation for this client.
+     *
      * @return Returns the affiliation.
      */
-    final HashSet getAffiliation() {
+    HashSet getAffiliation() {
         return new HashSet(affiliation);
     }
 
     /**
+     * Returns the operations for this client.
+     *
      * @return Returns the operations.
      */
-    final HashSet getOperations() {
+    HashSet getOperations() {
         return new HashSet(operations);
     }
 
     /**
+     * Returns the subsystems for this client.
+     *
      * @return Returns the operations.
      */
-    final HashSet getSubsystems() {
+    HashSet getSubsystems() {
         return new HashSet(subsystems);
     }
 
     /**
+     * Returns the attributes for this client.
+     *
      * @return Returns the attributes.
      */
-    final HashMap getAttributes() {
+    HashMap getAttributes() {
         return new HashMap(attributes);
     }
 
@@ -411,11 +435,10 @@ class AuthorizationClient {
      *
      * @param requestedAttributes
      * @return the highest of the attributes seclevel, 0 if no attributes are requested
-     * @throws IllegalArgumentException if requestedAttributes is null
-     * @throws IllegalStateException    if one (or more) of the requested attributes are not present
-     *                                  in the authorization client
+     * @throws UnknownAttributeException if one (or more) of the requested attributes are not present
+     *                                   in the authorization client
      */
-    final int getSecLevel(final String[] requestedAttributes) throws UnknownAttributeException {
+    int getSecLevel(final String[] requestedAttributes) throws UnknownAttributeException {
         if (requestedAttributes == null) {
             throw new IllegalArgumentException("requestedAttributes cannot be null");
         }
@@ -426,9 +449,9 @@ class AuthorizationClient {
 
         int res = 0;
         for (int i = 0; i < requestedAttributes.length; i++) {
-            AuthorizationAttribute authzAttribute = (AuthorizationAttribute) attributes.get(requestedAttributes[i]);
+            final AuthorizationAttribute authzAttribute = (AuthorizationAttribute) attributes.get(requestedAttributes[i]);
             if (authzAttribute == null) {
-                throw new UnknownAttributeException("Attribute '"+authzAttribute+"' does not exist.");
+                throw new UnknownAttributeException("Attribute '" + authzAttribute + "' does not exist.");
             }
             if (authzAttribute.getSecLevel() > res) {
                 res = authzAttribute.getSecLevel();
