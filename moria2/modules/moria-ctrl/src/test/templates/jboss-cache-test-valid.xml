@@ -33,7 +33,7 @@
 
     <attribute name="EvictionPolicyConfig">
       <config>
-        <attribute name="wakeUpIntervalSeconds">5</attribute>
+        <attribute name="wakeUpIntervalSeconds">30</attribute>
 
         <attribute name="maxNodes">200000</attribute>
 
@@ -61,7 +61,7 @@
 
     <attribute name="ClusterConfig">
       <config>
-        <TCP1_4
+        <TCP
            start_port="7800"
            bind_addr="localhost"
            loopback="false"/>

@@ -5,53 +5,55 @@
 <!-- Module: moria-ctrl -->
 
 <project
-   xmlns:j="jelly:core"
-   xmlns:m="jelly:maven"
-   xmlns:u="jelly:util"
-   default="project:install">
+    xmlns:j="jelly:core"
+    xmlns:m="jelly:maven"
+    xmlns:u="jelly:util"
+    default="project:install">
 
 
-  <!-- 
-       A number of filename fixes for Windows users.
+  <!--
+      A number of filename fixes for Windows users.
   -->
   <preGoal name="build:start">
     <tempfile property="windowsFixFile"
-              destDir="${maven.build.dir}/.."/>
+	      destDir="${maven.build.dir}/.."/>
     <echo message="project.test.templates.dir.fixed=${project.test.templates.dir}${line.separator}log4j.configuration=${log4j.configuration.raw}"
-          file="${windowsFixFile}"
+	  file="${windowsFixFile}"
           level="verbose"/>
     <replace file="${windowsFixFile}"
-						 replaceFilterFile="${maven.build.dir}/../windows.properties"/>
+	     replaceFilterFile="${maven.build.dir}/../windows.properties"/>
     <property file="${windowsFixFile}"/>
     <delete file="${windowsFixFile}"
-            deleteonexit="true"/>  
+	    deleteonexit="true"/>
   </preGoal>
 
 
-  <!-- 
-  		 Custom preparation of the file system.
+  <!--
+      Custom preparation of the file system.
   -->
   <postGoal
      name="test:prepare-filesystem">
-     
+
      <!-- Create output directories for the tests. -->
     <mkdir dir="${maven.build.dir}/test-logs"/>
     <mkdir dir="${project.test.generated.dir}"/>
 
     <!-- Generate new test files, overwriting any existing files. -->
     <copy todir="${project.test.generated.dir}"
-          overwrite="true">
+	  overwrite="true">
       <fileset dir="${project.test.templates.dir}">
-	      <include name="moria-base*.properties"/>
-        <include name="dm-test-valid.properties"/>
-        <include name="sm-test-valid.properties"/>
+	<include name="moria-base*.properties"/>
+	<include name="dm-test-valid.properties"/>
+	<include name="sm-test-valid.properties"/>
         <include name="directory-conf-test-valid.xml"/>
         <include name="am-test-valid.xml"/>
         <include name="web-test-valid.properties"/>
       </fileset>
     </copy>
-         
-    <!-- Update copied template files with the actual directory name. -->
+
+    <!--
+	Update copied template files with the actual directory name.
+    -->
     <replace
        dir="${project.test.generated.dir}"
        token="REPLACE_WITH_REALPATH"
@@ -59,13 +61,12 @@
       <include name="*.properties"/>
       <include name="*.xml"/>
     </replace>
-    
+
   </postGoal>
 
- 
   <!--
-       Build the module and install the resulting JAR in the local Maven
-       repository.
+      Build the module and install the resulting JAR in the local
+      Maven repository.
   -->
   <goal
      name="project:install"
@@ -74,12 +75,12 @@
 
 
   <!--
-       Build the module and install the resulting JAR in the remote Maven
-       repository.
+      Build the module and install the resulting JAR in the remote
+      Maven repository.
   -->
   <goal
      name="project:deploy"
      prereqs="jar:deploy"
-     description="Build and deploy jar to remote repository"/>    
+     description="Build and deploy jar to remote repository"/>
 
 </project>
