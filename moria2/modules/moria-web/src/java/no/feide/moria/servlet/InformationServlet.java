@@ -70,7 +70,8 @@ public class InformationServlet extends HttpServlet {
     private final MessageLogger log = new MessageLogger(InformationServlet.class);
 
     /**
-     * List of parameters required by <code>InformationServlet</code>.<br>
+     * List of parameters required by <code>InformationServlet</code>.
+     * <br>
      * <br>
      * Current required parameters are:
      * <ul>

@@ -56,7 +56,8 @@ extends HttpServlet {
     private final MessageLogger log = new MessageLogger(LoginServlet.class);
 
     /**
-     * List of parameters required by <code>LoginServlet</code>.<br>
+     * List of parameters required by <code>LoginServlet</code>.
+     * <br>
      * <br>
      * Current required parameters are:
      * <ul>

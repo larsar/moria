@@ -262,7 +262,7 @@ extends HttpServlet {
      *             illegal URL.
      * @throws RemoteException
      *             If an exception was thrown by the remote service.
-     * @see #SERVICE_ENDPOINT
+     * @see RequestUtil#PROP_DEMO_SERVICE_ENDPOINT
      */
     private String initiateAuthentication(final String[] attributeRequest, final String urlPrefix, final String urlPostfix, final boolean denySSO)
     throws MalformedURLException, RemoteException {
@@ -283,9 +283,11 @@ extends HttpServlet {
 
 
     /**
-     * Gets the previously requested (through
-     * <code>initiateAuthentication(...)</code> attributes following a
-     * successful user authentication.
+     * Gets user attributes following a successful user authentication.
+     *
+     * The attributes have previously been requested through
+     * <code>initiateAuthentication(...)</code>.
+     * 
      * @param serviceTicket
      *            A legal service ticket returned to the client service
      *            following a successful authentication on the user's part.
@@ -370,8 +372,10 @@ extends HttpServlet {
 
 
     /**
+     * Performs proxy authentication.
+     *
      * Verifies, by using a proxy ticket retrieved by 
-     * <code>getProxyTicket(...)</code>, that the user has been authenticated 
+     * <code>getProxyTicket</code>, that the user has been authenticated 
      * and retrieves a number of attributes.
      *
      * @param attributes
