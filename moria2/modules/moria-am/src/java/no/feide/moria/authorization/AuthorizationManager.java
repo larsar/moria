@@ -37,17 +37,17 @@ import java.util.Properties;
  * The AuthorizationManager class is used to parse and store authorization data.
  * The authorization data source is XML which is passed as a properties object
  * through the setConfig method. The config data must contain information about
- * every web service allowed to access Moria, and which attributes operations
+ * every web service allowed to access Moria, and which attributes, operations
  * and subsystems the service can access. <br>
  * <br>
- * When a new set of data arrives the authorization manager parses it and
+ * When a new set of data arrives, the authorization manager parses it and
  * replaces the old dataset if the parsing was successful. The authorization
  * manager can then be used to answer authorization questions, most likely from
  * the Moria controller. <br>
  * <br>
- * When the controller receives a request it asks the authorization manager if
- * the web service is authorized to perform the request. Every request is
- * supplied with the service principal.
+ * When the controller receives a request, it asks the authorization manager if
+ * the web service is authorized to perform the request. Every request includes
+ * the service principal.
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
@@ -75,16 +75,19 @@ public final class AuthorizationManager {
 
 
     /**
-     * Parses a XML element and creates a AuthorizationAttribute object in
+     * Parses an XML element and creates an AuthorizationAttribute object in
      * return. Throws an IllegalConfigException if there is something wrong with
-     * the element or it´s attributes.
+     * the element or its attributes.
      * @param element
-     *            the XML element to parse
+     *            The XML element to parse.
      * @return AuthorizationAttribute with same attributes as the supplied
-     *         Element
+     *        <code>element</code>.
      * @throws IllegalConfigException
-     *             if the element's sso attribute is not <code>true</code> or
-     *             <code>false</code>
+     *             If the element's sso attribute is not <code>true</code> or
+     *             <code>false</code>.
+     * @throws IllegalArgumentException
+     *             If the <code>AuthorizationAttribute</code> constructor
+     *             throws an exception.
      */
     static AuthorizationAttribute parseAttributeElem(final Element element)
     throws IllegalConfigException {
@@ -117,16 +120,20 @@ public final class AuthorizationManager {
 
 
     /**
-     * Parse the content of an Attributes element. The element can contain 0 or
-     * more Attribute elements which will be transformed into
+     * Parses the content of an Attributes element. The element can contain 0
+     * or more Attribute elements which will be transformed into
      * AuthorizationAttributes and returned in a HashMap with attribute name as
      * key.
      * @param element
-     *            The DOM element that contains Attribute child elements.
-     * @return HashMap with AuthorizationAttributes as value and attribute name
-     *         as key.
+     *            The DOM element that contains <code>Attribute</code> 
+     *            child elements.
+     * @return HashMap with AuthorizationAttributes as value and 
+     *         attribute name as key.
      * @throws IllegalConfigException
-     *             if element is not of type <code>attributes</code>
+     *             If <code>element</code> is not of type
+     *             <code>Attributes</code>.
+     * @throws IllegalArgumentException
+     *             If <code>element</code> is <code>null</code>.
      */
     static HashMap parseAttributesElem(final Element element)
     throws IllegalConfigException {
@@ -153,12 +160,15 @@ public final class AuthorizationManager {
      * Parses 'operation' and 'organization' elements and returns the name
      * attribute.
      * @param element
-     *            The operation element
+     *            The operation element.
      * @return String containing the name attribute of the element.
      * @throws IllegalConfigException
-     *             if the element is not of type <code>Operation</code>,
+     *             If the element is not of type <code>Operation</code>,
      *             <code>Subsystem</code> or <code>Organization</code> OR
      *             element's <code>name</code> attribute is not set.
+     * @throws IllegalArgumentException
+     *             If <code>element</code> is <code>null</code> or an empty 
+     *             string.
      */
     static String parseChildElem(final Element element)
     throws IllegalConfigException {
@@ -176,8 +186,8 @@ public final class AuthorizationManager {
 
 
     /**
-     * Parse the content of an Attributes element. The element can contain 0 or
-     * more Attribute elements which will be transformed into
+     * Parses the content of an Attributes element. The element can contain 
+     * 0 or more Attribute elements which will be transformed into
      * AuthorizationAttributes and returned in a HashMap with attribute name as
      * key.
      * @param element
@@ -185,8 +195,11 @@ public final class AuthorizationManager {
      * @return HashMap with AuthorizationAttributes as value and attribute name
      *         as key.
      * @throws IllegalConfigException
-     *             if element is not of type <code>Operations</code>,
-     *             <code>Affiliation</code> or <code>Subsystems</code>
+     *             If element is not of type <code>Operations</code>,
+     *             <code>Affiliation</code>, <code>Subsystems</code> or
+     *             <code>OrgsAllowed</code>.
+     * @throws IllegalArgumentException
+     *             If <code>element</code> is <code>null</code>.
      */
     static HashSet parseListElem(final Element element)
     throws IllegalConfigException {
@@ -210,14 +223,14 @@ public final class AuthorizationManager {
 
 
     /**
-     * Creates a AuthorizationClient object based on the supplied XML element.
+     * Creates an AuthorizationClient object based on the supplied XML element.
      * @param element
      *            The XML element representing the client service.
      * @return A new object representing the client service.
      * @throws IllegalConfigException
-     *             if the <i>name </i> attribute is not set for the given
+     *             If the <code>name</code> attribute is not set for the given
      *             element, or if any of the following tags are missing:
-     *             <ul><i>
+     *             <ul><code>
      *             <li>DisplayName
      *             <li>URL
      *             <li>Language
@@ -226,7 +239,7 @@ public final class AuthorizationManager {
      *             <li>Operations
      *             <li>Affiliation
      *             <li>OrgsAllowed
-     *             </i></ul>
+     *             </code></ul>
      * @throws IllegalArgumentException
      *             If <code>element</code> is <code>null</code>.
      */
@@ -296,10 +309,13 @@ public final class AuthorizationManager {
     /**
      * Parses a configuration root element with client elements.
      * @param element
-     *            the root element
-     * @return a HashMap containing AuthorizationClient objects
+     *            The root element.
+     * @return A HashMap containing AuthorizationClient objects.
      * @throws IllegalConfigException
-     *             if the element is not of type "ClientAuthorizationConfig"
+     *             If the element is not of type 
+     *             <code>ClientAuthorizationConfig</code>.
+     * @throws IllegalArgumentException
+     *             If <code>element</code> is <code>null</code>.
      * @see AuthorizationClient
      */
     static HashMap parseRootElem(final Element element)
@@ -323,14 +339,14 @@ public final class AuthorizationManager {
 
 
     /**
-     * Retrieves the content of a XML element.
+     * Retrieves the content of an XML element.
      * @param element
-     *            Parent element
+     *            Parent element.
      * @param childName
-     *            Name of the child node
-     * @return The content of the child element
+     *            Name of the child node.
+     * @return The content of the child element.
      * @throws IllegalConfigException
-     *             if the content of the child element is null
+     *             If the content of the child element is null.
      */
     private static String getChildContent(final Element element, final String childName)
     throws IllegalConfigException {
@@ -345,10 +361,15 @@ public final class AuthorizationManager {
 
 
     /**
-     * Return a client object for a given identifier.
+     * Returns a client object for a given identifier.
      * @param servicePrincipal
-     *            the client object identifier
-     * @return the client object for the identifier
+     *            The client object identifier.
+     * @return The client object for the identifier.
+     * @throws NoConfigException
+     *             If the authorization manager is not activated.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> 
+     *             or an empty string.
      */
     private AuthorizationClient getAuthzClient(final String servicePrincipal) {
 
@@ -365,13 +386,13 @@ public final class AuthorizationManager {
     /**
      * Validates a request for access to attributes for a given client/service.
      * @param servicePrincipal
-     *            the indentifier of the client
+     *            The identifier of the client.
      * @param requestedAttributes
-     *            the list of requested attributes
+     *            The list of requested attributes.
      * @return true if the service is allowed access, false if not or the client
-     *         does not exist
+     *         does not exist.
      * @throws UnknownServicePrincipalException
-     *             if the service principal does not exist
+     *             If the service principal does not exist.
      */
     public boolean allowAccessTo(final String servicePrincipal, final String[] requestedAttributes)
     throws UnknownServicePrincipalException {
@@ -387,13 +408,13 @@ public final class AuthorizationManager {
     /**
      * Validates a request for access to SSO for a given client/service.
      * @param servicePrincipal
-     *            the indentifier of the client
+     *            The identifier of the client.
      * @param requestedAttributes
-     *            the list of requested attributes
+     *            The list of requested attributes.
      * @return true if the service is allowed access, false if not or the client
-     *         does not exist
+     *         does not exist.
      * @throws UnknownServicePrincipalException
-     *             if the service principal does not exist
+     *             If the service principal does not exist.
      */
     public boolean allowSSOForAttributes(final String servicePrincipal, final String[] requestedAttributes)
     throws UnknownServicePrincipalException {
@@ -409,13 +430,13 @@ public final class AuthorizationManager {
     /**
      * Validates a request for access to operations for a given client/service.
      * @param servicePrincipal
-     *            the indentifier of the client
+     *            The identifier of the client.
      * @param requestedOperations
-     *            the list of requested operations
+     *            The list of requested operations.
      * @return true if the service is allowed access, false if not or the client
-     *         does not exist
+     *         does not exist.
      * @throws UnknownServicePrincipalException
-     *             if the servicePrincipal does not exist
+     *             If the servicePrincipal does not exist.
      */
     public boolean allowOperations(final String servicePrincipal, final String[] requestedOperations)
     throws UnknownServicePrincipalException {
@@ -429,16 +450,16 @@ public final class AuthorizationManager {
 
 
     /**
-     * Checks if the organization is allowed to use the service
+     * Checks if the organization is allowed to use the service.
      * @param servicePrincipal
-     *            the indentifier of the client
+     *            The identifier of the client.
      * @param userorg
-     *            the user's organization
+     *            The user's organization.
      * @return true if the organization is allowed to use the service, false if
      *         the client does not exists, or if the organization is not allowed
      *         to use the service.
      * @throws UnknownServicePrincipalException
-     *             if the servicePrincipal does not exist
+     *             If the servicePrincipal does not exist.
      */
     public boolean allowUserorg(final String servicePrincipal, final String userorg)
     throws UnknownServicePrincipalException {
@@ -452,9 +473,11 @@ public final class AuthorizationManager {
 
 
     /**
-     * Swap the old client database with the supplied HashMap.
+     * Swaps the old client database with the supplied HashMap.
      * @param newClients
-     *            the new client database
+     *            The new client database.
+     * @throws IllegalArgumentException
+     *             If <code>newClients</code> is <code>null</code>.
      */
     synchronized void setAuthzClients(final HashMap newClients) {
 
@@ -486,9 +509,11 @@ public final class AuthorizationManager {
 
 
     /**
-     * Set the configuration data for this manager.
+     * Sets the configuration data for this manager.
      * @param properties
      *            The properties containing the authorization database.
+     * @throws IllegalArgumentException
+     *             If <code>properties</code> is <code>null</code>.
      */
     public void setConfig(final Properties properties) {
 
@@ -528,10 +553,13 @@ public final class AuthorizationManager {
     /**
      * Returns the service properties for a given service.
      * @param servicePrincipal
-     *            the principal of the service
-     * @return a hashmap with properties for a given service
+     *            The principal of the service.
+     * @return A hashmap with properties for a given service.
      * @throws UnknownServicePrincipalException
-     *             if the service principal does not exist
+     *             If the service principal does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string.
      * @see AuthorizationClient#getProperties()
      */
     public HashMap getServiceProperties(final String servicePrincipal)
@@ -548,16 +576,20 @@ public final class AuthorizationManager {
 
 
     /**
-     * Returns the seclevel for a set of attributes for a given service.
+     * Returns the security level for a set of attributes for a given service.
      * @param servicePrincipal
-     *            the service principal of the requested service
+     *            The service principal of the requested service.
      * @param requestedAttributes
-     *            the requested attributes
-     * @return integer >= 0
+     *            The requested attributes.
+     * @return Security level - an integer >= 0.
      * @throws UnknownServicePrincipalException
-     *             if the service principal does not exist
+     *             If the service principal does not exist.
      * @throws UnknownAttributeException
-     *             if one or more of the requested attributes does not exist
+     *             If one or more of the requested attributes does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string, or if <code>requestedAttributes</code> is 
+     *             <code>null</code>.
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
      */
     public int getSecLevel(final String servicePrincipal, final String[] requestedAttributes)
@@ -580,11 +612,14 @@ public final class AuthorizationManager {
     /**
      * Returns the configured attributes for a given service.
      * @param servicePrincipal
-     *            the principal of the requested service
+     *            The principal of the requested service.
      * @return A string array with the attribute names that is configured for
      *         the service.
      * @throws UnknownServicePrincipalException
-     *             if the servicePrincipal does not exist
+     *             If the servicePrincipal does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string.
      * @see AuthorizationClient#getAttributes()
      */
     public HashSet getAttributes(final String servicePrincipal)
@@ -603,11 +638,14 @@ public final class AuthorizationManager {
     /**
      * Returns the organizations that can use this service.
      * @param servicePrincipal
-     *            the principal of the requested service
+     *            The principal of the requested service.
      * @return A string array with the names of the allowed organizations for
      *         the service.
      * @throws UnknownServicePrincipalException
-     *             if the servicePrincipal does not exist
+     *             If the servicePrincipal does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string.
      * @see AuthorizationClient#getOrgsNotAllowed()
      */
     public HashSet getOrgsAllowed(final String servicePrincipal)
@@ -626,11 +664,14 @@ public final class AuthorizationManager {
     /**
      * Returns the configured subsystems for a given service.
      * @param servicePrincipal
-     *            the principal of the requested service
+     *            The principal of the requested service,
      * @return A string array with the subsystem names that is configured for
      *         the service.
      * @throws UnknownServicePrincipalException
-     *             if the servicePrincipal does not exist
+     *             If the servicePrincipal does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string.
      * @see AuthorizationClient#getSubsystems()
      */
     public HashSet getSubsystems(final String servicePrincipal)
@@ -649,11 +690,14 @@ public final class AuthorizationManager {
     /**
      * Returns the configured operations for a given service.
      * @param servicePrincipal
-     *            the principal of the requested service
+     *            The principal of the requested service.
      * @return A string array with the operation names that is configured for
      *         the service.
      * @throws UnknownServicePrincipalException
-     *             if the servicePrincipal does not exist
+     *             If the servicePrincipal does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string.
      * @see AuthorizationClient#getOperations()
      */
     public HashSet getOperations(final String servicePrincipal)
@@ -672,7 +716,7 @@ public final class AuthorizationManager {
     /**
      * Returns the set of SSO attributes names (the attributes that can be
      * cached).
-     * @return a set of attributes that can be cached.
+     * @return A set of attributes that can be cached.
      */
     public HashSet getCachableAttributes() {
 
