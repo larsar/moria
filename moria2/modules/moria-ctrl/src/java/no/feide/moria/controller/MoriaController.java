@@ -22,8 +22,6 @@
 package no.feide.moria.controller;
 
 import java.util.Properties;
-import java.util.HashMap;
-import java.util.TreeMap;
 
 import no.feide.moria.store.MoriaStore;
 import no.feide.moria.store.MoriaStoreFactory;
@@ -57,16 +55,11 @@ public class MoriaController {
     /** The servlet context for the servlets using the controller */
     private static ServletContext servletContext;
 
-    // TODO: Only for debugging. Should be initialized in another way.
-    //static {
-    //    init();
-    //}
-
     /**
      *
      *
      */
-    synchronized public static void init() {
+    synchronized static void init() {
         // TODO: Implemented just to get the current code running
         if (isInitialized) {
             return;
@@ -74,7 +67,7 @@ public class MoriaController {
         isInitialized = true;
 
         // TODO: Ensure single instance of store
-        //store = MoriaStoreFactory.createMoriaStore();
+        store = MoriaStoreFactory.createMoriaStore();
 
         // TODO: Should use value specified on the command line, in startup servlet or something like that
         System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
@@ -202,9 +195,17 @@ public class MoriaController {
         }
     }
 
+    /**
+     * Start the controller. The controller is supposed to be started from a servlet.
+     * The supplied ServletContext can be used to transfer config from the configuration
+     * manager to the servlets.
+     *
+     * @param sc the servletContext from the caller
+     */
     public static void initController(ServletContext sc) {
         servletContext = sc;
         init();
+        // TODO: Finish implementation, the init() method will change
     }
 
 }
