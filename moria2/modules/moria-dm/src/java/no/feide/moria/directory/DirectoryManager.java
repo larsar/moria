@@ -112,9 +112,12 @@ public class DirectoryManager {
      */
     public static UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
     throws DirectoryManagerException {
-
+        
+        // TODO: Implement a backend pool.
+      
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
+        backend.open(index.lookup(userCredentials.getUsername()));
         UserAttribute[] attributes = backend.authenticate(userCredentials, attributeRequest);
         backend.close();
         return attributes;
