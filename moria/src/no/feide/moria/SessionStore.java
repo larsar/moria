@@ -167,7 +167,7 @@ public class SessionStore {
      * @param sessionID The old session ID.
      * @throws SessionExcepion If the old session ID cannot be found.
      */
-    protected void renameSession(Session session)
+    public void renameSession(Session session)
     throws SessionException {
         log.finer("renameSession(String)");
         
