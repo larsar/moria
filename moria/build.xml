@@ -239,7 +239,7 @@
       <classpath>
         <fileset dir="lib/" includes="*.jar"/>
         <fileset dir="mellon/lib/" includes="*.jar"/>
-        <fileset dir="test/lib/" includes="*.jar"/>
+        <fileset dir="moria/lib/" includes="*.jar"/>
         <fileset dir="dist/" includes="feide-mellon-api.jar"/>
       </classpath>
     </javac>
@@ -268,7 +268,7 @@
         <fileset dir="dist" includes="AuthenticationServiceClient.jar feide-mellon-api.jar"/>
         <fileset dir="lib/" includes="*.jar"/>
         <fileset dir="mellon/lib/" includes="*.jar"/>
-        <fileset dir="test/lib/" includes="*.jar"/>
+        <fileset dir="moria/lib/" includes="*.jar"/>
       </classpath>
       <arg value="${mellon_config}"/>
     </java>
