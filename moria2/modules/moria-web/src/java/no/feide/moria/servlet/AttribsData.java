@@ -22,20 +22,26 @@ package no.feide.moria.servlet;
 import java.util.HashMap;
 import java.util.Comparator;
 
+
 /**
  * 
  * @author Eva Indal
+ * @version %I%
  *
- * Stores data for all possible user attributes for the Feide project. The attributes
+ * Stores data for all possible user attributes registered. The attributes
  * are read from an xml file to make it easy to add and change the attributes.
  * 
  * The attribute is identified by the "key" keyword, which stores the attribute name,
- * but each attribute have other data as well. See feideattribs.xml for more information.
+ * but each attribute has other data as well. See feideattribs.xml for more information.
  * 
  */
 
 public class AttribsData implements Comparator {
-    private int idx;          // used for sorting the attributes
+    
+    /* Used for sorting the attributes */
+    private int idx; 
+    
+    /* Used for storing all info about a attribute */
     private HashMap hashmap;
    
     /**
@@ -98,7 +104,7 @@ public class AttribsData implements Comparator {
             throw new IllegalArgumentException("name must be a non-empty string.");
         }
         return (String) hashmap.get(name);
-    }
+    }    
 }
 
     

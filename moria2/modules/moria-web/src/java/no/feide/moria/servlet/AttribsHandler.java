@@ -26,6 +26,7 @@ import java.util.HashMap;
 /**
  * 
  * @author Eva Indal
+ * @version %I%
  *
  * The AttribsHandler class extends the xml DefaultHandler
  * to read the simple feideattribs xml file.
@@ -63,6 +64,12 @@ public class AttribsHandler extends DefaultHandler {
     
     /**
      * Implements callback that is called at start of an xml element.
+     *
+     * @param namespaceURI  namespace URI
+     * @param sName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
+     * @param qName  The qualified name (with prefix), or the empty string if qualified names are not available. 
+     * @param attrs  The specified or defaulted attributes.
+     *  
      * @see DefaultHandler.startElement for information about the parameters
      */
     public void startElement(String namespaceURI, String sName, String qName, Attributes attrs) throws SAXException {
@@ -70,7 +77,7 @@ public class AttribsHandler extends DefaultHandler {
         if ("".equals(eName)) eName = qName;
         
         /* look for <attribute> and allocate a new AttribsData if found */
-        if (eName == "attribute") {
+        if (eName.equals("attribute")) {
             currentattribute = new AttribsData(indexcounter);
             indexcounter++;
             currentitem = null;
@@ -84,6 +91,10 @@ public class AttribsHandler extends DefaultHandler {
     
     /**
      * Implements callback that is called at end of an xml element
+     * @param namespaceURI  namespace URI
+     * @param sName  The local name (without prefix), or the empty string if Namespace processing is not being performed
+     * @param qName  The qualified XML 1.0 name (with prefix), or the empty string if qualified names are not available. 
+     * 
      * @see DefaultHandler.endElement for information about the parameters
      */
     public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
@@ -91,7 +102,7 @@ public class AttribsHandler extends DefaultHandler {
         if ("".equals(eName)) eName = qName;
         
         /* wait for </attribute> */
-        if (eName == "attribute") {
+        if (eName.equals("attribute")) {
             adata.put(currentattribute.getData("key"), currentattribute);
             currentattribute = null;
         }
@@ -103,6 +114,11 @@ public class AttribsHandler extends DefaultHandler {
     
     /**
      * Implements callback that is called to soup up data for an element
+     * 
+     * @param buf  The characters.
+     * @param offset  The start position in the character array.
+     * @param len  The number of characters to use from the character array. 
+     * 
      * @see DefaultHandler.characters for information about the parameters
      */
     public void characters(char buf[], int offset, int len) throws SAXException {
