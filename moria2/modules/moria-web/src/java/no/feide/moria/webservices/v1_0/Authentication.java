@@ -28,6 +28,7 @@ import java.util.Map;
 
 import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.AuthorizationException;
+import no.feide.moria.controller.DirectoryUnavailableException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
@@ -50,6 +51,9 @@ public final class Authentication implements AuthenticationIF {
 
     /** Log message for AuthenticationExceptions. */
     private static final String AUTHN_EX_MSG = "Authentication failed. Throwing RemoteException to service: ";
+
+    /** Log message for DirectoryUnavailableExceptions. */
+    private static final String DIR_UNAV_EX_MSG = "Directory unavailable. Throwing RemoteException to service: ";
 
     /** Log message for IllegalInputExceptions. */
     private static final String ILLEGAL_INPUT_EX_MSG = "Illegal input. Throwing RemoteException to service: ";
@@ -115,6 +119,9 @@ public final class Authentication implements AuthenticationIF {
         } catch (AuthorizationException ae) {
             messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
+        } catch (DirectoryUnavailableException due) {
+            messageLogger.logWarn(DIR_UNAV_EX_MSG + servicePrincipal, due);
+            throw new RemoteException(due.getMessage());
         } catch (IllegalInputException iie) {
             messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
@@ -136,9 +143,6 @@ public final class Authentication implements AuthenticationIF {
         try {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
             return mapToAttributeArray(returnAttributes, serviceTicket);
-        } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
-            throw new RemoteException(ae.getMessage());
         } catch (IllegalInputException iie) {
             messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
@@ -165,6 +169,9 @@ public final class Authentication implements AuthenticationIF {
         } catch (AuthorizationException ae) {
             messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
+        } catch (DirectoryUnavailableException due) {
+            messageLogger.logWarn(DIR_UNAV_EX_MSG + servicePrincipal, due);
+            throw new RemoteException(due.getMessage());
         } catch (IllegalInputException iie) {
             messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
             throw new RemoteException(iie.getMessage());
