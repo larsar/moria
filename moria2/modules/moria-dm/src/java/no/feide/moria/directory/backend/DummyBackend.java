@@ -110,7 +110,7 @@ implements DirectoryManagerBackend {
      * <code>DirectoryManagerBackend</code> interface.
      * @param references
      *            Ignored.
-     * @see DirectoryManagerBackend#open(IndexedReference)
+     * @see DirectoryManagerBackend#open(IndexedReference[])
      */
     public void open(final IndexedReference[] references) {
 

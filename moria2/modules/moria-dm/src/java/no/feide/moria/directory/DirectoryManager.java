@@ -248,7 +248,7 @@ public class DirectoryManager {
      * @throws IllegalStateException
      *             If attempting to use this method without successfully using
      *             <code>setConfig(Properties)</code> first.
-     * @see setConfig(Properties)
+     * @see #setConfig(Properties)
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
     public HashMap authenticate(final String sessionTicket, final Credentials userCredentials, final String[] attributeRequest)

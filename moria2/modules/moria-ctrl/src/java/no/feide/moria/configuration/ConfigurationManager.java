@@ -209,7 +209,8 @@ public final class ConfigurationManager {
 
 
     /**
-     * @see java.lang.Object#destroy()
+     * Destructor. Will call <code>stop()</code>.
+     * @see ConfigurationManager#stop()
      */
     public void destroy() {
 

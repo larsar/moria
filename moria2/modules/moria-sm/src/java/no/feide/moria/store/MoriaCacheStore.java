@@ -238,7 +238,7 @@ implements MoriaStore {
     /**
      * Creates an authentication attempt based on a service request.
      *
-     * @param requestAttributes
+     * @param requestedAttributes
      *          The user attributes the requesting service asks for.
      * @param responseURLPrefix
      *          The forward part of the url the client is to be redirected to.
@@ -284,7 +284,7 @@ implements MoriaStore {
 
     /**
      * Gets the authentication attempt associated with the ticket given as argument.
-     * @param ticketID
+     * @param ticketId
      *            The ticket ID. Must be a non-empty string.
      * @param keep
      *            If <code>false</code>, the ticket will be removed from the
@@ -360,7 +360,7 @@ implements MoriaStore {
      *             If attributes is null, or
      *             userorg is null or an empty  string.
      *
-     * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
+     * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap, String)
      */
     public String cacheUserData(final HashMap attributes, final String userorg)
     throws MoriaStoreException {
@@ -385,7 +385,7 @@ implements MoriaStore {
      * Returns the userdata associated with the incoming ticket, which must be either a
      * proxy ticket, an SSO ticket or ticket granting ticket.
      *
-     * @param proxyTicketId
+     * @param ticketId
      *          A ticket to identify a userdata object (SSO, TGT or PROXY).
      * @param servicePrincipal
      *          The name of the service requesting the data,
@@ -783,7 +783,7 @@ implements MoriaStore {
      *          If the operation fails.
      * @throws IllegalArgumentException
      *          If ticketId is null or zero length.
-     * @see no.feide.moria.store.MoriaStore#getServicePrincipal(java.lang.String)
+     * @see no.feide.moria.store.MoriaTicket#getServicePrincipal()
      */
     public String getTicketServicePrincipal(final String ticketId, MoriaTicketType ticketType)
     throws InvalidTicketException, NonExistentTicketException,

@@ -66,7 +66,7 @@ public final class MoriaController {
      * Ticket type constant, indicating an SSO ticket, for use when returning a
      * HashMap of two tickets.
      * @see MoriaController#attemptLogin(java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String)
+     *      java.lang.String, java.lang.String, boolean)
      * @see MoriaController#attemptSingleSignOn(java.lang.String,
      *      java.lang.String)
      */
@@ -77,7 +77,7 @@ public final class MoriaController {
      * Ticket type constant, indicating a login ticket, for use when returning a
      * HashMap with multiple tickets.
      * @see MoriaController#attemptLogin(java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String)
+     *      java.lang.String, java.lang.String, boolean)
      * @see MoriaController#attemptSingleSignOn(java.lang.String,
      *      java.lang.String)
      */
@@ -774,7 +774,6 @@ public final class MoriaController {
      *             invalid.
      * @throws InoperableStateException
      *             If Moria is not ready for use.
-     * @throws
      */
     public static Map getUserAttributes(final String serviceTicketId, final String servicePrincipal)
     throws IllegalInputException, UnknownTicketException,

@@ -46,7 +46,7 @@ public class AttribsData implements Comparator {
    
     /**
      * Constructor.
-     * @param Index order in xml file.
+     * @param index order in xml file.
      */
     public AttribsData(int index) {
        idx = index;

@@ -48,7 +48,7 @@ implements DirectoryManagerBackendFactory {
      * @throws DirectoryManagerConfigurationException
      *             If <code>config</code> is not a <code>Backend</code>
      *             element.
-     * @see DirectoryManagerBackendFactory#setConfig(Properties)
+     * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
     public void setConfig(final Element config) {
 
@@ -67,7 +67,7 @@ implements DirectoryManagerBackendFactory {
      * Creates a new <code>DummyBackend</code> instance.
      * @param sessionTicket
      *            Ignored for instances of <code>DummyBackend</code>.
-     * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#createBackend()
+     * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#createBackend
      * @see DummyBackend
      */
     public DirectoryManagerBackend createBackend(final String sessionTicket) {

@@ -646,7 +646,7 @@ public final class AuthorizationManager {
      * @throws IllegalArgumentException
      *             If <code>servicePrincipal</code> is <code>null</code> or
      *             an empty string.
-     * @see AuthorizationClient#getOrgsNotAllowed()
+     * @see AuthorizationClient#getOrgsAllowed()
      */
     public HashSet getOrgsAllowed(final String servicePrincipal)
     throws UnknownServicePrincipalException {
