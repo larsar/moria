@@ -500,12 +500,13 @@ public class LoginServlet extends VelocityServlet {
         } 
         
         catch (BackendException e) {
-            log.severe("BackendException caught and re-thrown as ServletException");
-                return genLoginTemplate(request, response, context, null, GENERIC);
+            log.severe("BackendException caught and re-thrown as ServletException\n"+e);
+
+            return genLoginTemplate(request, response, context, null, GENERIC);
         } 
 
         catch (SessionException e) {
-            log.severe("SessionException caught and re-thrown as ServletException");
+            log.severe("SessionException caught and re-thrown as ServletException\n"+e);
                 return genLoginTemplate(request, response, context, null, GENERIC);
         }
 
