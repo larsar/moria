@@ -561,6 +561,9 @@ public class LoginServlet extends VelocityServlet {
             return genLoginTemplate(request, response, context, null, GENERIC);
         }
 
+        if (username.indexOf("@") != -1) {
+            realm = username.substring(username.indexOf("@")+1, username.length());
+        }
 
         if (realm != null) {
             /* Error message if user has not selected organization */
