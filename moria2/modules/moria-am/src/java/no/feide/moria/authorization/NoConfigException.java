@@ -30,10 +30,8 @@ final class NoConfigException extends RuntimeException {
 
     /**
      * Basic constructor.
-     *
-     * @param message Exception message.
      */
-    public NoConfigException(final String message) {
-        super(message);
+    public NoConfigException() {
+        super("Authorization manager is not configured.");
     }
 }

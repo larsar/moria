@@ -26,16 +26,12 @@ package no.feide.moria.configuration;
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class ConfigurationManagerException extends Exception {
+public final class ConfigurationManagerException extends Exception {
 
     /**
-     * @see java.lang.Exception#Exception()
-     */
-    public ConfigurationManagerException() {
-        super();
-    }
-
-    /**
+     * Constructor.
+     *
+     * @param message the exception message
      * @see java.lang.Exception#Exception(java.lang.String)
      */
     public ConfigurationManagerException(final String message) {
@@ -43,16 +39,13 @@ public class ConfigurationManagerException extends Exception {
     }
 
     /**
+     * Constructor.
+     *
+     * @param message the exception message
+     * @param cause the nested exception
      * @see java.lang.Exception#Exception(java.lang.String, java.lang.Throwable)
      */
     public ConfigurationManagerException(final String message, final Throwable cause) {
         super(message, cause);
-    }
-
-    /**
-     * @see java.lang.Exception#Exception(java.lang.Throwable)
-     */
-    public ConfigurationManagerException(final Throwable cause) {
-        super(cause);
     }
 }

@@ -21,10 +21,12 @@
 package no.feide.moria.configuration;
 
 /**
+ * Exception for signaling that the base config is not valid.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class BaseConfigException extends RuntimeException {
+final class BaseConfigException extends RuntimeException {
 
     /**
      * Basic constructor.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 FEIDE
+ * Copyright (c) 2004 UNINETT FAS
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,27 +17,29 @@
  *
  * $Id$
  */
-
 package no.feide.moria.authorization;
 
-import java.util.*;
-import java.io.File;
-import java.io.IOException;
 
-import org.jdom.Element;
+import no.feide.moria.log.MessageLogger;
 import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import no.feide.moria.log.MessageLogger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 
 /**
- * The AuthorizationManager class is used to parse and store authorization data.
- * The authorization data source is XML which is passed as a properties object
- * through the setConfig method. When a new set of data arrives the authorization
- * manager parses it and replaces the old dataset if the parsing was successful.
- * The authorization manager can then be used to answer authorization questions,
- * most likely from the Moria controller.
+ * The AuthorizationManager class is used to parse and store authorization data. The authorization data source is XML
+ * which is passed as a properties object through the setConfig method. When a new set of data arrives the authorization
+ * manager parses it and replaces the old dataset if the parsing was successful. The authorization manager can then be
+ * used to answer authorization questions, most likely from the Moria controller.
  *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
@@ -55,7 +57,7 @@ public final class AuthorizationManager {
     private HashMap authzClients = new HashMap();
 
     /**
-     * List of attributes that is allowed to be cached
+     * List of attributes that is allowed to be cached.
      */
     private HashSet cachableAttributes = new HashSet();
 
@@ -65,14 +67,12 @@ public final class AuthorizationManager {
     private boolean activated = false;
 
     /**
-     * Parses a XML element and creates a AuthorizationAttribute object in
-     * return. Throws an IllegalConfigException if there is something wrong
-     * with the element or it´s attributes.
+     * Parses a XML element and creates a AuthorizationAttribute object in return. Throws an IllegalConfigException if
+     * there is something wrong with the element or it´s attributes.
      *
-     * @param element
-     * @return AuthorizationAttribute with same attributes as the supplied
-     *         Element
-     * @throws IllegalConfigException
+     * @param element the XML element to parse
+     * @return AuthorizationAttribute with same attributes as the supplied Element
+     * @throws IllegalConfigException if the element's sso attribute is not <code>true</code> or <code>false</code>
      */
     static AuthorizationAttribute parseAttributeElem(final Element element) throws IllegalConfigException {
         String name = null;
@@ -87,8 +87,9 @@ public final class AuthorizationManager {
             throw new IllegalConfigException("allowSSO has to be set.");
         } else {
             allowSSOStr = element.getAttribute("sso").getValue();
-            if (!(allowSSOStr.equals("true") || allowSSOStr.equals("false")))
+            if (!(allowSSOStr.equals("true") || allowSSOStr.equals("false"))) {
                 throw new IllegalConfigException("allowSSO has to be 'true' or 'false'");
+            }
         }
 
         if (element.getAttribute("secLevel") != null) {
@@ -96,25 +97,22 @@ public final class AuthorizationManager {
         }
 
         try {
-            return new AuthorizationAttribute(name, new Boolean(allowSSOStr).booleanValue(), new Integer(secLevel).intValue());
+            return new AuthorizationAttribute(name, new Boolean(allowSSOStr).booleanValue(),
+                                              new Integer(secLevel).intValue());
         } catch (IllegalArgumentException e) {
             throw new IllegalConfigException("Illegal attributes: " + e.getMessage());
         }
     }
 
     /**
-     * Parse the content of an Attributes element. The element can contain 0 or
-     * more Attribute elements which will be transformed into
-     * AuthorizationAttributes and returned in a HashMap with attribute name as
-     * key.
+     * Parse the content of an Attributes element. The element can contain 0 or more Attribute elements which will be
+     * transformed into AuthorizationAttributes and returned in a HashMap with attribute name as key.
      *
      * @param element The DOM element that contains Attribute child elements.
-     * @return HashMap with AuthorizationAttributes as value and attribute name
-     *         as key.
-     * @throws IllegalConfigException
-     * @throws IllegalArgumentException
+     * @return HashMap with AuthorizationAttributes as value and attribute name as key.
+     * @throws IllegalConfigException if element is not of type <code>attributes</code>
      */
-    static HashMap parseAttributesElem(final Element element) throws IllegalConfigException, IllegalArgumentException {
+    static HashMap parseAttributesElem(final Element element) throws IllegalConfigException {
         final HashMap attributes = new HashMap();
 
         /* Validate element */
@@ -137,12 +135,12 @@ public final class AuthorizationManager {
     }
 
     /**
-     * Parses 'operation' and 'organization' elements and returns the name
-     * attribute.
+     * Parses 'operation' and 'organization' elements and returns the name attribute.
      *
      * @param element The operation element
      * @return String containing the name attribute of the element.
-     * @throws IllegalConfigException
+     * @throws IllegalConfigException if the element is not of type <code>Operation</code>, <code>Subsystem</code> or
+     *                                <code>Organization</code> OR element's <code>name</code> attribute is not set.
      */
     static String parseChildElem(final Element element) throws IllegalConfigException {
 
@@ -150,8 +148,8 @@ public final class AuthorizationManager {
             throw new IllegalArgumentException("Element cannot be null");
         }
 
-        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Subsystem") &&
-                !element.getName().equalsIgnoreCase("Organization")) {
+        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Subsystem")
+            && !element.getName().equalsIgnoreCase("Organization")) {
             throw new IllegalConfigException("Element must be of type 'Operation', 'Subsystem' or 'Organization'");
         }
 
@@ -167,15 +165,13 @@ public final class AuthorizationManager {
     }
 
     /**
-     * Parse the content of an Attributes element. The element can contain 0 or
-     * more Attribute elements which will be transformed into
-     * AuthorizationAttributes and returned in a HashMap with attribute name as
-     * key.
+     * Parse the content of an Attributes element. The element can contain 0 or more Attribute elements which will be
+     * transformed into AuthorizationAttributes and returned in a HashMap with attribute name as key.
      *
      * @param element The DOM element that contains Attribute child elements.
-     * @return HashMap with AuthorizationAttributes as value and attribute name
-     *         as key.
-     * @throws IllegalConfigException
+     * @return HashMap with AuthorizationAttributes as value and attribute name as key.
+     * @throws IllegalConfigException if element is not of type <code>Operations</code>, <code>Affiliation</code> or
+     *                                <code>Subsystems</code>
      */
     static HashSet parseListElem(final Element element) throws IllegalConfigException {
         final HashSet operations = new HashSet();
@@ -185,8 +181,8 @@ public final class AuthorizationManager {
             throw new IllegalArgumentException("Element cannot be null.");
         }
 
-        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") &&
-                !element.getName().equalsIgnoreCase("Affiliation")) {
+        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems")
+            && !element.getName().equalsIgnoreCase("Affiliation")) {
             throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems' or 'Affiliation'");
         }
 
@@ -205,7 +201,7 @@ public final class AuthorizationManager {
      *
      * @param element The XML element representing the client service
      * @return The object representing the client service
-     * @throws IllegalConfigException
+     * @throws IllegalConfigException if the name attribute is not set for the given element
      */
     static AuthorizationClient parseClientElem(final Element element) throws IllegalConfigException {
         final String name;
@@ -275,7 +271,7 @@ public final class AuthorizationManager {
      * @param element   Parent element
      * @param childName Name of the child node
      * @return The content of the child element
-     * @throws IllegalConfigException
+     * @throws IllegalConfigException if the content of the child element is null
      */
     private static String getChildContent(final Element element, final String childName) throws IllegalConfigException {
         final String value = element.getChildText(childName);
@@ -291,12 +287,11 @@ public final class AuthorizationManager {
      *
      * @param servicePrincipal the client object identifier
      * @return the client object for the identifier
-     * @throws IllegalArgumentException if the client identifier is null or ""
      */
     private AuthorizationClient getAuthzClient(final String servicePrincipal) {
         /* Is the manager activated? */
-        if (activated == false) {
-            throw new NoConfigException("Authorization manager is not configured");
+        if (!activated) {
+            throw new NoConfigException();
         }
 
         /* Validate input parameters */
@@ -316,7 +311,8 @@ public final class AuthorizationManager {
      * @throws UnknownServicePrincipalException
      *          if the service principal does not exist
      */
-    public boolean allowAccessTo(final String servicePrincipal, final String[] requestedAttributes) throws UnknownServicePrincipalException {
+    public boolean allowAccessTo(final String servicePrincipal, final String[] requestedAttributes)
+            throws UnknownServicePrincipalException {
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
 
         if (authzClient == null) {
@@ -335,7 +331,8 @@ public final class AuthorizationManager {
      * @throws UnknownServicePrincipalException
      *          if the service principal does not exist
      */
-    public boolean allowSSOForAttributes(final String servicePrincipal, final String[] requestedAttributes) throws UnknownServicePrincipalException {
+    public boolean allowSSOForAttributes(final String servicePrincipal, final String[] requestedAttributes)
+            throws UnknownServicePrincipalException {
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
 
         if (authzClient == null) {
@@ -354,7 +351,8 @@ public final class AuthorizationManager {
      * @throws UnknownServicePrincipalException
      *          if the servicePrincipal does not exist
      */
-    public boolean allowOperations(final String servicePrincipal, final String[] requestedOperations) throws UnknownServicePrincipalException {
+    public boolean allowOperations(final String servicePrincipal, final String[] requestedOperations)
+            throws UnknownServicePrincipalException {
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
 
         if (authzClient == null) {
@@ -375,15 +373,15 @@ public final class AuthorizationManager {
         }
 
         /* Generate a list of attributes that is allowed to be cached */
-        HashSet newCachableAttributes = new HashSet();
-        Iterator clientIt = newClients.keySet().iterator();
+        final HashSet newCachableAttributes = new HashSet();
+        final Iterator clientIt = newClients.keySet().iterator();
         while (clientIt.hasNext()) {
-            AuthorizationClient authzClient = (AuthorizationClient) newClients.get(clientIt.next());
+            final AuthorizationClient authzClient = (AuthorizationClient) newClients.get(clientIt.next());
 
-            HashMap attributes = authzClient.getAttributes();
-            Iterator attrIt = attributes.keySet().iterator();
+            final HashMap attributes = authzClient.getAttributes();
+            final Iterator attrIt = attributes.keySet().iterator();
             while (attrIt.hasNext()) {
-                AuthorizationAttribute attr = (AuthorizationAttribute) attributes.get(attrIt.next());
+                final AuthorizationAttribute attr = (AuthorizationAttribute) attributes.get(attrIt.next());
                 if (attr.getAllowSSO()) {
                     newCachableAttributes.add(attr.getName());
                 }
@@ -410,7 +408,8 @@ public final class AuthorizationManager {
 
         final String fileName = (String) properties.get("authorizationDatabase");
         if (fileName == null || fileName.equals("")) {
-            messageLogger.logWarn("The 'authorizationDatabase' property is not set (setConfig). Authorization database was NOT reloaded.");
+            messageLogger.logWarn(
+                    "The 'authorizationDatabase' property is not set (setConfig). Authorization database was NOT reloaded.");
             return;
         }
 
@@ -422,7 +421,8 @@ public final class AuthorizationManager {
         } catch (JDOMException e) {
             messageLogger.logWarn("Error during parsing of authorization database file. Still using old database.", e);
         } catch (IOException e) {
-            messageLogger.logWarn("IOException during parsing of authorization database file. Still using old database.", e);
+            messageLogger.logWarn(
+                    "IOException during parsing of authorization database file. Still using old database.", e);
         } catch (IllegalConfigException e) {
             messageLogger.logWarn("Error during authorization database generation. Still using old database.", e);
         }
@@ -431,7 +431,7 @@ public final class AuthorizationManager {
     /**
      * Returns the service properties for a given service.
      *
-     * @param servicePrincipal
+     * @param servicePrincipal the principal of the service
      * @return a hashmap with properties for a given service
      * @throws UnknownServicePrincipalException
      *          if the service principal does not exist
@@ -454,11 +454,12 @@ public final class AuthorizationManager {
     /**
      * Returns the seclevel for a set of attributes for a given service.
      *
-     * @param servicePrincipal
-     * @param requestedAttributes
+     * @param servicePrincipal    the service principal of the requested service
+     * @param requestedAttributes the requested attributes
      * @return integer >= 0
      * @throws UnknownServicePrincipalException
-     *          if the service principal does not exist
+     *                                   if the service principal does not exist
+     * @throws UnknownAttributeException if one or more of the requested attributes does not exist
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
      */
     public int getSecLevel(final String servicePrincipal, final String[] requestedAttributes)
@@ -487,7 +488,7 @@ public final class AuthorizationManager {
     /**
      * Returns the configured attributes for a given service.
      *
-     * @param servicePrincipal
+     * @param servicePrincipal the principal of the requested service
      * @return A string array with the attribute names that is configured for the service.
      * @throws UnknownServicePrincipalException
      *          if the servicePrincipal does not exist
@@ -510,7 +511,7 @@ public final class AuthorizationManager {
     /**
      * Returns the configured subsystems for a given service.
      *
-     * @param servicePrincipal
+     * @param servicePrincipal the principal of the requested service
      * @return A string array with the subsystem names that is configured for the service.
      * @throws UnknownServicePrincipalException
      *          if the servicePrincipal does not exist
@@ -533,7 +534,7 @@ public final class AuthorizationManager {
     /**
      * Returns the configured operations for a given service.
      *
-     * @param servicePrincipal
+     * @param servicePrincipal the principal of the requested service
      * @return A string array with the operation names that is configured for the service.
      * @throws UnknownServicePrincipalException
      *          if the servicePrincipal does not exist

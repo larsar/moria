@@ -25,9 +25,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- * Represents a web service. A web service has a name, id, url and attributes.
- * The attributes are flattened (for optimization) from a set of profiles,
- * allowed and denied attributes.
+ * Represents a web service. A web service has a name, id, url and attributes. The attributes are flattened (for
+ * optimization) from a set of profiles, allowed and denied attributes.
  */
 final class AuthorizationClient {
 
@@ -39,49 +38,48 @@ final class AuthorizationClient {
     /**
      * Unique identifier (principal) for the client.
      */
-    private String name;
+    private final String name;
 
     /**
      * Common name of the service.
      */
-    private String displayName;
+    private final String displayName;
 
     /**
-     * Home page URL for web service. Used for creating hyperlinks (together
-     * with the name of the web service).
+     * Home page URL for web service. Used for creating hyperlinks (together with the name of the web service).
      */
-    private String url;
+    private final String url;
 
     /**
      * Language preferred by the web service.
      */
-    private String language;
+    private final String language;
 
     /**
-     * The organization the webservice sets as default. Typically this is set
-     * to the organization that the web service belongs to.
+     * The organization the webservice sets as default. Typically this is set to the organization that the web service
+     * belongs to.
      */
-    private String home;
+    private final String home;
 
     /**
      * The organizations that the service belongs to.
      */
-    private HashSet affiliation;
+    private final HashSet affiliation;
 
     /**
      * The operations the client can perform.
      */
-    private HashSet operations;
+    private final HashSet operations;
 
     /**
      * The subsystems the client can use proxy authentication for.
      */
-    private HashSet subsystems;
+    private final HashSet subsystems;
 
     /**
      * Attributes the client can query.
      */
-    private HashMap attributes = new HashMap();
+    private final HashMap attributes;
 
     /**
      * The properties of this object. Used to transport internal data outside of the package.
@@ -160,8 +158,7 @@ final class AuthorizationClient {
     }
 
     /**
-     * Check all if all the requested attributes are legal for this web
-     * service.
+     * Check all if all the requested attributes are legal for this web service.
      *
      * @param requestedAttributes Names of all requested attributes.
      * @return true if access to the attributes is granted, else false
@@ -187,14 +184,13 @@ final class AuthorizationClient {
     }
 
     /**
-     * Check attributes for use with SSO. If all attributes are registered in
-     * the web services's attributes list and all attributes are allowed to use
-     * with SSO, then so be it.
+     * Check attributes for use with SSO. If all attributes are registered in the web services's attributes list and all
+     * attributes are allowed to use with SSO, then so be it.
      *
      * @param requestedAttributes The names of all requested attributes
      * @return true if the attributes can be used with SSO, else false
      */
-    boolean allowSSOForAttributes(final String requestedAttributes[]) {
+    boolean allowSSOForAttributes(final String[] requestedAttributes) {
         boolean allow = true;
 
         if (requestedAttributes == null) {
@@ -203,7 +199,8 @@ final class AuthorizationClient {
 
         for (int i = 0; i < requestedAttributes.length; i++) {
             final String attrName = requestedAttributes[i];
-            if (!attributes.containsKey(attrName) || !((AuthorizationAttribute) attributes.get(attrName)).getAllowSSO()) {
+            if (!attributes.containsKey(attrName)
+                || !((AuthorizationAttribute) attributes.get(attrName)).getAllowSSO()) {
                 allow = false;
                 break;
             }
@@ -212,12 +209,10 @@ final class AuthorizationClient {
     }
 
     /**
-     * Returns true if the supplied organization name is affiliated with the
-     * client.
+     * Returns true if the supplied organization name is affiliated with the client.
      *
      * @param organization Name of the organization to match
-     * @return True if the supplied organization name is affiliated with the
-     *         client
+     * @return True if the supplied organization name is affiliated with the client
      */
     boolean hasAffiliation(final String organization) {
         if (organization == null || organization.equals("")) {
@@ -228,8 +223,7 @@ final class AuthorizationClient {
     }
 
     /**
-     * Returns true if all elements in the requestedOperations array is
-     * represented in the objects operations set.
+     * Returns true if all elements in the requestedOperations array is represented in the objects operations set.
      *
      * @param requestedOperations A string array of operation names
      * @return True if all operations are allowed, else false.
@@ -254,8 +248,7 @@ final class AuthorizationClient {
     }
 
     /**
-     * Returns true if all elements in the requestedOperations array is
-     * represented in the objects operations set.
+     * Returns true if all elements in the requestedOperations array is represented in the objects operations set.
      *
      * @param requestedSubsystems A string array of operation names
      * @return True if all operations are allowed, else false.
@@ -292,14 +285,14 @@ final class AuthorizationClient {
         if (object instanceof AuthorizationClient) {
             final AuthorizationClient client = (AuthorizationClient) object;
             if (client.getName().equals(name)
-                    && client.getDisplayName().equals(displayName)
-                    && client.getURL().equals(url)
-                    && client.getLanguage().equals(language)
-                    && client.getHome().equals(home)
-                    && client.getAffiliation().equals(affiliation)
-                    && client.getOperations().equals(operations)
-                    && client.getSubsystems().equals(subsystems)
-                    && client.getAttributes().equals(attributes)) {
+                && client.getDisplayName().equals(displayName)
+                && client.getURL().equals(url)
+                && client.getLanguage().equals(language)
+                && client.getHome().equals(home)
+                && client.getAffiliation().equals(affiliation)
+                && client.getOperations().equals(operations)
+                && client.getSubsystems().equals(subsystems)
+                && client.getAttributes().equals(attributes)) {
                 return true;
             }
         }
@@ -307,8 +300,7 @@ final class AuthorizationClient {
     }
 
     /**
-     * Generate a hash code for the object. The hash code is computed from all
-     * fields.
+     * Generate a hash code for the object. The hash code is computed from all fields.
      *
      * @return The hash code
      */
@@ -333,10 +325,19 @@ final class AuthorizationClient {
     /**
      * Returns a string representation of this object.
      *
-     * @return A string representation of this object: "Name: NAME DisplayName: DISPLAYNAME URL: URL Language: LANGUAGE Home: HOME Affiliations: AFFILIATION Operations: OPERATIONS Attributes: ATTRIBUTES
+     * @return A string representation of this object: "Name: NAME DisplayName: DISPLAYNAME URL: URL Language: LANGUAGE
+     *         Home: HOME Affiliations: AFFILIATION Operations: OPERATIONS Attributes: ATTRIBUTES
      */
-    public final String toString() {
-        return "Name: " + name + " DisplayName: " + displayName + " URL: " + url + " Language: " + language + " Home: " + home + " Affiliation: " + affiliation + " Operations: " + operations + "Attributes: " + attributes;
+    public String toString() {
+        return "Name: " + name + " DisplayName: " + displayName + " URL: " + url + " Language: " + language
+               + " Home: "
+               + home
+               + " Affiliation: "
+               + affiliation
+               + " Operations: "
+               + operations
+               + "Attributes: "
+               + attributes;
     }
 
     /**
@@ -344,7 +345,7 @@ final class AuthorizationClient {
      *
      * @return The URL for the main page of the client service.
      */
-    public final String getURL() {
+    public String getURL() {
         return new String(url);
     }
 
@@ -353,7 +354,7 @@ final class AuthorizationClient {
      *
      * @return Clients principal.
      */
-    public final String getName() {
+    public String getName() {
         return new String(name);
     }
 
@@ -362,7 +363,7 @@ final class AuthorizationClient {
      *
      * @return Name of the client, to be displayed to the user.
      */
-    public final String getDisplayName() {
+    public String getDisplayName() {
         return new String(displayName);
     }
 
@@ -371,7 +372,7 @@ final class AuthorizationClient {
      *
      * @return Language of the client service.
      */
-    public final String getLanguage() {
+    public String getLanguage() {
         return new String(language);
     }
 
@@ -380,7 +381,7 @@ final class AuthorizationClient {
      *
      * @return The short for the home organization of the client service.
      */
-    public final String getHome() {
+    public String getHome() {
         return new String(home);
     }
 
@@ -421,22 +422,22 @@ final class AuthorizationClient {
     }
 
     /**
-     * Get the properties for this client. The properties object contains the
-     * data that should be transferred to other packages.
+     * Get the properties for this client. The properties object contains the data that should be transferred to other
+     * packages.
      *
      * @return the properties for this object
      */
-    public final HashMap getProperties() {
+    public HashMap getProperties() {
         return properties;
     }
 
     /**
      * Return the highest secLevel for the requested attributes.
      *
-     * @param requestedAttributes
+     * @param requestedAttributes the requested attributes
      * @return the highest of the attributes seclevel, 0 if no attributes are requested
-     * @throws UnknownAttributeException if one (or more) of the requested attributes are not present
-     *                                   in the authorization client
+     * @throws UnknownAttributeException if one (or more) of the requested attributes are not present in the
+     *                                   authorization client
      */
     int getSecLevel(final String[] requestedAttributes) throws UnknownAttributeException {
         if (requestedAttributes == null) {
@@ -449,7 +450,8 @@ final class AuthorizationClient {
 
         int res = 0;
         for (int i = 0; i < requestedAttributes.length; i++) {
-            final AuthorizationAttribute authzAttribute = (AuthorizationAttribute) attributes.get(requestedAttributes[i]);
+            final AuthorizationAttribute authzAttribute = (AuthorizationAttribute) attributes.get(
+                    requestedAttributes[i]);
             if (authzAttribute == null) {
                 throw new UnknownAttributeException("Attribute '" + authzAttribute + "' does not exist.");
             }

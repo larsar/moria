@@ -25,12 +25,14 @@ import junit.framework.TestSuite;
 import junit.framework.TestCase;
 
 /**
+ * Test suite for ConfigurationManager class.
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
-public class ConfigurationManagerTest extends TestCase {
+public final class ConfigurationManagerTest extends TestCase {
 
-    String configBaseProperty = "no.feide.moria.configuration.base";
+    private final String configBaseProperty = "no.feide.moria.configuration.base";
 
     /**
      * Initiate all tests.
