@@ -20,7 +20,6 @@
 
 package no.feide.moria.store;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -30,7 +29,7 @@ import java.util.HashMap;
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public final class MoriaAuthnAttempt implements Serializable {
+public final class MoriaAuthnAttempt implements MoriaStoreData {
 
     /**
      * The inital attributes requested by the initiating service.

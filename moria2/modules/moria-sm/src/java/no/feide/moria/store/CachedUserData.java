@@ -20,7 +20,6 @@
 
 package no.feide.moria.store;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -30,7 +29,7 @@ import java.util.HashMap;
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public final class CachedUserData implements Serializable {
+public final class CachedUserData implements MoriaStoreData {
 
     /** The internal hashmap used to store the attributes. */
     private final HashMap attributes;
