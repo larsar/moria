@@ -193,7 +193,7 @@ extends TestCase {
             Assert.assertNull("Attributes were returned", attributes);
             Assert.fail("Authentication without configuration succeeded");
 
-        } catch (DirectoryManagerConfigurationException e) {
+        } catch (IllegalStateException e) {
             // Expected.
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
