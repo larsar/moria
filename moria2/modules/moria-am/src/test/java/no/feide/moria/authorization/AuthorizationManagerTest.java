@@ -68,13 +68,15 @@ public final class AuthorizationManagerTest extends TestCase {
         subsystems.add("sub2");
 
         final HashSet affiliation = new HashSet();
-        affiliation.add("uninett.no");
-        affiliation.add("feide.no");
+        affiliation.add("testorg1.no");
+        affiliation.add("testorg2.no");
+        
+        final HashSet orgsAllowed = new HashSet();
 
         /* Set configuration */
         final AuthorizationClient authzClient = new AuthorizationClient("test", "testDisplay",
-                                                                        "http://moria.sf.net/", "en", "feide.no",
-                                                                        affiliation, operations, subsystems,
+                                                                        "http://moria.sf.net/", "en", "testorg2.no",
+                                                                        affiliation, orgsAllowed, operations, subsystems,
                                                                         attributes);
         authzClients = new HashMap();
         authzClients.put("test", authzClient);
@@ -105,7 +107,7 @@ public final class AuthorizationManagerTest extends TestCase {
         clientElem.addContent(child);
 
         child = new Element("URL");
-        child.setText("http://www.feide.no/");
+        child.setText("http://www.testorg2.no/");
         clientElem.addContent(child);
 
         child = new Element("Language");
@@ -113,7 +115,7 @@ public final class AuthorizationManagerTest extends TestCase {
         clientElem.addContent(child);
 
         child = new Element("Home");
-        child.setText("uio.no");
+        child.setText("testorg2.no");
         clientElem.addContent(child);
 
         /* Operations */
@@ -130,9 +132,15 @@ public final class AuthorizationManagerTest extends TestCase {
 
         /* Affiliation */
         final Element affiliationElem = new Element("Affiliation");
-        affiliationElem.addContent(createChildElem("Organization", "uio.no"));
-        affiliationElem.addContent(createChildElem("Organization", "uninett.no"));
+        affiliationElem.addContent(createChildElem("Organization", "testorg2.no"));
+        affiliationElem.addContent(createChildElem("Organization", "testorg1.no"));
         clientElem.addContent(affiliationElem);
+        
+        /* Organizations */
+        final Element orgsAllowedElem = new Element("OrgsAllowed");
+        orgsAllowedElem.addContent(createChildElem("Organization", "testorg2.no"));
+        orgsAllowedElem.addContent(createChildElem("Organization", "testorg1.no"));
+        clientElem.addContent(orgsAllowedElem);
 
         /* Attributes */
         final Element attributesElem = new Element("Attributes");
@@ -340,8 +348,8 @@ public final class AuthorizationManagerTest extends TestCase {
      * @see AuthorizationManager#parseListElem(org.jdom.Element)
      */
     public static void testParseListElem() throws IllegalConfigException {
-        final String[] elementType = new String[]{"Operations", "Affiliation", "Subsystems"};
-        final String[] childType = new String[]{"Operation", "Organization", "Subsystem"};
+        final String[] elementType = new String[]{"Operations", "Affiliation", "OrgsAllowed", "Subsystems"};
+        final String[] childType = new String[]{"Operation", "Organization", "Organization", "Subsystem"};
 
         for (int i = 0; i < elementType.length; i++) {
             Element operationsElem = new Element(elementType[i]);
@@ -427,9 +435,15 @@ public final class AuthorizationManagerTest extends TestCase {
         assertFalse("Subsystem should  not be allowed", client.allowSubsystems(new String[]{"sub1", "wrongSubsystem"}));
 
         /* Check affiliation */
-        assertTrue("Should have affiliation", client.hasAffiliation("uio.no"));
-        assertTrue("Should have affiliation", client.hasAffiliation("uninett.no"));
+        assertTrue("Should have affiliation", client.hasAffiliation("testorg2.no"));
+        assertTrue("Should have affiliation", client.hasAffiliation("testorg1.no"));
         assertFalse("Should not have affiliation", client.hasAffiliation("wrong.no"));
+        
+        /* Check allowed userorgs */
+        assertTrue("Should be allowed for", client.allowUserorg("testorg2.no"));
+        assertTrue("Should be allowed for", client.allowUserorg("testorg1.no"));
+        assertFalse("Should not be allowed for", client.allowUserorg("wrong.no"));
+
 
         /* Check attributes */
         assertTrue("Should have access to", client.allowAccessTo(new String[]{"attr1", "attr2", "attr3"}));
@@ -441,9 +455,9 @@ public final class AuthorizationManagerTest extends TestCase {
         /* Check fields of generated object */
         assertEquals("Name differs", "client1", client.getName());
         assertEquals("DisplayName differs", "Foobar", client.getDisplayName());
-        assertEquals("URL differs", "http://www.feide.no/", client.getURL());
+        assertEquals("URL differs", "http://www.testorg2.no/", client.getURL());
         assertEquals("Language differs", "no", client.getLanguage());
-        assertEquals("Home differs", "uio.no", client.getHome());
+        assertEquals("Home differs", "testorg2.no", client.getHome());
 
         /* Display name is required */
         clientElem.removeChild("URL");
@@ -478,7 +492,7 @@ public final class AuthorizationManagerTest extends TestCase {
         }
 
         final Element child = new Element("HomeOrganization");
-        child.setText("uio.no");
+        child.setText("testorg2.no");
         clientElem.addContent(child);
     }
 
@@ -903,6 +917,47 @@ public final class AuthorizationManagerTest extends TestCase {
 
         final HashSet actual = authMan.getAttributes("test");
         compareHashSets("Attribute", expected, actual);
+    }
+    
+    /**
+     * Test the allowUserorg method.
+     *
+     * @throws UnknownServicePrincipalException
+     *
+     * @see AuthorizationManager#allowUserorg(java.lang.String)
+     */
+    public void testAllowUserorg() throws UnknownServicePrincipalException {
+        final AuthorizationManager authMan = new AuthorizationManager();
+
+        final Properties props = new Properties();
+        props.put("authorizationDatabase", this.getClass().getResource("/am-data.xml").getPath());
+        authMan.setConfig(props);
+
+        /* Invalid arguments */
+        try {
+            authMan.getAttributes(null);
+            fail("IllegalArgumentException should be raised, servicePrincipal is null");
+        } catch (IllegalArgumentException success) {
+        }
+        try {
+            authMan.getAttributes("");
+            fail("IllegalArgumentException should be raised, servicePrincipal is empty string");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Non-existing principal */
+        try {
+            authMan.getAttributes("doesNotExist");
+            fail("UnknownServicePrincipalException should be raised, invalid servicePrincipal");
+        } catch (UnknownServicePrincipalException e) {
+        }
+
+       final HashSet expected = new HashSet();
+        expected.add("testorg2.no");
+        expected.add("testorg1.no");
+       
+        final HashSet actual = authMan.getOrgsAllowed("test");
+        compareHashSets("OrgsAllowed", expected, actual);
     }
 
     /**

@@ -78,86 +78,93 @@ public final class AuthorizationClientTest extends TestCase {
 
         /* Name */
         try {
-            new AuthorizationClient(null, "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient(null, "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (name = null)");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            new AuthorizationClient("", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (name = '')");
         } catch (IllegalArgumentException success) {
         }
 
         /* Display name */
         try {
-            new AuthorizationClient("foo", null, "foo", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", null, "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (displayName = null)");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            new AuthorizationClient("foo", "", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "", "foo", "foo", "foo", emptySet, emptySet,emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (displayName = '')");
         } catch (IllegalArgumentException success) {
         }
 
         /* URL */
         try {
-            new AuthorizationClient("foo", "foo", "", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "", "foo", "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (url = null)");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            new AuthorizationClient("foo", "foo", "", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "", "foo", "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (url = '')");
         } catch (IllegalArgumentException success) {
         }
 
         /* Language */
         try {
-            new AuthorizationClient("foo", "foo", "foo", null, "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "foo", null, "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (language = null)");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            new AuthorizationClient("foo", "foo", "foo", null, "foo", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "foo", null, "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (language = '')");
         } catch (IllegalArgumentException success) {
         }
 
         /* Home */
         try {
-            new AuthorizationClient("foo", "foo", "foo", "foo", null, emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "foo", "foo", null, emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (home = null)");
         } catch (IllegalArgumentException success) {
         }
 
         try {
-            new AuthorizationClient("foo", "foo", "foo", "foo", "", emptySet, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "foo", "foo", "", emptySet, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (home = '')");
         } catch (IllegalArgumentException success) {
         }
 
         /* Affiliation */
         try {
-            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", null, emptySet, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", null, emptySet, emptySet, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (affiliation = null)");
+        } catch (IllegalArgumentException success) {
+        }
+        
+        /* Organizations */
+        try {
+            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, null, emptySet, emptySet, emptyMap);
+            fail("Should raise IllegalArgumentException (orgsAllowed = null)");
         } catch (IllegalArgumentException success) {
         }
 
         /* Operations */
         try {
-            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, null, emptySet, emptyMap);
+            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, null, emptySet, emptyMap);
             fail("Should raise IllegalArgumentException (operations = null)");
         } catch (IllegalArgumentException success) {
         }
 
         /* Attributes */
         try {
-            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, null);
+            new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, null);
             fail("Should raise IllegalArgumentException (attributes = null)");
         } catch (IllegalArgumentException success) {
         }
@@ -168,16 +175,19 @@ public final class AuthorizationClientTest extends TestCase {
         final HashSet oper = new HashSet();
         final HashSet affil = new HashSet();
         final HashSet subsys = new HashSet();
+        final HashSet orgs = new HashSet();
         oper.add("oper1");
         oper.add("oper2");
         affil.add("org1");
         affil.add("org2");
+        orgs.add("allowedOrg1");
+        orgs.add("allowedOrg2");
         subsys.add("sub1");
         subsys.add("sub2");
 
 
         /* Verify a valid object */
-        final AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", affil, oper, subsys, attrs);
+        final AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", affil, orgs, oper, subsys, attrs);
 
         assertEquals("Name differs", "name", client.getName());
         assertEquals("Display name differs", "display", client.getDisplayName());
@@ -185,6 +195,7 @@ public final class AuthorizationClientTest extends TestCase {
         assertEquals("Language differs", "lang", client.getLanguage());
         assertEquals("Home differs", "home", client.getHome());
         assertEquals("Affiliation differs", affil, client.getAffiliation());
+        assertEquals("OrgsAllowed differs", orgs, client.getOrgsAllowed());
         assertEquals("Operations differs", oper, client.getOperations());
         assertEquals("Subsystems differs", subsys, client.getSubsystems());
         assertEquals("Attributes differs", attrs, client.getAttributes());
@@ -205,7 +216,7 @@ public final class AuthorizationClientTest extends TestCase {
      * Test allowSSOForAttributes method.
      */
     public void testAllowSSOForAttributes() {
-        AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+        AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
 
         /* Illegal arguments */
         try {
@@ -222,7 +233,7 @@ public final class AuthorizationClientTest extends TestCase {
         attributes.put("attr2", new AuthorizationAttribute("attr2", true, 2));
         attributes.put("attr3", new AuthorizationAttribute("attr3", true, 2));
 
-        client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, attributes);
+        client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, attributes);
 
         /* SSO for attributes */
         assertFalse("SSO should not be allowed", client.allowSSOForAttributes(new String[]{"attr1"}));
@@ -235,7 +246,7 @@ public final class AuthorizationClientTest extends TestCase {
      * Test accessTo method.
      */
     public void testAllowAccessTo() {
-        AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptyMap);
+        AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, emptyMap);
 
         /* No registered attributes */
         assertFalse("Non existing attributes", client.allowAccessTo(new String[]{"foo", "bar"}));
@@ -244,7 +255,7 @@ public final class AuthorizationClientTest extends TestCase {
         attributes.put("attr1", new AuthorizationAttribute("attr1", false, 2));
         attributes.put("attr2", new AuthorizationAttribute("attr2", true, 2));
 
-        client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, attributes);
+        client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, emptySet, attributes);
 
         /* Illegal arguments */
         try {
@@ -259,6 +270,30 @@ public final class AuthorizationClientTest extends TestCase {
         assertTrue("Should get access", client.allowAccessTo(new String[]{"attr1", "attr2"}));
         assertFalse("Should not get access", client.allowAccessTo(new String[]{"attr2", "attr3"}));
     }
+    
+    /**
+     * Test the allowUserorg method
+     *
+     */
+    public void testAllowUserorg() {
+        final HashSet organization= new HashSet();
+        organization.add("testorg2.no");
+        organization.add("testorg1.no");
+
+        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, organization, emptySet, emptySet, emptyMap);
+
+        /* Illegal arguments */
+        try {
+            client.allowUserorg(null);
+            fail("Should raise IllegalArgumentException, null value");
+        } catch (IllegalArgumentException success) {
+        }
+
+        /* Legal arguments */
+        assertTrue("Should be allowed for ", client.allowUserorg("testorg2.no"));
+        assertTrue("Should be allowed for ", client.allowUserorg("testorg1.no"));
+        assertFalse("Should not be allowed for ", client.allowUserorg("wrong.no"));
+    }
 
     /**
      * Test the allowOperations method.
@@ -270,9 +305,9 @@ public final class AuthorizationClientTest extends TestCase {
         operations.add("localAuth");
         operations.add("directAuth");
 
-        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, operations, emptySet, emptyMap);
+        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, operations, emptySet, emptyMap);
 
-        /* Illegal arguments */
+        /* Illegal argument */
         try {
             client.allowOperations(null);
             fail("Should raise IllegalArgumentException, null value");
@@ -296,7 +331,7 @@ public final class AuthorizationClientTest extends TestCase {
         subsystems.add("sub2");
         subsystems.add("sub1");
 
-        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, subsystems, emptyMap);
+        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, emptySet, emptySet, subsystems, emptyMap);
 
         /* Illegal arguments */
         try {
@@ -318,10 +353,10 @@ public final class AuthorizationClientTest extends TestCase {
      */
     public void testHasAffiliation() {
         final HashSet affiliation = new HashSet();
-        affiliation.add("uio.no");
-        affiliation.add("uninett.no");
+        affiliation.add("testorg2.no");
+        affiliation.add("testorg1.no");
 
-        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affiliation, emptySet, emptySet, emptyMap);
+        final AuthorizationClient client = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affiliation, emptySet, emptySet, emptySet, emptyMap);
 
         /* Illegal arguments */
         try {
@@ -337,7 +372,7 @@ public final class AuthorizationClientTest extends TestCase {
         }
 
         /* Legal arguments */
-        assertTrue("Should be affiliated with", client.hasAffiliation("uio.no"));
+        assertTrue("Should be affiliated with", client.hasAffiliation("testorg2.no"));
         assertFalse("Should not be affiliated with", client.hasAffiliation("wrong.no"));
     }
 
@@ -353,54 +388,61 @@ public final class AuthorizationClientTest extends TestCase {
         final HashSet oper = new HashSet();
         final HashSet affil = new HashSet();
         final HashSet subsys = new HashSet();
+        final HashSet orgs = new HashSet();
         oper.add("oper1");
         oper.add("oper2");
         affil.add("org1");
         affil.add("org2");
+        orgs.add("allowedOrg1");
+        orgs.add("allowedOrg2");
         subsys.add("sub1");
         subsys.add("sub2");
 
-        final AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
+        final AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs,  oper, subsys, attrs);
 
         /* Identical */
         assertEquals("Should be identical", master.hashCode(),
-                new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs).hashCode());
+                new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, oper, subsys, attrs).hashCode());
 
         /* Name */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("bar", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("bar", "foo", "foo", "foo", "foo", affil, orgs, oper, subsys, attrs).hashCode());
 
         /* Display name */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "bar", "foo", "foo", "foo", affil, oper, subsys, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "bar", "foo", "foo", "foo", affil, orgs, oper, subsys, attrs).hashCode());
 
         /* URL */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "foo", "bar", "foo", "foo", affil, oper, subsys, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "foo", "bar", "foo", "foo", affil, orgs, oper, subsys, attrs).hashCode());
 
         /* Language */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "bar", "foo", affil, oper, subsys, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "bar", "foo", affil, orgs, oper, subsys, attrs).hashCode());
 
         /* Home */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "bar", affil, oper, subsys, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "bar", affil, orgs, oper, subsys, attrs).hashCode());
 
         /* Affiliation */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, oper, subsys, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, orgs, oper, subsys, attrs).hashCode());
+
+        /* Allowed Organizations */
+        assertFalse("Should not be identical",
+                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, emptySet, oper, subsys, attrs).hashCode());
 
         /* Operations */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, emptySet, subsys, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, emptySet, subsys, attrs).hashCode());
 
         /* Subsystems */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, emptySet, attrs).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, oper, emptySet, attrs).hashCode());
 
         /* Attributes */
         assertFalse("Should not be identical",
-                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, emptyMap).hashCode());
+                master.hashCode() == new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, oper, subsys, emptyMap).hashCode());
     }
 
     /**
@@ -415,54 +457,61 @@ public final class AuthorizationClientTest extends TestCase {
         final HashSet oper = new HashSet();
         final HashSet affil = new HashSet();
         final HashSet subsys = new HashSet();
+        final HashSet orgs = new HashSet();
         oper.add("oper1");
         oper.add("oper2");
         affil.add("org1");
         affil.add("org2");
+        orgs.add("allowedOrg1");
+        orgs.add("allowedOrg2");
         subsys.add("sub1");
         subsys.add("sub2");
 
-        final AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs);
+        final AuthorizationClient master = new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, oper, subsys, attrs);
 
         /* Identical */
         assertTrue("Should be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs)));
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, oper, subsys, attrs)));
 
         /* Name */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("bar", "foo", "foo", "foo", "foo", affil, oper, subsys, attrs)));
+                master.equals(new AuthorizationClient("bar", "foo", "foo", "foo", "foo", affil, orgs, oper, subsys, attrs)));
 
         /* Display name */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "bar", "foo", "foo", "foo", affil, oper, subsys, attrs)));
+                master.equals(new AuthorizationClient("foo", "bar", "foo", "foo", "foo", affil, orgs, oper, subsys, attrs)));
 
         /* URL */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "bar", "foo", "foo", affil, oper, subsys, attrs)));
+                master.equals(new AuthorizationClient("foo", "foo", "bar", "foo", "foo", affil, orgs, oper, subsys, attrs)));
 
         /* Language */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "foo", "bar", "foo", affil, oper, subsys, attrs)));
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "bar", "foo", affil, orgs, oper, subsys, attrs)));
 
         /* Home */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "bar", affil, oper, subsys, attrs)));
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "bar", affil, orgs, oper, subsys, attrs)));
 
         /* Affiliation */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, oper, subsys, attrs)));
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", emptySet, orgs, oper, subsys, attrs)));
+
+        /* Allowed Organizations */
+        assertFalse("Should not be identical",
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, emptySet, oper, subsys, attrs)));
 
         /* Operations */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, emptySet, subsys, attrs)));
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, emptySet, subsys, attrs)));
 
         /* Subsystems */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, emptySet, attrs)));
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, oper, emptySet, attrs)));
 
         /* Attributes */
         assertFalse("Should not be identical",
-                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, oper, subsys, emptyMap)));
+                master.equals(new AuthorizationClient("foo", "foo", "foo", "foo", "foo", affil, orgs, oper, subsys, emptyMap)));
     }
 
     /**
@@ -473,7 +522,7 @@ public final class AuthorizationClientTest extends TestCase {
      */
     public void testGetSecLevell() throws UnknownAttributeException {
         /* Invalid arguments */
-        AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", emptySet,
+        AuthorizationClient client = new AuthorizationClient("name", "display", "url", "lang", "home", emptySet, emptySet, 
                 emptySet, emptySet, emptyMap);
         try {
             client.getSecLevel(null);
@@ -486,7 +535,7 @@ public final class AuthorizationClientTest extends TestCase {
         attrs.put("attr1", new AuthorizationAttribute("attr1", true, 1));
         attrs.put("attr2", new AuthorizationAttribute("attr2", false, 2));
 
-        client = new AuthorizationClient("name", "display", "url", "lang", "home", emptySet,
+        client = new AuthorizationClient("name", "display", "url", "lang", "home", emptySet, emptySet, 
                 emptySet, emptySet, attrs);
 
         /* Empty set of requested attributes */
