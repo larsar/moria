@@ -88,13 +88,13 @@ public class Moria {
      * @return A Moria session descriptor.
      * @throws MoriaException If a RemoteException is caught.
      */
-    public String requestSession(String[] attributes, String prefix, String postfix) 
+    public String requestSession(String[] attributes, String prefix, String postfix, boolean denySso) 
     throws MoriaException {
         log.finer("requestSession(String[], String, String)");
         
 	    AuthenticationIF service = (AuthenticationIF)stub;
         try {
-            return service.requestSession(attributes, prefix, postfix);
+            return service.requestSession(attributes, prefix, postfix, denySso);
         } catch (RemoteException e) {
             log.severe("RemoteException caught and re-thrown as MoriaException");
             throw new MoriaException("RemoteException caught", e);
