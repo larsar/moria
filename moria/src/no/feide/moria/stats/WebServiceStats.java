@@ -17,7 +17,6 @@
 
 package no.feide.moria.stats;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 

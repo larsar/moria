@@ -19,14 +19,23 @@ package no.feide.moria;
 
 import java.net.ConnectException;
 import java.security.Security;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Vector;
 import java.util.logging.Logger;
-import javax.naming.*;
-import javax.naming.directory.*;
+
+import javax.naming.AuthenticationException;
+import javax.naming.CommunicationException;
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.TimeLimitExceededException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapReferralException;
-
-import java.io.File;
 
 
 /**

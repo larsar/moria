@@ -17,37 +17,32 @@
 
 package no.feide.moria.servlet;
 
-import java.util.logging.Logger;
-import java.util.Properties;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Enumeration;
-
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
-import no.feide.moria.Configuration;
-import no.feide.moria.ConfigurationException;
-import no.feide.moria.stats.StatsStore;
-import no.feide.moria.stats.WebServiceStats;
-import no.feide.moria.authorization.AuthorizationData;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Cookie;
+
+import no.feide.moria.Configuration;
+import no.feide.moria.ConfigurationException;
+import no.feide.moria.authorization.AuthorizationData;
+import no.feide.moria.stats.StatsStore;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.servlet.VelocityServlet;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.servlet.VelocityServlet;
 
 /**
  * Presents the actual login page.

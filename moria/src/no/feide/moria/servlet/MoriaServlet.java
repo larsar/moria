@@ -17,36 +17,28 @@
 
 package no.feide.moria.servlet;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Cookie;
-
-import org.apache.velocity.Template;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.context.Context;
-import org.apache.velocity.servlet.VelocityServlet;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-
-import java.io.IOException;
 import java.io.FileNotFoundException;
-
-import java.util.logging.Logger;
+import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.HashMap;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
-
+import javax.servlet.ServletConfig;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import no.feide.moria.Configuration;
 import no.feide.moria.ConfigurationException;
+
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.context.Context;
+import org.apache.velocity.servlet.VelocityServlet;
 
 public class MoriaServlet extends VelocityServlet {
 

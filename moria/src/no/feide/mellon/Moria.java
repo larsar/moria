@@ -17,13 +17,13 @@
 
 package no.feide.mellon;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Logger;
+
 import javax.xml.rpc.Stub;
+
 import no.feide.moria.service.*;
 
 /**

@@ -19,7 +19,7 @@ package no.feide.moria.authorization;
 
 import java.util.TimerTask;
 import java.util.logging.Logger;
-import no.feide.moria.Configuration;
+
 import no.feide.moria.ConfigurationException;
 
 /**

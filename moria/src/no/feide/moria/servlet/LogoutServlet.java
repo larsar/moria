@@ -17,33 +17,24 @@
 
 package no.feide.moria.servlet;
 
-import no.feide.moria.servlet.MoriaServlet;
-import no.feide.moria.SessionStore;
-import no.feide.moria.Session;
-import no.feide.moria.NoSuchSessionException;
-import no.feide.moria.SessionException;
-import no.feide.moria.stats.StatsStore;
-import no.feide.moria.utils.URLValidator;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Cookie;
+
+import no.feide.moria.NoSuchSessionException;
+import no.feide.moria.Session;
+import no.feide.moria.SessionException;
+import no.feide.moria.SessionStore;
+import no.feide.moria.stats.StatsStore;
+import no.feide.moria.utils.URLValidator;
 
 import org.apache.velocity.Template;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.servlet.VelocityServlet;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-
-import java.util.HashMap;
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 public class LogoutServlet extends MoriaServlet {
 

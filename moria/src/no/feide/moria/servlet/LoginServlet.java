@@ -17,55 +17,40 @@
 
 package no.feide.moria.servlet;
 
-import java.util.Properties;
-import java.util.Arrays;
-import java.util.logging.Logger;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
-import java.util.Timer;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Vector;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.Vector;
+import java.util.logging.Logger;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Cookie;
 
+import no.feide.moria.BackendException;
 import no.feide.moria.Configuration;
 import no.feide.moria.ConfigurationException;
 import no.feide.moria.Credentials;
-import no.feide.moria.SessionException;
 import no.feide.moria.NoSuchSessionException;
-import no.feide.moria.SessionStore;
 import no.feide.moria.Session;
-import no.feide.moria.User;
-import no.feide.moria.BackendException;
+import no.feide.moria.SessionException;
+import no.feide.moria.SessionStore;
 import no.feide.moria.SessionStoreTask;
-import no.feide.moria.authorization.WebService;
 import no.feide.moria.stats.StatsStore;
 
 import org.apache.velocity.Template;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.servlet.VelocityServlet;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
-import javax.xml.rpc.server.ServletEndpointContext;
-
-import com.oreilly.servlet.LocaleNegotiator;
 
 /**
  * Presents the actual login page.

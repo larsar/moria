@@ -17,15 +17,14 @@
 
 package no.feide.moria.service;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import java.net.URL;
-import java.security.Principal;
 import java.rmi.RemoteException;
-import java.net.MalformedURLException;
-
-import java.util.*;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.xml.rpc.ServiceException;
@@ -35,13 +34,11 @@ import javax.xml.rpc.server.ServletEndpointContext;
 import no.feide.moria.Configuration;
 import no.feide.moria.ConfigurationException;
 import no.feide.moria.Session;
-import no.feide.moria.SessionStore;
 import no.feide.moria.SessionException;
-import no.feide.moria.BackendException;
-import no.feide.moria.Credentials;
-import no.feide.moria.authorization.WebService;
+import no.feide.moria.SessionStore;
 import no.feide.moria.authorization.AuthorizationData;
 import no.feide.moria.authorization.AuthorizationTask;
+import no.feide.moria.authorization.WebService;
 import no.feide.moria.stats.StatsStore;
 import no.feide.moria.utils.URLValidator;
 

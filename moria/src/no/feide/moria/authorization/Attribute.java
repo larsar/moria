@@ -17,9 +17,9 @@
 
 package no.feide.moria.authorization;
 
-import java.util.logging.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 
 /**

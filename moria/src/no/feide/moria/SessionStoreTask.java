@@ -18,7 +18,7 @@
 package no.feide.moria;
 
 import java.util.TimerTask;
-import java.util.logging.Logger;    
+import java.util.logging.Logger;
 
 
 /**

@@ -19,7 +19,6 @@ package no.feide.moria.service;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 
 public interface AuthenticationIF extends Remote {
     

@@ -17,15 +17,15 @@
 
 package no.feide.moria;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.File;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.HashMap;
-import java.util.Enumeration;
-import java.util.Locale;
 
 
 /**

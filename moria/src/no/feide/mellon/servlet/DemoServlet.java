@@ -17,15 +17,16 @@
 
 package no.feide.mellon.servlet;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * A simple servlet to be used to demonstrate the use of the

@@ -18,13 +18,13 @@
 package no.feide.moria;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Vector;
 import java.util.logging.Logger;
-import javax.naming.directory.BasicAttributes;
-import javax.servlet.ServletContext;
 
-import no.feide.moria.authorization.WebService;
 import no.feide.moria.authorization.AuthorizationData;
+import no.feide.moria.authorization.WebService;
 import no.feide.moria.stats.StatsStore;
 
 public class Session {

@@ -17,13 +17,12 @@
 
 package no.feide.moria.stats;
 
-import java.util.logging.Logger;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
-import no.feide.moria.Session;
+import java.util.Map;
+import java.util.logging.Logger;
 
 
 /**
