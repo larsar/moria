@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 FEIDE
+ * Copyright (c) 2004 UNINETT FAS
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
  *
  * $Id$
  */
@@ -41,17 +42,17 @@ public class AuthorizationAttribute {
     //private static Logger log = Logger.getLogger(AuthorizationAttribute.class.toString());
 
     /**
-     * Name of attribute
+     * Name of attribute.
      */
     private String name = null;
 
     /**
-     * Is this attribute allowd in use with SSO
+     * Is this attribute allowd in use with SSO.
      */
     private boolean allowSSO = false;
 
     /**
-     * Security level
+     * Security level.
      */
     private int secLevel = 2;
 
@@ -82,6 +83,7 @@ public class AuthorizationAttribute {
     /**
      * Return true if the supplied object is identical to this one.
      *
+     * @param object the object to compare with
      * @return false if any of the attributes are different from the supplied
      *         object.
      */
@@ -91,8 +93,9 @@ public class AuthorizationAttribute {
         }
         if (object instanceof AuthorizationAttribute) {
             AuthorizationAttribute attr = (AuthorizationAttribute) object;
-            if (attr.getName().equals(name) && attr.getAllowSSO() == getAllowSSO() && attr.getSecLevel() == secLevel)
+            if (attr.getName().equals(name) && attr.getAllowSSO() == getAllowSSO() && attr.getSecLevel() == secLevel) {
                 return true;
+            }
         }
         return false;
     }
@@ -117,7 +120,7 @@ public class AuthorizationAttribute {
     /**
      * @return secLevel
      */
-    public int getSecLevel() {
+    public final int getSecLevel() {
         return secLevel;
     }
 
@@ -126,7 +129,7 @@ public class AuthorizationAttribute {
      *
      * @return Name of the attribute
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -135,14 +138,16 @@ public class AuthorizationAttribute {
      *
      * @return True if the attribute can be used with SSO, else false
      */
-    public boolean getAllowSSO() {
+    public final boolean getAllowSSO() {
         return allowSSO;
     }
 
     /**
-     * @return
+     * Returns a string representation of this object.
+     *
+     * @return the string representation of this object
      */
-    public String toString() {
+    public final String toString() {
         return ("Attribute name: " + name + " secLevel: " + secLevel + " allowSSO: " + allowSSO);
     }
 }
