@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<ClientAuthorizationConfig>
+
+  <Client name="test">
+    <DisplayName>Foobar</DisplayName>
+    <URL>http://www.feide.no/</URL>
+    <Home>uio.no</Home>
+    <Language>no</Language>
+    <Affiliation>
+      <Organization name ="uninett.no"/>
+      <Organization name ="uio.no"/>
+    </Affiliation>
+    <Attributes>
+      <Attribute name="attr1" sso="true" secLevel="1"/>
+      <Attribute name="attr1" sso="true" secLevel="0"/>
+      <Attribute name="attr1" sso="false" secLevel="2"/>
+    </Attributes>
+    <Operations>
+      <Operation name="LocalAuth"/>
+    </Operations>
+  </Client>
+
+</ClientAuthorizationConfig>
