@@ -71,7 +71,7 @@ public class AttribsData implements Comparator {
      * Implements Comparator.equals -- not used.
      * 
      * @param ad Object to compare.
-     * @return true If equal.
+     * @return true if equal.
      */
     public boolean equals(Object ad) {
         AttribsData adata = (AttribsData) ad;
