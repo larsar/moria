@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+
 import no.feide.moria.directory.index.SerializableIndex;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -32,8 +33,12 @@ public class SerializableIndexCreator {
      *            First element should be the index specification file, second
      *            element should be the index object output file.
      * @throws IOException
+     *             If unable to read from or write to file.
      * @throws JDOMException
+     *             If unable to parse the index file.
      * @throws ClassNotFoundException
+     *             If unable to read the <code>SerializableIndex</code> object
+     *             from file when verifying results.
      */
     public static void main(String[] args)
     throws IOException, JDOMException, ClassNotFoundException {
@@ -47,7 +52,6 @@ public class SerializableIndexCreator {
         // Read index file.
         System.out.println("Reading file " + args[0]);
         final Element rootElement = (new SAXBuilder()).build(new File(args[0])).getRootElement();
-        // TODO: Check that the root element really is an Index element.
 
         // Process association elements (yes, we support more than one...)
         final List associations = rootElement.getChildren("Associations");
