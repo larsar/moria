@@ -4,7 +4,6 @@
 
 <attribute> 
   <key>mail</key>
-  <description>epost</description>
   <resourcebundle>rb_mail</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#mail</link>
@@ -12,7 +11,6 @@
 
 <attribute> 
   <key>sn</key>
-  <description>Etternavn</description>
   <resourcebundle>rb_sn</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#sn</link>
@@ -20,7 +18,6 @@
 
 <attribute> 
   <key>eduPersonPrincipalName</key>
-  <description>FEIDE-navn</description>
   <resourcebundle>rb_eduPersonPrincipalName</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrincipalName</link>
@@ -28,7 +25,6 @@
 
 <attribute> 
   <key>eduOrgLegalName</key>
-  <description>Formelt navn på organisasjonen</description>
   <resourcebundle>rb_eduOrgLegalName</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgLegalName</link>
@@ -36,7 +32,6 @@
 
 <attribute> 
   <key>norEduPersonNIN</key>
-  <description>Fødselsnummer</description>
   <resourcebundle>rb_norEduPersonNIN</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonNIN</link>
@@ -44,7 +39,6 @@
 
 <attribute> 
   <key>eduPersonOrgDN</key>
-  <description>LDAP-kode for organisasjonen</description>
   <resourcebundle>rb_eduPersonOrgDN</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonOrgDN</link>
@@ -52,7 +46,6 @@
 
 <attribute> 
   <key>eduPersonOrgUnitDN</key>
-  <description>LDAP-kode for organisasjonsenheten</description>
   <resourcebundle>rb_eduPersonOrgUnitDN</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonOrgUnitDN</link>
@@ -60,7 +53,6 @@
 
 <attribute> 
   <key>cn</key>
-  <description>LDAP-navn</description>
   <resourcebundle>rb_cn</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#cn</link>
@@ -68,7 +60,6 @@
 
 <attribute> 
   <key>uid</key>
-  <description>Lokal brukeridentitet (uid)</description>
   <resourcebundle>rb_uid</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#uid</link>
@@ -76,7 +67,6 @@
 
 <attribute> 
   <key>o</key>
-  <description>Organisasjon</description>
   <resourcebundle>rb_o</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#o</link>
@@ -84,7 +74,6 @@
 
 <attribute> 
   <key>ou</key>
-  <description>Organisasjonsenhet (institutt, fakultet eller avdeling)</description>
   <resourcebundle>rb_ou</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#ou</link>
@@ -92,7 +81,6 @@
 
 <attribute> 
   <key>eduPersonAffiliation</key>
-  <description>Rolle ved organisasjonen (ansatt, student, andre)</description>
   <resourcebundle>rb_eduPersonAffiliation</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonAffiliation</link>
@@ -100,7 +88,6 @@
 
 <attribute> 
   <key>norEduOrgUniqueIdentifier</key>
-  <description>UH-nummeret til organisasjonen</description>
   <resourcebundle>rb_norEduOrgUniqueIdentifier</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUniqueIdentifier</link>
@@ -108,7 +95,6 @@
 
 <attribute> 
   <key>federationFeideSchemaVersion</key>
-  <description>federationFeideSchemaVersion_missing</description>
   <resourcebundle>rb_federationFeideSchemaVersion</resourcebundle>  
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#federationFeideSchemaVersion</link>
@@ -117,7 +103,6 @@
 
 <attribute> 
   <key>l</key>
-  <description>Campusadresse</description>
   <resourcebundle>rb_l</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#l</link>
@@ -125,7 +110,6 @@
 
 <attribute> 
   <key>userCertificate</key>
-  <description>Digitalt sertifikat i X.509-format</description>
   <resourcebundle>rb_userCertificate</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#userCertificate</link>
@@ -133,7 +117,6 @@
 
 <attribute> 
   <key>userSMIMECertificate</key>
-  <description>Digitalt sertifikat i X.509-format til bruk for epost og andre S/MIME-applikasjoner</description>
   <resourcebundle>rb_userSMIMECertificate</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#userSMIMECertificate</link>
@@ -141,7 +124,6 @@
 
 <attribute> 
   <key>manager</key>
-  <description>Din overordnede</description>
   <resourcebundle>rb_manager</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#manager</link>
@@ -149,7 +131,6 @@
 
 <attribute> 
   <key>displayName</key>
-  <description>Ditt navn i foretrukket form</description>
   <resourcebundle>rb_displayName</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#displayName</link>
@@ -157,7 +138,6 @@
 
 <attribute> 
   <key>labeledURI</key>
-  <description>Ditt websted</description>
   <resourcebundle>rb_labeledURI</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#labeledURI</link>
@@ -165,7 +145,6 @@
 
 <attribute> 
   <key>facsimileTelephoneNumber</key>
-  <description>Faksnummer</description>
   <resourcebundle>rb_facsimileTelephoneNumber</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#facsimileTelephoneNumber</link>
@@ -173,7 +152,6 @@
 
 <attribute> 
   <key>norEduOrgAcronym</key>
-  <description>Forkortelse for organisasjonen</description>
   <resourcebundle>rb_norEduOrgAcronym</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgAcronym</link>
@@ -181,7 +159,6 @@
 
 <attribute> 
   <key>givenName</key>
-  <description>Fornavn</description>
   <resourcebundle>rb_givenName</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#givenName</link>
@@ -189,7 +166,6 @@
 
 <attribute> 
   <key>norEduPersonBirthDate</key>
-  <description>Fødselsdato</description>
   <resourcebundle>rb_norEduPersonBirthDate</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonBirthDate</link>
@@ -197,7 +173,6 @@
 
 <attribute> 
   <key>street</key>
-  <description>Gateadresse på campus</description>
   <resourcebundle>rb_street</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#street</link>
@@ -205,7 +180,6 @@
 
 <attribute> 
   <key>eduOrgHomePageURI</key>
-  <description>Hjemmeside for organisasjonen</description>
   <resourcebundle>rb_eduOrgHomePageURI</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgHomePageURI</link>
@@ -213,7 +187,6 @@
 
 <attribute> 
   <key>norEduPersonLIN</key>
-  <description>Lokal identifikasjon</description>
   <resourcebundle>rb_norEduPersonLIN</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonLIN</link>
@@ -221,7 +194,6 @@
 
 <attribute> 
   <key>mobile</key>
-  <description>Mobilnummer</description>
   <resourcebundle>rb_mobile</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#mobile</link>
@@ -229,7 +201,6 @@
 
 <attribute> 
   <key>norEduOrgUnitUniqueIdentifier</key>
-  <description>Nummerkode for organisasjonsenhet</description>
   <resourcebundle>rb_norEduOrgUnitUniqueIdentifier</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUnitUniqueIdentifier</link>
@@ -237,7 +208,6 @@
 
 <attribute> 
   <key>postalAddress</key>
-  <description>Postadresse på campus</description>
   <resourcebundle>rb_postalAddress</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#postalAddress</link>
@@ -245,7 +215,6 @@
 
 <attribute> 
   <key>homePostalAddress</key>
-  <description>Postadresse til hjemmekontor</description>
   <resourcebundle>rb_homePostalAddress</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#homePostalAddress</link>
@@ -253,7 +222,6 @@
 
 <attribute> 
   <key>postOfficeBox</key>
-  <description>Postboks på campus</description>
   <resourcebundle>rb_postOfficeBox</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#postOfficeBox</link>
@@ -261,7 +229,6 @@
 
 <attribute> 
   <key>postalCode</key>
-  <description>Postnummer på campus</description>
   <resourcebundle>rb_postalCode</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#postalCode</link>
@@ -269,7 +236,6 @@
 
 <attribute> 
   <key>eduPersonPrimaryOrgUnitDN</key>
-  <description>Primær organisasjonsenhet</description>
   <resourcebundle>rb_eduPersonPrimaryOrgUnitDN</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrimaryOrgUnitDN</link>
@@ -277,7 +243,6 @@
 
 <attribute> 
   <key>eduPersonPrimaryAffiliation</key>
-  <description>Primær rolle ved organisasjonen</description>
   <resourcebundle>rb_eduPersonPrimaryAffiliation</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrimaryAffiliation</link>
@@ -285,7 +250,6 @@
 
 <attribute> 
   <key>eduOrgIdentityAuthNPolicyURI</key>
-  <description>Sertifikatpolicy for digitale sertifikat brukt i organisasjonen</description>
   <resourcebundle>rb_eduOrgIdentityAuthNPolicyURI</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgIdentityAuthNPolicyURI</link>
@@ -293,7 +257,6 @@
 
 <attribute> 
   <key>preferredLanguage</key>
-  <description>Språkform eller språk (norsk, bokmål, nynorsk, nordsamisk eller engelsk)</description>
   <resourcebundle>rb_preferredLanguage</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#preferredLanguage</link>
@@ -301,7 +264,6 @@
 
 <attribute> 
   <key>eduOrgWhitePagesURI</key>
-  <description>Søkeside for personer i organisasjonen</description>
   <resourcebundle>rb_eduOrgWhitePagesURI</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgWhitePagesURI</link>
@@ -309,7 +271,6 @@
 
 <attribute> 
   <key>telephoneNumber</key>
-  <description>Telefonummer</description>
   <resourcebundle>rb_telephoneNumber</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#telephoneNumber</link>
@@ -317,7 +278,6 @@
 
 <attribute> 
   <key>homePhone</key>
-  <description>Telefonnummer til hjemmekontor</description>
   <resourcebundle>rb_homePhone</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#homePhone</link>
@@ -325,7 +285,6 @@
 
 <attribute> 
   <key>title</key>
-  <description>Tittel</description>
   <resourcebundle>rb_title</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#title</link>
@@ -333,7 +292,6 @@
 
 <attribute> 
   <key>eduPersonEntitlement</key>
-  <description>eduPersonEntitlement_missing</description>
   <resourcebundle>rb_eduPersonEntitlement</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonEntitlement</link>
@@ -341,7 +299,6 @@
 
 <attribute> 
   <key>eduPersonScopedAffiliation</key>
-  <description>eduPersonScopedAffiliation_missing</description>
   <resourcebundle>rb_eduPersonScopedAffiliation</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonScopedAffiliation</link>
@@ -349,7 +306,6 @@
 
 <attribute> 
   <key>jpegPhoto</key>
-  <description>jpegPhoto_missing</description>
   <resourcebundle>rb_jpegPhoto</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#jpegPhoto</link>
