@@ -408,7 +408,7 @@ public class Session {
     /** 
      * Return true if the session can be used with SSO.
      */
-    public boolean allowSso() {
+    public boolean getAllowSso() {
         return allowSso;
     }
 
@@ -416,7 +416,7 @@ public class Session {
     /** 
      * Prohibit the session from using SSO.
      */
-    public void denySso() {
+    public void setDenySso() {
         allowSso = false;
     }
 

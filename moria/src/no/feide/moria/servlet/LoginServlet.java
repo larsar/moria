@@ -382,7 +382,7 @@ public class LoginServlet extends MoriaServlet {
                     HashMap cachedAttributes = existingSession.getCachedAttributes();
                     if (cachedAttributes != null && cachedAttributes.size() > 0) {
 
-                        if (session.allowSso()) {
+                        if (session.getAllowSso()) {
                             log.info("Redirect to WebService (SSO), "+session.getWebService().getName());
                             String wsID = session.getWebService().getId();
                             stats.incStatsCounter(wsID, "loginSSO");

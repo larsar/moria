@@ -204,7 +204,7 @@ implements AuthenticationIF, ServiceLifecycle {
 
             /* Turn of SSO if required by web service. */
             if (denySso) 
-                session.denySso();
+                session.setDenySso();
 
             stats.incStatsCounter(serviceName, "createdSessions");
             stats.incStatsCounter(serviceName, "activeSessions");
