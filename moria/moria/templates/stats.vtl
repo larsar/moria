@@ -85,7 +85,7 @@
 <th>&nbsp;</th>
 <th class="thstat" colspan="2">Sessions</th>
 <th class="thstat" colspan="2">Timeout</th>
-<th class="thstat" colspan="3">Authentications</th>
+<th class="thstat" colspan="4">Authentications</th>
 <th class="thstat" colspan="2">Not created</th>
 </tr>
 
@@ -101,6 +101,7 @@
 <th class="thstat">Sucsessful</th>
 <th class="thstat">SSO</th> 
 <th class="thstat">Failed</th>
+<th class="thstat">Fail x $properties.getProperty("no.feide.moria.MaxFailedLogins")</th>
 
 <th class="thstat">Invalid URL</th>
 <th class="thstat">Attributes</th>
@@ -119,6 +120,7 @@
 <td class="tdstat">$wsStats.get($wsName).get("loginSuccessful")</td>
 <td class="tdstat">$wsStats.get($wsName).get("loginSSO")</td>
 <td class="tdstat_warn">$wsStats.get($wsName).get("loginFailed")</td>
+<td class="tdstat_warn">$wsStats.get($wsName).get("authLimitExeeded")</td>
 
 <td class="tdstat_warn">$wsStats.get($wsName).get("sessionDeniedURL")</td>
 <td class="tdstat_warn">$wsStats.get($wsName).get("sessionDeniedAuthZ")</td>

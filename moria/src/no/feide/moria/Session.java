@@ -177,6 +177,9 @@ public class Session {
             if (failedLogins == maxFailures.intValue()) {
                 // Remove ourselves from the session store.
                 log.fine("Invalidating session: "+sessionID);
+                StatsStore stats = StatsStore.getInstance();
+				stats.decStatsCounter(getWebService().getId(), "activeSessions");
+				stats.incStatsCounter(getWebService().getId(), "authLimitExeeded");
                 SessionStore.getInstance().deleteSession(this);
 		log.info("Max number of authN attempts ("+maxFailures+") reached");
             }
