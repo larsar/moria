@@ -340,7 +340,7 @@
 	  <copy todir="build.mellon/zip">
             <fileset dir="dist" includes="**/feide-mellon-api.jar"/>
             <fileset dir="mellon/config" includes="mellon.properties"/>
-            <fileset dir="doc/examples" includes="FeideExample.java"/>
+            <fileset dir="doc/mellon/java/examples" includes="SimpleCreateAuthSession.java"/>
             <fileset dir="lib">
               <include name="**/*.jar"/>
             </fileset>
