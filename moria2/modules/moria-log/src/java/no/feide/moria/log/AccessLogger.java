@@ -34,9 +34,9 @@ import org.apache.log4j.Logger;
  *
  * The format of the log-lines is the following:
  * <pre>
- * [2004-04-30 17:10:19,046] "BAD USER CREDENTIALS" "no.feide.test" "demo@feide.no, 10.3.12.75" "235892791" "350215527"
+ * [2004-04-30 17:10:19,046] "BAD USER CREDENTIALS" "no.feide.test" "demo@feide.no" "235892791" "350215527"
  *
- * [Timestamp] "STATUS" "service principal" "userid, user ip-address" "incoming ticket" "outgoing ticket"
+ * [Timestamp] "STATUS" "service principal" "userid" "incoming ticket" "outgoing ticket"
  * </pre>
  *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
@@ -73,19 +73,15 @@ public final class AccessLogger implements Serializable {
      *            the id of the service that is responsible for this operation
      * @param userId
      *            the id of the user, may be null if unknow at time of event
-     * @param userIpAddr
-     *            the address the request originated from, may be null if
-     *            unknow at time of event
      * @param incomingTicketId
      *            the id of the ticket given with the request
      * @param outgoingTicketId
      *            the id of the potentially returned ticket, may be null
      */
-    public void logUser(final AccessStatusType status, final String servicePrincipal, final String userId, final String userIpAddr,
+    public void logUser(final AccessStatusType status, final String servicePrincipal, final String userId,
             final String incomingTicketId, final String outgoingTicketId) {
-         // TODO: Remove userIpAddr, the controller does all the logging and does not know the IP address of the user
         /* Generate the log message and log it. */
-        getLogger().warn(generateLogMessage(status, servicePrincipal, userId, userIpAddr, incomingTicketId, outgoingTicketId));
+        getLogger().warn(generateLogMessage(status, servicePrincipal, userId, incomingTicketId, outgoingTicketId));
     }
 
     /**
@@ -104,7 +100,7 @@ public final class AccessLogger implements Serializable {
             final String outgoingTicketId) {
 
         /* Generate the log message and log it. */
-        getLogger().warn(generateLogMessage(status, servicePrincipal, null, null, incomingTicketId, outgoingTicketId));
+        getLogger().warn(generateLogMessage(status, servicePrincipal, null, incomingTicketId, outgoingTicketId));
     }
 
     /**
@@ -116,8 +112,6 @@ public final class AccessLogger implements Serializable {
      *            the id of the service that is peforming the operation
      * @param userId
      *            the id of the user
-     * @param userIpAddr
-     *            the address the request originated from
      * @param incomingTicketId
      *            the id of the ticket given with the request
      * @param outgoingTicketId
@@ -125,15 +119,14 @@ public final class AccessLogger implements Serializable {
      * @return the string to be logged
      */
     private String generateLogMessage(final AccessStatusType status, final String servicePrincipal, final String userId,
-            final String userIpAddr, final String incomingTicketId, final String outgoingTicketId) {
+            final String incomingTicketId, final String outgoingTicketId) {
 
         StringBuffer buffer = new StringBuffer();
 
         /* Add default value "-" if variabel is null */
         buffer.append(status != null ? "\"" + status + "\" " : "\"-\" ");
         buffer.append(servicePrincipal != null ? "\"" + servicePrincipal + "\" " : "\"-\" ");
-        buffer.append(userId != null ? "\"" + userId + ", " : "\"-, ");
-        buffer.append(userIpAddr != null ? userIpAddr + "\" " : "-\" ");
+        buffer.append(userId != null ? "\"" + userId + "\"" : "\"-\"");
         buffer.append(incomingTicketId != null ? "\"" + incomingTicketId + "\" " : "\"-\" ");
         buffer.append(outgoingTicketId != null ? "\"" + outgoingTicketId + "\"" : "\"-\"");
 
@@ -148,7 +141,8 @@ public final class AccessLogger implements Serializable {
      * @return the logger instance of this class
      */
     private Logger getLogger() {
-        if (logger == null) logger = Logger.getLogger(ACCESS_LOGGER_CLASS);
+        if (logger == null)
+            logger = Logger.getLogger(ACCESS_LOGGER_CLASS);
 
         return logger;
     }
