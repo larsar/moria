@@ -192,9 +192,19 @@
     </javac>
   </target>
   
-  <target name="test:build"
-          description="Mellon test: All steps necessary to build the test application"
-          depends="test:compile"/>
+  <target name="test:run"
+          description="Mellon test: Run the application">
+    <java classname="no.feide.mellon.jaxrpc.test.MellonTest"
+          fork="true">
+      <classpath>
+        <pathelement location="build/test"/>
+        <pathelement location="dist/feide-mellon-api-${mellon_tag}.jar"/>        
+        <fileset dir="${include_libs}">
+          <include name="**/*.jar"/>
+        </fileset>  		        
+      </classpath>
+    </java>
+  </target>
   
   <target name="test:clean"
           description="Mellon test: clean up">
