@@ -35,7 +35,7 @@
   </servlet>  
 
   <servlet>
-    <servlet-name>InformationServlet</servlet-name>
+    <servlet-name>Information</servlet-name>
     <servlet-class>no.feide.moria.servlet.InformationServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
@@ -47,7 +47,7 @@
   </servlet>
 
   <servlet>
-    <servlet-name>BackendStatus</servlet-name>
+    <servlet-name>Status</servlet-name>
     <servlet-class>no.feide.moria.servlet.BackendStatusServlet</servlet-class>
     <load-on-startup>6</load-on-startup>
   </servlet>  
@@ -56,11 +56,6 @@
     <servlet-name>Information.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/information.jsp</jsp-file>
   </servlet> 
-
-  <servlet>
-    <servlet-name>Status.JSP</servlet-name>
-    <jsp-file>/WEB-INF/jsp/status.jsp</jsp-file>
-  </servlet>
 
   <servlet>
     <servlet-name>Logout.JSP</servlet-name>
@@ -103,7 +98,7 @@
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>InformationServlet</servlet-name>
+    <servlet-name>Information</servlet-name>
     <url-pattern>/Information</url-pattern>
   </servlet-mapping>
   
@@ -133,8 +128,8 @@
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>BackendStatus</servlet-name>
-    <url-pattern>/BackendStatus</url-pattern>
+    <servlet-name>Status</servlet-name>
+    <url-pattern>/Status</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -147,11 +142,6 @@
     <url-pattern>/v2_1/Authentication</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-    <servlet-name>Status.JSP</servlet-name>
-    <url-pattern>/Status</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>JSP-Error.JSP</servlet-name>
     <url-pattern>/Error</url-pattern>
