@@ -123,7 +123,7 @@ $Id$
         authentication session from Moria. The request contains two parameters: a
         list of requested attributes and a URL that the user agent will be redirected
         back to after successful authentication. The URL will be supplied with a
-        ticked for retrieval of the requested user attributes. Moria requires
+        ticket for retrieval of the requested user attributes. Moria requires
         that the web service itself has been authenticated.  The request will
         be denied if the resource is unknown to Moria, or a known resource
         requests attributes (or operations) where it is not authorized.
@@ -151,7 +151,7 @@ $Id$
         authentication. The web resource (client) now receives a request from the
         user's browser, with a service ticket generated after the retrieval of the attributes.
         The client then requests user data
-        from Moria by supplying the ticked in a SOAP request. Moria validates the ticket
+        from Moria by supplying the ticket in a SOAP request. Moria validates the ticket
         and return the user attributes to the client. An empty
         data set indicates that the user is registered in the LDAP server, but no
         attributes are requested (or the requested attributes aren't available
@@ -189,7 +189,7 @@ $Id$
 	<dd>The user is authenticated against his/her home organizations directory
           service and the user attributes are stored in Moria.  </dd> 
 	<dt>(10,11) Redirect back to the web resource service</dt>
-	<dd>The user is redirected back to the web resource, with a ticked
+	<dd>The user is redirected back to the web resource, with a ticket
           supplied in the URL. This ticket is generated after a successful
           authentication.  </dd>
 	<dt>(12,13) Retrieval of the user attributes</dt>
@@ -224,8 +224,8 @@ $Id$
     <subsection name="Ticket Based Reauthentication">
 
       <p>
-        The ticked based re-authentication uses the existing Moria model. The
-        first time a user logs into a service via Moria, a SSO ticked is stored in a
+        The ticket based re-authentication uses the existing Moria model. The
+        first time a user logs into a service via Moria, a SSO ticket is stored in a
         cookie. The next time the user is redirected to Moria for login Moria uses
         the ticket to find the authentication session from last login. If it still
         exist (i.e. the session has not timed out), the user is immediately
@@ -236,7 +236,7 @@ $Id$
       </p>
 
       <p>
-        There are three scenarios when ticked based re-authentication fails,
+        There are three scenarios when ticket based re-authentication fails,
         and a normal authentication process is required:
       </p>
 
@@ -302,7 +302,7 @@ $Id$
 
           <li>
             <p>S2 uses the ticket to fetch attributes from Moria. The request
-            must contain both the ticked and a list of attributes. S2 can also
+            must contain both the ticket and a list of attributes. S2 can also
             ask for a TGT that it can use to log into other sub systems.</p>
           </li>
 
@@ -421,10 +421,10 @@ $Id$
           The Axis servlet receives all the SOAP requests and forwards them to the Axis engine for
           decoding.  It only acts as a thin transport layer without any real logic.  Although Axis
           comes with an servlet that handles frontend http traffic, Moria uses it's own
-          implementation of the frontend service.  This was done to get controll over request url
+          implementation of the frontend service.  This was done to get control over request url
           mapping and simplify configuration and integration of Axis into the application as a
           whole.  The servlet uses the request URI as service identifier as it forwards the request
-          to the Axis Engine.  The engine uses this identifier to map the request to Moria-spesific
+          to the Axis Engine.  The engine uses this identifier to map the request to Moria-specific
           classes that process the request data before calling the controller.  See the <a
           href="configuration.html">configuration documentation</a> for details.
 	</p>
