@@ -74,7 +74,7 @@ $Id$
 
       <p>
         This paper describes the authentication model implemented by Moria.
-        This model is based on the user being redirected to the FEIDE login system
+        The model is based on the user being redirected to the Moria login system
         when the web resource requests authentication. The authentication consists
         of two steps:
         <ol>
@@ -91,7 +91,7 @@ $Id$
       </p>
     </section>
 
-    <section name="Interactive authentication">
+    <section name="Interactive Authentication">
 
       <p>Moria consists of two interfaces: a SOAP based interface for the
     client (web resource) and a html interface for the user.</p>
@@ -119,43 +119,42 @@ $Id$
         authentication session from Moria. The request contains two parameters: a
         list of requested attributes and a URL that the user will be redirected
         back to after successful authentication. (The URL will be supplied with a
-        ticked for retrieval of the requested user attributes.) Moria will perform
-        basic HTTP authentication of the client (web service) along with
-        authorization. If the client is unknown to Moria, or a known client
-        requests attributes that it&#39;s not authorized to see, the request will
-        be denied. If Moria accepts the client&#39;s request, a URL to Moria&#39;s
+        ticked for retrieval of the requested user attributes.) Moria requires
+        that the web service has been authenticated and principal is sent with
+        the request. If the client is unknown to Moria, or a known client
+        requests attributes (or operations) that it's not authorized access to,the request will
+        be denied. If Moria accepts the client's request, a URL to Moria's
         login page is returned to the client. The URL contains a ticked that
-        connects the user to the created authentication session (Moria session)
+        connects the user to the created authentication session
         and client then sends a 302 redirect response to the users web browser,
         with the Location header set to be the URL returned from Moria.</p>
 
       <p>
         The user's browser now performs a GET request for Moria's
-        login page. The supplied ticket (Moria session ID) is verified and if the
+        login page. The supplied ticket (login ticket) is verified and if the
         session exists a login page is returned to the user. The login page
         contains the name of the resource and what kind of data it has requested
         about the user. The browser then sends a POST request with the users
-        user-name and password, to Moria. Moria uses the index server, LIMS, to
-        locate the LDAP server that contains the user data.</p>
+        user-name and password, to Moria.
+      </p>
 
       <p>
         Moria binds to the LDAP server, using the supplied user-name and
-        password as credentials. The connection is stored in the Moria session and
+        password as credentials. The required set of user attributes are fetched
+        from the LDAP server and
         the user is redirected back to the web service that requested the
         authentication. The web resource (client) now receives a request from the
-        user&#39;s browser, with the ticket. The client then requests user data
-        from Moria by supplying the ticked in a SOAP request. Moria again performs
-        client authentication and - given that the ticket is valid and the client
-        is the same client that initiated the authentication - fetches user data
-        from the LDAP server and returns it as a data set to the client. An empty
+        user's browser, with a service ticket generated after the retrieval of the attributes.
+        The client then requests user data
+        from Moria by supplying the ticked in a SOAP request. Moria validates the ticket
+        and return the user attributes to the client. An empty
         data set indicates that the user is registered in the LDAP server, but no
-        attributes are requested (or the requested attributes aren&#39;t available
+        attributes are requested (or the requested attributes aren't available
         from the LDAP server). A user is never redirected back to the web resource
-        if the authentication failed. It is not possible to request user data from
-        a Moria session without an authenticated connection to the LDAP server.</p>
+        if the authentication failed.</p>
 
       <p>
-        When Moria has delivered user data to the client, FEIDE&#39;s web
+        When Moria has delivered user data to the client, FEIDE's web
         authentication service is finished. It is now up to the client to store
         the data as long as it needs it. If the client needs more data, or the
         same data once more, from FEIDE, it has to initiate a new authentication
@@ -167,6 +166,7 @@ $Id$
       <ol>
         <li>
           <strong>User requests a web resource (1)</strong><br/>
+
           The user requests a access restricted web resource, typically by
           a GET request from a web browser.
         </li>
@@ -174,8 +174,9 @@ $Id$
         <li>
           <strong>The web resource requests an authentication session
           from Moria(2,3)</strong><br/>
+
           A request for an authentication session is sent from the web
-          resource service to Moria. Moria responds by returning a URL to the
+          resource service to Moria. Moria responds by returning the URL for the
           login page.
         </li>
 
@@ -198,17 +199,14 @@ $Id$
         </li>
 
         <li>
-          <strong>Authentication (8,9)</strong>
+          <strong>Authentication (8,9)</strong><br/>
 
-          Moria uses LIMS to find the correct LDAP server and opens a
-          connection to it using the user's credentials. The LDAP connection
-          is stored in the Moria session for later use. If the authentication
-          failed the user is presented with a error message and a new login
-          form.
+          The user is authenticated against his/her home organizations directory
+          service and the user attributes are stored in Moria.
         </li>
 
         <li>
-          <strong>Redirect back to the web resource service (10,11)</strong>
+          <strong>Redirect back to the web resource service (10,11)</strong><br/>
 
           The user is redirected back to the web resource, with a ticked
           supplied in the URL. This ticket is generated after a successful
@@ -216,7 +214,7 @@ $Id$
         </li>
 
         <li>
-          <strong>Retrieval of the user attributes (12,13)</strong>
+          <strong>Retrieval of the user attributes (12,13)</strong><br/>
 
           The client requests the user attributes from Moria, identified
           by the ticket. If the ticket is valid and the client is the one that
@@ -227,54 +225,59 @@ $Id$
         </li>
 
         <li>
-          <strong>Access to the web resource(14)</strong>
+          <strong>Access to the web resource(14)</strong><br/>
 
           The web resource is returned to the user's client.
         </li>
       </ol>
     </section>
 
-    <section name="Single Sign On">
+    <section name="Single Sign-On">
 
       <p>
-        Single Sign-On is a requested feature in Moria both from users and
-        web service providers. Users don't want to supply their username and
-        password every time they access a new web service and the service
-        providers want to be able to authenticate the users to subsystems. The
-        current version of Moira has SSO for users which means that users can roam
-        between services without performing more than one interactive login. Even
-        before Moria went in production developers started to demand proxy
-        authentication functionality, mainly when developing portals that requires
-        to authenticate to other components on behalf of the user.</p>
+        "Single Sign-On" is a term with various interpretations. For a user Single Sign-On
+        is to supply his/her password once and be able to use a variety of different
+        services without re-typing the password. In this paper we will
+        use the term "Ticket based reauthentication" for this type of Single Sing-On.
+      </p>
 
+      <p>
+        From a service point of view "Single Sign-On" can bee seen as the ability to
+        log the user into multiple independent subsystems. For instance a portal
+        service might need to log the user into one or more subsystems.
+        This kind of Single Sign-On is referred to as "Proxy authentication".
+      </p>
 
-    <subsection name="Ticket based reauthentication (SSO Light)">
+    <subsection name="Ticket Based Reauthentication">
 
       <p>
         The ticked based reauthentication uses the existing Moria model. The
-      first time a user logs into a service via Moria, a ticked is stored in a
-      cookie. The next time the user is redirected to Moria for login Moria uses
-      the ticket to find the authentication session from last login. If it still
-      exist (i.e. the session has not timed out), the user is immediately
-      redirected back to the web service and the web service get access to the
-      cached user data. If reauthentication cannot be used, the user is
-      presented with a login form and a regular authentication process is
-      performed.</p>
+        first time a user logs into a service via Moria, a SSO ticked is stored in a
+        cookie. The next time the user is redirected to Moria for login Moria uses
+        the ticket to find the authentication session from last login. If it still
+        exist (i.e. the session has not timed out), the user is immediately
+        redirected back to the web service and the web service get access to the
+        cached user data. If reauthentication cannot be used, the user is
+        presented with a login form and a regular authentication process is
+        performed.
+      </p>
 
-      <p>There are three scenarios when ticked based reauthentication fails,
-      and a normal authentication process is required:</p>
+      <p>
+        There are three scenarios when ticked based reauthentication fails,
+        and a normal authentication process is required:
+      </p>
 
       <ul>
         <li>
-          The ticket refers to a non-existing authentication session. This
-          happens when the a session times out and thus is removed from the
-          session store or if the session has been removed for any other reason.
+          The ticket refers to a non-existing set of userdata. This
+          happens when the a SSO ticket times out and thus is removed from the
+          ticket store or if the ticket has been removed for any other reason.
         </li>
 
         <li>
           The web service requests user attributes that Moria does not
           allow to be cached. The attributes are not stored in the
-          authentication session and have to be retrieved from the LDAP server,
+          cache and have to be retrieved from the LDAP server,
           which requires the user to supply their username and password.
         </li>
 
@@ -283,14 +286,12 @@ $Id$
           authentication. Before critical operations, typically writing data,
           some services want to reauthenticate the user to be sure that no
           impersonator issues commands as the user. When requesting a user
-          authentication the web service can insist that SSO should not be used.
-          In this case Moria will remove the cached authentication session and
-          present the user with a login form.
+          authentication the web service can insist that SSO should not be used..
         </li>
       </ul>
     </subsection>
 
-    <subsection name="Proxy authentication">
+    <subsection name="Proxy Authentication">
 
       <p>For both of the following examples the following amendments to
       standard authentication process apply:</p>
@@ -307,27 +308,23 @@ $Id$
             TGT returned to service.
           </li>
 
-      <p>Both scenarios describes SSO after a regular authentication process
-      has been performed.</p>
-
-     <img src="proxy_auth.png"/>
+      <img src="proxy_auth.png"/>
 
         <ol>
           <li>
-            <p>Service 1 (S1) requests, from Moria, tickets to log into
+            <p>Service 1 (S1) requests, from Moria, a proxy ticket to log into
             service 2 (S2). S1 supplies the TGT obtained from Moria in the
             regular user authentication process.</p>
           </li>
 
           <li>
-            <p>Upon the request Moria looks up the session and associated
-            user id (UID) using the TGT as session identificator. A new ticket
+            <p>Upon the request Moria looks up the cached user data using the TGT. A proxy ticket
             is generated for S2 and returned to S1. This ticket can only be used
             once and only by S2.</p>
           </li>
 
           <li>
-            <p>S1 relays the ticket to S2, probably with other parameters.</p>
+            <p>S1 relays the ticket to S2.</p>
           </li>
 
           <li>
@@ -339,12 +336,7 @@ $Id$
           <li>
             <p>Moria either returns the requested attributes or denies the
             request (due to timeout or if S2 has requested non-cached attributes
-            or attributes it&#39;s not allowed to get access to)</p>
-          </li>
-
-          <li>
-            <p>If the authentication was successful, S2 probably returns the
-            data S1 requested.</p>
+            or attributes it's not allowed to get access to)</p>
           </li>
         </ol>
 
@@ -352,80 +344,150 @@ $Id$
       </subsection>
     </section>
 
-    <section name="Other services">
-      <B>TODO: directAuthentication</B>
-      <br/><B>TODO: verifyUserExistence</B>
+    <section name="Other Services">
+      <p>
+        Moria is designed to be extended with new authentication
+        methods and services. The authorization model is flexible the ACL's can
+        be extended without changes in the authorization software. The WSDL
+        interface is also designed to be extended with full backward compatibility
+        allowing Moria to be equipped with new functionality.
+      </p>
+
+      <p>
+        In addition to the previously described authentication methods, Moria support
+        direct authentication and user existence lookup.
+      </p>
+
+      <subsection name="Direct Authentication">
+        <p>
+          For services that cannot use the redirect model, Moria support the use of
+          direct authentication. The requesting service must collect the username and
+          password from the user and then do a direct authentication against Moria.
+          The direct authentication is done in one SOAP request containing the
+          requested attributes along with the user's username and password. If the
+          authentication is successful the service will receive the requested attributes.
+        </p>
+      </subsection>
+
+      <subsection name="Verify User Existence">
+        <p>
+          For those who need to verify that a user exist without authenticating the
+          user, Moria has a boolean function that returns true or false for a
+          verification query.
+        </p>
+      </subsection>
     </section>
 
-    <section name="Moria internals">
+    <section name="Moria Internals">
+
       <p>
-        <b>TODO: Intro, module based</b><br/>
+        Moria consists of several modules that performs a specific task. All requests
+        from the web service are sent through the Axis servlet, and the user's requests
+        are sent through the Login servlet. From the servlets all requests are sent to
+        the Controller intermediator for processing.
         <img src="moria2.png"/>
       </p>
 
       <subsection name="Controller">
+        <p>
+          At startup the controller initiates all modules and if no problem occur the
+          controller is ready for use.
+        </p>
+        <p>
+          All requests from the external interfaces (Login, Logout and Axis servlets)
+          are processed by the controller. Validation of input is one of the
+          controllers major tasks, and if a request is invalid an exception is
+          thrown back to the caller. The other main function of the controller is to
+          provide an easy interface for the servlets handeling logging, exception and
+          forwarding requests down to the proper module.
+        </p>
       </subsection>
 
-      <subsection name="Configuration">
+      <subsection name="Configuration Manager">
+        <p>
+          The configuration managers task is to watch the configuration files for changes.
+          Initially a configuration file for each module (authorization, web, store and
+          directory) are read and the content passed as Properties objects to the corresponding
+          module through the controller.
+          When a configuration file is changed the entire file is read and the updated
+          configuration is passed to the corresponding module.
+        </p>
+        <p>
+          A configuration file for the configuration manager is required to be set as a
+          system property in the VM before initialization, and this file must
+          contain a property for the time interval for watching the files on the file system
+          along with paths to the individual module configuration files. The content of
+          the configuration managers config file is described in detail in the
+          <a href="configuration.html">configuration documentation</a>.
+        </p>
       </subsection>
 
-      <subsection name="Authorization">
+      <subsection name="Authorization Manager">
+        <p>
+          Every requesting web service must be authorized to use Moria. The authentication
+          of the web service is done outside of Moria and the service principal is supplied
+          every request to the controller. When the controller receives a request it asks
+          the authorization manager if the web service is authorized to perform the request.
+        </p>
+        <p>
+          The authorization manager requires a configuration containing information about
+          every web service allowed to access Moria. Besides information about the service's
+          name, affiliation, URL and so on, the configuration must contain information about
+          which attributes, operations and subsystems the web service can access. The
+          <a href="configuration.html">configuration documentation</a> contains a detailed
+          specification of the authorization managers configuration file.
+        </p>
       </subsection>
 
-      <subsection name="Store">
+      <subsection name="Web Module">
+        <p>
+          The web module contains the servlets that are accessed by the requesting web service
+          and the user. The following three servlets are used: Axis, login and logout.
+        </p>
+        <p>
+          The Axis servlet receives all the SOAP requests and forwards it to the controller.
+          <br/><br>TODO: Bjørn Ola</br>
+        </p>
+        <p>
+          After the authentication attempt has been initiated from the web service through the
+          Axis servlet, the user is redirected to the login servlet. If the user has been
+          authenticated previously, has a valid Single Sign-On ticket and the web service is authorized
+          to use Single Sign-On, the user is not presented with the login page, but rediercted
+          back to the web service. Otherwise a login page is displayed to the user and he/she
+          has to supply his/her username and password. After a successful authentication the
+          user is redirected back to the web service that requested the authentication.
+        </p>
+        <p>
+          The logout servlet has a simple task: remove the Single Sign-On ticket from and prevent
+          that the user is automatically signed into other web services without reauthentication.
+          All web services can send the user to the logout page, but naturally the logout servlet
+          cannot remove the web service's internal sessions. When a web service redirects a
+          user to the logout servlet it can also specify a redirect URL that the logout servlet
+          redirects the user back to. In other words the web service can implement a logout
+          function that log the user out of the web service, redirects the user to Moria for
+          removal of Single Sign-On ticket and redirects the user back to the web service (typically
+          to a web page that informs the user that he/she has been logged out). Moria information
+          about configuring the logout redirect parameter is located in the
+          <a href="configuration.html">configuration documentation</a>.
+        </p>
+
+      </subsection>
+
+      <subsection name="Axis Servlet">
         <b>TODO: Bjørn Ola</b>
       </subsection>
 
-      <subsection name="Store">
+      <subsection name="Logger">
         <b>TODO: Bjørn Ola</b>
       </subsection>
 
-      <subsection name="Directory">
+      <subsection name="Store Manager">
+        <b>TODO: Bjørn Ola</b>
+      </subsection>
+
+      <subsection name="Directory Manager">
         <b>TODO: Cato</b>
       </subsection>
     </section>
-
-    <section name="Security">
-      <p>All communication to and from Moria is encrypted by SSL. The LDAP
-    servers and web resources are required to trust Moria's SSL server
-    certificate, signed by VeriSign. FEIDE does not require encrypted
-    communication between the user and the web resource, but it is strongly
-    encouraged.</p>
-
-      <p>Moria uses a memory resident authorization data structure for
-    authorization of the client. Each client must use basic authentication
-    when performing SOAP requests and the principal is used to look up
-    authorization from the authorization data structure. Every client is
-    associated with a set of attributes (the set is empty for anonymous
-    authentications). Only this set, or a subset of it, can be requested by
-    the client. Any attempt to request other attributes will result in an
-    exception when the client requests an authentication session.</p>
-
-      <p>The ticket (or Moria session ID) is changed after authentication to
-    minimize the risk of hijacking, and is generated according to the IETF
-    UUID draft specification to be practically impossible to guess. The only
-    place to hijack a session is in step 10 and 11 (redirect back to web
-    resource). A hijacker has to intercept and stop the request between Moria
-    and user or between user and web resource. The hijacker then has to use
-    the ticket to present it self to the web resource and continue as an
-    authenticated user. If the connection is encrypted, this risk is reduced
-    significantly. Remember that session hijacking can be done at any time
-    after the authentication, by eavesdropping the communication between the
-    user and web resource. The possibility for session hijacking is reduced to
-    virtually zero if all communication between the user and web resource is
-    encrypted - this includes the redirect from Moria back to the web
-    resource.</p>
-
-      <p>Moria uses two different timeouts for the Moria session. If the user
-    does not supply user-name and password within a given number of seconds
-    (typically a few minutes), the session is removed and the user has to go
-    back to the web resource to start a new authentication loop. After the
-    user has been authenticated and redirected back to the web resource, the
-    Moria session is only active for a few seconds. If the client does not
-    request the user data from Moria during this time, the session is removed
-    and the LDAP connection closed. This renders the ticked invalid and a new
-    authentication loop is required to get user attributes from Moria.</p>
-    </section>
-
   </body>
 </document>
