@@ -335,6 +335,27 @@
     <delete dir="build.mellon/demo"/>
   </target>
 
+  <target name="mellon:zip"
+          description="Mellon jars, docs and example code in zip-file.">
+	  <copy todir="build.mellon/zip">
+            <fileset dir="dist" includes="**/feide-mellon-api.jar"/>
+            <fileset dir="mellon/config" includes="mellon.properties"/>
+            <fileset dir="doc/examples" includes="FeideExample.java"/>
+            <fileset dir="lib">
+              <include name="**/*.jar"/>
+            </fileset>
+          </copy>   
+	  <copy todir="build.mellon/zip/javadoc">
+	    <fileset dir="build.mellon/javadoc"/>
+	  </copy>
+
+	  <zip destfile="dist/mellon.zip">
+	    <fileset dir="build.mellon/zip"/>
+	  </zip>
+	  
+	  
+  </target>	  
+
 
   <!-- Mellon API test code -->
   <target name="test:prepare"
