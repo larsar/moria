@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definitions name="FeideAuthentication" targetNamespace="https://login.feide.no/moria/FeideAuthentication" xmlns:tns="https://login.feide.no/moria/FeideAuthentication" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<definitions name="Authentication" targetNamespace="https://login.feide.no/moria/Authentication" xmlns:tns="https://login.feide.no/moria/Authentication" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <types>
-    <schema targetNamespace="https://login.feide.no/moria/FeideAuthentication" xmlns:tns="https://login.feide.no/moria/FeideAuthentication" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://www.w3.org/2001/XMLSchema">
+    <schema targetNamespace="https://login.feide.no/moria/Authentication" xmlns:tns="https://login.feide.no/moria/Authentication" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://www.w3.org/2001/XMLSchema">
       <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
       <complexType name="ArrayOfAttribute">
         <complexContent>
@@ -37,17 +37,17 @@
   <binding name="AuthenticationIFBinding" type="tns:AuthenticationIF">
     <operation name="getAttributes">
       <input>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/Authentication"/></input>
       <output>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/Authentication"/></output>
       <soap:operation soapAction=""/></operation>
     <operation name="requestSession">
       <input>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/Authentication"/></input>
       <output>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/FeideAuthentication"/></output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="https://login.feide.no/moria/Authentication"/></output>
       <soap:operation soapAction=""/></operation>
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/></binding>
-  <service name="FeideAuthentication">
+  <service name="Authentication">
     <port name="AuthenticationIFPort" binding="tns:AuthenticationIFBinding">
-      <soap:address location="https://demo.feide.no/moria/FeideAuthentication?WSDL"/></port></service></definitions>
+      <soap:address location="https://demo.feide.no/moria/Authentication?WSDL"/></port></service></definitions>
