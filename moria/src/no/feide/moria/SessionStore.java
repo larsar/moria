@@ -1,7 +1,9 @@
 package no.feide.moria;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.Hashtable;
+import java.util.Timer;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
@@ -17,6 +19,32 @@ public class SessionStore {
     
     /** Contains all active session objects. Key is current session ID. */
     private Hashtable sessions = new Hashtable();
+    
+    /** Used to handle session store timeouts. */
+    private Timer sessionTimer = new Timer(true);
+    
+    
+    /**
+     * Constructor. Kicks off the session store maintenance thread, to handle
+     * session timeouts.
+     */
+    public SessionStore() {
+        log.finer("SessionStore()");
+        
+        // Initialize periodical session sessionStore checks.
+        // TODO: Replace 2500 with Properties lookup.
+        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), 2500);
+    }
+    
+    
+    /**
+     * Stops the background maintenance thread.
+     */
+    public void destroy() {
+        log.finer("destroy()");
+        
+        sessionTimer.cancel();
+    }
    
     
     /** 

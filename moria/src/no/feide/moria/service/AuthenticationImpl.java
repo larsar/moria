@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.logging.*;
-import java.util.Timer;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 import java.rmi.RemoteException;
@@ -14,17 +13,12 @@ import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 import no.feide.moria.*;
 
-import java.util.Date;
-
 
 public class AuthenticationImpl
 implements AuthenticationIF, ServiceLifecycle {
 
     /** Used for logging. */
     private static Logger log = Logger.getLogger(AuthenticationImpl.class.toString());
-
-    /** Used to handle session store timeouts. */
-    private Timer sessionTimer = new Timer(true);
 
     /** Used to retrieve the client identity. */
     private ServletEndpointContext ctx;
@@ -41,7 +35,6 @@ implements AuthenticationIF, ServiceLifecycle {
     public void destroy() {
 	log.finer("destroy()");
 
-        sessionTimer.cancel();
 	log = null;
 	ctx = null;
     }
@@ -84,9 +77,6 @@ implements AuthenticationIF, ServiceLifecycle {
             log.severe("InvalidPreferencesFormatException caught and re-thrown as ServiceException");
             throw new ServiceException("InvalidPreferencesException caught", e);
         }
-        
-        // Initialize periodical session sessionStore checks.
-        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), 2500);
 
     }
 
