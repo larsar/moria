@@ -28,12 +28,14 @@ public class Register {
     /* The internal register. */
     private Hashtable register;
 
+    private MessageLogger messageLog; 
 
     /**
      * 
      */
     public Register() {
         register = new Hashtable();
+        messageLog = new MessageLogger(Register.class);
     }
 
 
@@ -48,7 +50,7 @@ public class Register {
 
         // Did we just update an existing element?
         if (register.put(new String(element.getName()), element) != null)
-            MessageLogger.logInfo("Element " + element.getName() + " updated");
+            messageLog.logInfo("Element " + element.getName() + " updated");
     }
 
 
