@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 
 /**
  * A serializable index implementation, used for offline generation of a new
@@ -16,27 +16,29 @@ implements Serializable, DirectoryManagerIndex {
     /**
      * Internal list of associations; that is, the mapping between logical ID
      * realms (as <code>String</code>s) - following the 'at' character - and
-     * search base references (as <code>String</code> s).
+     * search base references (as <code>String</code> arrays).
      */
     private HashMap associations = new HashMap();
 
     /**
      * Internal list of exceptions to the associations; that is, explicitly
      * indexed logical IDs (as <code>String</code>s) to full external
-     * references (as <code>String</code> arrays).
+     * references (as <code>String</code> s).
      */
     private HashMap exceptions = new HashMap();
 
 
     /**
-     * Checks whether two index instances are equal.
+     * Checks whether two index instances are equal. <br>
+     * <br>
+     * Note that for convenience (and/or laziness) this method relies on the
+     * <code>String</code> representation as given by <code>toString()</code>.
      * @return <code>true</code> if two <code>SerializableIndex</code>
      *         objects are equal, otherwise <code>false</code>. To instances
      *         are equal if and only if their lists of associations and
-     *         exceptions are equal. These structures are compared using the
-     *         <code>AbstractMap.equals(Object)</code> method.
+     *         exceptions are equal.
      * @see java.lang.Object#equals(java.lang.Object)
-     * @see java.util.AbstractMap#equals(java.lang.Object)
+     * @see #toString()
      */
     public boolean equals(Object obj) {
 
@@ -44,17 +46,32 @@ implements Serializable, DirectoryManagerIndex {
         if (obj.getClass() != this.getClass())
             return false;
         final SerializableIndex other = (SerializableIndex) obj;
-
-        // Verify associations.
-        if (!other.associations.equals(associations))
+        
+        // Check associations. Normal equals(...) doesn't work here.
+        if (!associations.keySet().equals(other.associations.keySet()))
             return false;
+        Iterator keys = associations.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = (String)keys.next();
+            String[] values = (String[])associations.get(key);
+            ArrayList myValues = new ArrayList(values.length);
+            for (int i=0; i<values.length; i++)
+                myValues.add(values[i]);
+            values = (String[])other.associations.get(key);
+            ArrayList otherValues = new ArrayList(values.length);
+            for (int i=0; i<values.length; i++)
+                otherValues.add(values[i]);    
+            if (!myValues.equals(otherValues))
+                return false;
+        }
+        
 
-        // Verify exceptions.
-        if (!other.exceptions.equals(exceptions))
+        // Check exceptions; much simple data structure.
+        if (!exceptions.equals(other.exceptions))
             return false;
-
+        
+        // We're okay.
         return true;
-
     }
 
 
@@ -78,24 +95,24 @@ implements Serializable, DirectoryManagerIndex {
         // Sanity check.
         if (id == null)
             return null;
-        
+
         ArrayList newReferences = new ArrayList();
 
         // Do we have an explicit match? That is, an exception from the
         // association rule?
         if (exceptions.containsKey(id))
-            newReferences.add(new IndexedReference(new String[] {(String)exceptions.get(id)}, true));
+            newReferences.add(new IndexedReference(new String[] {(String) exceptions.get(id)}, true));
 
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
-        if ((i > 0) && (associations.containsKey(id.substring(i+1))))
-        	newReferences.add(new IndexedReference((String[])associations.get(id.substring(i+1)), false));
-        
+        if ((i > 0) && (associations.containsKey(id.substring(i + 1))))
+            newReferences.add(new IndexedReference((String[]) associations.get(id.substring(i + 1)), false));
+
         // Did we find any references?
         if (newReferences.size() == 0)
             return null;
         else
-            return (IndexedReference[])newReferences.toArray(new IndexedReference[] {});
+            return (IndexedReference[]) newReferences.toArray(new IndexedReference[] {});
 
     }
 
@@ -131,9 +148,9 @@ implements Serializable, DirectoryManagerIndex {
         if (associations.containsKey(realm)) {
 
             // Update existing association.
-            List oldBase = Arrays.asList((String[]) associations.get(realm));
-            oldBase.add(base);
-            associations.put(realm, oldBase.toArray(new String[] {}));
+            ArrayList bases = new ArrayList(Arrays.asList((String[]) associations.get(realm)));
+            bases.add(base);
+            associations.put(realm, (String[]) bases.toArray(new String[] {}));
 
         } else {
 
@@ -181,8 +198,22 @@ implements Serializable, DirectoryManagerIndex {
      */
     public String toString() {
 
-        String s = "\tAssociations: " + associations.toString().replaceAll("], ", "\n\t               ");
-        return s = s + "\tExceptions: " + exceptions.toString().replaceAll(", ", "\n\t             ");
+        // Associations.
+        String s = "\tAssociations: {";
+        Iterator associationKeys = associations.keySet().iterator();
+        while (associationKeys.hasNext()) {
+            String[] bases = (String[]) associations.get(associationKeys.next());
+            for (int i = 0; i < bases.length; i++) {
+                s = s + bases[i];
+                if (i < bases.length - 1)
+                    s = s + "\n\t               ";
+                else
+                    s = s + '}';
+            }
+        }
+
+        // Exceptions.
+        return s = s + "\n\tExceptions: " + exceptions.toString().replaceAll(", ", "\n\t             ");
 
     }
 
