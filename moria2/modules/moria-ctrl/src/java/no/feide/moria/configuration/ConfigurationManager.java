@@ -39,7 +39,7 @@ import java.util.TimerTask;
  * has a configuration file which is read and passed as a Properties object 
  * to the module at startup. The authorization module does its own file
  * parsing, so for that module the Properties object just contains the 
- * file name of configuration file, which is then read and parsed by the 
+ * name of the configuration file, which is then read and parsed by the 
  * authorization module.
  * 
  * If a configuration file is changed, the entire file is reread and the
@@ -49,8 +49,8 @@ import java.util.TimerTask;
  * property to be set, and the property has to point to the configuration file
  * for the ConfigurationManager module. The file can be referenced by either
  * full file path or as a resource in the classpath. <br/><br/>The
- * configuration file has to contain properties that points to the other modules
- * properties files. These files kan be referenced by either full file path or
+ * configuration file has to contain properties that point to the other modules'
+ * properties files. These files can be referenced by either full file path or
  * as a resource in the classpath. The
  * <code>no.feide.moria.configuration.fileListenerIntervalSeconds</code>
  * attribute specifies the interval between each file poll. <br/><p/>
@@ -75,7 +75,7 @@ import java.util.TimerTask;
  *  
  * </pre>
  * 
- * <p/>When a configuration file is changed the content is read into a
+ * <p/>When a configuration file is changed, the content is read into a
  * properties object which is sent to the MoriaController.
  * 
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -85,7 +85,7 @@ import java.util.TimerTask;
 public final class ConfigurationManager {
 
     /**
-     * For logging events that does not throw exceptions to the layer above.
+     * For logging events that do not throw exceptions to the layer above.
      */
     private final MessageLogger messageLogger = new MessageLogger(ConfigurationManager.class);
 
@@ -141,7 +141,7 @@ public final class ConfigurationManager {
 
 
     /**
-     * Constructor. The constructor reads the ConfigurationManagers properties
+     * Constructor. The constructor reads the ConfigurationManager's properties
      * from file (set by <code>System.properties</code>) and starts file
      * listeners for all modules' configuration files.
      * @throws BaseConfigException
@@ -218,8 +218,8 @@ public final class ConfigurationManager {
 
 
     /**
-     * Number of active file listeners. Basicly needed for testing.
-     * @return the number of active file listeners
+     * Number of active file listeners. Basically needed for testing.
+     * @return The number of active file listeners.
      */
     int numFileListeners() {
 
@@ -229,13 +229,16 @@ public final class ConfigurationManager {
 
     /**
      * Read properties from file. The fileURI can be absolute path to file or
-     * relative to the classpath. If the fieleURI does not resolve to a readeble
-     * file, a <code>ConfigurationManagerException</code> is thrown.
+     * relative to the classpath. If the fileURI does not resolve to a readeble
+     * file, an<code>IOException</code> or 
+     * <code>IllegalArgumentException</code>is thrown. 
      * @param fileURI
-     *            the reference to the properties file
-     * @return properties from the file
+     *            The reference to the properties file.
+     * @return Properties from the file.
      * @throws IOException
-     *             if something goes wrong during file read
+     *             If something goes wrong during file read.
+     * @throws IllegalArgumentException
+     *             If <code>fileURI</code> is not a non-empty string.
      */
     private static Properties readProperties(final String fileURI)
     throws IOException {
@@ -255,17 +258,17 @@ public final class ConfigurationManager {
 
 
     /**
-     * Monitor a file. A new file listener is started for the modules properties
+     * Monitor a file. A new file listener is started for the module's properties
      * file. If the file cannot be read, a <code>FileNotFoundException</code>
      * is thrown.
      * @param fileName
-     *            full path or relative (classpath) path to the properties file
+     *            Full path or relative (classpath) path to the properties file.
      * @param module
-     *            the module the configuration file belongs to
+     *            The module the configuration file belongs to.
      * @param intervalSec
-     *            polling period in seconds
+     *            Polling period in seconds.
      * @throws FileNotFoundException
-     *             if the file is not found
+     *             If the file is not found.
      */
     private void addFileChangeListener(final String fileName, final String module, final int intervalSec)
     throws FileNotFoundException {
@@ -280,9 +283,9 @@ public final class ConfigurationManager {
 
 
     /**
-     * Stop monitoring of file.
+     * Stop monitoring file.
      * @param fileName
-     *            the file name to stop monitoring
+     *            The file name to stop monitoring.
      */
     private void removeFileChangeListener(final String fileName) {
 
@@ -296,9 +299,9 @@ public final class ConfigurationManager {
     /**
      * Send changed configuration to <code>MoriaController</code>.
      * @param module
-     *            the module the configuration file belongs to
+     *            The module the configuration file belongs to.
      * @param configurationFile
-     *            a <code>File</code> object representing the changed file
+     *            A <code>File</code> object representing the changed file.
      * @see no.feide.moria.controller.MoriaController#setConfig
      */
     private void fileChangeEvent(final String module, final File configurationFile) {
@@ -335,11 +338,11 @@ public final class ConfigurationManager {
     /**
      * Resolves a fileURI to a <code>File</code> object.
      * @param fileURI
-     *            reference to the file (full path or relative within the
-     *            classpath)
-     * @return a <code>File</code> object referenced by the fileURI
+     *            Reference to the file (full path or relative within the
+     *            classpath).
+     * @return A <code>File</code> object referenced by the fileURI.
      * @throws FileNotFoundException
-     *             if the fileURI cannot be resolved to a readable file
+     *             If the fileURI cannot be resolved to a readable file.
      */
     private static File fileForURI(final String fileURI)
     throws FileNotFoundException {
@@ -377,11 +380,11 @@ public final class ConfigurationManager {
         /**
          * Constructor.
          * @param fileURI
-         *            the URI for the file to watch
+         *            The URI for the file to watch.
          * @param module
-         *            the module the file belongs to
+         *            The module the file belongs to.
          * @throws FileNotFoundException
-         *             if the file does not exist
+         *             If the file does not exist.
          */
         public FileListenerTask(final String fileURI, final String module)
         throws FileNotFoundException {
