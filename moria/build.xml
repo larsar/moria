@@ -18,7 +18,7 @@
   <!-- Common Mellon/Moria targets. -->
   <target name="all:clean"
           description="All: Clean up everything"
-          depends="mellon:clean,moria:clean,test:clean,mellon:demo:clean">
+          depends="mellon:clean,moria:clean,mellon:demo:clean">
     <delete dir="dist"/>
   </target>
 
