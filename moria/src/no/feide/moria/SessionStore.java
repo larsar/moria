@@ -231,8 +231,6 @@ public class SessionStore {
                             stats.sessionTimeout(wsName, "AUTH");
                             invalidatedSessions.add(session);
                     }
-                        
-
                 }
 
                 /* Time out due to missing login info from user */
@@ -243,8 +241,6 @@ public class SessionStore {
                         invalidatedSessions.add(session);
                     }
                 }
-
-
             }
 
             // Invalidate sessions

@@ -59,47 +59,45 @@ $deniedSessionsAuthentication
 <br/>
 
 <table>
+
 <tr>
-<th>Client</th>
-<th>Created</th>
-<th>Active</th>
-<th>Failed auth.</th>
-<th>Sucsessful auth.</th> 
-<th>SSO auth.</th> 
-<th>Denied (URL)</th>
-<th>Denied (attr.)</th>
-<th>Timeout (SSO)</th>
-<th>Timeout (AUTH)</th>
-<th>Timeout (USER)</th>
+<th>&nbsp;</th>
+<th class="thstat" colspan="2">Sessions</th>
+<th class="thstat" colspan="3">Authentications</th>
+<th class="thstat" colspan="3">Timeout</th>
+<th class="thstat" colspan="2">Not created</th>
 </tr>
 
 <tr>
-<td>All</td>
-<td class="num">$createdSessions</td>
-<td class="num">$activeSessions</td>
-<td class="num">$loginAttemptFailed</td>
-<td class="num">$loginAttemptSuccess</td>
-<td class="num">$loginAttemptSSO</td>
-<td class="num">$deniedSessionsURL</td>
-<td class="num">$deniedSessionsAuthorization</td>
-<td class="num">$sessionsTimeoutSSO</td>
-<td class="num">$sessionsTimeoutAUTH</td>
-<td class="num">$sessionsTimeoutUSER</td>
+<th class="thstat">Client</th>
+<th class="thstat">Active</th>
+<th class="thstat">Created</th>
+<th class="thstat">Sucsessful</th> 
+<th class="thstat">Failed</th>
+<th class="thstat">SSO</th> 
+<th class="thstat">User</th>
+<th class="thstat">SSO</th>
+<th class="thstat">Client</th>
+<th class="thstat">Invalid URL</th>
+<th class="thstat">Attributes</th>
 </tr>
 
-#foreach( $key in $wsStats.keySet() )
+#foreach( $wsName in $wsStats.keySet() )
 <tr>
-<td>$key</td>
-<td class="num">$wsStats.get($key).getSessionStats("created")</td>
-<td class="num">$wsStats.get($key).getSessionStats("active")</td>
-<td class="num">$wsStats.get($key).getSessionStats("authFailed")</td>
-<td class="num">$wsStats.get($key).getSessionStats("authSuccess")</td>
-<td class="num">$wsStats.get($key).getSessionStats("authSSO")</td>
-<td class="num">$wsStats.get($key).getSessionStats("deniedURL")</td>
-<td class="num">$wsStats.get($key).getSessionStats("deniedAuthorization")</td>
-<td class="num">$wsStats.get($key).getSessionStats("timeoutSSO")</td>
-<td class="num">$wsStats.get($key).getSessionStats("timeoutAuth")</td>
-<td class="num">$wsStats.get($key).getSessionStats("timeoutUser")</td>
+<td>$wsName</td>
+<td class="tdstat">$wsStats.get($wsName).get("activeSessions")</td>
+<td class="tdstat">$wsStats.get($wsName).get("createdSessions")</td>
+<td class="tdstat">$wsStats.get($wsName).get("loginAttemptSuccess")</td>
+<td class="tdstat">$wsStats.get($wsName).get("loginAttemptFailed")</td>
+<td class="tdstat">$wsStats.get($wsName).get("loginAttemptSSO")</td>
+
+<td class="tdstat">$wsStats.get($wsName).get("sessionsTimeoutUSER")</td>
+<td class="tdstat">$wsStats.get($wsName).get("sessionsTimeoutSSO")</td>
+<td class="tdstat">$wsStats.get($wsName).get("sessionsTimeoutAUTH")</td>
+
+<td class="tdstat">$wsStats.get($wsName).get("deniedSessionsURL")</td>
+<td class="tdstat">$wsStats.get($wsName).get("deniedSessionsAuthorization")</td>
+
 </tr>
 #end
 

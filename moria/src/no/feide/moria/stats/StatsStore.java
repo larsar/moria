@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import no.feide.moria.Session;
 
 
 /**
@@ -108,70 +109,52 @@ public class StatsStore {
         return upTime;
     }
 
-    public HashMap sessions() {
-        int loginAttemptFailed  = 0;
-        int loginAttemptSuccess = 0;
-        int loginAttemptSSO = 0;
-
-        int createdSessions = 0;
-        int deniedSessionsURL = 0;
-        int deniedSessionsAuthorization  = 0;
-        
-        int sessionsTimeoutSSO = 0;
-        int sessionsTimeoutAUTH= 0;
-        int sessionsTimeoutUSER= 0;
-
+    public HashMap getStats() {
         HashMap stats = new HashMap();
+        HashMap totalStats = new HashMap();
 
         for (Iterator it = wsStats.keySet().iterator(); it.hasNext(); ) {
-            WebServiceStats ws = (WebServiceStats) wsStats.get(it.next());
+            String wsName = (String) it.next();
+            WebServiceStats ws = (WebServiceStats) wsStats.get(wsName);
+            HashMap statsValues = ws.getStats();
+
+            stats.put(wsName, statsValues);
+
+            for (Iterator it2 = wsStats.keySet().iterator(); it2.hasNext(); ) {
+                String counter = (String) it2.next();
+                Integer value = (Integer) statsValues.get(counter);
+                Integer sum = (Integer) totalStats.get(counter);
+                
+                if (sum != null)
+                    sum = new Integer(sum.intValue() + value.intValue());
+                else
+                    sum = value;
+                
+                totalStats.put(counter, sum);
+            }
             
-            createdSessions += ws.getSessionStats("created");
-            deniedSessionsAuthorization += ws.getSessionStats("deniedAuthorization");
-            sessionsTimeoutSSO += ws.getSessionStats("timeoutSSO");
-            sessionsTimeoutAUTH += ws.getSessionStats("timeoutAuth");
-            sessionsTimeoutUSER += ws.getSessionStats("timeoutUser");
-            loginAttemptFailed += ws.getSessionStats("authFailed");
-            loginAttemptSuccess += ws.getSessionStats("authSuccess");
-            loginAttemptSSO += ws.getSessionStats("authSSO");
-            deniedSessionsURL += ws.getSessionStats("deniedURL");
-        }
-
-        stats.put("deniedSessionsAuthentication", ""+deniedSessionsAuthentication);
-        stats.put("loginAttemptFailed", ""+loginAttemptFailed);
-        stats.put("loginAttemptSuccess", ""+loginAttemptSuccess);
-        stats.put("loginAttemptSSO", ""+loginAttemptSSO);
-        stats.put("createdSessions", ""+createdSessions);
-        stats.put("deniedSessionsURL", ""+deniedSessionsURL);
-        stats.put("deniedSessionsAuthorization", ""+deniedSessionsAuthorization);
-        stats.put("sessionsTimeoutSSO", ""+sessionsTimeoutSSO);
-        stats.put("sessionsTimeoutAUTH", ""+sessionsTimeoutAUTH);
-        stats.put("sessionsTimeoutUSER", ""+sessionsTimeoutUSER);
-
-        stats.put("activeSessions", ""+(createdSessions-(sessionsTimeoutSSO+sessionsTimeoutAUTH+sessionsTimeoutUSER)));
+        }        
         
         return stats;
     }
 
-    public void loginAttempt(String wsName, String result) {
-        getWSStats(wsName).loginAttempt(result);
+    public void loginAttempt(String wsID, String result) {
+        getWSStats(wsID).loginAttempt(result);
     }
     
-    public void createSessionAttempt(String wsName, String result) {
+    public void createSessionAttempt(String wsID, String result) {
         if (result.equals("AUTHN")) {
             deniedSessionsAuthentication++;
-            System.out.println("AUTHN: "+deniedSessionsAuthentication);
         }
         else 
-            getWSStats(wsName).createSessionAttempt(result);
+            getWSStats(wsID).createSessionAttempt(result);
     }
 
-    public void sessionTimeout(String wsName, String type) {
-        getWSStats(wsName).sessionTimeout(type);
+    public void sessionTimeout(String wsID, String type) {
+        getWSStats(wsID).sessionTimeout(type);
     }
 
-    public HashMap getWsStats() {
-        return new HashMap(wsStats);
+    public int getDeniedSessionsAuthentication() {
+        return deniedSessionsAuthentication;
     }
-
 }

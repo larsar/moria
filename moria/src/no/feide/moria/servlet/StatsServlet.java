@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import no.feide.moria.Configuration;
 import no.feide.moria.ConfigurationException;
 import no.feide.moria.stats.StatsStore;
+import no.feide.moria.stats.WebServiceStats;
 import no.feide.moria.authorization.AuthorizationData;
 
 import javax.servlet.ServletConfig;
@@ -145,24 +146,21 @@ public class StatsServlet extends VelocityServlet {
                 String label = (String) it.next();
                 context.put(label, upTime.get(label));
             }
-
-            /* Sessions */
-            HashMap sessions = stats.sessions();
-            for (Iterator it = sessions.keySet().iterator(); it.hasNext(); ) {
-                String label = (String) it.next();
-                context.put(label, sessions.get(label));
-            }
-        
+            
             /* Authorization data */
             context.put("numOfWebServices", ""+AuthorizationData.getInstance().numOfWebServices());
 
-            /* Web Services */
-            HashMap wsStats = stats.getWsStats();
-            context.put("wsStats", wsStats);
-
             /* Configuration */
             context.put("properties", Configuration.getProperties());
+
+            /* Web Services */
+            HashMap wsStats = stats.getStats();
+            context.put("wsStats", wsStats);
+
+            //System.out.println(((HashMap)wsStats.get("demo")).get("createdSessions"));
             
+            context.put("deniedSessionsAuthentication", new Integer(stats.getDeniedSessionsAuthentication()));
+
             return getTemplate("stats.vtl");
         }
 

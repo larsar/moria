@@ -18,6 +18,7 @@
 package no.feide.moria.stats;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 
@@ -32,15 +33,15 @@ public class WebServiceStats {
 
     int loginAttemptFailed  = 0;
     int loginAttemptSuccess = 0;
-    int loginAttemptSSO = 0;
+    int loginAttemptSSO     = 0;
 
-    int createdSessions = 0;
+    int createdSessions     = 0;
     int deniedSessionsAuthorization  = 0;
-    int deniedSessionsURL  = 0;
+    int deniedSessionsURL   = 0;
 
-    int sessionsTimeoutSSO = 0;
-    int sessionsTimeoutAUTH= 0;
-    int sessionsTimeoutUSER= 0;
+    int sessionsTimeoutSSO  = 0;
+    int sessionsTimeoutAUTH = 0;
+    int sessionsTimeoutUSER = 0;
 
     /** Used for logging. */
     private static Logger log = Logger.getLogger(WebServiceStats.class.toString());
@@ -58,6 +59,24 @@ public class WebServiceStats {
         lastUsed  = firstUsed;
     }
 
+    public HashMap getStats() {
+        HashMap stats = new HashMap();
+        // stats.put("firstUsed", new Integer(firstUsed));
+        // stats.put("lastUsed", new Integer(lastUsed));
+        stats.put("loginAttemptFailed", new Integer(loginAttemptFailed));
+        stats.put("loginAttemptSuccess", new Integer(loginAttemptSuccess));
+        stats.put("loginAttemptSSO", new Integer(loginAttemptSSO));
+        stats.put("createdSessions", new Integer(createdSessions));
+        stats.put("deniedSessionsAuthorization", new Integer(deniedSessionsAuthorization));
+        stats.put("deniedSessionsURL", new Integer(deniedSessionsURL));
+        stats.put("sessionsTimeoutSSO", new Integer(sessionsTimeoutSSO));
+        stats.put("sessionsTimeoutAUTH", new Integer(sessionsTimeoutAUTH));
+        stats.put("sessionsTimeoutUSER", new Integer(sessionsTimeoutUSER));
+        stats.put("activeSessions", new Integer(createdSessions - sessionsTimeoutSSO - sessionsTimeoutAUTH - sessionsTimeoutUSER));
+
+        return stats;
+    }
+    
 
     protected void loginAttempt(String result) {
         timeStamp();
@@ -95,10 +114,10 @@ public class WebServiceStats {
         if (type.equals("SSO"))
             sessionsTimeoutSSO++;
 
-        if (type.equals("AUTH")) 
+        else if (type.equals("AUTH")) 
             sessionsTimeoutAUTH++;
 
-        if (type.equals("USER"))
+        else if (type.equals("USER"))
             sessionsTimeoutUSER++;
 
         else
@@ -106,48 +125,8 @@ public class WebServiceStats {
             
         
     }
-        
 
     private void timeStamp() {
         lastUsed = new Date();
     }
-
-    public int getSessionStats(String type) {
-
-        if (type.equals("created"))
-            return createdSessions;
-
-        else if (type.equals("active"))
-            return createdSessions-(sessionsTimeoutAUTH+sessionsTimeoutSSO+sessionsTimeoutUSER);
-
-        else if (type.equals("deniedAuthorization"))
-            return deniedSessionsAuthorization;
-        
-        else if (type.equals("deniedURL"))
-            return deniedSessionsURL;
-
-        else if (type.equals("timeoutAuth"))
-            return sessionsTimeoutAUTH;
-
-        else if (type.equals("timeoutSSO"))
-            return sessionsTimeoutSSO;
-
-        else if (type.equals("timeoutUser"))
-            return sessionsTimeoutUSER;
-        
-        else if (type.equals("authSuccess"))
-            return loginAttemptSuccess;
-
-        else if (type.equals("authSSO"))
-            return loginAttemptSSO;
-
-        else if (type.equals("authFailed"))
-            return loginAttemptFailed;
-
-        else 
-            return -1;
-    }
-
-
- 
 }
