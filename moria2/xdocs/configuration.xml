@@ -420,6 +420,36 @@ no.feide.moria.configuration.web=../relative/path/web.properties
                     </li>
                 </ul>
             </subsection>
+            <subsection name="Status Servlet Property">
+            <p>
+                The following property are used by the status servlet:
+                </p>
+                <ul>
+                    <li>
+                    <code>no.feide.moria.web.backendstatus.status_xml</code>
+                    <p>Gives the path and name of the file containing the information
+                    about the test-users. The XML file contains a rootelement <i>Testuserlist</i>
+                    with one or more <i>User</i> child elements. Each <i>User</i> element must
+                    contain the child elements <i>Name</i> (which has a text child element
+                    giving the name of a test-user) and <i>Password</i> (which has a text child
+                    element giving the password of a test-user).
+                    </p>
+                    <p>Example of a status.xml file</p>
+                    <source>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
+
+&lt;Testuserlist&gt;
+
+   &lt;User&gt;
+      &lt;Name&gt;test@test.no&lt;/Name&gt;
+      &lt;Password&gt;test&lt;/Password&gt;
+   &lt;/User&gt;
+
+&lt;/Testuserlist&gt;
+			</source>
+			</li>
+		</ul>
+        </subsection>
             <p>     
             Example Web Module configuration file:
             </p>
@@ -512,6 +542,13 @@ no.feide.moria.web.information.url_prefix=http://localhost:8080/moria/Informatio
 
 # Configuration property for the attribute description file name.
 no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
+
+#
+# Configuration property relevant for the status service (StatusServlet):
+#
+
+# Configuration proprety for the status.xml file.
+no.feide.moria.web.backendstatus.status_xml=/some/path/status.xml
             </source>
         </section>
         <section name="Authorization Manager">
