@@ -20,7 +20,6 @@
 
 package no.feide.moria.authorization;
 
-import java.util.logging.Logger;
 
 /**
  * This class represents a LDAP attribute and is used for authorization of a
@@ -39,7 +38,7 @@ public class AuthorizationAttribute {
     /**
      * Used for logging.
      */
-    private static Logger log = Logger.getLogger(AuthorizationAttribute.class.toString());
+    //private static Logger log = Logger.getLogger(AuthorizationAttribute.class.toString());
 
     /**
      * Name of attribute
@@ -58,11 +57,12 @@ public class AuthorizationAttribute {
 
     /**
      * Constructor. Name of attribute must be a non-empty string. Security
-     * level can be set to "LOW", "MEDIUM" or " "HIGH", it defaults to "HIGH".
+     * level must be > 0.
      *
      * @param name     Name of attribute
      * @param secLevel The attributes security level
      * @param allowSSO Allow use of SSO with this attribute
+     * @throws IllegalArgumentException if name is null or "", or if seclevel is < 0
      */
     AuthorizationAttribute(final String name, final boolean allowSSO, final int secLevel) {
 
