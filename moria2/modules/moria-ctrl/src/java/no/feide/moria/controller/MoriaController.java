@@ -947,6 +947,39 @@ public class MoriaController {
         }
     }
 
+    public final static String getRedirectURL(final String serviceTicketId)
+            throws InoperableStateException, IllegalInputException, UnknownTicketException {
+
+        /* Check controller state */
+        if (!ready) {
+            throw new InoperableStateException("Controller is not ready");
+        }
+
+        /* Validate argument */
+        if (serviceTicketId == null || serviceTicketId.equals("")) {
+            throw new IllegalInputException("serviceTicketId must be a non-empty string.");
+        }
+//        if (servicePrincipal == null || servicePrincipal.equals("")) {
+//            throw new IllegalInputException("servicePrincipal must be a non-empty string.");
+//        }
+
+        MoriaAuthnAttempt authnAttempt;
+        try {
+            authnAttempt = store.getAuthnAttempt(serviceTicketId, true, null);
+        } catch (InvalidTicketException e) {
+            // TODO: Log
+            throw new UnknownTicketException("Ticket does not exist.");
+        } catch (NonExistentTicketException e) {
+            // TODO: Log
+            throw new UnknownTicketException("Ticket does not exist.");
+        } catch (MoriaStoreException e) {
+            // TODO: Log
+            throw new InoperableStateException("Moria is unavailable, the store is down.");
+        }
+
+        return authnAttempt.getReturnURLPrefix()+serviceTicketId+authnAttempt.getReturnURLPostfix();
+    }
+
     /**
      * Get the total status of the controller. The method returns a HashMap with Boolean values. The following elements
      * are in the map: init: <code>true</code> if the <code>initController</code> method has been called, else

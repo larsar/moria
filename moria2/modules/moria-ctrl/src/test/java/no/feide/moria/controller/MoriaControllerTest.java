@@ -867,7 +867,39 @@ public class MoriaControllerTest extends TestCase {
         } catch (UnknownTicketException success) {
 
         }
+    }
 
+    public void testGetRedirectURL() throws MoriaControllerException {
+        controllerInitialization();
 
+        /* Invalid arguments */
+        try {
+            MoriaController.getRedirectURL(null);
+            fail("IllegalInputException should be raised, serviceTicketId is null.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.getRedirectURL("");
+            fail("IllegalInputException should be raised, serviceTicketId is an empty string.");
+        } catch (IllegalInputException success) {
+        }
+//        try {
+//            MoriaController.getRedirectURL("1234", null);
+//            fail("IllegalInputException should be raised, principal is null.");
+//        } catch (IllegalInputException success) {
+//        }
+//        try {
+//            MoriaController.getRedirectURL("1234", "");
+//            fail("IllegalInputException should be raised, principal is an empty string.");
+//        } catch (IllegalInputException success) {
+//        }
+
+         String loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+                                                                      validPrincipal);
+        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        String serviceTicket = (String) tickets.get(MoriaController.SERVICE_TICKET);
+        String actualURL = MoriaController.getRedirectURL(serviceTicket);
+        String expectedURL = validPrefix+serviceTicket+validPostfix;
+        assertEquals("Redirect URL differs.", expectedURL, actualURL);
     }
 }
