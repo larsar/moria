@@ -64,7 +64,7 @@
     <copy file="Authentication.wsdl"
           todir="build/WEB-INF"/>
     <exec executable="sed" output="build/WEB-INF/Authentication.wsdl">
-      <arg line="s!REPLACE_WITH_DEPLOY_URL!${deploy_url}! Authentication.wsdl"/>
+      <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! Authentication.wsdl"/>
     </exec>
   </target>
 
