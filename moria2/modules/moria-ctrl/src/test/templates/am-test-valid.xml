@@ -2,28 +2,49 @@
 
 <ClientAuthorizationConfig>
 
-  <Client name="test">
-    <DisplayName>Foobar</DisplayName>
-    <URL>http://www.feide.no/</URL>
-    <Home>uio.no</Home>
-    <Language>no</Language>
-    <Affiliation>
-      <Organization name ="uninett.no"/>
-      <Organization name ="uio.no"/>
-    </Affiliation>
-    <Attributes>
-      <Attribute name="attr1" sso="true" secLevel="0"/>
-      <Attribute name="attr2" sso="true" secLevel="1"/>
-      <Attribute name="attr3" sso="false" secLevel="2"/>
-    </Attributes>
-    <Operations>
-      <Operation name="LocalAuth"/>
-      <Operation name="InteractiveAuth"/>
-    </Operations>
-    <Subsystems>
-      <Subsystem name="sub1"/>
-      <Subsystem name="sub2"/>
-    </Subsystems>
-  </Client>
+    <Client name="test">
+        <DisplayName>Foobar</DisplayName>
+        <URL>http://www.feide.no/</URL>
+        <Home>uio.no</Home>
+        <Language>no</Language>
+        <Affiliation>
+            <Organization name="uninett.no"/>
+            <Organization name="uio.no"/>
+        </Affiliation>
+        <Attributes>
+            <Attribute name="attr1" sso="true" secLevel="0"/>
+            <Attribute name="attr2" sso="true" secLevel="1"/>
+            <Attribute name="attr3" sso="false" secLevel="2"/>
+        </Attributes>
+        <Operations>
+            <Operation name="LocalAuth"/>
+            <Operation name="InteractiveAuth"/>
+        </Operations>
+        <Subsystems>
+            <Subsystem name="sub1"/>
+            <Subsystem name="sub2"/>
+        </Subsystems>
+    </Client>
+
+    <Client name="sub1">
+        <DisplayName>Subsystem 1</DisplayName>
+        <URL>http://www.feide.no/</URL>
+        <Home>uio.no</Home>
+        <Language>no</Language>
+        <Affiliation>
+            <Organization name="uninett.no"/>
+            <Organization name="uio.no"/>
+        </Affiliation>
+        <Attributes>
+            <Attribute name="attr1" sso="true" secLevel="0"/>
+            <Attribute name="attr2" sso="true" secLevel="1"/>
+        </Attributes>
+        <Operations>
+            <Operation name="ProxyAuth"/>
+        </Operations>
+        <Subsystems>
+            <Subsystem name="sub2"/>
+        </Subsystems>
+    </Client>
 
 </ClientAuthorizationConfig>
