@@ -215,7 +215,7 @@ public class User {
             }
 
             // Search for user element.
-	    log.config("Connected to "+env.get(Context.PROVIDER_URL));
+	        log.config("Connected to "+env.get(Context.PROVIDER_URL));
             ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
             rdn = ldapSearch(pattern);
@@ -278,9 +278,27 @@ public class User {
             NamingEnumeration results;
             try {
                 
-		long searchStart = System.currentTimeMillis();
+                // Start counting the (milli)seconds.
+                long searchStart = System.currentTimeMillis();
                 try {
-                    results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, true));
+                    
+                    // Timeout hack, for real this time.
+                    int attempts = 0;
+                    while (true) {
+                        try {
+                            attempts++;
+                            results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000*Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.timeout", "15")), new String[] {}, false, false));
+                            break;
+                        } catch (TimeLimitExceededException e) {
+                            if (attempts < 5)
+                                log.severe("Timeout, trying again...");
+                            else {
+                                log.severe("Too many timeouts, aborting...");
+                                throw new TimeLimitExceededException("Too many timeouts, aborting...");
+                            }
+                        }
+                    }
+                    
                 } catch (ConfigurationException e) {
                     log.severe("ConfigurationException caught and re-thrown as BackendException");
                     throw new BackendException(e);
