@@ -28,13 +28,13 @@ public class SessionStoreTask
 extends TimerTask {
 
     /** Session time out value. */
-    private int timeoutSec;
+    //private int timeoutSec;  Was not used.
 
     /** SSO Session time out value. */
-    private int ssoTimeoutMin;
+    //private int ssoTimeoutMin;  Was not used.
 
     /** Authenticated session time out value. */
-    private int authTimeoutSec;
+    //private int authTimeoutSec;  Was not used.
 
     /** Used for logging. */
     private static Logger log = Logger.getLogger(SessionStoreTask.class.toString());
