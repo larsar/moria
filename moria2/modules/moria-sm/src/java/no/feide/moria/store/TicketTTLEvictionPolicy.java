@@ -381,7 +381,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * Simple data container for region values.
      */
-    class RegionValue {
+    static class RegionValue {
 
         /** Region name. */
         String regionName;

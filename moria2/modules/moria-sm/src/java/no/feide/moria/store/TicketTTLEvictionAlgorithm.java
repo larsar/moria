@@ -170,7 +170,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     /**
      *
      */
-    private class NodeEntry {
+    private static class NodeEntry {
 
         private final Long evictionTime;
 
