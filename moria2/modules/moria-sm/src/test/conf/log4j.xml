@@ -2,7 +2,9 @@
 
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+<log4j:configuration
+   xmlns:log4j="http://jakarta.apache.org/log4j/"
+   debug="false">
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <param name="Threshold" value="TRACE"/>
@@ -13,19 +15,54 @@
     </layout>
   </appender>
 
-  <category name="org.jboss.system">
+  <appender name="ACCESS" class="org.apache.log4j.FileAppender">
+    <param name="File" value="target/logs/test-access.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%d] %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="MESSAGE" class="org.apache.log4j.FileAppender">
+    <param name="File" value="target/logs/test-message.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="JBOSS" class="org.apache.log4j.FileAppender">
+    <param name="File" value="target/logs/test-jboss.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
+  <category name="org.jboss.system" additivity="false">
     <priority value="TRACE" class="org.jboss.logging.XLevel"/>
+    <appender-ref ref="JBOSS"/>
   </category>
   
-  <category name="org.jboss.cache">
+  <category name="org.jboss.cache" additivity="false">
     <priority value="TRACE" class="org.jboss.logging.XLevel"/>
+    <appender-ref ref="JBOSS"/>
   </category>
 
-  <category name="org.jboss.tm">
+  <category name="org.jboss.tm" additivity="false">
     <priority value="TRACE" class="org.jboss.logging.XLevel"/>
+    <appender-ref ref="JBOSS"/>
+  </category>
+
+  <category name="no.feide.moria.log.AccessLogger" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="ACCESS"/>
+  </category>
+
+  <category name="no.feide.moria" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="MESSAGE"/>
   </category>
 
   <root>
+    <priority value="DEBUG"/>
     <appender-ref ref="CONSOLE"/>
   </root>
 </log4j:configuration>
