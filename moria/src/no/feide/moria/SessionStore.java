@@ -164,8 +164,6 @@ public class SessionStore {
      * @param sessionID Current ID for the Moria session.
      * @throws SessionException If the session wasn't found.
      */
-    // TODO: Maybe use another type of exception to distinguish other
-    // session exceptions from not found. NoSuchSessionException?
     public Session getSession(String sessionID) 
     throws SessionException {
         log.finer("getSession(String)");
