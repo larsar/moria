@@ -16,8 +16,12 @@
             <entry key="LoginURL" value="http://klungset.uninett.no:8080/feide-moria/Login"/>
             <entry key="SessionURL" value="http://klungset.uninett.no:8080/feide-mellon/Session"/>
             <entry key="MaxFailedLogins" value="3"/>
-	    <entry key="TemplateDir" value="/foo/bar/aat-templates"/>
           </map>
+          <node name="servlet">
+            <map>
+	      <entry key="TemplateDir" value="/usr/local/jwsdp/work/Standard Engine/localhost/feide-moria/WEB-INF/classes/templates"/>
+            </map>
+          </node>
         </node>
       </node>
     </node>
