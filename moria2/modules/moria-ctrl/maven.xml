@@ -15,7 +15,11 @@
     <mkdir dir="${maven.build.dir}/test-logs"/>
     <mkdir dir="${project.test.generated.dir}"/>
 
-    <copy todir="${project.test.generated.dir}">
+    <!--
+         Generate new test files, overwriting any existing files.
+    -->
+    <copy todir="${project.test.generated.dir}"
+          overwrite="true">
       <fileset dir="${project.test.templates.dir}">
 	      <include name="moria-base*.properties"/>
         <include name="dm-test-valid.properties"/>
