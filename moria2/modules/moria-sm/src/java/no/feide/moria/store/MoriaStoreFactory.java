@@ -20,7 +20,7 @@
 
 package no.feide.moria.store;
 
-import no.feide.moria.store.cache.MoriaCacheStoreImpl;
+import no.feide.moria.store.cache.MoriaCacheStore;
 
 /**
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
@@ -29,6 +29,6 @@ import no.feide.moria.store.cache.MoriaCacheStoreImpl;
 public class MoriaStoreFactory {
 
     public static MoriaStore createMoriaStore() {
-        return new MoriaCacheStoreImpl();
+        return new MoriaCacheStore();
     }
 }

@@ -24,8 +24,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * This class is the container for the userdata that persist across logins
- * (for SSO-Light and Proxy-authentication).
+ * This class is the container for the userdata that persist across logins (for
+ * SSO-Light and Proxy-authentication).
  * 
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
@@ -37,7 +37,7 @@ public class CachedUserData implements Serializable {
     /**
      * Constructs a new instance encapsulating the userdata given as argument
      * 
-     * @param attributes a hashmap containing the user attributes 
+     * @param attributes a hashmap containing the user attributes
      */
     public CachedUserData(HashMap attributes) throws IllegalArgumentException {
         if (attributes == null)

@@ -62,55 +62,71 @@ public class MoriaTicketTest extends TestCase {
     public void testTicketTypes() {
 
         /* Check every combination of tickets */
-        assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.PROXY_TICKET);
+        assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.SERVICE_TICKET);
         assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.SSO_TICKET);
         assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.TICKET_GRANTING_TICKET);
-        assertTrue(MoriaTicket.PROXY_TICKET != MoriaTicket.SSO_TICKET);
-        assertTrue(MoriaTicket.PROXY_TICKET != MoriaTicket.TICKET_GRANTING_TICKET);
+        assertTrue(MoriaTicket.LOGIN_TICKET != MoriaTicket.PROXY_TICKET);
+        assertTrue(MoriaTicket.SERVICE_TICKET != MoriaTicket.SSO_TICKET);
+        assertTrue(MoriaTicket.SERVICE_TICKET != MoriaTicket.TICKET_GRANTING_TICKET);
+        assertTrue(MoriaTicket.SERVICE_TICKET != MoriaTicket.PROXY_TICKET);
         assertTrue(MoriaTicket.SSO_TICKET != MoriaTicket.TICKET_GRANTING_TICKET);
+        assertTrue(MoriaTicket.SSO_TICKET != MoriaTicket.PROXY_TICKET);
+        assertTrue(MoriaTicket.TICKET_GRANTING_TICKET != MoriaTicket.PROXY_TICKET);
     }
 
     /**
      * Test the constructor. Should throw exceptions for invalid arguments.
      */
-    public void testConstructor() {
+    public void testConstructor()
+        throws IllegalArgumentException, InvalidTicketException, InterruptedException {
 
         /* Test for illegal id */
         try {
-            MoriaTicket ticket = new MoriaTicket(null, MoriaTicket.LOGIN_TICKET, principal1);
-            fail("An IllegalArgumentException should have been thrown.");
-        } catch (IllegalArgumentException e) {
-        } catch (InvalidTicketTypeException e) {
-            fail("InvalidTicketTypeException thrown, should be IllegalArgumentException");
+            MoriaTicket ticket = new MoriaTicket(null, MoriaTicket.LOGIN_TICKET, principal1, 5);
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException success) {
         }
 
         /* Test for illegal ticket */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, -1, principal1);
-            fail("An InvalidTicketTypeException should have been thrown");
-        } catch (IllegalArgumentException e) {
-            fail("IllegalArgumentException thrown, should be InvalidTicketTypeException");
-        } catch (InvalidTicketTypeException e) {
+            MoriaTicket ticket = new MoriaTicket(id1, -1, principal1, 5);
+            fail("An InvalidTicketException should have been thrown");
+        } catch (InvalidTicketException success) {
         }
 
         /* Test for illegal principal */
         try {
-            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, null);
-            fail("An IllegalArgumentException should have been thrown.");
-
-        } catch (IllegalArgumentException e) {
-        } catch (InvalidTicketTypeException e) {
-            fail("InvalidTicketTypeException thrown, should be IllegalArgumentException");
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, null, 5);
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException success) {
         }
+        
+        try {
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.SSO_TICKET, principal1, 5);
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException success){
+        }
+
+        /* Test for illegal time to live */
+        try {
+            MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, principal1, -1);
+            fail("An IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException e) {
+        }
+
+        /* Test for expiry */
+        MoriaTicket ticket = new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, principal1, 1);
+        Thread.sleep(1001);
+        assertTrue("Ticket should have expired", ticket.hasExpired());
     }
 
     /**
      * Tests the overriden equal() method of MoriaTicket. Equality is based
      * soley on the id field of the object.
      * 
-     * @throws InvalidTicketTypeException thrown by MoriaTicket constructors
+     * @throws InvalidTicketException thrown by MoriaTicket constructors
      */
-    public void testEquality() throws InvalidTicketTypeException {
+    public void testEquality() throws InvalidTicketException {
 
         /*
          * Same type and principal, different id. Should result in non-equal
@@ -118,14 +134,14 @@ public class MoriaTicketTest extends TestCase {
          */
         assertFalse(
             "Tickets supposed to have different id and not be equal",
-            new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, principal1).equals(
-                new MoriaTicket(id2, MoriaTicket.LOGIN_TICKET, principal1)));
+            new MoriaTicket(id1, MoriaTicket.LOGIN_TICKET, principal1, 5).equals(
+                new MoriaTicket(id2, MoriaTicket.LOGIN_TICKET, principal1, 5)));
 
         /* Same id, different type and principal. Should result in equality. */
         assertEquals(
             "Tickets have same id and should be considered equal",
-            new MoriaTicket(id2, MoriaTicket.TICKET_GRANTING_TICKET, principal1),
-            new MoriaTicket(id2, MoriaTicket.SSO_TICKET, principal2));
+            new MoriaTicket(id2, MoriaTicket.TICKET_GRANTING_TICKET, principal1, 5),
+            new MoriaTicket(id2, MoriaTicket.SSO_TICKET, null, 5));
 
     }
 
@@ -133,12 +149,12 @@ public class MoriaTicketTest extends TestCase {
      * Test if the values given in the constructor are returned correctly.
      * 
      * @throws IllegalArgumentException
-     * @throws InvalidTicketTypeException
+     * @throws InvalidTicketException
      */
-    public void testGetters() throws IllegalArgumentException, InvalidTicketTypeException {
-        MoriaTicket ticket = new MoriaTicket(id2, MoriaTicket.LOGIN_TICKET, principal2);
+    public void testGetters() throws IllegalArgumentException, InvalidTicketException {
+        MoriaTicket ticket = new MoriaTicket(id2, MoriaTicket.LOGIN_TICKET, principal2, 5);
 
-        String errorMsg = "The value given at object construction does not match the returned value.";
+        String errorMsg = "The value given at object construction does not match the returned value";
         assertEquals(errorMsg, id2, ticket.getTicketId());
         assertEquals(errorMsg, MoriaTicket.LOGIN_TICKET, ticket.getTicketType());
         assertEquals(errorMsg, principal2, ticket.getServicePrincipal());

@@ -20,6 +20,8 @@
 
 package no.feide.moria.store;
 
+import java.util.HashMap;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -28,22 +30,35 @@ import junit.framework.TestSuite;
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public class MoriaStoreFactoryTest extends TestCase {
-    public MoriaStoreFactoryTest(String testName) {
-        super(testName);
-    }
+public class CachedUserDataTest extends TestCase {
+
+    HashMap attributes;
 
     public static Test suite() {
-        return new TestSuite(MoriaStoreFactoryTest.class);
+        return new TestSuite(CachedUserDataTest.class);
     }
 
-    /**
-     * Simple test that verifies the creation of a MoriaStore instance as the
-     * result of the method tested. 
-     */
-    public void testCreateMoriaStore() {
-        MoriaStore store = MoriaStoreFactory.createMoriaStore();
-        assertFalse(store == null);
-        assertTrue(store instanceof MoriaStore);
+    public void setUp() {
+        attributes = new HashMap();
+        attributes.put("", "");
+    }
+    public void testConstructor() {
+
+        try {
+            CachedUserData cachedUserData = new CachedUserData(null);
+            fail("IllegalArgumentException should have been thrown when argument is null");
+        } catch (IllegalArgumentException e) {
+        }
+
+        try {
+            CachedUserData cachedUserData = new CachedUserData(attributes);
+        } catch (Exception e) {
+            fail("Object creation should succseed. Exception thrown: " + e.toString());
+        }
+    }
+
+    public void testGetAttributes() throws IllegalArgumentException {
+        CachedUserData cachedUserData = new CachedUserData(attributes);
+        assertEquals("", attributes, cachedUserData.getAttributes());
     }
 }
