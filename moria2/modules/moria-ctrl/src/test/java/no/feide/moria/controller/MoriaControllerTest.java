@@ -100,6 +100,7 @@ public final class MoriaControllerTest extends TestCase {
         } catch (InoperableStateException success) {
         } catch (UnknownTicketException e) {
             /* Should never get here */
+            fail(e.getMessage());
         }
 
         MoriaController.init();
