@@ -98,7 +98,7 @@ extends HttpServlet {
     private Properties config = null;
 
     /** Required parameters. */
-    private String[] REQUIRED_PARAMETERS = {
+    private static final String[] REQUIRED_PARAMETERS = {
         "MASTER_ATTRIBUTE_REQUEST",
         "SLAVE_ATTRIBUTE_REQUEST",
         "SERVICE_ENDPOINT",
@@ -114,7 +114,7 @@ extends HttpServlet {
      * <br>
      * Current value is <code>"ticket"</code>.
      */
-    private final String PARAM_TICKET = "ticket";
+    private static final String PARAM_TICKET = "ticket";
 
 
     /**

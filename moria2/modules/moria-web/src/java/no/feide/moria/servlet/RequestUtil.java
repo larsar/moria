@@ -397,9 +397,6 @@ public final class RequestUtil {
      */
     public static final String ERROR_NO_CREDENTIALS = "noCredentials";
 
-    /** Used for logging. */
-    private static final MessageLogger log = new MessageLogger(LoginServlet.class);
-
     /**
      * Used to build the QName for mapping remote Attribute type to local type.
      * <br>

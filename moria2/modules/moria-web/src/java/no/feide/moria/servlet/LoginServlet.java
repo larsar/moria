@@ -85,7 +85,7 @@ extends HttpServlet {
      * @see RequestUtil#PROP_LOGIN_DEFAULT_LANGUAGE
      * @see RequestUtil#PROP_LOGIN_URL_PREFIX
      */
-    private final String[] REQUIRED_PARAMETERS = {
+    private static final String[] REQUIRED_PARAMETERS = {
         RequestUtil.PROP_COOKIE_DENYSSO,
         RequestUtil.PROP_LOGIN_TICKET_PARAM,
         RequestUtil.PROP_COOKIE_SSO,

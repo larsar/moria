@@ -59,12 +59,12 @@ public class InformationServlet extends HttpServlet {
      * Each item in the hashmap maps from an attribute name to an
      * AttribsData class instance
      */
-    private HashMap feideattribs_stored = null;
+    private HashMap feideattribsStored = null;
 
     /** Principal name of the service.
      *  Current value is "info"
      */
-    private String PRINCIPAL = "info";
+    private static final String PRINCIPAL = "info";
 
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(InformationServlet.class);
@@ -91,7 +91,7 @@ public class InformationServlet extends HttpServlet {
      * @see RequestUtil#PROP_INFORMATION_URL_PREFIX
      * @see RequestUtil#PROP_INFORMATION_FEIDEATTRIBS_XML
      */
-    private final String[] REQUIRED_PARAMETERS = {
+    private static final String[] REQUIRED_PARAMETERS = {
         RequestUtil.PROP_COOKIE_LANG,
         RequestUtil.PROP_COOKIE_LANG_TTL,
         RequestUtil.PROP_COOKIE_DENYSSO,
@@ -115,7 +115,7 @@ public class InformationServlet extends HttpServlet {
      *      AttribsData
      */
     public final synchronized HashMap getAttribs() {
-         if (feideattribs_stored == null) {
+         if (feideattribsStored == null) {
           Properties config = getConfig();
           if (config != null) {
             AttribsHandler handler = new AttribsHandler();
@@ -127,11 +127,11 @@ public class InformationServlet extends HttpServlet {
             } catch (Throwable t) {
               log.logCritical("Error parsing feideattribs.xml");
             } finally {
-              feideattribs_stored = handler.getAttribs();
+              feideattribsStored = handler.getAttribs();
             }
           }
         }
-        return feideattribs_stored;
+        return feideattribsStored;
     }
 
     /**
@@ -181,7 +181,7 @@ public class InformationServlet extends HttpServlet {
             String relevance = adata.getData("relevance");
 
             String userstring = "";
-            String relevance_string = null;
+            String relevanceString = null;
 
             if (userdata != null) {
                 for (int j = 0; j < userdata.length; j++) {
@@ -195,15 +195,15 @@ public class InformationServlet extends HttpServlet {
              */
             if (relevance.equals("Mandatory")) {
                 // set to bundle name
-                relevance_string = "fd_mandatory";
+                relevanceString = "fd_mandatory";
             } else {
                 // set to bundle name
-                relevance_string = "fd_optional";
+                relevanceString = "fd_optional";
             }
             out.add(link);
             out.add(description);
             out.add(userstring);
-            out.add(relevance_string);
+            out.add(relevanceString);
         }
         return out;
     }
