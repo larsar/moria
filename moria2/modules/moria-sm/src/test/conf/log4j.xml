@@ -1,68 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- $Id$ -->
 
 <log4j:configuration
    xmlns:log4j="http://jakarta.apache.org/log4j/"
+   threshold="all"
    debug="false">
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="TRACE"/>
     <param name="Target" value="System.out"/>
-
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
     </layout>
   </appender>
 
   <appender name="ACCESS" class="org.apache.log4j.FileAppender">
-    <param name="File" value="target/logs/test-access.log"/>
+    <param name="File" value="target/test-logs/access.log"/>
+    <param name="Append" value="true"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="[%d] %m%n"/>
     </layout>
   </appender>
 
   <appender name="MESSAGE" class="org.apache.log4j.FileAppender">
-    <param name="File" value="target/logs/test-message.log"/>
+    <param name="File" value="target/test-logs/message.log"/>
+    <param name="Append" value="true"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n"/>
     </layout>
   </appender>
 
-  <appender name="JBOSS" class="org.apache.log4j.FileAppender">
-    <param name="File" value="target/logs/test-jboss.log"/>
+  <appender name="JBOSSCACHE" class="org.apache.log4j.FileAppender">
+    <param name="File" value="target/test-logs/jboss-cache.log"/>
+    <param name="Append" value="true"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d %-5p [%c{1}] %m%n"/>
     </layout>
   </appender>
+
+  <logger name="no.feide.moria.log.AccessLogger" additivity="false">
+    <level value="warn"/>
+    <appender-ref ref="ACCESS"/>
+  </logger>
+
+  <logger name="no.feide.moria" additivity="false">
+    <level value="debug"/>
+    <appender-ref ref="MESSAGE"/>
+  </logger>
 
   <category name="org.jboss.system" additivity="false">
-    <priority value="TRACE" class="org.jboss.logging.XLevel"/>
-    <appender-ref ref="JBOSS"/>
+    <level value="info" class="org.jboss.logging.XLevel"/>
+    <appender-ref ref="JBOSSCACHE"/>
   </category>
-  
+
   <category name="org.jboss.cache" additivity="false">
-    <priority value="TRACE" class="org.jboss.logging.XLevel"/>
-    <appender-ref ref="JBOSS"/>
+    <level value="info" class="org.jboss.logging.XLevel"/>
+    <appender-ref ref="JBOSSCACHE"/>
   </category>
 
   <category name="org.jboss.tm" additivity="false">
-    <priority value="TRACE" class="org.jboss.logging.XLevel"/>
-    <appender-ref ref="JBOSS"/>
-  </category>
-
-  <category name="no.feide.moria.log.AccessLogger" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="ACCESS"/>
-  </category>
-
-  <category name="no.feide.moria" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="MESSAGE"/>
+    <level value="info" class="org.jboss.logging.XLevel"/>
+    <appender-ref ref="JBOSSCACHE"/>
   </category>
 
   <root>
-    <priority value="DEBUG"/>
+    <level value="debug"/>
     <appender-ref ref="CONSOLE"/>
   </root>
 </log4j:configuration>
