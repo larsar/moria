@@ -12,4 +12,11 @@ Development setup for Eclipse, using Maven:
 
 4) Import each module as a project in Eclipse.
 
-5) Enable CVS for each project.
+
+Note for users of Maven 1.0
+---------------------------
+The message
+
+ Plugin 'maven-deploy-plugin' in project '{insert project here}' is not available
+
+when building modules can be ignored, as it is caused by a "feature" in this version of Maven.
