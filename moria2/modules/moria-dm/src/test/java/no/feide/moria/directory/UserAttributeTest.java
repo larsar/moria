@@ -11,8 +11,11 @@ extends TestCase {
     /** Legal attribute name. */
     private static final String legalName = "legalName";
     
-    /** Attribute values. */
-    private static final String[] legalValues = {"value1", "", "value3", null, "value4"};
+    /** Illegal attribute values. */
+    private static final String[] illegalValues = {"value1", "", "value3", null, "value4"};
+    
+    /** Legal attribute values. */
+    private static final String[] legalValues = {"value1", "value2", "value3"};
     
     /** Internal representation of the user attribute. */
     private UserAttribute attribute;
@@ -36,18 +39,19 @@ extends TestCase {
         String[] illegalNames = {"", null};
         for (int i=0; i<illegalNames.length; i++)
 	        try {
-	            Assert.assertNull("Created an illegal attribute", new UserAttribute(illegalNames[i], new String[] {}));
-	        } catch (IllegalAttributeException e) {
+	            Assert.assertNull("Successfully created an illegal attribute", new UserAttribute(illegalNames[i], new String[] {}));
+	        } catch (IllegalArgumentException e) {
 	            // Normal.
 	        }
+	    try {
+	        Assert.assertNull("Successfully created an illegal attribute", new UserAttribute(legalName, illegalValues));
+	    } catch (IllegalArgumentException e) {
+	        // Normal.
+	    }
         
         // Create a legal attribute.
-        try {
-            attribute = new UserAttribute(legalName, legalValues);
-            Assert.assertNotNull("Failed to create a legal attribute", attribute);
-        } catch (IllegalAttributeException e) {
-            Assert.fail("Failed to create a legal attribute");
-        }
+	    attribute = new UserAttribute(legalName, legalValues);
+        Assert.assertNotNull("Failed to create a legal attribute", attribute);
 
     }
 

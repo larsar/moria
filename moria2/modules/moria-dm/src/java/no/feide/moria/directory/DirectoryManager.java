@@ -1,15 +1,3 @@
-/*
- * Copyright (c) 2004 UNINETT FAS A/S This program is free software; you can
- * redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version. This program is distributed
- * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details. You should have received
- * a copy of the GNU General Public License along with this program; if not,
- * write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- */
 package no.feide.moria.directory;
 
 import java.lang.reflect.Constructor;
@@ -24,7 +12,6 @@ import no.feide.moria.log.MessageLogger;
 /**
  * The Directory Manager (DM) component. Responsible for all backend operations,
  * that is, Authentication Server (LDAP) lookups and actual user authentication.
- * @author Cato Olsen
  */
 public class DirectoryManager {
 
@@ -35,7 +22,7 @@ public class DirectoryManager {
     private static DirectoryManagerBackendFactory backendFactory;
 
     /** The message logger. */
-    private static MessageLogger log = new MessageLogger(DirectoryManager.class);
+    private final static MessageLogger log = new MessageLogger(DirectoryManager.class);
 
     /** The current (valid) Directory Manager configuration. */
     private static DirectoryManagerConfiguration currentConfiguration = null;
@@ -48,60 +35,53 @@ public class DirectoryManager {
      *            <code>directoryConfiguration</code> that points to a file
      *            containing the Directory Manager configuration.
      */
-    public static void setConfig(Properties config) {
+    public static void setConfig(final Properties config) {
 
         // Update current configuration.
         try {
-            
-            DirectoryManagerConfiguration newConfiguration = new DirectoryManagerConfiguration(config);
+
+            final DirectoryManagerConfiguration newConfiguration = new DirectoryManagerConfiguration(config);
             currentConfiguration = newConfiguration;
-            
+
         } catch (Exception e) {
-            
-            // Something happened while updating the configuration; can we recover?
+
+            // Something happened while updating the configuration; can we
+            // recover?
             if (currentConfiguration == null) {
 
                 // Critical error; we don't have a working configuration.
-                log.logCritical("Unable to update configuration", e);
-                throw new DirectoryManagerConfigurationException("Unable to update configuration", e);
+                throw new DirectoryManagerConfigurationException("Unable to set initial configuration", e);
 
             } else {
 
                 // Non-critical error; we still have a working configuration.
-                log.logWarn("Unable to update configuration", e);
+                log.logWarn("Unable to update existing configuration", e);
 
             }
-            
-        }
 
-        // Preparations.
-        Class[] noParameters = {};
-        Constructor constructor = null;
+        }
 
         // Set the index class.
         // TODO: Initialize index update.
-        // TODO: Gracefully handle switch between index classes.
+        // TODO: Gracefully handle switch between index classes?
+        Constructor constructor = null;
         try {
-            
-            constructor = currentConfiguration.getIndexClass().getConstructor(noParameters);
-            index = (DirectoryManagerIndex) constructor.newInstance(noParameters);
-            
+            constructor = currentConfiguration.getIndexClass().getConstructor(null);
+            index = (DirectoryManagerIndex) constructor.newInstance(null);
         } catch (NoSuchMethodException e) {
-            log.logCritical("Cannot find index constructor", e);
             throw new DirectoryManagerConfigurationException("Cannot find index constructor", e);
         } catch (Exception e) {
-            log.logCritical("Unable to instantiate index object", e);
             throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
         }
 
         // Set the backend factory class.
         // TODO: Initialize backend configuration update.
-        // TODO: Gracefully handle switch between backend factories.
+        // TODO: Gracefully handle switch between backend factories?
         try {
-            
-            constructor = currentConfiguration.getBackendFactoryClass().getConstructor(noParameters);
-            backendFactory = (DirectoryManagerBackendFactory) constructor.newInstance(noParameters);
-            
+
+            constructor = currentConfiguration.getBackendFactoryClass().getConstructor(null);
+            backendFactory = (DirectoryManagerBackendFactory) constructor.newInstance(null);
+
         } catch (NoSuchMethodException e) {
             log.logCritical("Cannot find backend factory constructor", e);
             throw new DirectoryManagerConfigurationException("Cannot find backend factory constructor", e);
@@ -109,10 +89,6 @@ public class DirectoryManager {
             log.logCritical("Unable to instantiate backend factory object", e);
             throw new DirectoryManagerConfigurationException("Unable to instantiate backend factory object", e);
         }
-
-        // Cleanup.
-        noParameters = null;
-        constructor = null;
 
     }
 
@@ -127,10 +103,11 @@ public class DirectoryManager {
      *         available. Otherwise an empty array, which still indicate a
      *         successful authentication.
      * @throws BackendException
-     *             If an unrecoverable error is encountered when operating the
-     *             backend.
+     *             Subclasses of <code>BackendException</code> is thrown if an
+     *             error is encountered when operating the backend, including if
+     *             the authentication fails.
      */
-    public static UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
+    public static UserAttribute[] authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws BackendException {
 
         // TODO: Implement a backend pool.

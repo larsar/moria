@@ -1,6 +1,5 @@
 package no.feide.moria.directory.backend;
 
-
 /**
  * Factory class for dummy backends.
  */
@@ -11,10 +10,10 @@ implements DirectoryManagerBackendFactory {
      * Creates a new <code>DummyBackend</code> instance.
      * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#createBackend()
      */
-    public DirectoryManagerBackend createBackend() throws BackendException {
+    public DirectoryManagerBackend createBackend() {
 
         return new DummyBackend();
-        
+
     }
 
 }

@@ -1,8 +1,7 @@
 package no.feide.moria.directory;
 
 /**
- * @author Cato Olsen Used to signal an exception related to the directory
- *         manager's configuration.
+ * Used to signal an exception related to the directory manager's configuration.
  */
 public class DirectoryManagerConfigurationException
 extends RuntimeException {
@@ -17,7 +16,8 @@ extends RuntimeException {
         super(message);
 
     }
-    
+
+
     /**
      * Constructor.
      * @param message

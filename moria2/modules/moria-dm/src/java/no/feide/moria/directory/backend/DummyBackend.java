@@ -1,7 +1,6 @@
 package no.feide.moria.directory.backend;
 
 import no.feide.moria.directory.Credentials;
-import no.feide.moria.directory.IllegalAttributeException;
 import no.feide.moria.directory.UserAttribute;
 import no.feide.moria.log.MessageLogger;
 
@@ -13,7 +12,7 @@ public class DummyBackend
 implements DirectoryManagerBackend {
 
     /** Message logger. */
-    private MessageLogger log = new MessageLogger(DummyBackend.class);
+    private final MessageLogger log = new MessageLogger(DummyBackend.class);
 
 
     /**
@@ -22,7 +21,7 @@ implements DirectoryManagerBackend {
      * @param reference
      *            Ignored.
      */
-    public void open(String reference) {
+    public void open(final String reference) {
 
         // Does nothing.
 
@@ -30,26 +29,21 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Will authenticate a user, if the user name is
+     * Will authenticate a user successfully, if the user name is
      * <code>user@some.realm</code> and the password is <code>password</code>.
      * @see no.feide.moria.directory.backend.DirectoryManagerBackend#authenticate(Credentials,
      *      String[])
      */
-    public UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
+    public UserAttribute[] authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws BackendException {
 
         // Sanity check.
-        if (userCredentials == null) {
-
-            // Bad authentication.
-            log.logWarn("Attempt to authenticate anonymous user");
-            throw new AuthenticationFailedException("Anonymous user cannot be authenticated");
-
-        }
+        if (userCredentials == null)
+            throw new IllegalArgumentException("Credentials cannot be NULL");
 
         // "Authentication", sort of.
-        String username = userCredentials.getUsername();
-        String password = userCredentials.getPassword();
+        final String username = userCredentials.getUsername();
+        final String password = userCredentials.getPassword();
         if ((username.equalsIgnoreCase("user@some.realm")) && (password.equals("password"))) {
 
             // Successful authentication.
@@ -58,7 +52,6 @@ implements DirectoryManagerBackend {
         } else {
 
             // Bad authentication.
-            log.logWarn('\"' + username + "\" failed authentication");
             throw new AuthenticationFailedException('\"' + username + "\" failed authentication");
 
         }
@@ -70,12 +63,12 @@ implements DirectoryManagerBackend {
      * Prepare and return a proper test attribute set.
      * @param attributeRequest
      *            Only the attribute <code>someAttribute</code> is considered.
-     *            Not case-sensitive.
+     *            Not case-sensitive and may be <code>null</code>.
      * @return If the attribute is at all requested, will contain the attribute
      *         <code>someAttribute</code> with the value
      *         <code>someValue</code>. If not, will contain an empty array.
      */
-    private UserAttribute[] prepareAttributes(String[] attributeRequest) {
+    private UserAttribute[] prepareAttributes(final String[] attributeRequest) {
 
         // Sanity check.
         if (attributeRequest == null)
@@ -85,14 +78,8 @@ implements DirectoryManagerBackend {
         for (int i = 0; i < attributeRequest.length; i++)
             if (attributeRequest[i].equalsIgnoreCase("someAttribute")) {
 
-                // Return the attribute value.
-                String[] attributeValues = new String[] {"someValue"};
-                try {
-                    return new UserAttribute[] {new UserAttribute("someAttribute", attributeValues)};
-                } catch (IllegalAttributeException e) {
-                    // Unexpected exception.
-                    log.logCritical("Unexpected exception when creating user attribute", e);
-                }
+                // Return a new attribute.
+                return new UserAttribute[] {new UserAttribute("someAttribute", new String[] {"someValue"})};
 
             }
 

@@ -12,7 +12,7 @@ public class UserAttribute {
     private String myName;
 
     /** Internal representation of the attribute's values. */
-    private Vector myValues;
+    private Vector myValues = null;
 
     /** Message logger. */
     MessageLogger log = new MessageLogger(UserAttribute.class);
@@ -21,28 +21,28 @@ public class UserAttribute {
     /**
      * Constructor.
      * @param name
-     *            The attribute name.
+     *            The attribute name. Cannot be <code>null</code>.
      * @param values
      *            A list of attribute values. A <code>null</code> value is
-     *            accepted, as is an empty array.
-     * @throws IllegalAttributeException
-     *             If the attribute name is <code>null<code> or an empty string.
+     *            accepted, as is an empty array. However, a value cannot be
+     *            <code>null</code> or an empty string.
      */
-    public UserAttribute(String name, String[] values)
-    throws IllegalAttributeException {
+    public UserAttribute(final String name, final String[] values) {
 
         // Sanity check.
-        if ((name == null) || (name.length() == 0)) {
-            log.logWarn("Attribute name cannot be NULL");
-            throw new IllegalAttributeException("Attribute name cannot be NULL");
-        }
+        if ((name == null) || (name.length() == 0))
+            throw new IllegalArgumentException("Attribute name cannot be NULL or an empty string");
 
         // Set values.
         myName = name;
-        myValues = new Vector();
-        if (values != null)
-            for (int i = 0; i < values.length; i++)
+        if (values != null) {
+            myValues = new Vector();
+            for (int i = 0; i < values.length; i++) {
+                if ((values[i] == null) || (values[i].length() == 0))
+                    throw new IllegalArgumentException("Attribute value cannot be NULL or an empty string");
                 myValues.add(values[i]);
+            }
+        }
 
     }
 

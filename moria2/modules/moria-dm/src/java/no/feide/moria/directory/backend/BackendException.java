@@ -18,7 +18,8 @@ extends DirectoryManagerException {
         super(message);
 
     }
-    
+
+
     /**
      * Constructor.
      * @param message

@@ -7,10 +7,10 @@ package no.feide.moria.directory;
 public class Credentials {
 
     /** Internal representation of the username . */
-    private String username;
+    private final String username;
 
     /** Internal representation of the user's password. */
-    private String password;
+    private final String password;
 
 
     /**
@@ -21,19 +21,14 @@ public class Credentials {
      * @param password
      *            The user's password. May not be <code>null</code> or an
      *            empty string.
-     * @throws IllegalCredentialsException
-     *             If attempting to create a set of credentials where either the
-     *             username or password is <code>null</code> or an empty
-     *             string.
      */
-    public Credentials(String username, String password)
-    throws IllegalCredentialsException {
+    public Credentials(final String username, final String password) {
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
-            throw new IllegalCredentialsException("Illegal username");
+            throw new IllegalArgumentException("User name cannot be NULL or an empty string");
         if ((password == null || password.length() == 0))
-            throw new IllegalCredentialsException("Illegal password");
+            throw new IllegalArgumentException("Password cannot be NULL or an empty string");
 
         this.username = username;
         this.password = password;

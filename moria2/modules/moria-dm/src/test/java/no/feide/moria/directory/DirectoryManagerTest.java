@@ -55,12 +55,7 @@ extends TestCase {
 
         config = new Properties();
         config.setProperty("directoryConfiguration", "src/test/conf/DirectoryManagerConfiguration.xml");
-        try {
-            goodCredentials = new Credentials("user@some.realm", "password");
-        } catch (IllegalCredentialsException e) {
-            e.printStackTrace();
-            Assert.fail("Unexpected IllegalCredentialsException");
-        }
+        goodCredentials = new Credentials("user@some.realm", "password");
 
     }
 
