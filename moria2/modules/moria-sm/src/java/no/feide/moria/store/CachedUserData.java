@@ -45,10 +45,10 @@ public final class CachedUserData implements MoriaStoreData {
             throw new IllegalArgumentException("Argument can not be null");
         this.attributes = attributes;
     }
-    
+
     /**
      * Adds an attribute. Needed to add ticket granting tickets to cache.
-     * 
+     *
      * @param name Attribute name.
      * @param data Attribute data.
      */

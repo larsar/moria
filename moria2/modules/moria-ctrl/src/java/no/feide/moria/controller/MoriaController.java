@@ -61,7 +61,7 @@ import no.feide.moria.store.NonExistentTicketException;
  * @see MoriaController#initController(javax.servlet.ServletContext)
  */
 public final class MoriaController {
-    
+
     /**
      * Ticket type constant, indicating an SSO ticket, for use when returning a
      * HashMap of two tickets.
@@ -72,7 +72,7 @@ public final class MoriaController {
      */
     public static final String SSO_TICKET = "sso";
 
-    
+
     /**
      * Ticket type constant, indicating a login ticket, for use when returning a
      * HashMap with multiple tickets.
@@ -138,7 +138,7 @@ public final class MoriaController {
      * Standard log message for InvalidTicketException.
      */
     private static final String CAUGHT_STORE = "MoriaStoreException caught";
-    
+
     /**
      * Log message for AuthorizationException.
      */
@@ -388,7 +388,7 @@ public final class MoriaController {
             store.setTransientAttributes(loginTicketId, ssoTicketId);
 
             /* set loginTicket userorg from SSO ticket */
-            String userorg = store.getTicketUserorg(ssoTicketId, MoriaTicketType.SSO_TICKET); 
+            String userorg = store.getTicketUserorg(ssoTicketId, MoriaTicketType.SSO_TICKET);
             store.setTicketUserorg(loginTicketId, MoriaTicketType.LOGIN_TICKET, userorg);
 
             /* Get service ticket */
@@ -465,7 +465,7 @@ public final class MoriaController {
             throw new IllegalInputException("User ID must be a non-empty string");
         if (password == null || password.equals(""))
             throw new IllegalInputException("Password must be a non-empty string");
-                
+
         // Look up authentication attempt from the store.
         final MoriaAuthnAttempt authnAttempt;
         String userorg = null;
@@ -476,8 +476,8 @@ public final class MoriaController {
             store.setTicketUserorg(loginTicketId, MoriaTicketType.LOGIN_TICKET, userorg);
             /* check userorg */
             if (!authzManager.allowUserorg(servicePrincipal, userorg)) {
-                throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");                
-            }            
+                throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");
+            }
             authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
         } catch (NonExistentTicketException e) {
             accessLogger.logUser(AccessStatusType.NONEXISTENT_LOGIN_TICKET, null, userId, loginTicketId, null);
@@ -494,7 +494,7 @@ public final class MoriaController {
             // should not happen
             throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");
         }
-        
+
         // TODO: Must be done for directNonInteractiveAuthentication. Should be
         // extracted to a method.
 
@@ -502,14 +502,14 @@ public final class MoriaController {
         final String[] requestedAttributes = authnAttempt.getRequestedAttributes();
         final HashSet parsedRequestAttributes = new HashSet();
         boolean appendTGT = false;
-        
+
         //TGT is only granted when users use SSO
         for (int i = 0; i < requestedAttributes.length; i++) {
             if (requestedAttributes[i].equals(TGT_IDENTIFIER) && !denySSO) {
                 appendTGT = true;
                 } else {
                     parsedRequestAttributes.add(requestedAttributes[i]);
-                }                            
+                }
         }
 
         // Resolve list of cached and requested attributes.
@@ -668,7 +668,7 @@ public final class MoriaController {
 
         // Log successful authentication initialization, and return the ticket ID.
         accessLogger.logService(AccessStatusType.SUCCESSFUL_AUTH_INIT, servicePrincipal, null, loginTicketId);
-                
+
         return loginTicketId;
     }
 
@@ -683,13 +683,13 @@ public final class MoriaController {
      * @param operation
      *            The requested operation.
      * @param userorg
-     * 		  The organization the user comes from, or null if unknown.
+     *            The organization the user comes from, or null if unknown.
      * @throws AuthorizationException
      *             If the authorization failed.
      * @throws NullPointerException
      *             If servicePrincipal is null.
      * @throws IllegalArgumentException
-     *             If servicePrincipal is an empty string or the operation 
+     *             If servicePrincipal is an empty string or the operation
      *             is wrong.
      */
     private static void authorizationCheck(final String servicePrincipal, final String[] attributes, final String operation, final String userorg)
@@ -729,15 +729,15 @@ public final class MoriaController {
                 messageLogger.logInfo("Service '" + servicePrincipal + "' tried to access '" + new HashSet(Arrays.asList(attributes)) + "', but have only access to '" + authzManager.getAttributes(servicePrincipal));
                 throw new AuthorizationException("Access to the requested attributes is denied.");
             }
-            
+
             /* Userorg */
             if (userorg != null && !authzManager.allowUserorg(servicePrincipal, userorg)) {
                 accessLogger.logService(statusType, servicePrincipal, null, null);
                 //FIXME - this should be fixed to something more specific for the organization-check
                 messageLogger.logInfo("Service '" + servicePrincipal + "' tried to access '" + new HashSet(Arrays.asList(attributes)) + "', but have only access to '" + authzManager.getAttributes(servicePrincipal));
-                throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");                
+                throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");
             }
-            
+
         } catch (UnknownServicePrincipalException e) {
             messageLogger.logWarn("UnknownServicePrincipalException caught during authorizationCheck, service probably not configured in authorization database.", e);
             throw new AuthorizationException("Authorization failed for: " + servicePrincipal);
@@ -763,7 +763,7 @@ public final class MoriaController {
      *         requested user attributes, if found. Entries have a
      *         <code>String</code> key and a <code>String[]</code> value.
      * @throws AuthorizationException
-     *             If userorg isn't set for ticket, userorg is denied 
+     *             If userorg isn't set for ticket, userorg is denied
      *             access to the service or service principal is unknown.
      * @throws IllegalInputException
      *             If <code>serviceTicketId</code> or
@@ -800,9 +800,9 @@ public final class MoriaController {
             if (!authzManager.allowUserorg(servicePrincipal, userorg)) {
                 accessLogger.logService(AccessStatusType.ACCESS_DENIED_USERORG, servicePrincipal, serviceTicketId, null);
                 messageLogger.logWarn(CAUGHT_DENIED_USERORG + ", userorg (" + userorg + ") tried to access service (" + servicePrincipal + ")", serviceTicketId);
-                throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");                
+                throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");
             }
-            
+
             // Get the originally requested attributes and all cached values.
             MoriaAuthnAttempt authenticationAttempt = store.getAuthnAttempt(serviceTicketId, false, servicePrincipal);
             String[] requestedAttributes = authenticationAttempt.getRequestedAttributes();
@@ -814,8 +814,8 @@ public final class MoriaController {
                 if (cachedAttributes.containsKey(requestedAttributes[i]))
                     filteredAttributes.put(requestedAttributes[i], cachedAttributes.get(requestedAttributes[i]));
 
-            // the service principal is unknown  
-        } catch (UnknownServicePrincipalException e) {          
+            // the service principal is unknown
+        } catch (UnknownServicePrincipalException e) {
             accessLogger.logService(AccessStatusType.GET_USER_ATTRIBUTES_DENIED_INVALID_PRINCIPAL, servicePrincipal, serviceTicketId, null);
             messageLogger.logInfo("UnknownServicePrincipalException caught", e);
             throw new AuthorizationException("Unknown service principal: " + servicePrincipal);
@@ -877,9 +877,8 @@ public final class MoriaController {
     public static Map directNonInteractiveAuthentication(final String[] requestedAttributes, final String userId, final String password, final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, AuthenticationException,
-    DirectoryUnavailableException
-    {
-        
+    DirectoryUnavailableException {
+
         /* Check controller state */
         if (!ready) { throw new InoperableStateException(NOT_READY); }
 
@@ -955,11 +954,11 @@ public final class MoriaController {
         final HashMap result = new HashMap();
         final HashMap userData;
         final HashSet cachedAttributes = authzManager.getCachableAttributes();
-        
+
         try {
-            final String userorg = store.getTicketUserorg(proxyTicketId, MoriaTicketType.PROXY_TICKET); 
+            final String userorg = store.getTicketUserorg(proxyTicketId, MoriaTicketType.PROXY_TICKET);
             if (userorg == null) throw new InvalidTicketException("Userorg is not set in ticket");
-            authorizationCheck(servicePrincipal, requestedAttributes, 
+            authorizationCheck(servicePrincipal, requestedAttributes,
                     PROXY_AUTH_OPER, userorg);
             userData = store.getUserData(proxyTicketId, servicePrincipal).getAttributes();
         } catch (InvalidTicketException e) {
@@ -1032,10 +1031,10 @@ public final class MoriaController {
         /* Return proxyTicket */
         final String proxyTicketId;
         try {
-            final String userorg = store.getTicketUserorg(ticketGrantingTicket, 
+            final String userorg = store.getTicketUserorg(ticketGrantingTicket,
                                                           MoriaTicketType.TICKET_GRANTING_TICKET);
             if (userorg == null) throw new UnknownTicketException("Userorg is not set in ticket");
-        
+
             /* Authorize creation of proxy ticket */
             authorizationCheck(servicePrincipal, new String[] {}, PROXY_AUTH_OPER, userorg);
             try {
@@ -1101,7 +1100,7 @@ public final class MoriaController {
             org = userId.substring(userId.indexOf("@") + 1, userId.length());
         }
         if (org == null) {
-            throw new AuthorizationException("Userorg is unknown"); 
+            throw new AuthorizationException("Userorg is unknown");
         }
 
         /* Authorization */
@@ -1322,7 +1321,7 @@ public final class MoriaController {
      * @return int describing the security level for the requested attributes in
      *         The authentication attempt.
      * @throws UnknownTicketException
-     *             If the ticket does not exist, is invalid, or is not 
+     *             If the ticket does not exist, is invalid, or is not
      *             associated with a service.
      * @throws InoperableStateException
      *             If Moria is not usable.
@@ -1440,22 +1439,22 @@ public final class MoriaController {
 
         return authnAttempt.getReturnURLPrefix() + serviceTicketId + authnAttempt.getReturnURLPostfix();
     }
-    
+
     /**
      * Gets the userorg from the directoryManager.
-     * 
-     * @param userId 
-     * 				The userId of a user.
+     *
+     * @param userId
+     *                          The userId of a user.
      * @param password
-     * 				The password of a user.
+     *                          The password of a user.
      * @return A <code>String</code> containing the user's organization.
      * @throws AuthenticationException
-     * 				If the user's organization is not found.
+     *                          If the user's organization is not found.
      */
     private static String getUserOrg(String userId, String password) throws AuthenticationException {
         String org = directoryManager.getRealm(userId);
         if (org == null) {
-            throw new AuthenticationException(); 
+            throw new AuthenticationException();
         }
         return org;
     }

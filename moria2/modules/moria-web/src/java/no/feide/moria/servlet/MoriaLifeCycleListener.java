@@ -28,7 +28,7 @@ import no.feide.moria.controller.MoriaController;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * 
+ *
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */

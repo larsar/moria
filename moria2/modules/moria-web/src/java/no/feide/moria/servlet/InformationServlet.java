@@ -46,26 +46,26 @@ import java.util.Vector;
 
 
 /**
- * This servlet is responsible for retrieving information about a user, and 
+ * This servlet is responsible for retrieving information about a user, and
  * sending it to information.jsp for display.
- * 
+ *
  * @author Eva Indal
  * @version $Revision$
  */
 public class InformationServlet extends HttpServlet {
-    
-    /** 
+
+    /**
      * A hash map containing all possible attributes for a user.
      * Each item in the hashmap maps from an attribute name to an
-     * AttribsData class instance 
+     * AttribsData class instance
      */
     private HashMap feideattribs_stored = null;
-    
+
     /** Principal name of the service.
      *  Current value is "info"
-     */ 
+     */
     private String PRINCIPAL = "info";
-    
+
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(InformationServlet.class);
 
@@ -106,11 +106,11 @@ public class InformationServlet extends HttpServlet {
      */
     public InformationServlet() {
     }
-    
+
     /**
      * Implements a simple xml parser that parses the feideattribs.xml file
      * into a HashMap with AttribsData instances.
-     * 
+     *
      * @see AttribsHandler
      *      AttribsData
      */
@@ -123,32 +123,31 @@ public class InformationServlet extends HttpServlet {
             try {
                String filename = (String) config.get(RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML);
                SAXParser saxParser = factory.newSAXParser();
-               saxParser.parse( new File(filename), handler);
+               saxParser.parse(new File(filename), handler);
             } catch (Throwable t) {
               log.logCritical("Error parsing feideattribs.xml");
-            }
-            finally {
+            } finally {
               feideattribs_stored = handler.getAttribs();
             }
           }
         }
         return feideattribs_stored;
     }
-        
+
     /**
      * Generates table for a user. The vector consists of rows of data. Each row
      * has four columns. The first column is the URL link for the user attribute. The
-     * second column is the attribute description as presented to the user. The 
+     * second column is the attribute description as presented to the user. The
      * third column is the actual data stored for the attribute, and the fourth
      * columns is either fd_mandatory or fd_optional, as a key for a mandatory
-     * or optional attribute.  
-     * 
+     * or optional attribute.
+     *
      * @param userData The user data.
      * @param bundle Resource bundle for language.
      * @return Vector with table data.
      */
     private Vector printTableToVector(Map userData, ResourceBundle bundle) {
-        
+
         /* Stores the data in a temporary vector */
         Vector temp = new Vector();
         HashMap feideattribs = getAttribs();
@@ -209,28 +208,28 @@ public class InformationServlet extends HttpServlet {
         return out;
     }
 
-    
+
     /**
      * Get the config from the context. The configuration is expected to be set
      * by the controller before requests are sent to this servlet.
-     * 
+     *
      * @return The configuration.
      * @throws IllegalStateException
-     *		If the config is not properly set.
+     *          If the config is not properly set.
      *
      */
     private Properties getConfig() {
         final Properties config;
-        
+
         /* Validate config */
         try {
             config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
         } catch (ClassCastException e) {
             throw new IllegalStateException("Config is not correctly set in context.");
         }
-        if (config == null) 
+        if (config == null)
             throw new IllegalStateException("Config is not set in context.");
-        
+
         // Are we missing some required properties?
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
             String requiredParameter = REQUIRED_PARAMETERS[i];
@@ -239,12 +238,12 @@ public class InformationServlet extends HttpServlet {
             }
         }
         return config;
-        
+
     }
-    
+
     /**
      * Implements the HttpServlet.doGet method.
-     * 
+     *
      * @param request   The HTTP request.
      * @param response  The HTTP response.
      * @throws IOException
@@ -254,7 +253,7 @@ public class InformationServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {      
+            throws ServletException, IOException {
         if (getAttribs() == null) throw new IOException("feideattribs.xml not parsed");
 
         String ticketId = request.getParameter("moriaID");
@@ -265,7 +264,7 @@ public class InformationServlet extends HttpServlet {
             rd.forward(request, response);
             return;
         }
-        
+
         /*
          * Makes a Properties object named config, which gets the config
          * from the getConfig() method
@@ -283,16 +282,16 @@ public class InformationServlet extends HttpServlet {
         if (config != null && request.getCookies() != null) {
             langFromCookie = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
         }
-        
+
         /*Use default login language as default for the information servlet */
         final ResourceBundle bundle = RequestUtil.getBundle(
-                RequestUtil.BUNDLE_INFORMATIONSERVLET, 
+                RequestUtil.BUNDLE_INFORMATIONSERVLET,
                 request.getParameter(RequestUtil.PARAM_LANG), langFromCookie, null,
                 request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
 
         HttpSession session = request.getSession(true);
-        
-        request.setAttribute("bundle", bundle);        
+
+        request.setAttribute("bundle", bundle);
         request.setAttribute("urlPrefix", config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX));
 
         // update cookie if language has changed
@@ -306,20 +305,16 @@ public class InformationServlet extends HttpServlet {
         if (ticketId != null && !changelanguage) {
             try {
                 userData = MoriaController.getUserAttributes(ticketId, PRINCIPAL);
-            }
-            catch (AuthorizationException e) {
+            } catch (AuthorizationException e) {
                 log.logCritical("AuthorizationException");
                 throw new ServletException(e);
-            }
-            catch (IllegalInputException e) {
+            } catch (IllegalInputException e) {
                 log.logCritical("IllegalInputException");
                 throw new ServletException(e);
-            }
-            catch (UnknownTicketException e) {
+            } catch (UnknownTicketException e) {
                 log.logCritical("UnknownTicketException");
                 throw new ServletException(e);
-            }
-            catch (InoperableStateException e) {
+            } catch (InoperableStateException e) {
                 log.logCritical("InoperableStateException");
                 throw new ServletException(e);
             }
@@ -333,7 +328,7 @@ public class InformationServlet extends HttpServlet {
                 userorg = userorgarray[0];
             }
             request.setAttribute("userorg", userorg);
-                      
+
             Vector tabledata = printTableToVector(userData, bundle);
             request.setAttribute("tabledata", tabledata);
 
@@ -359,16 +354,15 @@ public class InformationServlet extends HttpServlet {
             // print the table in the JSP
             final RequestDispatcher rd = getServletContext().getNamedDispatcher("Information.JSP");
             rd.forward(request, response);
-        }
-        else {
+        } else {
             // call doPost() to get the user attributes from the Controller
             doPost(request, response);
         }
     }
-    
+
     /**
      * Implements the HttpServlet.doPost method.
-     * 
+     *
      * @param request   The HTTP request.
      * @param response  The HTTP response.
      * @throws IOException      Required by interface.
@@ -378,7 +372,7 @@ public class InformationServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        
+
         String jspLocation = getServletContext().getInitParameter("jsp.location");
         log.logInfo("jsp.location is '" + jspLocation + "'");
         String moriaID = null;
@@ -388,14 +382,14 @@ public class InformationServlet extends HttpServlet {
         String urlPrefix = (String) request.getAttribute("urlPrefix") + "?moriaID=";
         String urlPostfix = "";
         String principal = PRINCIPAL;
-        
+
         try {
             MoriaController.initController(getServletContext());
             log.logInfo("Requested attributes: " + attributes);
             log.logInfo("URL prefix: " + urlPrefix);
             log.logInfo("URL postfix: " + urlPostfix);
             log.logInfo("Principal: " + principal);
-            moriaID = MoriaController.initiateAuthentication(attributes.split(","), 
+            moriaID = MoriaController.initiateAuthentication(attributes.split(","),
                                                              urlPrefix, urlPostfix, false, principal);
             log.logInfo("Moria ID is now " + moriaID);
 
@@ -413,7 +407,7 @@ public class InformationServlet extends HttpServlet {
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
             log.logCritical("Configuration: " + config.toString());
-            String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + 
+            String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) +
                  "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
             log.logCritical("Redirect URL: " + redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -423,10 +417,10 @@ public class InformationServlet extends HttpServlet {
             throw new ServletException("Unknown error in InformationServlet");
         }
     }
-    
+
     /**
      * Builds a list of all possible user attributes.
-     * 
+     *
      * @return Comma separated list of attributes.
      */
     private String getAllAttributes() {

@@ -265,7 +265,7 @@ public final class SimpleAxisServlet extends AxisServlet {
 
         /*
          * Retrieve SOAP service object. Make NullPointerException page and
-	 * return if SOAP service is null.
+         * return if SOAP service is null.
          */
         try {
             service = axisEngine.getService(serviceName);

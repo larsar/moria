@@ -70,9 +70,9 @@ public class DirectoryManager {
 
 
     /**
-     * Sets or updates the Directory Manager's configuration. The first time 
+     * Sets or updates the Directory Manager's configuration. The first time
      * this
-     * method is used, it will force an initial index update by reading the 
+     * method is used, it will force an initial index update by reading the
      * index
      * through <code>IndexUpdater.readIndex()</code>.
      * @param config
@@ -182,6 +182,9 @@ public class DirectoryManager {
      *            The username to look up.
      * @return <code>true</code> if the user element corresponding to the
      *         username actually exists, otherwise <code>false</code>.
+     * @throws BackendException
+     *             A subclass of <code>BackendException</code> is thrown if
+     *             there was a problem accessing the backend.
      * @throws IllegalStateException
      *             If attempting to use this method without successfully using
      *             <code>setConfig(Properties)</code> first.
@@ -239,8 +242,8 @@ public class DirectoryManager {
      *         will be returned. This still indicates a successful
      *         authentication.
      * @throws BackendException
-     *             A subclass of <code>BackendException</code> is thrown if an
-     *             error is encountered when operating the backend.
+     *             A subclass of <code>BackendException</code> is thrown if
+     *             there was a problem accessing the backend.
      * @throws AuthenticationFailedException
      *             If we managed to access the backend, and the authentication
      *             failed. In other words, the user credentials are incorrect.

@@ -134,7 +134,7 @@ public interface MoriaStore {
      * @throws MoriaStoreException
      *          If the operation fails.
      * @throws IllegalArgumentException
-     *          If ticketId is null or zero length, or SSO ticket principal 
+     *          If ticketId is null or zero length, or SSO ticket principal
      *          is null or zero length.
      */
     CachedUserData getUserData(final String proxyTicketId, final String servicePrincipal)
@@ -258,10 +258,10 @@ public interface MoriaStore {
      */
     void removeSSOTicket(final String ssoTicketId)
             throws NonExistentTicketException, MoriaStoreException;
-    
+
     /**
-     * Returns the service principal for the ticket
-     * 
+     * Returns the service principal for the ticket.
+     *
      * @param ticketId The ticket id.
      * @param ticketType The ticket type.
      * @return Service principal.

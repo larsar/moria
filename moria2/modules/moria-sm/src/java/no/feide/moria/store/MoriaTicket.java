@@ -49,8 +49,8 @@ final class MoriaTicket implements Serializable {
 
     /** The data associated with this ticket. */
     private final MoriaStoreData data;
-    
-    /** The userorg associated with this ticket */
+
+    /** The userorg associated with this ticket. */
     private String userorg;
 
     /**
@@ -79,8 +79,8 @@ final class MoriaTicket implements Serializable {
      * @param ticketType
      *            The type of ticket.
      * @param servicePrincipal
-     *            The id of the service this ticket relates to. Must be null 
-     *            for SSO tickets, but not null or zero length for other 
+     *            The id of the service this ticket relates to. Must be null
+     *            for SSO tickets, but not null or zero length for other
      *            ticket types.
      * @param expiryTime
      *          The time when this ticket expires (in milliseconds since Epoch).
@@ -92,7 +92,7 @@ final class MoriaTicket implements Serializable {
      *          The userorg associated with this ticket. Can be null if unknown.
      * @throws IllegalArgumentException
      *          If ticketId is null or zero length, if ticketType is null, if
-     *          servicePrincipal or data is inappropriate for the ticketType 
+     *          servicePrincipal or data is inappropriate for the ticketType
      *          or if expiryTime is in the past.
      */
     MoriaTicket(final String ticketId, final MoriaTicketType ticketType, final String servicePrincipal, final Long expiryTime,
@@ -245,7 +245,7 @@ final class MoriaTicket implements Serializable {
     static String newId() {
         return RandomId.newId();
     }
-    
+
     /**
      * Returns the userorg associated with this ticket, or null if none.
      * @return The userorg.
@@ -253,7 +253,7 @@ final class MoriaTicket implements Serializable {
     public String getUserorg() {
         return userorg;
     }
-    
+
     /**
      * Associates a userorg with this ticket.
      * @param org The userorg.
@@ -261,5 +261,5 @@ final class MoriaTicket implements Serializable {
     public void setUserorg(String org) {
         userorg = org;
     }
-    
+
 }

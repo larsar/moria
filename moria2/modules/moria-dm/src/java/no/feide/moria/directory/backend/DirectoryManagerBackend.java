@@ -24,7 +24,7 @@ import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.index.IndexedReference;
 
 /**
- * 
+ *
  */
 public interface DirectoryManagerBackend {
 

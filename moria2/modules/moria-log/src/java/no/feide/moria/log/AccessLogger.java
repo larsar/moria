@@ -135,7 +135,7 @@ public final class AccessLogger implements Serializable {
 
     /**
      * Returns the logger, instantiates it if not already done.
-     * Private, so that nothing is able to override the formatting that is 
+     * Private, so that nothing is able to override the formatting that is
      * done by generateLogMessage.
      *
      * @return The logger instance of this class.

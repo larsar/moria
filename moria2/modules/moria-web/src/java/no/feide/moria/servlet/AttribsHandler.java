@@ -24,7 +24,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.HashMap;
 
 /**
- * 
+ *
  * @author Eva Indal
  * @version %I%
  *
@@ -32,7 +32,7 @@ import java.util.HashMap;
  * to read the simple feideattribs xml file.
  */
 public class AttribsHandler extends DefaultHandler {
-    
+
     /**
      * Constructor.
      *
@@ -43,13 +43,13 @@ public class AttribsHandler extends DefaultHandler {
         adata = new HashMap();
         indexcounter = 0;
     }
-    
+
     private HashMap adata;
     private AttribsData currentattribute;
     private String currentchars;
     private String currentitem;
     private int indexcounter;
-    
+
     /**
      * Implements callback that is called at start of document. Empty for now.
      *
@@ -58,7 +58,7 @@ public class AttribsHandler extends DefaultHandler {
      */
     public void startDocument() throws SAXException {
     }
-    
+
     /**
      * Implements callback that is called at end of document. Empty for now.
      *
@@ -67,73 +67,70 @@ public class AttribsHandler extends DefaultHandler {
      */
     public void endDocument() throws SAXException {
     }
-    
+
     /**
      * Implements callback that is called at start of an xml element.
      *
      * @param namespaceURI  Namespace URI.
      * @param sName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
-     * @param qName  The qualified name (with prefix), or the empty string if qualified names are not available. 
+     * @param qName  The qualified name (with prefix), or the empty string if qualified names are not available.
      * @param attrs  The specified or defaulted attributes.
      * @throws SAXException
      *          Required by interface.
-     *  
+     *
      * @see org.xml.sax.helpers.DefaultHandler#startElement
      *          for information about the parameters
      */
     public void startElement(String namespaceURI, String sName, String qName, Attributes attrs) throws SAXException {
         String eName = sName;
         if ("".equals(eName)) eName = qName;
-        
+
         /* look for <attribute> and allocate a new AttribsData if found */
         if (eName.equals("attribute")) {
             currentattribute = new AttribsData(indexcounter);
             indexcounter++;
             currentitem = null;
             currentchars = null;
-        }
-        else if (currentattribute != null){
+        } else if (currentattribute != null) {
             currentitem = eName;
-            currentchars = "";        
+            currentchars = "";
         }
     }
-    
+
     /**
      * Implements callback that is called at end of an xml element.
      *
      * @param namespaceURI  Namespace URI.
      * @param sName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
-     * @param qName  The qualified XML 1.0 name (with prefix), or the empty string if qualified names are not available. 
+     * @param qName  The qualified XML 1.0 name (with prefix), or the empty string if qualified names are not available.
      * @throws SAXException
      *          Required by interface.
-     * 
+     *
      * @see org.xml.sax.helpers.DefaultHandler#endElement
      *          for information about the parameters
      */
     public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
         String eName = sName;
         if ("".equals(eName)) eName = qName;
-        
+
         /* wait for </attribute> */
         if (eName.equals("attribute")) {
             adata.put(currentattribute.getData("key"), currentattribute);
             currentattribute = null;
-        }
-        else if (currentattribute != null){
+        } else if (currentattribute != null) {
             currentattribute.addData(eName, currentchars);
         }
-        
     }
-    
+
     /**
      * Implements callback that is called to process data for an element.
-     * 
+     *
      * @param buf  The characters.
      * @param offset  The start position in the character array.
-     * @param len  The number of characters to use from the character array. 
+     * @param len  The number of characters to use from the character array.
      * @throws SAXException
      *          Required by interface.
-     * 
+     *
      * @see org.xml.sax.helpers.DefaultHandler#characters
      *          for information about the parameters
      */
@@ -141,7 +138,7 @@ public class AttribsHandler extends DefaultHandler {
         String s = new String(buf, offset, len);
         currentchars += s;
     }
-    
+
     /**
      * Gets parsed attributes.
      *
@@ -151,5 +148,5 @@ public class AttribsHandler extends DefaultHandler {
     public HashMap getAttribs() {
         return adata;
     }
-    
+
 }

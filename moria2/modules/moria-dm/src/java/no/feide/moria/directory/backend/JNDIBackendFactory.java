@@ -90,7 +90,7 @@ implements DirectoryManagerBackendFactory {
      *             is found, but without either of the <code>filename</code>
      *             or <code>password</code> attributes. Also thrown if the
      *             <code>timeout</code> attribute contains an illegal timeout
-     *             value, if the <code>username</code> attribute does not 
+     *             value, if the <code>username</code> attribute does not
      *             exist, if the <code>guess</code> attribute does not exist,
      *             or if the <code>filename</code> file does not exist.
      * @see DirectoryManagerBackendFactory#setConfig(Element)

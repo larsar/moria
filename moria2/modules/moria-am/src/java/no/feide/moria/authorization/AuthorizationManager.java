@@ -125,9 +125,9 @@ public final class AuthorizationManager {
      * AuthorizationAttributes and returned in a HashMap with attribute name as
      * key.
      * @param element
-     *            The DOM element that contains <code>Attribute</code> 
+     *            The DOM element that contains <code>Attribute</code>
      *            child elements.
-     * @return HashMap with AuthorizationAttributes as value and 
+     * @return HashMap with AuthorizationAttributes as value and
      *         attribute name as key.
      * @throws IllegalConfigException
      *             If <code>element</code> is not of type
@@ -167,7 +167,7 @@ public final class AuthorizationManager {
      *             <code>Subsystem</code> or <code>Organization</code> OR
      *             element's <code>name</code> attribute is not set.
      * @throws IllegalArgumentException
-     *             If <code>element</code> is <code>null</code> or an empty 
+     *             If <code>element</code> is <code>null</code> or an empty
      *             string.
      */
     static String parseChildElem(final Element element)
@@ -186,7 +186,7 @@ public final class AuthorizationManager {
 
 
     /**
-     * Parses the content of an Attributes element. The element can contain 
+     * Parses the content of an Attributes element. The element can contain
      * 0 or more Attribute elements which will be transformed into
      * AuthorizationAttributes and returned in a HashMap with attribute name as
      * key.
@@ -312,7 +312,7 @@ public final class AuthorizationManager {
      *            The root element.
      * @return A HashMap containing AuthorizationClient objects.
      * @throws IllegalConfigException
-     *             If the element is not of type 
+     *             If the element is not of type
      *             <code>ClientAuthorizationConfig</code>.
      * @throws IllegalArgumentException
      *             If <code>element</code> is <code>null</code>.
@@ -368,7 +368,7 @@ public final class AuthorizationManager {
      * @throws NoConfigException
      *             If the authorization manager is not activated.
      * @throws IllegalArgumentException
-     *             If <code>servicePrincipal</code> is <code>null</code> 
+     *             If <code>servicePrincipal</code> is <code>null</code>
      *             or an empty string.
      */
     private AuthorizationClient getAuthzClient(final String servicePrincipal) {
@@ -588,7 +588,7 @@ public final class AuthorizationManager {
      *             If one or more of the requested attributes does not exist.
      * @throws IllegalArgumentException
      *             If <code>servicePrincipal</code> is <code>null</code> or
-     *             an empty string, or if <code>requestedAttributes</code> is 
+     *             an empty string, or if <code>requestedAttributes</code> is
      *             <code>null</code>.
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
      */

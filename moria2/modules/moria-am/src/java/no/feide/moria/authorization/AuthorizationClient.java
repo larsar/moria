@@ -72,7 +72,7 @@ final class AuthorizationClient {
      * The organizations that the service belongs to.
      */
     private final HashSet affiliation;
-    
+
     /**
      * The organizations that can use the service.
      */
@@ -134,12 +134,12 @@ final class AuthorizationClient {
      *            <code>null</code>.
      * @param attributes
      *            Attributes the service can access. Cannot be <code>null</code>.
-     * 
+     *
      * @throws IllegalArgumentException
      *             If any of <code>name</code>,<code>displayName</code>,
      *             <code>url</code>,<code>language</code>,
      *             <code>home</code>,<code>affiliation</code>,
-     * 			   <code>allowedOrg</code>, 
+     *                     <code>allowedOrg</code>,
      *             <code>operations</code>, or <code>attributes</code> are
      *             <code>null</code> or an empty string (where applicable).
      */
@@ -156,7 +156,7 @@ final class AuthorizationClient {
         if (home == null || home.equals("")) { throw new IllegalArgumentException("Home must be a non empty string."); }
 
         if (affiliation == null) { throw new IllegalArgumentException("Affiliation cannot be null."); }
-        
+
         if (orgsAllowed == null) { throw new IllegalArgumentException("OrgsAllowed cannot be null."); }
 
         if (operations == null) { throw new IllegalArgumentException("Operations cannot be null."); }
@@ -215,7 +215,7 @@ final class AuthorizationClient {
 
     /**
      * Checks attributes for use with single sign-on (SSO). If all attributes
-     * are registered in 
+     * are registered in
      * the web service's attributes list and all attributes are allowed to use
      * with SSO, then so be it.
      * @param requestedAttributes
@@ -249,7 +249,7 @@ final class AuthorizationClient {
      * @return true if the supplied organization name is affiliated with the
      *         client.
      * @throws IllegalArgumentException
-     *             If <code>organization</code> is <code>null</code> or 
+     *             If <code>organization</code> is <code>null</code> or
      *             an empty string.
      */
     boolean hasAffiliation(final String organization) {
@@ -281,18 +281,18 @@ final class AuthorizationClient {
 
         return true;
     }
-    
+
     /**
      * Returns true for the organizations that are allowed to use this service.
-     * 
+     *
      * @param organization
-     * 				The organization requesting authorization.
+     *                          The organization requesting authorization.
      * @return true if the organization can use this service.
      * @throws IllegalArgumentException
      *             If <code>organization</code> is <code>null</code>.
      */
-    boolean allowUserorg(final String organization){
-        
+    boolean allowUserorg(final String organization) {
+
         //Sanity check.
         if (organization == null) {
             log.logInfo("organization = " + organization);
@@ -386,7 +386,7 @@ final class AuthorizationClient {
 
     /**
      * Returns a string representation of this object.
-     * @return A string representation of this object: 
+     * @return A string representation of this object:
      * Name: NAME DisplayName:
      *         DISPLAYNAME URL: URL Language: LANGUAGE Home: HOME Affiliations:
      *         AFFILIATION Operations: OPERATIONS Attributes: ATTRIBUTES
@@ -455,9 +455,9 @@ final class AuthorizationClient {
 
         return new HashSet(affiliation);
     }
-    
+
     /**
-     * Returns the organizations that are allowed to use the client
+     * Returns the organizations that are allowed to use the client.
      * @return The organizations.
      */
     HashSet getOrgsAllowed() {

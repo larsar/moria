@@ -44,7 +44,7 @@ import org.w3c.dom.Text;
 
 /**
  * This eviction policy evicts tickets after a fixed period, aka Time To Live.
- * 
+ *
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
@@ -254,7 +254,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * Parse the config retrieved from TreeCache.getEvictionPolicyConfig(). Populates
      * the regionValues array.
-     * 
+     *
      * @param config configuration for this eviction policy
      */
     void parseConfig(Element config) {
@@ -305,8 +305,8 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
 
     /**
      * Retrieves the value of the first occurance of the given
-     * attribute in the given element. 
-     * 
+     * attribute in the given element.
+     *
      * @param element the element containing an named attribute.
      * @param attributeName the name of the requested attribute.
      * @return the value of the requested attribute, null if no attribute exists in element.
@@ -332,7 +332,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
 
     /**
      * Retrieves the textual content of an xml element.
-     * 
+     *
      * @param element the element containing the data to be retrieved.
      * @param trim whether or not to trim whitespace before returing.
      * @return a concatenated string of the text of the child nodes of the element

@@ -18,8 +18,6 @@
 
 package no.feide.moria.directory.backend;
 
-import java.util.Properties;
-
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
 
 import org.jdom.Element;
@@ -68,6 +66,7 @@ implements DirectoryManagerBackendFactory {
      * @param sessionTicket
      *            Ignored for instances of <code>DummyBackend</code>.
      * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#createBackend
+     * @return The new DummyBackend.
      * @see DummyBackend
      */
     public DirectoryManagerBackend createBackend(final String sessionTicket) {

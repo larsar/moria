@@ -42,7 +42,7 @@ import EDU.oswego.cs.dl.util.concurrent.WriterPreferenceReadWriteLock;
 
 /**
  * This eviction algorithm expires cache elements after a fixed period, aka Time To Live.
- * 
+ *
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
@@ -58,7 +58,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     private SyncMap nodeMap;
 
     /**
-     * 
+     *
      */
     public TicketTTLEvictionAlgorithm() {
         super();
@@ -103,8 +103,8 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
-     * @param region
-     * @param fqn
+     * @param region Region of tree.
+     * @param fqn    Fully qualified name.
      */
     private void processAddedNodes(final Region region, final Fqn fqn) {
         TicketTTLEvictionPolicy policy = (TicketTTLEvictionPolicy) region.getEvictionPolicy();
@@ -119,7 +119,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
-     * @param fqn
+     * @param fqn Fully qualified name.
      */
     private void processRemovedNodes(final Fqn fqn) {
         NodeEntry node = (NodeEntry) nodeMap.remove(fqn);
@@ -127,7 +127,9 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
-     * 
+     * @param region Region of tree.
+     * @throws  EvictionException
+     *            If eviction is interrupted or fails.
      */
     private void prune(final Region region)
             throws EvictionException {
@@ -166,7 +168,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     }
 
     /**
-     * 
+     *
      */
     private class NodeEntry {
 

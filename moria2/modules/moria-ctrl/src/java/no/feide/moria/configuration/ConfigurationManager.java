@@ -36,15 +36,15 @@ import java.util.TimerTask;
 /**
  * The configuration manager's task is to load and monitor the configuration
  * files for changes. Each module (authorization, web, store and directory)
- * has a configuration file which is read and passed as a Properties object 
+ * has a configuration file which is read and passed as a Properties object
  * to the module at startup. The authorization module does its own file
- * parsing, so for that module the Properties object just contains the 
- * name of the configuration file, which is then read and parsed by the 
+ * parsing, so for that module the Properties object just contains the
+ * name of the configuration file, which is then read and parsed by the
  * authorization module.
- * 
+ *
  * If a configuration file is changed, the entire file is reread and the
  * updated configuration is passed to the corresponding module.
- *  
+ *
  * The constructor requires the <code>no.feide.moria.configuration.cm</code>
  * property to be set, and the property has to point to the configuration file
  * for the ConfigurationManager module. The file can be referenced by either
@@ -54,30 +54,30 @@ import java.util.TimerTask;
  * as a resource in the classpath. The
  * <code>no.feide.moria.configuration.fileListenerIntervalSeconds</code>
  * attribute specifies the interval between each file poll. <br/><p/>
- * 
+ *
  * <pre>
- * 
- *  
- *   
- *    
- *     
- *      
+ *
+ *
+ *
+ *
+ *
+ *
  *       # Example content for ConfigurationManager properties
  *       no.feide.moria.configuration.fileListenerIntervalSeconds=1
  *       no.feide.moria.configuration.sm=/sm-test-valid.properties
  *       no.feide.moria.configuration.dm=/dm-test-valid.properties
  *       no.feide.moria.configuration.am=/am-data.xml
- *       
- *      
- *     
- *    
- *   
- *  
+ *
+ *
+ *
+ *
+ *
+ *
  * </pre>
- * 
+ *
  * <p/>When a configuration file is changed, the content is read into a
  * properties object which is sent to the MoriaController.
- * 
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  * @see no.feide.moria.controller.MoriaController
@@ -231,8 +231,8 @@ public final class ConfigurationManager {
     /**
      * Read properties from file. The fileURI can be absolute path to file or
      * relative to the classpath. If the fileURI does not resolve to a readeble
-     * file, an<code>IOException</code> or 
-     * <code>IllegalArgumentException</code>is thrown. 
+     * file, an<code>IOException</code> or
+     * <code>IllegalArgumentException</code>is thrown.
      * @param fileURI
      *            The reference to the properties file.
      * @return Properties from the file.

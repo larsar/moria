@@ -60,7 +60,7 @@ final class AuthorizationAttribute {
      * @param allowSSO Allow use of SSO with this attribute.
      * @param secLevel The attribute's security level.
      * @throws IllegalArgumentException
-     *             If <code>name</code> is <code>null</code> or 
+     *             If <code>name</code> is <code>null</code> or
      *             an empty string, or <code>secLevel</code> is < 0.
      */
     AuthorizationAttribute(final String name, final boolean allowSSO, final int secLevel) {
@@ -99,7 +99,7 @@ final class AuthorizationAttribute {
     }
 
     /**
-     * Generates a hashCode from the object's attributes. 'name', 'secLevel' 
+     * Generates a hashCode from the object's attributes. 'name', 'secLevel'
      * and 'allowSSO' are used for the computation.
      *
      * @return The hashcode for this object.

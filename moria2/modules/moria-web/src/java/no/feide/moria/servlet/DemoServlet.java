@@ -132,7 +132,7 @@ extends HttpServlet {
 
             // Handle logout request.
             if (request.getParameter("logout") != null) {
-                
+
                 // Redirect to the configured logout URL.
                 response.sendRedirect(config.getProperty(RequestUtil.PROP_DEMO_LOGOUT_URL));
             }
@@ -170,9 +170,7 @@ extends HttpServlet {
                         // Just remember the ticket for later use.
                         ticketGrantingTicket = attributes[i].getValues()[0];
 
-                    }
-
-                    else {
+                    } else {
 
                         // Show the actual attribute and its values.
                         out.println("<tr><td>" + name + "</td>");
@@ -287,7 +285,7 @@ extends HttpServlet {
      *
      * The attributes have previously been requested through
      * <code>initiateAuthentication(...)</code>.
-     * 
+     *
      * @param serviceTicket
      *            A legal service ticket returned to the client service
      *            following a successful authentication on the user's part.
@@ -374,8 +372,8 @@ extends HttpServlet {
     /**
      * Performs proxy authentication.
      *
-     * Verifies, by using a proxy ticket retrieved by 
-     * <code>getProxyTicket</code>, that the user has been authenticated 
+     * Verifies, by using a proxy ticket retrieved by
+     * <code>getProxyTicket</code>, that the user has been authenticated
      * and retrieves a number of attributes.
      *
      * @param attributes

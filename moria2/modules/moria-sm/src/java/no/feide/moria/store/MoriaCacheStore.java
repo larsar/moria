@@ -76,7 +76,7 @@ implements MoriaStore {
     private static final String DATA_ATTRIBUTE = "MoriaData";
 
     /**
-     * The common hashmap key for the userorg attribute
+     * The common hashmap key for the userorg attribute.
      */
     private static final String USERORG_ATTRIBUTE = "Userorg";
 
@@ -292,6 +292,7 @@ implements MoriaStore {
      * @param servicePrincipal
      *            The principal used by the service to authenticate itself to
      *            Moria. May be <code>null</code>.
+     * @return The authentication attempt.
      * @throws IllegalArgumentException
      *             If ticket ID is <code>null</code> or an empty string.
      * @throws NonExistentTicketException
@@ -299,6 +300,8 @@ implements MoriaStore {
      * @throws InvalidTicketException
      *             If the ticket is not associated with an authentication
      *             attempt.
+     * @throws MoriaStoreException
+     *          If the operation fails.
      * @see no.feide.moria.store.MoriaStore#getAuthnAttempt(java.lang.String,
      *      boolean, java.lang.String)
      */
@@ -398,7 +401,7 @@ implements MoriaStore {
      * @throws MoriaStoreException
      *          If the operation fails.
      * @throws IllegalArgumentException
-     *          If ticketId is null or zero length, or SSO ticket principal 
+     *          If ticketId is null or zero length, or SSO ticket principal
      *          is null or zero length.
      * @see no.feide.moria.store.MoriaStore#getUserData(java.lang.String,
      *      java.lang.String)
@@ -551,7 +554,7 @@ implements MoriaStore {
         if (map.containsKey("tgt")) {
             // try to cache the TGT
             removeFromStore(ssoTicket);
-            cachedUserData.addAttribute("tgt", tgTicket.getTicketId());    
+            cachedUserData.addAttribute("tgt", tgTicket.getTicketId());
             insertIntoStore(ssoTicket);
         }
         return tgTicket.getTicketId();
@@ -770,8 +773,8 @@ implements MoriaStore {
 
 
     /**
-     * Returns the service principal for the ticket
-     * 
+     * Returns the service principal for the ticket.
+     *
      * @param ticketId The ticket id.
      * @param ticketType The ticket type.
      * @return Service principal.

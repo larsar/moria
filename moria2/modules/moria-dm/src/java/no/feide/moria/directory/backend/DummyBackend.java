@@ -123,6 +123,7 @@ implements DirectoryManagerBackend {
      * Checks whether a user exists.
      * @param username
      *            The username. Case is ignored.
+     * @return    true if the user exists, false otherwise.
      * @see DirectoryManagerBackend#userExists(String)
      */
     public boolean userExists(final String username) {
@@ -142,6 +143,7 @@ implements DirectoryManagerBackend {
      * @param attributeRequest
      *            A list of requested attributes from the user object. May be
      *            <code>null</code> or an empty array. Not case sensitive.
+     * @return User attributes, possibly empty.
      * @throws AuthenticationFailedException
      *             If the authentication fails.
      * @throws IllegalArgumentException

@@ -47,7 +47,7 @@ public final class MoriaAuthnAttempt implements MoriaStoreData {
     private final String returnURLPostfix;
 
     /**
-     * Whether or not single sign-on (SSO) is to be used when user arrives 
+     * Whether or not single sign-on (SSO) is to be used when user arrives
      * at login servlet.
      */
     private final boolean forceInterativeAuthentication;
@@ -142,7 +142,7 @@ public final class MoriaAuthnAttempt implements MoriaStoreData {
     }
 
     /**
-     * Checks whether or not single sign-on (SSO) should be refused even if 
+     * Checks whether or not single sign-on (SSO) should be refused even if
      * possible.
      *
      * @return True for forced authentication.

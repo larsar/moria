@@ -42,7 +42,7 @@ import no.feide.moria.directory.index.IndexedReference;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * Java Naming and Directory Interface (JNDI) backend. Used to authenticate 
+ * Java Naming and Directory Interface (JNDI) backend. Used to authenticate
  * users and retrieve the associated attributes.
  */
 public class JNDIBackend
@@ -165,7 +165,7 @@ implements DirectoryManagerBackend {
 
     /**
      * Checks whether a user element exists, based on its username value.
-     * @param username
+     * @param username User name.
      * @return <code>true</code> if the user can be looked up through JNDI,
      *         otherwise <code>false</code>.
      * @throws BackendException
@@ -218,10 +218,15 @@ implements DirectoryManagerBackend {
      * requested attributes.
      * @param userCredentials
      *            User's credentials. Cannot be <code>null</code>.
-     * @param attributeRequest
-     * @return <code>false</code> if authentication was unsuccessful (bad or
-     *         <code>null</code> username/password), otherwise
-     *         <code>true</code>.
+     * @param attributeRequest 
+     *            Requested attributes.
+     * @return The requested attributes (<code>String</code> names and
+     *         <code>String[]</code> values), if they did exist in the
+     *         external backend. Otherwise returns
+     *         those attributes that could actually be read, this may be an
+     *         empty <code>HashMap</code>. Returns an empty
+     *         <code>HashMap</code> if <code>attributeRequest</code> is
+     *         <code>null</code> or an empty array.
      * @throws AuthenticationFailedException
      *             If the authentication fails.
      * @throws BackendException

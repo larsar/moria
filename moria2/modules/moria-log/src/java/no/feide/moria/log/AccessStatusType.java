@@ -78,7 +78,7 @@ public final class AccessStatusType implements Serializable {
      * Access log type used to indicate that the service requests illegal operations.
      */
     public static final AccessStatusType OPERATIONS_NOT_PERMITTED = new AccessStatusType("OPERATIONS NOT PERMITTED");
-    
+
     /**
      * Access log type used to indicate that user from a specific userorg is not allowed to use.
      * this service
@@ -105,7 +105,7 @@ public final class AccessStatusType implements Serializable {
      */
     public static final AccessStatusType ACCESS_DENIED_VERIFY_USER_EXISTENCE = new AccessStatusType(
             "ACCESS DENIED VERIFY USER EXISTENCE");
-    
+
     /**
      * Access log type used to indicate that the service requests illegal proxy authentication.
      */

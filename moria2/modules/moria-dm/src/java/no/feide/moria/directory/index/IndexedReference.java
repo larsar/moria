@@ -19,7 +19,7 @@
 package no.feide.moria.directory.index;
 
 /**
- * Represents an indexed reference to an external element. Used to 
+ * Represents an indexed reference to an external element. Used to
  * distinguish
  * between explicitly and implicitly indexed references.
  */
