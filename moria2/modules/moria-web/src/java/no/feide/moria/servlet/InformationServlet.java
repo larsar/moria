@@ -20,14 +20,13 @@
 package no.feide.moria.servlet;
 
 import java.io.IOException;
-// import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Arrays;
-
+import java.util.Collections;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,23 +36,12 @@ import javax.servlet.http.HttpSession;
 import java.io.*;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
-
 import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.UnknownTicketException;
 import no.feide.moria.log.MessageLogger;
-
-//import no.feide.moria.controller.MoriaController;
-
-//import no.feide.moria.authorization.UnknownServicePrincipalException;
-
-//import no.feide.moria.servlet.RequestUtil;
-
-//import no.feide.moria.controller.MoriaController;
-//import no.feide.moria.servlet.RequestUtil;
-
 import java.util.Vector;
 
 
@@ -61,62 +49,94 @@ import java.util.Vector;
  * This servlet is responsible for retrieving information about a user, and send
  * it to information.jsp for display.
  * 
-
- * Required properties:
- * TODO
- * 
  * @author Eva Indal
  * @version %I%
  */
 public class InformationServlet extends HttpServlet {
     
-    /** A hash map containing all possible attributes for a user.
-     Each item in the hashmap maps from a attribute name to a
-     AttribsData class instance */
-    private HashMap feideattribs;
+    /** 
+     * A hash map containing all possible attributes for a user.
+     * Each item in the hashmap maps from a attribute name to a
+     * AttribsData class instance 
+     */
+    private HashMap feideattribs_stored = null;
     
     /** Principal name of the sercive.
      *  Current value is "info"
      */ 
     private String PRINCIPAL = "info";
-    
-    /** Map used for storing userattributes, so language can be changed */
-    private Map storedmap = null;
-    
-    /** Stored ticket for languages */
-    private String storedticket = null;
+
+    /** 
+     * HashMap used for storing userattributes (one for each loginTicket), 
+     * so that refresh can be used and language can be changed. Synchronize
+     * it so that multiple threads can work on this map. 
+     */
+    private Map storeduserdata = Collections.synchronizedMap(new HashMap());
     
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(InformationServlet.class);
 
     /**
+     * List of parameters required by <code>InformationServlet</code>.<br>
+     * <br>
+     * Current required parameters are:
+     * <ul>
+     ** <li><code>RequestUtil.PROP_COOKIE_LANG</code>
+     ** <li><code>RequestUtil.PROP_COOKIE_LANG_TTL</code>
+     ** <li><code>RequestUtil.PROP_COMMON</code>
+     ** <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
+     ** <li><code>RequestUtil.PROP_INFORMATION_URL_PREFIX</code>
+     ** <li><code>RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML</code>
+     * </ul>
+     * @see RequestUtil.PROP_COOKIE_LANG
+     * @see RequestUtil.PROP_COOKIE_LANG_TTL
+     * @see RequestUtil.PROP_COMMON
+     * @see RequestUtil.PROP_LOGIN_TICKET_PARAM
+     * @see RequestUtil.PROP_INFORMATION_URL_PREFIX
+     * @see RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML
+     */
+    final String[] REQUIRED_PARAMETERS = {
+        RequestUtil.PROP_COOKIE_LANG,
+        RequestUtil.PROP_COOKIE_LANG_TTL,
+        RequestUtil.PROP_COMMON,
+        RequestUtil.PROP_LOGIN_TICKET_PARAM,
+        RequestUtil.PROP_INFORMATION_URL_PREFIX,
+        RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML
+    };
+
+    /**
      * Constructor.
-     * Get info about user attributes 
      */
     public InformationServlet() {
-        // TODO: xml file should really be reread when file is changed
-        feideattribs = getAttribs();
     }
-
     
     /**
      * Implements a simple xml parser that parses the feideattribs.xml file
      * into a HashMap with AttribsData instances.
      * 
-     * @return the content of the xml file
+     * @param config The configuration for the web module
      * @see AttribsHandler
      *      AttribsData
      */
-    public HashMap getAttribs() {
-        AttribsHandler handler = new AttribsHandler();
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        try {
-            SAXParser saxParser = factory.newSAXParser();
-            saxParser.parse( new File(RequestUtil.PATH_FEIDEATTRIBS), handler);
-        } catch (Throwable t) {
-            t.printStackTrace();
+    public synchronized HashMap getAttribs() {
+         if (feideattribs_stored == null) {
+          Properties config = getConfig();
+          if (config != null) {
+            AttribsHandler handler = new AttribsHandler();
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            try {
+               String filename = (String) config.get(RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML);
+               SAXParser saxParser = factory.newSAXParser();
+               saxParser.parse( new File(filename), handler);
+            } catch (Throwable t) {
+              log.logCritical("Error parsing feideattribs.xml");
+            }
+            finally {
+              feideattribs_stored = handler.getAttribs();
+            }
+          }
         }
-        return handler.getAttribs();
+        return feideattribs_stored;
     }
         
     /**
@@ -135,6 +155,7 @@ public class InformationServlet extends HttpServlet {
         
         /* Stores the data in a temporary vector */
         Vector temp = new Vector();
+        HashMap feideattribs = getAttribs();
         for (Iterator iterator = feideattribs.keySet().iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
             AttribsData attribsData = (AttribsData) feideattribs.get(key);
@@ -209,10 +230,18 @@ public class InformationServlet extends HttpServlet {
         } catch (ClassCastException e) {
             throw new IllegalStateException("Config is not correctly set in context.");
         }
-        if (config == null) {
+        if (config == null) 
             throw new IllegalStateException("Config is not set in context.");
+        
+            // Are we missing some required properties?
+            for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
+                String requiredParameter = REQUIRED_PARAMETERS[i];
+                if ((requiredParameter == null) || (requiredParameter.equals(""))) {
+                    throw new IllegalStateException("Required parameter '" + requiredParameter + "' is not set");
+                }
         }
         return config;
+        
     }
     
     /**
@@ -225,12 +254,16 @@ public class InformationServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException {      
+        if (getAttribs() == null) throw new IOException("feideattribs.xml not parsed");
+
+        String loginTicketId = request.getParameter("moriaID");
 
         if (request.getParameter("logout") != null) {
             log.logInfo("Logout received");
-            storedticket = null;
-            storedmap = null;
+            if (loginTicketId != null) {
+                storeduserdata.remove(loginTicketId);
+            }
             final RequestDispatcher rd = getServletContext().getNamedDispatcher("Logout");
             rd.forward(request, response);
             return;
@@ -255,27 +288,21 @@ public class InformationServlet extends HttpServlet {
                     .getCookies());
         }
         
-        //FIXME "en"
+        /*Use default login language as default for the information servlet */
         final ResourceBundle bundle = RequestUtil.getBundle(
                 RequestUtil.BUNDLE_INFORMATIONSERVLET, 
                 request.getParameter(RequestUtil.PARAM_LANG), langFromCookie, null,
-                request.getHeader("Accept-Language"), "en");
+                request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
 
         HttpSession session = request.getSession(true);
         
         request.setAttribute("bundle", bundle);        
         request.setAttribute("urlPrefix", config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX));
 
-        String loginTicketId = request.getParameter("moriaID");
         if (loginTicketId != null) {
- 
-            Map userData = null;
-            
-            // FIXME: is it ok/safe to store userData in servlet
-            if (storedticket != null && storedticket.equals(loginTicketId)) {
-                userData = storedmap;
-            }
-            else {
+            // check for cached user data for this ticket
+            Map userData = (Map) storeduserdata.get(loginTicketId);            
+            if (userData == null) {
               try {
                 userData = MoriaController.getUserAttributes(loginTicketId, PRINCIPAL);
               } 
@@ -289,28 +316,19 @@ public class InformationServlet extends HttpServlet {
                   log.logCritical("InoperableStateException in doGet()");
               }
               
-              // FIXME: see comment above. Is this ok?
               if (userData != null) {
-                  storedmap = userData;
-                  storedticket = loginTicketId;
-                  
-                  // print some log info about userAttributes found
-                  log.logInfo("UserAttributes found ok...");
-                  for (Iterator it = userData.keySet().iterator(); it.hasNext();) {
-                     String key = (String) it.next();
-                     log.logInfo("Attribute: " + key);
-                  }
+                  // cache user data to enable refresh and language change
+                  storeduserdata.put(loginTicketId, userData);
               }
             }
             if (userData == null) {
                 // TODO: print error message instead of empty table?
                 userData = new HashMap();
             }
-            
             // need userorg as an attribute in the JSP to be able to print
             // instructions on where to update the optional or mandatory info
             String [] userorgarray = (String[]) userData.get(RequestUtil.EDU_ORG_LEGAL_NAME);
-            String userorg = "unknown userorg";
+            String userorg = bundle.getString("unknown_userorg");
             if (userorgarray != null && userorgarray.length > 0) {
                 userorg = userorgarray[0];
             }
@@ -406,6 +424,7 @@ public class InformationServlet extends HttpServlet {
      */
     String getAllAttributes() {
         String acc = "";
+        HashMap feideattribs = getAttribs();
         for (Iterator iterator = feideattribs.keySet().iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
             acc += key;
