@@ -91,14 +91,6 @@
 </attribute>
 
 <attribute> 
-  <key>userPassword</key>
-  <description>Passord</description>
-  <resourcebundle>rb_userPassword</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#userPassword</link>
-</attribute>
-
-<attribute> 
   <key>eduPersonAffiliation</key>
   <description>Rolle ved organisasjonen (ansatt, student, andre)</description>
   <resourcebundle>rb_eduPersonAffiliation</resourcebundle>
