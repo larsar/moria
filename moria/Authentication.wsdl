@@ -3,15 +3,15 @@
 <!-- $Id$ -->
 
 <definitions name="Authentication"
-             targetNamespace="https://login.feide.no/moria/r001/Authentication"
-             xmlns:tns="https://login.feide.no/moria/r001/Authentication"
+             targetNamespace="REPLACE_WITH_DEPLOY_URL/Authentication"
+             xmlns:tns="REPLACE_WITH_DEPLOY_URL/Authentication"
              xmlns="http://schemas.xmlsoap.org/wsdl/"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 
   <types>
-    <schema targetNamespace="https://login.feide.no/moria/r001/Authentication"
-            xmlns:tns="https://login.feide.no/moria/r001/Authentication"
+    <schema targetNamespace="REPLACE_WITH_DEPLOY_URL/Authentication"
+            xmlns:tns="REPLACE_WITH_DEPLOY_URL/Authentication"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
             xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/"
@@ -142,12 +142,12 @@
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </input>
       <output>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </output>
       <soap:operation soapAction=""/>
     </operation>
@@ -156,12 +156,12 @@
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </input>
       <output>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </output>
       <soap:operation soapAction=""/>
     </operation>
@@ -170,12 +170,12 @@
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </input>
       <output>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </output>
       <soap:operation soapAction=""/>
     </operation>
@@ -184,12 +184,12 @@
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </input>
       <output>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </output>
       <soap:operation soapAction=""/>
     </operation>
@@ -198,12 +198,12 @@
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </input>
       <output>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </output>
       <soap:operation soapAction=""/>
     </operation>
@@ -212,12 +212,12 @@
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </input>
       <output>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
-                   namespace="https://login.feide.no/moria/r001/Authentication"/>
+                   namespace="REPLACE_WITH_DEPLOY_URL/Authentication"/>
       </output>
       <soap:operation soapAction=""/>
     </operation>
@@ -226,7 +226,7 @@
 
   <service name="Authentication">
     <port name="AuthenticationIFPort" binding="tns:AuthenticationIFBinding">
-      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+      <soap:address location="REPLACE_WITH_DEPLOY_URL/Authentication?WSDL"/>
     </port>
   </service>
 
