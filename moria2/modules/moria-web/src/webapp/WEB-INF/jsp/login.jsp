@@ -174,6 +174,15 @@ function fokuser(){document.loginform.username.focus();}
 
        </td>
       </tr>
+      
+            <td><img src="/element/listepunkt.gif" alt="-"/></td>
+        <td><%=bundle.getString("expl_link1")%><A HREF=<%=request.getAttribute("faqlink")%>><%=bundle.getString("expl_link2")%></A>
+        <%=bundle.getString("expl_link3")%><BR/>
+
+
+       </td>
+      </tr>
+          
       <tr>
         <td>&nbsp;</td>
         <td><hr noshade="noshade" size="1"/></td>

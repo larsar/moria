@@ -335,6 +335,9 @@ extends HttpServlet {
             request.setAttribute(RequestUtil.ATTR_CLIENT_NAME, serviceProperties.get(RequestUtil.CONFIG_DISPLAY_NAME));
             request.setAttribute(RequestUtil.ATTR_CLIENT_URL, serviceProperties.get(RequestUtil.CONFIG_URL));
         }
+        
+        // Link to the faq
+        request.setAttribute("faqlink", config.get(RequestUtil.FAQ_LINK));
 
         /* Process jsp */
         final RequestDispatcher rd = getServletContext().getNamedDispatcher("Login.JSP");
