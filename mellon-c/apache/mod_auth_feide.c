@@ -1,8 +1,8 @@
 
+#include "apr_time.h"
 #include "apr_strings.h"
 #include "apr_shm.h"
-#include "apr_rmm.h"
-#include "apr_global_mutex.h"
+#include "apr_md5.h"
 
 #include "ap_config.h"
 #include "httpd.h"
@@ -15,6 +15,94 @@
 #include "feide.h"
 
 module AP_MODULE_DECLARE_DATA auth_feide_module;
+
+#define MF_CACHE_KEYSIZE 120
+
+/*
+ * all the information required to store an authentication hash inside
+ * the module.  this means we demand support for shared memory!
+ */
+typedef struct {
+	char key[MF_CACHE_KEYSIZE];
+	apr_time_t access;
+} mf_cache_entry_t;
+
+
+/*
+ * finds the matching element in the table, if it exists.  if it does
+ * it returns the difference in seconds between the authentication
+ * and now.
+ */
+static int mf_cache_find(mf_cache_entry_t *table, int size, char *key)
+{
+	int i;
+
+	for (i = 0; i < size; i++) {
+		if (strcmp(table[i].key, key) == 0) {
+			apr_time_t interval;
+			interval = apr_time_sec(apr_time_now() - table[i].access);
+			/* renew 'lease' of the key */
+			table[i].access = apr_time_now();
+			return interval;
+		}
+	}
+
+	return -1;
+}
+
+
+/*
+ * sets the key into the table, and makes room for it if the cache is
+ * full.
+ */
+static void mf_cache_set(mf_cache_entry_t *table, int size, char *key)
+{
+	int i;
+
+	if (table == NULL || key == NULL) {
+		return;
+	}
+
+	/* first attempt to find an empty spot */
+	for (i = 0; i < size; i++) {
+		if (table[i].access == 0)
+			break;
+	}
+
+	/* if there is no room, then kick out the oldest element */
+	if (table[i].key[0] != '\0') {
+		int oldest_index = 0;
+		for (i = 0; i < size; i++) {
+			if (table[i].access < table[oldest_index].access) {
+				oldest_index = i;
+			}
+		}
+		i = oldest_index;
+	}
+
+	/* update table element */
+	strcpy(table[i].key, key);
+	table[i].access = apr_time_now();
+
+	return;
+}
+
+
+/* parse error here for some silly reason */
+static char *mf_cache_genkey(apr_pool_t *pool, char *id, char *domain)
+{
+	char hash[MF_CACHE_KEYSIZE];
+	char *tmp;
+
+	tmp = apr_pstrcat(pool, id, domain, NULL);
+
+	if (apr_md5_encode(tmp, "ab", hash, strlen(tmp)) == 0) {
+		return apr_pstrdup(pool, hash);
+	} else {
+		return NULL;
+	}
+}
+
 
 /*
  * all this is for the FeideRequire configuration command.  we want each
@@ -83,10 +171,19 @@ typedef struct {
 	char *userid;
 	char *passwd;
 	char *domain;
-	int   authorative;
-	int   cache_age;
 	apr_hash_t *require;
 } auth_feide_config_rec;
+
+
+/*
+ * struct to hold server configuration info.
+ */
+typedef struct {
+	int nelms;
+	int cache_age;
+	apr_shm_t *cache;
+	char *cache_name;
+} auth_feide_server_rec;
 
 
 /*
@@ -101,9 +198,24 @@ static void *create_auth_dir_config(apr_pool_t *p, char *d)
 	conf->userid = NULL;
 	conf->passwd = NULL;
 	conf->domain = NULL;
-	conf->cache_age = 3600;  /* default to one hour */
 	conf->require = apr_hash_make(p);
 	return conf;
+}
+
+
+/*
+ * intialize a server configuration structure
+ */
+static void *create_auth_server_config(apr_pool_t *p, server_rec *s)
+{
+	auth_feide_server_rec *cfg;
+
+	cfg = apr_palloc(p, sizeof(*cfg));
+	cfg->nelms = 100;  /* number of authorizations to cache */
+	cfg->cache = NULL; /* will be allocated later */
+	cfg->cache_age = 3600; /* default to one hour */
+
+	return cfg;
 }
 
 
@@ -196,8 +308,11 @@ static const command_rec auth_feide_cmds[] =
 	AP_INIT_TAKE12("FeideDomain", set_feide_slot,
 	               (void *)APR_OFFSETOF(auth_feide_config_rec, domain),
 	               OR_AUTHCFG, "The 'domain' of the authentication."),
+	AP_INIT_TAKE1("FeideCacheSize", ap_set_int_slot,
+	              (void *)APR_OFFSETOF(auth_feide_server_rec, nelms),
+	              OR_AUTHCFG, "The size of the server cache."),
 	AP_INIT_TAKE1("FeideCacheAge", ap_set_int_slot,
-	              (void *)APR_OFFSETOF(auth_feide_config_rec, cache_age),
+	              (void *)APR_OFFSETOF(auth_feide_server_rec, cache_age),
 	              OR_AUTHCFG, "Local authentication cache age in seconds.  Defaults to 3600."),
 	AP_INIT_RAW_ARGS("FeideRequire", set_require_slot, NULL,
 	                 OR_AUTHCFG, "Attribute requirements."),
@@ -337,13 +452,21 @@ static char *mf_get_cookie(request_rec *r)
  */
 static void mf_set_cookie(request_rec *r, char *id)
 {
-	auth_feide_config_rec *cfg = ap_get_module_config(r->per_dir_config,
-	                                                  &auth_feide_module);
-	char *name = apr_pstrcat(r->pool, "feide-", cfg->varname, NULL);
-	char *cookie;
+	auth_feide_config_rec *cfg; 
+	auth_feide_server_rec *scfg;
+	char *name, *cookie;
+
+	if (id == NULL) {
+		return;
+	}
+
+	cfg = ap_get_module_config(r->per_dir_config, &auth_feide_module);
+	scfg = ap_get_module_config(r->server->module_config, &auth_feide_module);
+
+	name = apr_pstrcat(r->pool, "feide-", cfg->varname, NULL);
 
 	cookie = apr_psprintf(r->pool, "%s=%s; Version=1; Path=/; Max-Age=%d",
-	                      name, id, cfg->cache_age);
+	                      name, id, scfg->cache_age);
 	apr_table_setn(r->headers_out, "Set-Cookie", cookie);
 	return;
 }
@@ -435,11 +558,12 @@ static char *mf_get_key(request_rec *r)
  * this is where we do most of the work.  look in the cache, contact Moria,
  * redirect user if necessary and throw him out if he's not wanted.
  */
-
 static int authenticate_feide_user(request_rec *r)
 {
 	auth_feide_config_rec *cfg = ap_get_module_config(r->per_dir_config,
 	                                                  &auth_feide_module);
+	auth_feide_server_rec *scfg = ap_get_module_config(r->server->module_config,
+	                                                   &auth_feide_module);
 	int return_code = HTTP_UNAUTHORIZED;
 	/* temporary value, this will need a better solution when requests
 	 * become more structured */
@@ -457,7 +581,10 @@ static int authenticate_feide_user(request_rec *r)
 	cookie = mf_get_cookie(r);
 	key    = mf_get_key(r);
 
-	if (key) { /* was (cookie || key), but we don't have shared mem yet */
+	ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+	             "cookie=%s, key=%s", cookie, key);
+
+	if (cookie || key) {
 		/* we have a way of accessing an ID */
 		int ret;
 		f_attr_array *fa;
@@ -486,17 +613,63 @@ static int authenticate_feide_user(request_rec *r)
 		}
 
 		/* then attempt to handle cookie, if still relevant */
-		if (/*cookie && return_code != OK*/ NULL) {
+		if (cookie && return_code != OK) {
 			/* here we're supposed to look up the cookie in a local cache
 			 * but there's no cache implemented yet.  just log that we're
 			 * here and then continue as normal */
+			mf_cache_entry_t *cache;
+
 			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-			             "cookie=%s", cookie);
+			             "hash: cookie=%s, ip=%s.",
+			             cookie, r->connection->remote_ip);
+
+			cache = apr_shm_baseaddr_get(scfg->cache);
+
+			if (mf_cache_find(cache, scfg->nelms, cookie) == -1) {
+				ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+				             "%s no longer valid.", cookie);
+				return_code = HTTP_UNAUTHORIZED;
+			} else {
+				ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+				             "%s authorised in cache.", cookie);
+				return_code = OK;
+			}
 		}
 
-		/* if there's no cookie but we're still ok, then make a cookie */
+		/* the user is authenticated, but he has no cookie set, so we make
+		 * a hash from the key and the client IP address and send that to
+		 * the client as a cookie.  the hash is stored in the cache together
+		 * with the access time. */
 		if (!cookie && return_code == OK) {
-			mf_set_cookie(r, key);
+			mf_cache_entry_t *cache;
+			char *cache_key;
+
+			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+			             "Entering cookie-setting and cache-setting.");
+
+			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+			             "Making cache_key from \"%s\" and \"%s\".",
+			             key, r->connection->remote_ip);
+
+			cache_key = mf_cache_genkey(r->pool, key, r->connection->remote_ip);
+
+			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+			             "cache_key=%s", cache_key);
+
+			cache     = apr_shm_baseaddr_get(scfg->cache);
+
+			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+			             "Cache fetched.");
+
+			mf_set_cookie(r, cache_key);
+
+			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+			             "Cookie has been set.");
+
+			mf_cache_set(cache, scfg->nelms, cache_key);
+
+			ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+			             "Cache has been set/updated.");
 		}
 	} else {
 		/* we don't have a way to accvess an ID, redirect to authenticate */
@@ -525,6 +698,64 @@ static int authenticate_feide_user(request_rec *r)
 
 
 /*
+ * frees the shared memory structure, it's run when the `pconf' pool is
+ * deallocated (see `mf_global_init').
+ */
+static apr_status_t mf_global_kill(void *p)
+{
+	server_rec *s = p;
+	auth_feide_server_rec *cfg;
+
+	cfg = ap_get_module_config(s->module_config, &auth_feide_module);
+
+	if (cfg->cache) {
+		apr_shm_destroy(cfg->cache);
+		cfg->cache = NULL;
+	}
+
+	return OK;
+}
+
+
+/*
+ * alloated the shared memory and puts a pointer to it in the shared
+ * memory structure.
+ */
+static int mf_global_init(apr_pool_t *pconf, apr_pool_t *plog,
+                          apr_pool_t *ptemp, server_rec *s)
+{
+	mf_cache_entry_t *table;
+	apr_status_t rv;
+	apr_size_t mem_size;
+	auth_feide_server_rec *cfg;
+	int i;
+	
+	cfg = ap_get_module_config(s->module_config,
+	                           &auth_feide_module);
+
+	mem_size = sizeof(mf_cache_entry_t) * cfg->nelms;
+
+	apr_pool_cleanup_register(pconf, s, mf_global_kill, apr_pool_cleanup_null);
+
+	rv = apr_shm_create(&(cfg->cache), mem_size, NULL, pconf);
+	if (rv != APR_SUCCESS) {
+		ap_log_error(APLOG_MARK, APLOG_ERR, rv, s,
+		             "Could not allocate %d bytes of shared memory.",
+		             mem_size);
+		return !OK;
+	}
+
+	table = apr_shm_baseaddr_get(cfg->cache);
+	for (i = 0; i < cfg->nelms; i++) {
+		table[i].key[0] = '\0';
+		table[i].access = 0;
+	}
+
+	return OK;
+}
+
+
+/*
  * tell Apache when we want to mess in it's request handling business.
  *
  * we had to use access_checker hook instead of the authentication hooks
@@ -533,6 +764,7 @@ static int authenticate_feide_user(request_rec *r)
 static void register_hooks(apr_pool_t *p)
 {
 	ap_hook_access_checker(authenticate_feide_user,NULL,NULL,APR_HOOK_MIDDLE);
+	ap_hook_post_config(mf_global_init, NULL, NULL, APR_HOOK_MIDDLE);
 }
 
 
@@ -544,7 +776,7 @@ module AP_MODULE_DECLARE_DATA auth_feide_module =
 	STANDARD20_MODULE_STUFF,
 	create_auth_dir_config,
 	NULL,
-	NULL,
+	create_auth_server_config,
 	NULL,
 	auth_feide_cmds,
 	register_hooks
