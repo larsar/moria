@@ -22,6 +22,7 @@
 	<include name="moria-base*.properties"/>
 	<include name="dm-test-valid.properties"/>
 	<include name="sm-test-valid.properties"/>
+	<include name="directory-conf-test-valid.xml"/>
       </fileset>
     </copy>
 
@@ -30,6 +31,7 @@
        token="REPLACE_WITH_REALPATH"
        value="${project.test.templates.dir}">
       <include name="*.properties"/>
+      <include name="*.xml"/>
     </replace>
   </postGoal>
 
