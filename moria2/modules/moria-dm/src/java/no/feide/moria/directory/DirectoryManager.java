@@ -14,6 +14,8 @@ package no.feide.moria.directory;
 
 import java.lang.reflect.Constructor;
 import java.util.Properties;
+import no.feide.moria.directory.DirectoryManagerConfigurationException;
+import no.feide.moria.directory.backend.BackendException;
 import no.feide.moria.directory.backend.DirectoryManagerBackend;
 import no.feide.moria.directory.backend.DirectoryManagerBackendFactory;
 import no.feide.moria.directory.index.DirectoryManagerIndex;
@@ -31,27 +33,9 @@ public class DirectoryManager {
 
     /** Internal representation of the backend factory. */
     private static DirectoryManagerBackendFactory backendFactory;
-
-
-    /**
-     * Utility method.
-     * @param message
-     * @param cause
-     * @throws DirectoryManagerConfigurationException
-     */
-    protected static void error(String message, Throwable cause)
-    throws DirectoryManagerConfigurationException {
-
-        // Set up logging.
-        // TODO: Make sure it works.
-        MessageLogger messageLog = new MessageLogger(DirectoryManager.class);
-
-        // TODO: Differ between critical and warning depending on existing
-        // configuration.
-        messageLog.logCritical(message);
-        throw new DirectoryManagerConfigurationException(message, cause);
-
-    }
+    
+    /** The message logger. */
+    private static MessageLogger messageLog = new MessageLogger(DirectoryManager.class);
 
 
     /**
@@ -75,9 +59,11 @@ public class DirectoryManager {
             constructor = DirectoryManagerConfiguration.getIndexClass().getConstructor(noParameters);
             index = (DirectoryManagerIndex) constructor.newInstance(noParameters);
         } catch (NoSuchMethodException e) {
-            error("Cannot find index constructor", e);
+            messageLog.logCritical("Cannot find index constructor", e);
+            throw new DirectoryManagerConfigurationException("Cannot find index constructor", e);
         } catch (Exception e) {
-            error("Unable to instantiate index object", e);
+            messageLog.logCritical("Unable to instantiate index object", e);
+            throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
         }
 
         // Set the backend factory class.
@@ -87,9 +73,11 @@ public class DirectoryManager {
             constructor = DirectoryManagerConfiguration.getBackendFactoryClass().getConstructor(noParameters);
             backendFactory = (DirectoryManagerBackendFactory) constructor.newInstance(noParameters);
         } catch (NoSuchMethodException e) {
-            error("Cannot find backend factory constructor", e);
+            messageLog.logCritical("Cannot find backend factory constructor", e);
+            throw new DirectoryManagerConfigurationException("Cannot find backend factory constructor", e);
         } catch (Exception e) {
-            error("Unable to instantiate backend factory object", e);
+            messageLog.logCritical("Unable to instantiate backend factory object", e);
+            throw new DirectoryManagerConfigurationException("Unable to instantiate backend factory object", e);
         }
 
         // Cleanup.
@@ -108,10 +96,10 @@ public class DirectoryManager {
      * @return The user attributes matching the attribute request, if those were
      *         available. Otherwise an empty array, which still indicate a
      *         successful authentication.
-     * @throws DirectoryManagerException
+     * @throws BackendException If an unrecoverable error is encountered when operating the backend.
      */
     public static UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
-    throws DirectoryManagerException {
+    throws BackendException {
         
         // TODO: Implement a backend pool.
       
