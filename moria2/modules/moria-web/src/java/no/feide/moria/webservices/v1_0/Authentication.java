@@ -168,6 +168,9 @@ public final class Authentication implements AuthenticationIF {
         } catch (UnknownTicketException ute) {
             messageLogger.logWarn(UNKNOWN_TICKET_EX_MSG + servicePrincipal, ute);
             throw new RemoteException(ute.getMessage());
+        } catch (AuthorizationException e) {
+            messageLogger.logWarn("Service not allowed for organization. Throwing RemoteException to service: ", e);
+            throw new RemoteException(e.getMessage());
         }
     }
 
