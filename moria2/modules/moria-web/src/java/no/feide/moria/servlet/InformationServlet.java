@@ -91,7 +91,7 @@ public class InformationServlet extends HttpServlet {
      * @see RequestUtil#PROP_INFORMATION_URL_PREFIX
      * @see RequestUtil#PROP_INFORMATION_FEIDEATTRIBS_XML
      */
-    final String[] REQUIRED_PARAMETERS = {
+    private final String[] REQUIRED_PARAMETERS = {
         RequestUtil.PROP_COOKIE_LANG,
         RequestUtil.PROP_COOKIE_LANG_TTL,
         RequestUtil.PROP_COOKIE_DENYSSO,

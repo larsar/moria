@@ -49,7 +49,7 @@ import EDU.oswego.cs.dl.util.concurrent.WriterPreferenceReadWriteLock;
 public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
 
     /** */
-    MessageLogger messageLogger = new MessageLogger(TicketTTLEvictionAlgorithm.class);
+    private final MessageLogger messageLogger = new MessageLogger(TicketTTLEvictionAlgorithm.class);
 
     /** */
     private SyncList nodeList;
@@ -172,9 +172,9 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
      */
     private class NodeEntry {
 
-        final Long evictionTime;
+        private final Long evictionTime;
 
-        final Fqn fqn;
+        private final Fqn fqn;
 
         public NodeEntry(Long evictionTime, Fqn fqn) {
             this.evictionTime = evictionTime;

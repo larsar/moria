@@ -50,7 +50,7 @@ public class DirectoryManagerConfiguration {
      * Currently contains the value
      * <code>no.feide.moria.directory.configuration</code>.
      */
-    public final static String CONFIGURATION_PROPERTY = "no.feide.moria.directory.configuration";
+    public static final String CONFIGURATION_PROPERTY = "no.feide.moria.directory.configuration";
 
 
     /**
