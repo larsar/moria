@@ -799,17 +799,13 @@ public final class MoriaController {
             // Get the originally requested attributes and all cached values.
             MoriaAuthnAttempt authenticationAttempt = store.getAuthnAttempt(serviceTicketId, false, servicePrincipal);
             String[] requestedAttributes = authenticationAttempt.getRequestedAttributes();
-            for (int i = 0; i < requestedAttributes.length; i++)
-                messageLogger.logInfo("Requested attribute: " + requestedAttributes[i]);
             final Map cachedAttributes = authenticationAttempt.getTransientAttributes();
-            messageLogger.logInfo("Returned attributes: " + cachedAttributes.toString());
 
             // Filter cached attributes; only those requested are to be
             // returned.
             for (int i = 0; i < requestedAttributes.length; i++)
                 if (cachedAttributes.containsKey(requestedAttributes[i]))
                     filteredAttributes.put(requestedAttributes[i], cachedAttributes.get(requestedAttributes[i]));
-            messageLogger.logInfo("Filtered attributes: " + filteredAttributes.toString());
 
             // the service principal is unknown  
         } catch (UnknownServicePrincipalException e) {          
