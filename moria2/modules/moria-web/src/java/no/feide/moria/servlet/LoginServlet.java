@@ -25,6 +25,8 @@ import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.UnknownTicketException;
+import no.feide.moria.controller.AuthenticationException;
+import no.feide.moria.controller.DirectoryUnavailableException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -35,11 +37,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Map;
 
 /**
  * Use this servlet to bootstrap the system.
  * Set &lt;load-on-startup&gt;1&lt;/load-on-startup&gt; in web.xml.
- * 
+ *
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
@@ -85,22 +88,56 @@ public class LoginServlet extends HttpServlet {
         }
 
         /* Validate input */
-        if (username == null || username.equals("")) {
-            showLoginPage(request, response, "nocred");
-        } else if (password == null || password.equals("")) {
-            showLoginPage(request, response, "nocred");
-        } else if (org == null || org.equals("") || org.equals("null")) {
+//        if (username == null || username.equals("")) {
+//            showLoginPage(request, response, "nocred");
+//            return;
+//        } else if (password == null || password.equals("")) {
+//            showLoginPage(request, response, "nocred");
+//            return;
+//        } else
+        if (org == null || org.equals("") || org.equals("null")) {
             showLoginPage(request, response, "noorg");
-        } else if (RequestUtil.parseConfig(getConfig(), "org", "en").get(org) == null) { // TODO: Requires english bundle
+            return;
+        } else if (!RequestUtil.parseConfig(getConfig(), "org", "en").containsValue(org)) { // TODO: Requires english bundle
             showLoginPage(request, response, "errorg");
+            return;
         }
 
-        // TODO: Attempt login
-        // TODO: GEt redirect url
-        // TODO: Set SSO ticket in cookie
-        // TODO: Redirect to web service if successful
 
-        // TODO: If error other than UnknownTicketException, show loginpage with correct error
+
+        /* Attempt login */
+        Map tickets;
+        String redirectURL;
+        try {
+            tickets = MoriaController.attemptLogin(loginTicketId, ssoTicketId, username+"@"+org, password);
+            redirectURL = MoriaController.getRedirectURL((String) tickets.get(MoriaController.SERVICE_TICKET));
+        } catch (AuthenticationException e) {
+            showLoginPage(request, response, "auth");
+            return;
+        } catch (UnknownTicketException e) {
+            showLoginPage(request, response, "unknownTicket");
+            return;
+        } catch (DirectoryUnavailableException e) {
+            // TODO: Create error message
+            showLoginPage(request, response, "directoryDown");
+            return;
+        } catch (InoperableStateException e) {
+            // TODO: Create error message
+            showLoginPage(request, response, "moriaDown");
+            return;
+        } catch (IllegalInputException e) {
+            // TODO: Create error message
+            showLoginPage(request, response, "nocred");
+            return;
+            /* This should not happen. Programming error. */
+        }
+
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        response.setHeader("Location", redirectURL);
+
+
+
+        // TODO: Set SSO ticket in cookie
     }
 
     /**
@@ -205,7 +242,7 @@ public class LoginServlet extends HttpServlet {
 
         /* Validate config */
         try {
-            config = (Properties) getServletContext().getAttribute("config");
+            config = (Properties) getServletContext().getAttribute("no.feide.moria.web.config");
         } catch (ClassCastException e) {
             // TODO: Log
             throw new IllegalStateException("Config is not correctly set in context.");
