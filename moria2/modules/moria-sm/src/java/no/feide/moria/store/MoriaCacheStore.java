@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * $Id$
  */
 
@@ -30,7 +30,7 @@ import org.jboss.cache.lock.TimeoutException;
 /**
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
- *  
+ *
  */
 public class MoriaCacheStore implements MoriaStore {
 
@@ -41,7 +41,7 @@ public class MoriaCacheStore implements MoriaStore {
 
     /**
      * Constructs a new instance
-     *  
+     *
      */
     public MoriaCacheStore() {
         try {
@@ -101,7 +101,7 @@ public class MoriaCacheStore implements MoriaStore {
     }
 
     /**
-     * @see no.feide.moria.store.MoriaStore#getAuthnAttempt(no.feide.moria.store.MoriaTicket)
+     * @see no.feide.moria.store.MoriaStore#getAuthnAttempt(no.feide.moria.store.MoriaTicket, boolean)
      */
     public MoriaAuthnAttempt getAuthnAttempt(MoriaTicket loginTicket, boolean keep) throws InvalidTicketException {
 
@@ -172,7 +172,7 @@ public class MoriaCacheStore implements MoriaStore {
          * If the returned value isn't a CachedUserData object, we can't do
          * much else than throw an exception, so we just go for the default
          * ClassCastException
-         *  
+         *
          */
         try {
             return (CachedUserData) tree.get("moria", ticket);
@@ -264,7 +264,7 @@ public class MoriaCacheStore implements MoriaStore {
     }
 
     /**
-     * @see no.feide.moria.store.MoriaStore#createProxyTicket(no.feide.moria.store.MoriaTicket)
+     * @see no.feide.moria.store.MoriaStore#createProxyTicket(no.feide.moria.store.MoriaTicket, java.lang.String) 
      */
     public MoriaTicket createProxyTicket(MoriaTicket tgTicket, String servicePrincipal) throws InvalidTicketException {
 
@@ -300,7 +300,7 @@ public class MoriaCacheStore implements MoriaStore {
     public void setTransientAttributes(MoriaTicket ticket, String[] transientAttributes) throws InvalidTicketException {
 
         // TOOD: Validate this implementation
-        
+
         validateTicket(ticket, MoriaTicket.LOGIN_TICKET);
 
         MoriaAuthnAttempt authnAttempt = null;
@@ -314,14 +314,14 @@ public class MoriaCacheStore implements MoriaStore {
             // TODO: Handle exception properly
             throw new RuntimeException(e);
         }
-        
+
         if (authnAttempt != null) {
             authnAttempt.setTransientAttributes(transientAttributes);
         } else {
             // TODO: Handle exception properly
             throw new IllegalStateException("authnAttempt can not be null");
         }
-        
+
         try {
             tree.put("moria", ticket, authnAttempt);
         } catch (Exception e) {
@@ -332,7 +332,7 @@ public class MoriaCacheStore implements MoriaStore {
 
     /**
      * Check validity of ticket against type and expiry time
-     * 
+     *
      * @param ticket
      *            ticket to be checked
      * @param type
@@ -355,7 +355,7 @@ public class MoriaCacheStore implements MoriaStore {
 
     /**
      * Check validity of ticket against a set of types and expiry time
-     * 
+     *
      * @param ticket
      *            ticket to be checked
      * @param types
