@@ -32,6 +32,9 @@ import java.util.Iterator;
 public class SerializableIndex
 implements Serializable, DirectoryManagerIndex {
 
+    /** Serial version identifier. */
+    static final long serialVersionUID = -3356791609795577197L;
+
     /**
      * Internal list of associations; that is, the mapping between logical ID
      * realms (as <code>String</code>s) - following the 'at' character - and
@@ -68,7 +71,7 @@ implements Serializable, DirectoryManagerIndex {
      * @see java.lang.Object#equals(java.lang.Object)
      * @see #toString()
      */
-    public boolean equals(final Object obj) {
+    public final boolean equals(final Object obj) {
 
         // Check class.
         if (obj.getClass() != this.getClass())
@@ -105,6 +108,18 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
+     * Generates a hashCode.
+     * Dummy implementation.
+     *
+     * @return The hashcode.
+     * @throw UnsupportedOperationException Always.
+     */
+     public final int hashCode() {
+         throw new UnsupportedOperationException();
+     }
+
+
+    /**
      * Looks up an element reference from the index based on its logical ID
      * (typically username). <br>
      * <br>
@@ -119,7 +134,7 @@ implements Serializable, DirectoryManagerIndex {
      *         <code>null</code> if no such reference was found.
      * @see DirectoryManagerIndex#getReferences(String)
      */
-    public IndexedReference[] getReferences(final String id) {
+    public final IndexedReference[] getReferences(final String id) {
 
         // Sanity check.
         if (id == null)
@@ -154,7 +169,7 @@ implements Serializable, DirectoryManagerIndex {
      *         if no such realm could be found.
      * @see DirectoryManagerIndex#getRealm(String)
      */
-    public String getRealm(final String id) {
+    public final String getRealm(final String id) {
 
         // Do we have an exception matching this identifier with an explicit
         // realm?
@@ -191,7 +206,7 @@ implements Serializable, DirectoryManagerIndex {
      *             If either <code>realm</code> or <code>base</code> is
      *             <code>null</code>.
      */
-    public void addAssociation(final String realm, final String base) {
+    public final void addAssociation(final String realm, final String base) {
 
         // Sanity checks.
         if (realm == null)
@@ -239,7 +254,7 @@ implements Serializable, DirectoryManagerIndex {
      *             If either <code>id</code> or <code>reference</code> is
      *             <code>null</code>.
      */
-    public void addException(final String id, final String reference, final String realm) {
+    public final void addException(final String id, final String reference, final String realm) {
 
         // Sanity checks.
         if (id == null)
@@ -258,7 +273,7 @@ implements Serializable, DirectoryManagerIndex {
      * @return The object represented as a <code>String</code>, includes
      *         separate lists of associations and exceptions.
      */
-    public String toString() {
+    public final String toString() {
 
         // Associations.
         String s = "\tAssociations: {";
