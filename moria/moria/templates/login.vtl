@@ -67,17 +67,20 @@ function fokuser(){document.loginform.username.focus();}
             <form action="$loginURL" method="POST" name="loginform" autocomplete="off">
               <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
                 <tbody>
+		<tr>
+		<td>$form_org
+		<select name="realm">
+		  $orgListOptions
+		  </select>
+		</td>
+		</tr>
                   <tr>
                     <td align="left" nowrap ="nowrap">
 		      $form_username<br/>
-                      <input type="text" size="8" value="" name="username"></td>
-		    <td><br/>@</td>
-		    <td>
-		      $form_org<br/>
-		    <input type="text" size="8" value="$preset_realm" name="realm"><br></td>
-</tr>
+                      <input type="text" size="16" value="" name="username"></td>
+ </tr>
 <tr>
-<td colspan="3">
+<td>
                       $form_password<br>
                       <input type="password" size="16" value="" name="password">
                     </td>
