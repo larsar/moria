@@ -414,13 +414,20 @@ $Id$
 
       <subsection name="Web Module">
         <p>
-          The web module contains the servlets that are accessed by the requesting web service
-          and the user. The following three servlets are used: Axis, login and logout.
+          The web module contains the servlets that are accessed by the requesting web service and
+          the user. The following three servlets are used: Axis, Login and Logout.
         </p>
         <p>
-          The Axis servlet receives all the SOAP requests and forwards it to the controller.
-          <br/><br>TODO: Bjørn Ola</br>
-        </p>
+          The Axis servlet receives all the SOAP requests and forwards them to the Axis engine for
+          decoding.  It only acts as a thin transport layer without any real logic.  Although Axis
+          comes with an servlet that handles frontend http traffic, Moria uses it's own
+          implementation of the frontend service.  This was done to get controll over request url
+          mapping and simplify configuration and integration of Axis into the application as a
+          whole.  The servlet uses the request URI as service identifier as it forwards the request
+          to the Axis Engine.  The engine uses this identifier to map the request to Moria-spesific
+          classes that process the request data before calling the controller.  See the <a
+          href="configuration.html">configuration documentation</a> for details.
+	</p>
         <p>
           After the authentication attempt has been initiated from the web service through the
           Axis servlet, the user is redirected to the login servlet. If the user has been
@@ -443,19 +450,59 @@ $Id$
           about configuring the logout redirect parameter is located in the
           <a href="configuration.html">configuration documentation</a>.
         </p>
-
-      </subsection>
-
-      <subsection name="Axis Servlet">
-        <b>TODO: Bjørn Ola</b>
+	<p>
+	  Additionally the web application contains an Servlet Context Listener that handles
+          starting and stopping of the controller and underlying modules on web application creation
+          and destruction.
+	</p>
       </subsection>
 
       <subsection name="Logger">
-        <b>TODO: Bjørn Ola</b>
+	<p>
+	  The log api is quite simple.  Using Log4J as a backend it has two modes of operation
+	  implemented by two separate classes: MessageLogger.java and AccessLogger.java.
+	</p>
+	<p>
+	  The most commonly used mode is message logging; this mode has four log levels: debug,
+	  info, warn and critical.  This mode is intended to be used anywhere throughout the code
+	  where log-worthy incidents occur.
+	</p>
+	<p>
+	  The second mode, for access logging, is only used in the controller.  This mode's intended
+	  use is for usage statistics. Each incident is logged in a predefined format using
+	  predefined identifiers.  See the <a href="TODO">javadoc</a> for more details.
+	</p>
       </subsection>
 
       <subsection name="Store Manager">
-        <b>TODO: Bjørn Ola</b>
+	<p>
+	  The store managers primary function is creation of tickets, and later persistence and
+	  lookup of tickets and its associated data.  As a side effect it also handles distribution
+	  of these data if Moria is run in a cluster configuration.  The store also handles
+	  life-cycle management of tickets, validating them on retrieval and continuously removing
+	  tickets that have expired.
+	</p>
+	<p>
+	  The current store implements the generic store interface using <a href="TODO">JBoss
+	  Cache</a>. This API provides a tree structured cache implementation. To achieve
+	  distribution of cache data JBoss Cache uses <a href="http://www.jgroups.org/">JGroups</a>
+	  as a distribution and transport layer.
+	</p>
+	<p>
+	  Ticket ID generation is handled by the store.  The current implementation uses a algorithm
+	  that is guaranteed to produce tickets unique across time and all nodes in the cluster.
+	  This is done using a predefined, and must be unique, three character node id combined with
+	  a time-stamp and a random sequence of bytes.  The final sequence of bytes is then
+	  pseudo-Base64 encoded to be URI friendly.
+	</p>
+	<p>
+	  The automatic removal of expired tickets is done with code specific to Moria, implemented
+	  using JBoss Caches' eviction policy framework.  It uses a simple algorithm where each
+	  individual ticket, defined by its type, is given an absolute time to live.  This period is
+	  a configurable percentage of the time the ticket stays in the cache.  So the time the
+	  ticket is valid and usable is actually less than the time it stays in the cache. More on
+	  this in the <a href="configuration.html">configuration documentation</a>.
+	</p>
       </subsection>
 
       <subsection name="Directory Manager">

@@ -23,7 +23,7 @@ $Id$
 <document>
 
   <properties>
-    <title>Moria</title>
+    <title>About</title>
     <author email="b.o@smievoll.no">Bjørn Ola Smievoll</author>
   </properties>
 
@@ -33,7 +33,7 @@ $Id$
       <p>
 	Moria is the authentication service for the FEIDE-project. The
 	source code is distributed under the <a
-	href="/license.html">General Public
+	href="license.html">General Public
 	License</a>, and is located at <a
 	href="http://sourceforge.net/projects/moria/">Morias
 	SourceForge site</a>.

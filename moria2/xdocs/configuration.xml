@@ -46,23 +46,52 @@ $Id$
 
     <section name="Presentation">
       <p>
-        JSP is used for the user login and logout page and Moria ships with standard versions of both.
-
-        <br/><b>TODO: How to localize? (Bjørn Ola)</b>
+        JSP is used for the user login and logout page and Moria ships with standard versions of
+        both.  In addition there's a number of other JSP used.  These standard files are contained
+        in the src/webapp/WEB-INF/jsp directory of the web module.
+      </p>
+      <p>
+	There are two ways of replacing the standard JSP's.  One can either replace the files when
+	building the war or additionally add some new JSP's and provide a web.xml where the servlet
+	definitions for the JSP's are redefined.
+      </p>
+      <p>
+	A property named <strong>project.alternative.jsp.location</strong> will be used as source
+	directory for JSP files if defined.  All *.jsp files in this location will end up in the jsp
+	directory in the war file.  For ways to replace the default web.xml file see the Maven war
+	plugin documentation.
+      </p>
+      <p>
+	When replacing the JSP's one may also want to replace the language files.  This can be done
+	by redefining the property <strong>project.resourcebundle.dir</strong>, pointing it to a
+	directory with replacement bundles.
       </p>
     </section>
 
 
     <section name="Base configuration">
       <p>
-        Moria is dependent on two system properties which has to be specified as system properties in the VM.
+        Moria is dependent on three inital properties which has to be specified as system properties
+        in the VM (or classloader if your appserver supports this functionality).  The three are:
+
         <source>
 # The configuration managers property file
 no.feide.moria.configuration.base=/full/path/to/configuration_managers.properties
         </source>
-        <br/><b>TODO: Logging property (Bjørn Ola)</b>
+	<source>
+# The node id. A three character alphanumeric string.
+no.feide.moria.node.id=no1
+	</source>
+	<source>
+# log4j's configuration
+log4j.configuration=/full/path/to/log4j.xml
+	</source>
       </p>
-      </section>
+      <p>
+	The last one may be considered optional as log4j on initialization has its own regime of
+	locating the config, but this is the prefered way to do it when using Moria.
+      </p>
+    </section>
 
       <section name="Configuration manager">
         <p>
@@ -274,7 +303,65 @@ no.feide.moria.web.logout.url_param=redirUrl
       </section>
 
       <section name="Store manager">
-        <b>TODO: Bjørn Ola</b>
+	<p>
+	  The store managers configuration file must contain two properties.
+
+	  <source>
+# The configuration for JBoss Cache
+no.feide.moria.store.cachestoreconf=/full/path/to/jboss-cache.xml
+
+# The percentage defining the actual (or real) ticket time to live
+no.feide.moria.store.real_ttl_percentage=80
+	  </source>
+	</p>
+	<p>
+	  The first points to the JBoss Cache specific configuration file.  The format of this is
+	  defined in the JBoss Cache documentation found <a href="TODO">here</a>.  The eviction
+	  policy configuration must be contained in this file, it's format is simply this:
+	  <source>
+&lt;attribute name="EvictionPolicyClass"&gt;no.feide.moria.store.TicketTTLEvictionPolicy&lt;/attribute&gt;
+
+&lt;attribute name="EvictionPolicyConfig"&gt;
+  &lt;config&gt;
+    &lt;attribute name="wakeUpIntervalSeconds"&gt;60&lt;/attribute&gt;
+
+    &lt;attribute name="maxNodes"&gt;200000&lt;/attribute&gt;
+
+    &lt;region name="Login Ticket"&gt;
+      &lt;attribute name="timeToLive"&gt;375&lt;/attribute&gt;
+    &lt;/region&gt;
+
+    &lt;region name="Service Ticket"&gt;
+      &lt;attribute name="timeToLive"&gt;375&lt;/attribute&gt;
+    &lt;/region&gt;
+
+    &lt;region name="Single Sign-On Ticket"&gt;
+      &lt;attribute name="timeToLive"&gt;36000&lt;/attribute&gt;
+    &lt;/region&gt;
+
+    &lt;region name="Ticket Granting Ticket"&gt;
+      &lt;attribute name="timeToLive"&gt;4500&lt;/attribute&gt;
+    &lt;/region&gt;
+
+    &lt;region name="Proxy Ticket"&gt;
+      &lt;attribute name="timeToLive"&gt;750&lt;/attribute&gt;
+    &lt;/region&gt;
+  &lt;/config&gt;
+&lt;/attribute&gt;
+	  </source>
+	  Each regions name match the actual name of the branch in the cache.  The time to live is
+	  the time in seconds.  The wakeUpIntervalSeconds attribute defines how often the thread
+	  doing the evictions should be run.  The maxNodes attributes is required by the underlying
+	  api but isn't really used in this policy.
+	</p>
+	<p>
+	  The second property, the real ttl percentage, is used to calculate the actual validity
+	  time of tickets.  While the time defined in the eviction policy declaration defines the
+	  time the tickets will remain in the cache, the time the tickets are valid is a sub one
+	  multiple of this.  I.e.: Service Tickets stay in the cache for 375 seconds, but is
+	  considered valid for use only 80 percent of this period (which calculates to: 375 * 0.8 =
+	  300 seconds or 5 minutes).
+	</p>
       </section>
 
       <section name="Directory manager">
@@ -282,9 +369,19 @@ no.feide.moria.web.logout.url_param=redirUrl
       </section>
 
       <section name="Logging">
-        <b>TODO: Bjørn Ola</b>
+	<p>
+	  Configuration of the log api is basically limited to producing a suitable log4j
+	  configuration.  See log4j's manual and the distributed examples for hints.
+	</p>
+	<p>
+	  The only special case to consider is the access log.  The logger's identifier will always
+	  the fully qualified path of the AccessLogger class itself. To isolate the access log it's
+	  therefore important to define the logger that catches the AccessLogger output before any
+	  other loggers catching output from the no.feide.moria hierarchy. Also, all logging from
+	  the AccessLogger is done at log4j level warn, so to disable access logging define the log
+	  level at a higher level than this.
+	</p>
       </section>
-
 
   </body>
 </document>

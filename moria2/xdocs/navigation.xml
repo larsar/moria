@@ -34,7 +34,12 @@ $Id$
     </links>
 
     <menu name="Overview">
-      <item name="Modules" href="/modules.html" collapse="false">
+      <item name="Usage" href="usage.html"/>
+      <item name="Design" href="design.html"/>
+      <item name="Configuration" href="configuration.html"/>
+      <item name="Building" href="building.html"/>
+
+      <item name="Modules" href="design.html#Moria_Internals" collapse="false">
 	<item name="Controller" href="/moria-ctrl/index.html"/>
 	<item name="Authorization manager" href="/moria-am/index.html"/>
 	<item name="Directory manager" href="/moria-dm/index.html"/>
