@@ -303,6 +303,7 @@ public final class MoriaCacheStore implements MoriaStore {
             throw new InvalidTicketException("No user data associated with ticket.");
         }
 
+        removeFromStore(ticket);
         return cachedUserData;
     }
 
