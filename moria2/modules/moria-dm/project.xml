@@ -27,6 +27,17 @@
       </properties>
     </dependency>
   </dependencies>
+  
+  <dependencies>
+    <dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.0b10</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+  </dependencies>
 
   <build>
     <resources>
