@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <name>Moria NextGen controller</name>
+  <id>moria-cm</id>
+
+  <shortDescription>The core component of Moria, controlling all
+  operations related to data flow.</shortDescription>
+
+  <dependencies>
+  </dependencies>
+
+  <build>
+
+    <resources>
+    </resources>
+
+  </build>
+
+</project>
