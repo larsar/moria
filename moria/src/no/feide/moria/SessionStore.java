@@ -213,7 +213,7 @@ public class SessionStore {
     }
 
     
-    protected void checkTimeout(int timeout, int timeoutSso) {
+    protected void checkTimeout(int timeout, int authTimeoutSec, int timeoutSso) {
 
         Vector invalidatedSessions = new Vector();
         Date start = new Date();
@@ -225,21 +225,35 @@ public class SessionStore {
             for (Iterator iterator = sessions.keySet().iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
                 Session session = (Session) sessions.get(key);
+                double now = new Date().getTime();
 
-                /* Look for timed out SSO sessions. */
-                if (session.isAuthenticated() && session.isLocked()) {
-                    if (!session.isValid(new Date().getTime()-timeoutSso)) {
-                        log.fine("Invalidating SSO session (timeout): "+session.getID());
-                        invalidatedSessions.add(session);
+                if (session.isAuthenticated()) {
+
+                    /* Look for timed out SSO sessions. */
+                    if (session.isLocked() && 
+                        !session.isValid(now-timeoutSso)) {
+                            log.info("Invalidating SSO session (timeout): "+session.getID());
+                            invalidatedSessions.add(session);
                     }
+
+                    /* Web service to slow to fetch user attributes */
+                    else if (!session.isValid(now-authTimeoutSec)) {
+                            log.info("Invalidating authenticated session (timeout): "+session.getID());
+                            invalidatedSessions.add(session);
+                    }
+                        
+
                 }
-                
+
+                /* Time out due to missing login info from user */
                 else {
-                    if (!session.isValid(new Date().getTime()-timeout)) {
-                        log.fine("Invalidating session (timeout): "+session.getID());
+                    if (!session.isValid(now-timeout)) {
+                        log.info("Invalidating session (timeout): "+session.getID());
                         invalidatedSessions.add(session);
                     }
                 }
+
+
             }
 
             // Invalidate sessions
