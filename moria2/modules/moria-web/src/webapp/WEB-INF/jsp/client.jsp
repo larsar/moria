@@ -1,5 +1,7 @@
 <%@ page import="java.util.Iterator,
-                 java.util.Map"%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+                 java.util.Map"%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <head>
@@ -8,12 +10,43 @@
 
 <body>
 
-<%
-    String username, password, attributes, urlPrefix, urlPostfix, principal;
-    if (request.getParameter("attributes") != null)
-        attributes = request.getParameter("attributes");
-    else
-        attributes = "attr1,attr2";
+<!-- Do we have an error message? -->
+<%if (request.getAttribute("error") != null) {%>
+
+	<!-- Display error message. -->
+	<font color="red"><%=request.getAttribute("error")%></font>
+
+<!-- Do we have attributes to show? -->	
+<%} else if (request.getAttribute("attributes") != null) {%>
+  
+	<!-- Show table with attribute values. -->
+	<%Map attributes = (Map) request.getAttribute("attributes");
+	Iterator keys = attributes.keySet().iterator();%>
+	<table><tr><td><u>Attribute name</u></td><td><u>Attribute value(s)</u></td></tr>
+	<%while (keys.hasNext()) {%>
+		<%String name = (String)keys.next();%>
+		<tr>
+		<td><%=name%></td>
+		<%Object values = attributes.get(name);
+		if (values == null)%>
+			<td>NULL</td>
+	    <%else {
+	    	String value = values.toString();%>
+	    	<td><%=value%></td>
+	    <%}%>
+		</tr>
+	<%}%>
+	</table>
+	
+<!-- The authentication page. -->
+<%} else {%>
+
+	<!-- Show authentication form. -->
+	<%String username, password, attributes, urlPrefix, urlPostfix, principal;
+	if (request.getParameter("attributes") != null)
+		attributes = request.getParameter("attributes");
+	else
+	    attributes = "attr1,attr2";
     if (request.getParameter("urlPrefix") != null)
         urlPrefix = request.getParameter("urlPrefix");
     else
@@ -25,50 +58,18 @@
     if (request.getParameter("principal") != null)
         principal = request.getParameter("principal");
     else
-        principal = "test";
-%>
+        principal = "test";%>
+	
+	<form action="Client" method="POST" name="startAuth">
+		Service principal:    <input type="text" size="50" value="<%=principal%>"  name="principal"/> <br/>
+		Requested attributes: <input type="text" size="50" value="<%=attributes%>" name="attributes"/><br/>
+		URL prefix:           <input type="text" size="50" value="<%=urlPrefix%>"  name="urlPrefix"/> <br/>
+		URL postfix:          <input type="text" size="50" value="<%=urlPostfix%>" name="urlPostfix"/><br/>
+		<input type="submit" value="Request authentication"/>
+	</form>
 
-
-<% if (request.getAttribute("ticketID") != null) {%>
-<!-- Request contains Moria Ticket, show result -->
-
-<%} else {
-  if (request.getAttribute("attributes") != null) {
-
-  }
-
-
-%>
-<!-- Request does not contain Moria Ticket, request authentication -->
-
-<form action="Client" method="POST" name="startAuth">
-
-
-Principal:  <input type="text" size="50" value="<%= principal %>"  name="principal"/> <br/>
-Attributes: <input type="text" size="50" value="<%= attributes %>" name="attributes"/><br/>
-URLPrefix:  <input type="text" size="50" value="<%= urlPrefix %>"  name="urlPrefix"/> <br/>
-URLPostfix: <input type="text" size="50" value="<%= urlPostfix %>" name="urlPostfix"/><br/>
-Force: <br/>
-<input type="submit" value="Request authentication"/>
-
-</form>
-
-  <% if (request.getAttribute("error") != null) { %>
-    <font color="red"><%= request.getAttribute("error") %></font>
-  <%}%>
 <%}%>
-<table border="1">
-  <% if (request.getAttribute("attributes") != null) {
-      Map attrs = (Map) request.getAttribute("attributes");
-      Iterator it = attrs.keySet().iterator();
-      while (it.hasNext()) {
-       String key = (String) it.next();
-       String[] values = (String[]) attrs.get(key);%>
-       <tr><td><%=key%></td><td><%for (int i = 0; i < values.length; i++) { %><%=values[i]%> <%}%></td></tr>
-      <%}%>
-
-    <%= request.getAttribute("error") %>
-  <%}%>
 
 </body>
+
 </html>
