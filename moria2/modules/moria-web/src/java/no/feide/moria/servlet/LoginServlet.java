@@ -66,6 +66,8 @@ public class LoginServlet extends HttpServlet {
         /* Only for testing */
         request.setAttribute("selectedRealm", "uninett.no");
         request.setAttribute("selectedLang", "nb");
+        request.setAttribute("clientName", "Test");
+        request.setAttribute("clientURL", "http://www.feide.no/");
 
         RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/login.jsp");
         rd.include(request, response);
@@ -90,5 +92,4 @@ public class LoginServlet extends HttpServlet {
 
         return config;
     }
-
 }
