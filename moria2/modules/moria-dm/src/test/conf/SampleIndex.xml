@@ -11,6 +11,15 @@
 	  	<Realm name="realm2">
 		    <Base name="ldap://another.ldap.server:636/dc=search,dc=base"/>
 		</Realm>
+		
+	  	<Realm name="realm3">
+		    <Base name="ldap://another.ldap.server:636/ou=people,dc=search,dc=base"/>
+		</Realm>		
 
 	</Associations>
+	
+	<Exception id="user1@realm1" reference="ldap://some.ldap.server:636/ou=people,dc=search,dc=base"/>
+	<Exception id="user2@realm1" reference="ldap://another.ldap.server:636/dc=search,dc=base"/>
+	<Exception id="user1@realm4" reference="ldap://some.ldap.server:636/dc=search,dc=base"/>
+	
 </Index>

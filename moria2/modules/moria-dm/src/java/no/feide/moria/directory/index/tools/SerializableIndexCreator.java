@@ -64,13 +64,25 @@ public class SerializableIndexCreator {
                 final List bases = realm.getChildren("Base");
                 for (int k = 0; k < bases.size(); k++) {
                     Element base = (Element) bases.get(k);
-                    System.out.println('\t' + realm.getAttributeValue("name") + " = " + base.getAttributeValue("name"));
                     generatedIndex.addAssociation(realm.getAttributeValue("name"), base.getAttributeValue("name"));
                 }
 
             }
 
         }
+
+        // Process exception elements.
+        final List exceptions = rootElement.getChildren("Exception");
+        for (int i = 0; i < exceptions.size(); i++) {
+
+            Element exception = (Element) exceptions.get(i);
+            generatedIndex.addException(exception.getAttributeValue("id"), exception.getAttributeValue("reference"));
+
+        }
+
+        // Dump the index to console.
+        System.out.println("\tAssociations: " + generatedIndex.getAssociations().toString().replaceAll("], ", "\n\t               "));
+        System.out.println("\tExceptions: " + generatedIndex.getExceptions().toString().replaceAll(", ", "\n\t             "));
 
         // Write the index to file.
         System.out.println("Writing to file " + args[1]);
@@ -84,22 +96,14 @@ public class SerializableIndexCreator {
         in.close();
 
         // Dump written index to console.
-        Iterator realms = writtenIndex.getAssociations().keySet().iterator();
-        while (realms.hasNext()) {
-            
-            String realm = (String)realms.next();
-            List bases = writtenIndex.getAssociation(realm);
-            for (int i=0; i<bases.size(); i++)
-                System.out.println('\t' + realm + " = " + (String)bases.get(i));
-            
-        }
-        
-        // Verify index contents.        
+        System.out.println("\tAssociations: " + writtenIndex.getAssociations().toString().replaceAll("], ", "\n\t               "));
+        System.out.println("\tExceptions: " + writtenIndex.getExceptions().toString().replaceAll(", ", "\n\t             "));
+
+        // Verify index contents.
         if (generatedIndex.equals(writtenIndex))
             System.out.println("Generated and written indexes match");
         else
             System.err.println("Generated and written indexes DO NOT match!");
 
     }
-
 }
