@@ -20,11 +20,11 @@ $Id$
 -->
 <document>
 	<properties>
-		<title>Service Integration - Overview</title>
+		<title>Service Integration</title>
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
-		<section name="Introduction">
+		<section name="Service Integration">
 			<p>
 			The supported interface to Moria2 consists of a number of SOAP
 			methods defined by a WSDL. To allow for backwards compatibility,
@@ -55,214 +55,221 @@ $Id$
 			Contact your Moria2 administrator to obtain a proper service
 			account.
 			</p>
-		</section>
-		<section name="User Authentication">
-			<p>
-			There are two or three ways to perform authentication using Moria2,
-			depending on the version of the Moria2 SOAP interface used:
-			</p>
-			<ul>
-				<li>
-					<b>Interactive authentication (since v2.0)</b>
+			
+			<subsection name="User Authentication">
+				<p>
+				There are two or three ways to perform authentication using Moria2,
+				depending on the version of the Moria2 SOAP interface used:
+				</p>
+				<ul>
+					<li>
+						<b>Interactive authentication (since v2.0)</b>
+						<p>
+						This is the typical use of Moria2 for web applications, and
+						works as follows:
+						</p>
+						<ol>
+							<li>
+							The Moria2-enabled service requests an authentication
+							session from Moria2, optionally including a request for
+							user attributes.
+							<p>
+							Method used by service: <code>initiateAuthentication</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_initiateAuthentication.html">Java/Axis Example</a>)
+							</p>
+							</li>
+							<li>
+							The service redirects the user to the Moria2 login page.
+							</li>
+							<li>
+							The user supplies his or her credentials to Moria2 for
+							authentication.
+							</li>
+							<li>
+							Following a successful authentication, Moria2 redirects
+							the user back to the originating service.
+							</li>
+							<li>
+							The service may now read the user attributes from Moria2
+							that were requested in the first step.
+							<p>
+							Method used by service: <code>getUserAttributes</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#getUserAttributes(java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_getUserAttributes.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_getUserAttributes.html">Java/Axis Example</a>)
+							</p>
+							</li>
+						</ol>
+					</li>
+					<li>
+						<b>Direct non-interactive authentication (since v2.0)</b>
+						<p>
+						This is where the Moria2-enabled service authenticates the
+						user directly using a single method, instead of relying on
+						the Moria2 login page (thus allowing for situations where
+						HTTP redirects cannot be used). Note that this requires the
+						service itself to hand over the user credentials on behalf
+						of the user, which of course requires a certain degree of
+						trust from the Moria2 administrator:
+						</p>
+						<ol>
+							<li>
+							The user supplies his or her credentials to the
+							Moria2-enabled service.
+							</li>
+							<li>
+							The service sends the credentials to Moria2, optionally
+							including a request for user attributes.
+							<p>
+							Method used by service: <code>directNonInteractiveAuthentication</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_directNonInteractiveAuthentication.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_directNonInteractiveAuthentication.html">Java/Axis Example</a>)
+							</p>
+							</li>
+							<li>
+							Following a successful authentication, Moria2 returns
+							the requested attributes.
+							<p>
+							</p>
+							</li>
+						</ol>
+					</li>
+					<li>
+						<b>Proxy authentication (since v2.1)</b>
+						<p>
+						For Moria2-enabled services that contain one or more
+						subservices for which single-sign on is required (which is
+						likely the case for web portals, for example), proxy
+						authentication is the solution. Through using one of the two
+						above methods and requesting the user attribute <i>tgt</i>,
+						the service may issue proxy tickets to its subservices. The
+						subservices can then use these proxy tickets to confirm the
+						user's previous authentication and to retrieve user
+						attributes through Moria2:
+						</p>
+						<ol>
+							<li>
+							The Moria2-enabled service requests a proxy ticket for a
+							subservice.
+							<p>
+							Method used by service: <code>getProxyTicket</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getProxyTicket(java.lang.String, java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_getProxyTicket.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_getProxyTicket.html">Java/Axis Example</a>)
+							</p>
+							</li>
+							<li>
+							The Moria2-enabled service hands over a proxy ticket to
+							a subservice.
+							</li>
+							<li>
+							The subservice sends the proxy ticket to Moria2,
+							optionally including a request for user attributes.
+							<p>
+							Method used by subservice: <code>proxyAuthentication</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#proxyAuthentication(java.lang.String[], java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_proxyAuthentication.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_proxyAuthentication.html">Java/Axis Example</a>)
+							</p>
+							</li>
+							<li>
+							If the proxy ticket belongs to a previously
+							authenticated user, Moria2 returns the requested
+							attributes.
+							</li>
+						</ol>
+					</li>
+				</ul>
+			</subsection>
+			
+			<subsection name="Utility Methods">
+				<p>
+				In addition to user authentication, Moria2 offers a number of
+				utility methods for Moria2-enabled services to use:
+				</p>
+				<ul>
+					<li>
+					<b>User existence (since v2.0)</b>
 					<p>
-					This is the typical use of Moria2 for web applications, and
-					works as follows:
+					In order to check whether a certain user is visible in the
+					Moria2 framework, Moria2-enabled services may use the following
+					method:
 					</p>
-					<ol>
-						<li>
-						The Moria2-enabled service requests an authentication
-						session from Moria2, optionally including a request for
-						user attributes.
-						<p>
-						Method used by service: <code>initiateAuthentication</code>
-						(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean)">JavaDoc</a>, 
-						<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>, 
-						<a href="howto_service_example_java-axis_initiateAuthentication.html">Java/Axis Example</a>)
-						</p>
-						</li>
-						<li>
-						The service redirects the user to the Moria2 login page.
-						</li>
-						<li>
-						The user supplies his or her credentials to Moria2 for
-						authentication.
-						</li>
-						<li>
-						Following a successful authentication, Moria2 redirects
-						the user back to the originating service.
-						</li>
-						<li>
-						The service may now read the user attributes from Moria2
-						that were requested in the first step.
-						<p>
-						Method used by service: <code>getUserAttributes</code>
-						(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#getUserAttributes(java.lang.String)">JavaDoc</a>, 
-						<a href="howto_service_example_soap_getUserAttributes.html">SOAP Example</a>, 
-						<a href="howto_service_example_java-axis_getUserAttributes.html">Java/Axis Example</a>)
-						</p>
-						</li>
-					</ol>
-				</li>
-				<li>
-					<b>Direct non-interactive authentication (since v2.0)</b>
 					<p>
-					This is where the Moria2-enabled service authenticates the
-					user directly using a single method, instead of relying on
-					the Moria2 login page (thus allowing for situations where
-					HTTP redirects cannot be used). Note that this requires the
-					service itself to hand over the user credentials on behalf
-					of the user, which of course requires a certain degree of
-					trust from the Moria2 administrator:
+					Method used by service/subservice: <code>verifyUserExistence</code>
+					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#verifyUserExistence(java.lang.String)">JavaDoc</a>, 
+					<a href="howto_service_example_soap_verifyUserExistence.html">SOAP Example</a>, 
+					<a href="howto_service_example_java-axis_verifyUserExistence.html">Java/Axis Example</a>)
 					</p>
-					<ol>
-						<li>
-						The user supplies his or her credentials to the
-						Moria2-enabled service.
-						</li>
-						<li>
-						The service sends the credentials to Moria2, optionally
-						including a request for user attributes.
-						<p>
-						Method used by service: <code>directNonInteractiveAuthentication</code>
-						(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String)">JavaDoc</a>, 
-						<a href="howto_service_example_soap_directNonInteractiveAuthentication.html">SOAP Example</a>, 
-						<a href="howto_service_example_java-axis_directNonInteractiveAuthentication.html">Java/Axis Example</a>)
-						</p>
-						</li>
-						<li>
-						Following a successful authentication, Moria2 returns
-						the requested attributes.
-						<p>
-						</p>
-						</li>
-					</ol>
-				</li>
-				<li>
-					<b>Proxy authentication (since v2.1)</b>
+					</li>
+					<li>
+					<b>Group existence (since v2.1)</b>
 					<p>
-					For Moria2-enabled services that contain one or more
-					subservices for which single-sign on is required (which is
-					likely the case for web portals, for example), proxy
-					authentication is the solution. Through using one of the two
-					above methods and requesting the user attribute <i>tgt</i>,
-					the service may issue proxy tickets to its subservices. The
-					subservices can then use these proxy tickets to confirm the
-					user's previous authentication and to retrieve user
-					attributes through Moria2:
+					In order to check whether a certain user group is visible in the
+					Moria2 framework, Moria2-enabled services may use the following
+					method:
 					</p>
-					<ol>
-						<li>
-						The Moria2-enabled service requests a proxy ticket for a
-						subservice.
-						<p>
-						Method used by service: <code>getProxyTicket</code>
-						(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getProxyTicket(java.lang.String, java.lang.String)">JavaDoc</a>, 
-						<a href="howto_service_example_soap_getProxyTicket.html">SOAP Example</a>, 
-						<a href="howto_service_example_java-axis_getProxyTicket.html">Java/Axis Example</a>)
-						</p>
-						</li>
-						<li>
-						The Moria2-enabled service hands over a proxy ticket to
-						a subservice.
-						</li>
-						<li>
-						The subservice sends the proxy ticket to Moria2,
-						optionally including a request for user attributes.
-						<p>
-						Method used by subservice: <code>proxyAuthentication</code>
-						(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#proxyAuthentication(java.lang.String[], java.lang.String)">JavaDoc</a>, 
-						<a href="howto_service_example_soap_proxyAuthentication.html">SOAP Example</a>, 
-						<a href="howto_service_example_java-axis_proxyAuthentication.html">Java/Axis Example</a>)
-						</p>
-						</li>
-						<li>
-						If the proxy ticket belongs to a previously
-						authenticated user, Moria2 returns the requested
-						attributes.
-						</li>
-					</ol>
-				</li>
-			</ul>
-		</section>
-		<section name="Utility Methods">
-			<p>
-			In addition to user authentication, Moria2 offers a number of
-			utility methods for Moria2-enabled services to use:
-			</p>
-			<ul>
-				<li>
-				<b>User existence (since v2.0)</b>
+					<p>
+					Method used by service/subservice: <code>verifyGroupExistence</code>
+					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyGroupExistence(java.lang.String)">JavaDoc</a>)
+					</p>
+					<p>
+					Note that this method has yet to be implemented, and its
+					specifications may be subject to change.
+					</p>
+					</li>
+					<li>
+					<b>Group attributes (since v2.1)</b>
+					<p>
+					In order to read the group attributes of a certain user group,
+					Moria2-enabled services may use the following method:
+					</p>
+					<p>
+					Method used by service/subservice: <code>getGroupAttributes</code>
+					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getGroupAttributes(java.lang.String)">JavaDoc</a>)
+					</p>
+					<p>
+					Note that this method has yet to be implemented, and its
+					specifications may be subject to change.
+					</p>
+					</li>
+					<li>
+					<b>User group membership (since v2.1)</b>
+					<p>
+					In order to check whether a certain user is member of a certain
+					user group, Moria2-enabled services may use the following
+					method:
+					</p>
+					<p>
+					Method used by service/subservice: <code>verifyUserMemberOfGroup</code>
+					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyUserMemberOfGroup(java.lang.String, java.lang.String)">JavaDoc</a>)
+					</p>
+					<p>
+					Note that this method has yet to be implemented, and its
+					specifications may be subject to change.
+					</p>
+					</li>
+				</ul>
+			</subsection>
+			
+			<subsection name="Error Handling">
+			</subsection>
+			
+			<subsection name="SOAP Implementations">
 				<p>
-				In order to check whether a certain user is visible in the
-				Moria2 framework, Moria2-enabled services may use the following
-				method:
+				The following SOAP implementations have been tested and shown to
+				work with Moria2.
 				</p>
-				<p>
-				Method used by service/subservice: <code>verifyUserExistence</code>
-				(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#verifyUserExistence(java.lang.String)">JavaDoc</a>, 
-				<a href="howto_service_example_soap_verifyUserExistence.html">SOAP Example</a>, 
-				<a href="howto_service_example_java-axis_verifyUserExistence.html">Java/Axis Example</a>)
-				</p>
-				</li>
-				<li>
-				<b>Group existence (since v2.1)</b>
-				<p>
-				In order to check whether a certain user group is visible in the
-				Moria2 framework, Moria2-enabled services may use the following
-				method:
-				</p>
-				<p>
-				Method used by service/subservice: <code>verifyGroupExistence</code>
-				(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyGroupExistence(java.lang.String)">JavaDoc</a>)
-				</p>
-				<p>
-				Note that this method has yet to be implemented, and its
-				specifications may be subject to change.
-				</p>
-				</li>
-				<li>
-				<b>Group attributes (since v2.1)</b>
-				<p>
-				In order to read the group attributes of a certain user group,
-				Moria2-enabled services may use the following method:
-				</p>
-				<p>
-				Method used by service/subservice: <code>getGroupAttributes</code>
-				(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getGroupAttributes(java.lang.String)">JavaDoc</a>)
-				</p>
-				<p>
-				Note that this method has yet to be implemented, and its
-				specifications may be subject to change.
-				</p>
-				</li>
-				<li>
-				<b>User group membership (since v2.1)</b>
-				<p>
-				In order to check whether a certain user is member of a certain
-				user group, Moria2-enabled services may use the following
-				method:
-				</p>
-				<p>
-				Method used by service/subservice: <code>verifyUserMemberOfGroup</code>
-				(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyUserMemberOfGroup(java.lang.String, java.lang.String)">JavaDoc</a>)
-				</p>
-				<p>
-				Note that this method has yet to be implemented, and its
-				specifications may be subject to change.
-				</p>
-				</li>
-			</ul>
-		</section>
-		<section name="SOAP Implementations">
-			<p>
-			The following SOAP implementations have been tested and shown to
-			work with Moria2.
-			</p>
-			<table>
-				<tr><th>Language</th><th>Name</th><th>Tested with Moria2</th></tr>
-				<tr><td>C</td><td><a href="http://www.cs.fsu.edu/~engelen/soap.html">gSOAP</a></td><td>Yes</td></tr>
-				<tr><td>Java</td><td><a href="http://ws.apache.org/axis/">Axis</a></td><td>Yes (and used in Moria)</td></tr>
-			</table>
+				<table>
+					<tr><th>Language</th><th>Name</th><th>Tested with Moria2</th></tr>
+					<tr><td>C</td><td><a href="http://www.cs.fsu.edu/~engelen/soap.html">gSOAP</a></td><td>Yes</td></tr>
+					<tr><td>Java</td><td><a href="http://ws.apache.org/axis/">Axis</a></td><td>Yes (and used in Moria)</td></tr>
+				</table>
+			</subsection>
+			
 		</section>
 	</body>
 </document>

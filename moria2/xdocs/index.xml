@@ -22,33 +22,88 @@ $Id$
 
 <document>
 
-  <properties>
-    <title>About</title>
-    <author email="b.o@smievoll.no">Bjørn Ola Smievoll</author>
-  </properties>
+	<properties>
+		<title>Introduction</title>
+    	<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
 
-  <body>
+	<body>
 
-    <section name="Moria">
-      <p>
-	Moria is the authentication service for the FEIDE-project. The
-	source code is distributed under the <a
-	href="license.html">General Public
-	License</a>, and is located at <a
-	href="http://sourceforge.net/projects/moria/">Morias
-	SourceForge site</a>.
-      </p>
-      <p>
-        For web service developers:<br/>
-        <a href="usage.html">How to use Moria for authentication</a><br/>
-        <a href="design.html">Moria design document</a><br/>
-      </p>
+    <section name="Introduction">
+    	<p>
+		Moria is the authentication service for the Norwegian FEIDE
+		(<b>F</b>ederated <b>E</b>lectronic <b>IDE</b>ntity) project.
+		</p>
+		<p>
+		The source code is distributed under the
+		<a href="license.html">GNU General Public License</a>; software and
+		related technical documentation can be found on the Moria
+		SourceForge.net
+		<a href="http://sourceforge.net/projects/moria/">site</a>.
+		</p>
+		
+		<subsection name="A Note on Versioning">
+			<p>
+			Following the versioning structure introduced with the second-generation
+			Moria implementation, all previous and current Moria versions follow
+			the naming convention Moria<i>G</i> v<i>X</i>.<i>Y</i>, where <i>G</i>
+			is the generation number, and <i>X</i>.<i>Y</i> denote the major and
+			minor SOAP interface version, respectively.
+			</p>
+			<p>
+			Thus, the first production version of the Moria software will from
+			now on be known as Moria1 v0.9, while the earliest second-generation
+			version is known as Moria2 v2.0. The SOAP interface version will
+			only be used when relevant, as will the generation number.
+			</p>
+			<p>
+			Thus, Moria is the authentication system itself, Moria2 is the
+			second-generation implementation of this system, and Moria2 v2.0 is
+			the second-generation implementation using the 2.0 version of the
+			SOAP interface.
+			</p>
+		</subsection>
+		
+		<subsection name="For Service Developers">
+			<p>
+			Do you have a (web) service that you wish to integrate with an
+			existing Moria2 installation?
+			<ol>
+			    <li>
+	        	<a href="design.html">Design</a>
+	        	<p>
+	        	A description of the underlying Moria design.
+	        	</p>
+	        	</li>
+				<li>
+				<a href="howto_service_overview.html">Service Integration</a>
+				<p>
+				Outlines a number of integration methods, with several examples.
+				</p>
+				</li>
+			</ol>
+	        </p>
+		</subsection>
 
-      <p>
-        For Moria administrators:<br/>
-        <a href="configuration.html">Moria configuration</a><br/>
-        <a href="building.html">Build instructions</a><br/>
-      </p>
+		<subsection name="For Moria Administrators">
+			<p>
+			Do you wish to build and/or configure your own Moria2 installation?
+			<ol>
+		        <li>
+		        <a href="building.html">Build instructions</a>
+		        <p>
+		        A brief step-by-step guide to building Moria2.
+		        </p>
+		        </li>
+				<li>
+		        <a href="configuration.html">Moria2 configuration</a>
+		        <p>
+		        A complete configuration reference.
+		        </p>
+		        </li>
+		    </ol>
+		    </p>
+		</subsection>
 
     </section>
   </body>
