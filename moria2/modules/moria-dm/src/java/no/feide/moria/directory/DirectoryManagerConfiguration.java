@@ -16,12 +16,9 @@ import org.jdom.input.SAXBuilder;
  * Configuration handler for the directory manager.
  */
 public class DirectoryManagerConfiguration {
-
-    /** Internal representation of the index class. */
-    private Class indexClass;
-    
+   
     /** Holds the index file location. */
-    private String indexFile;
+    private String indexFilename;
 
     /** Internal representation of the backend class. */
     private Class backendFactoryClass;
@@ -111,35 +108,13 @@ public class DirectoryManagerConfiguration {
         // Get the index element, with sanity checks.
         final Element indexElement = getUniqueElement(rootElement, "Index");
         HashMap indexConfig = new HashMap();
-
-        // Get index class, with sanity checks.
-        Attribute a = indexElement.getAttribute("class");
-        if ((a == null) || (a.getValue() == null) || (a.getValue() == "")) {
-            throw new DirectoryManagerConfigurationException("Index class not set in configuration file");
-        }
-        try {
-            indexClass = Class.forName(a.getValue());
-        } catch (ClassNotFoundException e) {
-            throw new DirectoryManagerConfigurationException("Index class " + a.getValue() + " not found", e);
-        }
         
-        // Get index class, with sanity checks.
-        a = indexElement.getAttribute("file");
+        // Get index filename, with sanity checks.
+        Attribute a = indexElement.getAttribute("file");
         if ((a == null) || (a.getValue() == null) || (a.getValue() == "")) {
             throw new DirectoryManagerConfigurationException("Index file not set in configuration file");
         }
-        indexFile = a.getValue();
-
-    }
-
-
-    /**
-     * Get the index class implementation.
-     * @return The index class.
-     */
-    public Class getIndexClass() {
-
-        return indexClass;
+        indexFilename = a.getValue();
 
     }
     
@@ -148,9 +123,9 @@ public class DirectoryManagerConfiguration {
      * Get the serialized index file name.
      * @return The index file name.
      */
-    public String getIndexFile() {
+    public String getIndexFilename() {
         
-        return indexFile;
+        return indexFilename;
         
     }
 

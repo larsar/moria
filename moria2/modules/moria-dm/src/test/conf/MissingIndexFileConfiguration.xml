@@ -2,8 +2,7 @@
 
 <DirectoryManagerConfiguration>
 
-  <Index class="no.feide.moria.directory.index.SerializableIndex"
-         file="src/test/conf/NonExistingIndex.object"/>
+  <Index file="src/test/conf/NonExistingIndex.object"/>
   
   <Backend>
     <Class name="no.feide.moria.directory.backend.DummyBackendFactory"/>

@@ -2,8 +2,7 @@
 
 <DirectoryManagerConfiguration>
 
-  <Index class="no.feide.moria.directory.index.ThisClassDoesNotExist"
-         file="src/test/conf/DummyIndex.object"/>
+  <Index file="src/test/conf/DummyIndex.object"/>
   
   <Backend>
     <Class name="no.feide.moria.directory.backend.DummyBackendFactory"/>

@@ -67,18 +67,13 @@ public class DirectoryManager {
 
         }
 
-        // Set the index class and configure the index.
-        // TODO: Initialize index update.
-        // TODO: Gracefully handle switch between index classes?
+        // TODO: Move index updates to external TimerTask.
         Constructor constructor = null;
         try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream(currentConfiguration.getIndexFile()));
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(currentConfiguration.getIndexFilename()));
             index = (DirectoryManagerIndex) in.readObject();
-            //constructor =
-            // currentConfiguration.getIndexClass().getConstructor(null);
-            //index = (DirectoryManagerIndex) constructor.newInstance(null);
         } catch (IOException e) {
-            throw new DirectoryManagerConfigurationException("Unable to read index from file " + currentConfiguration.getIndexFile(), e);
+            throw new DirectoryManagerConfigurationException("Unable to read index from file " + currentConfiguration.getIndexFilename(), e);
         } catch (ClassNotFoundException e) {
             throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
         }
