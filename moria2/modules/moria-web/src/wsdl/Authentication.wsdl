@@ -5,8 +5,8 @@
 <definitions name="Authentication"
              targetNamespace="https://login.feide.no/moria/v1_0/Authentication"
              xmlns:tns="https://login.feide.no/moria/v1_0/Authentication"
-             xmlns="http://schemas.xmlsoap.org/wsdl/"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 
   <types>
@@ -56,14 +56,6 @@
     <part name="result" type="xsd:string"/>
   </message>
 
-  <message name="getUserAttributesIn">
-    <part name="ticketId" type="xsd:string"/>
-  </message>
-
-  <message name="getUserAttributesOut">
-    <part name="result" type="tns:ArrayOfAttribute"/>
-  </message>
-
   <message name="directNonInteractiveAuthenticationIn">
     <part name="attributes" type="tns:ArrayOfstring"/>
     <part name="username" type="xsd:string"/>
@@ -74,28 +66,19 @@
     <part name="result" type="xsd:string"/>
   </message>
 
+  <message name="getUserAttributesIn">
+    <part name="ticketId" type="xsd:string"/>
+  </message>
+
+  <message name="getUserAttributesOut">
+    <part name="result" type="tns:ArrayOfAttribute"/>
+  </message>
+
   <message name="verifyUserExistenceIn">
     <part name="username" type="xsd:string"/>
   </message>
 
   <message name="verifyUserExistenceOut">
-    <part name="result" type="xsd:boolean"/>
-  </message>
-
-  <message name="verifyGroupExistenceIn">
-    <part name="groupname" type="xsd:string"/>
-  </message>
-
-  <message name="verifyGroupExistenceOut">
-    <part name="result" type="xsd:boolean"/>
-  </message>
-
-  <message name="verifyUserMemberOfGroupIn">
-    <part name="username" type="xsd:string"/>
-    <part name="groupname" type="xsd:string"/>
-  </message>
-
-  <message name="verifyUserMemberOfGroupOut">
     <part name="result" type="xsd:boolean"/>
   </message>
 
@@ -107,29 +90,19 @@
       <output message="tns:initiateAuthenticationOut"/>
     </operation>
 
-    <operation name="getUserAttributes" parameterOrder="ticketId">
-      <input message="tns:getUserAttributesIn"/>
-      <output message="tns:getUserAttributesOut"/>
-    </operation>
-
     <operation name="directNonInteractiveAuthentication" parameterOrder="attributes username password">
       <input message="tns:directNonInteractiveAuthenticationIn"/>
       <output message="tns:directNonInteractiveAuthenticationOut"/>
     </operation>
 
+    <operation name="getUserAttributes" parameterOrder="ticketId">
+      <input message="tns:getUserAttributesIn"/>
+      <output message="tns:getUserAttributesOut"/>
+    </operation>
+
     <operation name="verifyUserExistence" parameterOrder="username">
       <input message="tns:verifyUserExistenceIn"/>
       <output message="tns:verifyUserExistenceOut"/>
-    </operation>
-
-    <operation name="verifyGroupExistence" parameterOrder="groupname">
-      <input message="tns:verifyGroupExistenceIn"/>
-      <output message="tns:verifyGroupExistenceOut"/>
-    </operation>
-
-    <operation name="verifyUserMemberOfGroup" parameterOrder="username groupname">
-      <input message="tns:verifyUserMemberOfGroupIn"/>
-      <output message="tns:verifyUserMemberOfGroupOut"/>
     </operation>
 
   </portType>
@@ -140,6 +113,20 @@
                   style="rpc"/>
 
     <operation name="initiateAuthentication">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                   use="encoded"
+                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
+      </output>
+      <soap:operation soapAction=""/>
+    </operation>
+
+    <operation name="directNonInteractiveAuthentication">
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
@@ -167,49 +154,7 @@
       <soap:operation soapAction=""/>
     </operation>
 
-     <operation name="directNonInteractiveAuthentication">
-      <input>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
-                   use="encoded"
-                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
-      </input>
-      <output>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
-                   use="encoded"
-                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
-      </output>
-      <soap:operation soapAction=""/>
-    </operation>
-
     <operation name="verifyUserExistence">
-      <input>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
-                   use="encoded"
-                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
-      </input>
-      <output>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
-                   use="encoded"
-                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
-      </output>
-      <soap:operation soapAction=""/>
-    </operation>
-
-    <operation name="verifyGroupExistence">
-      <input>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
-                   use="encoded"
-                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
-      </input>
-      <output>
-        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
-                   use="encoded"
-                   namespace="https://login.feide.no/moria/v1_0/Authentication"/>
-      </output>
-      <soap:operation soapAction=""/>
-    </operation>
-
-    <operation name="verifyUserMemberOfGroup">
       <input>
         <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
                    use="encoded"
