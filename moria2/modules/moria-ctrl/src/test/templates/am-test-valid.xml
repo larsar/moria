@@ -2,8 +2,6 @@
 
 <ClientAuthorizationConfig>
 
-    <!-- TODO: Add list of cachable attributes -->
-
     <Client name="test">
         <DisplayName>Foobar</DisplayName>
         <URL>http://www.feide.no/</URL>
@@ -17,11 +15,13 @@
             <Attribute name="attr1" sso="true" secLevel="0"/>
             <Attribute name="attr2" sso="true" secLevel="1"/>
             <Attribute name="attr3" sso="false" secLevel="2"/>
+            <Attribute name="tgt"   sso="false" secLevel="0"/>
         </Attributes>
         <Operations>
-            <Operation name="LocalAuth"/>
+            <Operation name="DirectAuth"/>
             <Operation name="InteractiveAuth"/>
-            <Operation name="verifyUserExistence"/>
+            <Operation name="VerifyUserExistence"/>
+            <Operation name="ProxyAuth"/>
         </Operations>
         <Subsystems>
             <Subsystem name="sub1"/>
