@@ -213,7 +213,7 @@ public class SessionStore {
                 String key = (String) iterator.next();
                 Session session = (Session) sessions.get(key);
                 double now = new Date().getTime();
-                String wsName = session.getID();
+                String wsName = session.getWebService().getId();
 
                 if (session.isAuthenticated()) {
 
