@@ -14,7 +14,7 @@ extends TimerTask {
     private static Logger log = Logger.getLogger(SessionStoreTask.class.toString());
     
     /**
-     * Do something clever.
+     * Called periodically by the timer.
      **/
     public void run() {
         log.fine("run()");
