@@ -20,6 +20,7 @@
 
 package no.feide.moria.store;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -36,10 +37,13 @@ import junit.framework.TestSuite;
 public class MoriaCacheStoreTest extends TestCase {
 
     /** Property needed by the RandomId class. */
-    String nodeIdPropertyName = "no.feide.moria.store.nodeid";
+    final String nodeIdPropertyName = "no.feide.moria.store.nodeid";
 
-    /** Configuration property. */
-    String storeConfigurationPropertyName = "no.feide.moria.store.cachestoreconf";
+    /** Configuration file property. */
+    final String storeConfigurationPropertyName = "no.feide.moria.store.cachestoreconf";
+
+    /** TTL percentage property. */
+    final String realTTLPercentagePropertyName = "no.feide.moria.store.real_ttl_percentage";
 
     /** The instance of the store. */
     MoriaCacheStore store;
@@ -60,43 +64,67 @@ public class MoriaCacheStoreTest extends TestCase {
         return new TestSuite(MoriaCacheStoreTest.class);
     }
 
-    public void setUp() throws MoriaStoreException {
+    public void setUp()
+            throws MoriaStoreException {
+
+        /* Create store. */
+        store = new MoriaCacheStore();
+        store.setConfig(getSystemProperties());
+    }
+
+    public void tearDown() {
+        store.stop();
+    }
+
+    Properties getSystemProperties() {
         if (System.getProperty(nodeIdPropertyName) == null)
             fail("System property: " + nodeIdPropertyName + " must be set.");
 
+        Properties storeProperties = new Properties();
+
+        /* Get config file. */
         String storeConfigurationFileName = System.getProperty(storeConfigurationPropertyName);
 
         if (storeConfigurationFileName == null)
             fail("System property: " + storeConfigurationPropertyName + " must be set.");
 
-        Properties storeProperties = new Properties();
-
         storeProperties.setProperty(storeConfigurationPropertyName, storeConfigurationFileName);
 
-        store = new MoriaCacheStore();
-        store.setConfig(storeProperties);
+        /* Get ttl percentage. */
+        String realTTLPercentage = System.getProperty(realTTLPercentagePropertyName);
+
+        if (realTTLPercentage == null)
+            fail("System property: " + realTTLPercentagePropertyName + " must be set.");
+
+        storeProperties.setProperty(realTTLPercentagePropertyName, realTTLPercentage);
+
+        return storeProperties;
     }
 
     /**
      * 
      *
      */
-    public void testSetConfig() throws MoriaStoreException {
+    public void testSetConfig()
+            throws MoriaStoreException {
         /* Try with null-value argument. */
+        store.stop();
         store = new MoriaCacheStore();
 
         try {
             store.setConfig(null);
+            store.stop();
             fail("IllegalArgumentException should have been thrown");
         } catch (IllegalArgumentException success) {
         }
 
-        /* Try with missing property. */
+        /* Try with missing properties. */
         store = new MoriaCacheStore();
         Properties properties = new Properties();
 
         try {
             store.setConfig(properties);
+            store.stop();
             fail("MoriaStoreConfigurationException should have been thrown.");
         } catch (MoriaStoreConfigurationException success) {
         }
@@ -105,16 +133,43 @@ public class MoriaCacheStoreTest extends TestCase {
         store = new MoriaCacheStore();
         String fileName = "This file should not exist. If it does the test will return a false positive.";
         properties.setProperty(storeConfigurationPropertyName, fileName);
+        properties.setProperty(realTTLPercentagePropertyName, "80");
 
         try {
             store.setConfig(properties);
+            store.stop();
+            fail("MoriaStoreConfigurationException should have been thrown.");
+        } catch (MoriaStoreConfigurationException success) {
+        }
+
+        /* Try with invalid ttls. */
+        properties = getSystemProperties();
+
+        properties.setProperty(realTTLPercentagePropertyName, "0");
+
+        store = new MoriaCacheStore();
+
+        try {
+            store.setConfig(properties);
+            store.stop();
+            fail("MoriaStoreConfigurationException should have been thrown.");
+        } catch (MoriaStoreConfigurationException success) {
+        }
+
+        properties.setProperty(realTTLPercentagePropertyName, "101");
+
+        store = new MoriaCacheStore();
+
+        try {
+            store.setConfig(properties);
+            store.stop();
             fail("MoriaStoreConfigurationException should have been thrown.");
         } catch (MoriaStoreConfigurationException success) {
         }
 
         /* Try with vaild configuration file. Multiple calls should not fail. */
         store = new MoriaCacheStore();
-        properties.setProperty(storeConfigurationPropertyName, System.getProperty(storeConfigurationPropertyName));
+        properties = getSystemProperties();
         store.setConfig(properties);
         store.setConfig(properties);
         store.setConfig(properties);
@@ -125,7 +180,8 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testCreateAuthnAttempt() throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    public void testCreateAuthnAttempt()
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
 
         String loginTicketId = store.createAuthnAttempt(attributes, prefix, postfix, forceAuthn, principal);
         MoriaTicket loginTicket = store.getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
@@ -178,7 +234,8 @@ public class MoriaCacheStoreTest extends TestCase {
     }
 
     // TODO: getTicket() test
-    public void testGetTicket() throws MoriaStoreException, InvalidTicketException {
+    public void testGetTicket()
+            throws MoriaStoreException, InvalidTicketException {
         /* Illegal parameters */
         try {
             MoriaTicketType type = null;
@@ -220,7 +277,8 @@ public class MoriaCacheStoreTest extends TestCase {
         // TODO: test for all kinds of tickets
     }
 
-    public void testGetAuthnAttempt() throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    public void testGetAuthnAttempt()
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
         /* Illegal arguments */
         try {
             store.getAuthnAttempt(null, false, null);
@@ -271,7 +329,8 @@ public class MoriaCacheStoreTest extends TestCase {
      * @throws InvalidTicketException
      * @see MoriaCacheStore#cacheUserData(java.util.HashMap)
      */
-    public void testCacheUserData() throws InvalidTicketException, MoriaStoreException {
+    public void testCacheUserData()
+            throws InvalidTicketException, MoriaStoreException {
         HashMap cachedAttrs = new HashMap();
 
         /* Invalid parameters */
@@ -294,7 +353,8 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testServiceTicketCreation() throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    public void testServiceTicketCreation()
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
 
         /* Invalid arguments */
         try {
@@ -323,7 +383,8 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testGetUserData() throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    public void testGetUserData()
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
 
         /* Invalid arguments */
         try {
@@ -357,7 +418,7 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Test with invalid (non-existent) ticket */
 
-        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(30), userData).getTicketId();
+        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), userData).getTicketId();
         try {
             userData = store.getUserData(ssoTicketId, null);
             fail("NonExistentTicketException should be raised, ticket is invalid.");
@@ -370,7 +431,8 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testCreateTicketGrantingTicket() throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    public void testCreateTicketGrantingTicket()
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
         /* Invalid arguments */
         try {
             store.createTicketGrantingTicket(null, principal);
@@ -408,7 +470,7 @@ public class MoriaCacheStoreTest extends TestCase {
 
         /* Non-existing ticket */
         tgTicketId = null;
-        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(30), null).getTicketId();
+        ssoTicketId = new MoriaTicket(MoriaTicketType.SSO_TICKET, null, new Long(new Date().getTime() + 500), null).getTicketId();
         try {
             tgTicketId = store.createTicketGrantingTicket(ssoTicketId, principal);
             fail("NonExistentTicketException should have been thrown");
@@ -422,7 +484,8 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testCreateProxyTicket() throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    public void testCreateProxyTicket()
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
         /* Invalid arguments */
         try {
             store.createTicketGrantingTicket(null, principal);
@@ -477,7 +540,8 @@ public class MoriaCacheStoreTest extends TestCase {
      *
      * @throws InvalidTicketException
      */
-    public void testSetTransientAttributes() throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    public void testSetTransientAttributes()
+            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
         HashMap transAttributes = new HashMap();
         transAttributes.put("a", new String[] {"foo"});
         transAttributes.put("b", new String[] {"bar"});
