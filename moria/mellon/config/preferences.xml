@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE preferences SYSTEM 'http://java.sun.com/dtd/preferences.dtd'>
+<preferences EXTERNAL_XML_VERSION="1.0">
+  <root type="user">
+    <map />
+    <node name="no">
+      <map />
+      <node name="feide">
+        <map />
+        <node name="mellon">
+          <map>
+            <entry key="serviceUsername" value="service"/>
+            <entry key="servicePassword" value="service"/>
+            <entry key="trustStore" value="/usr/local/jwsdp/conf/mellon.keystore"/>
+            <entry key="trustStorePassword" value="changeit"/>
+          </map>
+        </node>
+      </node>
+    </node>
+  </root>
+</preferences>

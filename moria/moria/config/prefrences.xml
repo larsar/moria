@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE preferences SYSTEM 'http://java.sun.com/dtd/preferences.dtd'>
+<preferences EXTERNAL_XML_VERSION="1.0">
+  <root type="user">
+    <map />
+    <node name="no">
+      <map />
+      <node name="feide">
+        <map />
+        <node name="moria">
+          <map>
+            <entry key="Backend.LDAP.Base" value="dc=no"/>
+            <entry key="Backend.LDAP.Host" value="kattem.uninett.no"/>
+            <entry key="Backend.LDAP.Port" value="1389"/>
+            <entry key="Backend.LDAP.UIDAttribute" value="uid"/>
+            <entry key="LoginURL" value="http://klungset.uninett.no:8080/feide-moria/Login"/>
+            <entry key="SessionURL" value="http://klungset.uninett.no:8080/feide-mellon/Session"/>
+            <entry key="MaxFailedLogins" value="3"/>
+	    <entry key="TemplateDir" value="/foo/bar/aat-templates"/>
+          </map>
+        </node>
+      </node>
+    </node>
+  </root>
+</preferences>
