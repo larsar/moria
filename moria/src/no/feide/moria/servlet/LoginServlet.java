@@ -89,6 +89,9 @@ public class LoginServlet extends VelocityServlet {
     private static String AUTHFAILED = "auth";
 
     /** Constant for property lookup. */
+    private static String NOORG    = "noorg";
+
+    /** Constant for property lookup. */
     private static String GENERIC    = "generic";
 
 
@@ -365,28 +368,18 @@ public class LoginServlet extends VelocityServlet {
             realm = getCookieValue("realm", request);
         }
 
-        
-        /* List of organizations */
-        HashMap orgNames = Configuration.getOrgNames(selectedLanguage);
-        if (orgNames == null)
-            orgNames = Configuration.getOrgNames(defaultLang);
-        
-        // Sort list by organization name
-        String  orgList  = "";
-        String[] orgNamesStr = (String[]) orgNames.keySet().toArray(new String[orgNames.size()]);
-        Arrays.sort(orgNamesStr);
+        context.put("selectedRealm", realm);
 
-        // Create option for selection list
-        for (int i = 0; i < orgNamesStr.length; i++) {
+        /* List of organizations (for drop down menu) */
+        HashMap orgShorts = Configuration.getOrgShorts(selectedLanguage);
+        if (orgShorts == null)
+            orgShorts = Configuration.getOrgShorts(defaultLang);
 
-            String orgShort = (String) orgNamesStr[i];
-            if (!realm.equals(orgShort))
-                orgList += "<option value=\""+orgShort+"\">"+orgNames.get(orgShort)+"</option>";
-            else
-                orgList += "<option selected=\"true\" value=\""+orgShort+"\">"+orgNames.get(orgShort)+"</option>";
-        }
+        String[] sortedOrgNames = (String[]) orgShorts.keySet().toArray(new String[orgShorts.size()]);
+        Arrays.sort(sortedOrgNames);
 
-        context.put("orgListOptions", orgList);
+        context.put("orgShorts", orgShorts);
+        context.put("sortedOrgNames", sortedOrgNames);
 
 
         /* Set or reset error messages */
@@ -555,10 +548,6 @@ public class LoginServlet extends VelocityServlet {
         String password = request.getParameter("password");
 
 
-        /* Concatinate realm with username */
-        if ((realm != null && !realm.equals("")) && (username != null && username.indexOf("@") == -1))
-            username += "@"+realm;
-
         /* Get session */
         try {
             session = sessionStore.getSession(id);
@@ -570,6 +559,17 @@ public class LoginServlet extends VelocityServlet {
 
         catch (SessionException e) {
             return genLoginTemplate(request, response, context, null, GENERIC);
+        }
+
+
+        if (realm != null) {
+            /* Error message if user has not selected organization */
+            if (realm.equals("null"))
+                return genLoginTemplate(request, response, context, session, NOORG);
+            
+            /* Concatinate realm with username */
+            if (!realm.equals("") && (username != null && username.indexOf("@") == -1))
+                username += "@"+realm;
         }
 
         String log_prefix = "Authentication attempt from "+username+": ";
