@@ -141,8 +141,10 @@ public class MoriaControllerTest extends TestCase {
         assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
     }
 
-    public void testAttemptLogin() {
+    public void testAttemptLogin() throws UnknownTicketException, InoperableStateException, IllegalInputException {
         // TODO: Implement
+        MoriaController.init();
+        MoriaController.attemptLogin(null, null, null, null);
     }
 
     public void testAttemptSingleSignOn() {
