@@ -2,9 +2,8 @@
 
 <DirectoryManagerConfiguration>
 
-  <Index>
-    <Class name="no.feide.moria.directory.index.DummyIndex"/>
-  </Index>
+  <Index class="no.feide.moria.directory.index.SerializableIndex"
+         file="src/test/conf/DummyIndex.object"/>
   
   <Backend>
     <Class name="no.feide.moria.directory.backend.DummyBackendFactory"/>
