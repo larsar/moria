@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import no.feide.moria.controller.AuthorizationException;
+import no.feide.moria.controller.IllegalInputException;
+import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
-import no.feide.moria.controller.MoriaControllerException;
+import no.feide.moria.controller.UnknownTicketException;
 import no.feide.moria.log.MessageLogger;
 
 import org.apache.axis.MessageContext;
@@ -43,10 +45,16 @@ public final class Authentication implements AuthenticationIF {
     private MessageLogger messageLogger;
 
     /** Log message for AuthorizationExceptions. */
-    private static final String AUTHZ_EX_MESSAGE = "Authorization failed. Throwing RemoteException to service: ";
+    private static final String AUTHZ_EX_MSG = "Authorization failed. Throwing RemoteException to service: ";
 
-    /** Log message for MoriaControllerExceptions. */
-    private static final String MORIACTRL_EX_MESSAGE = "Exception from MoriaController. Throwing RemoteException to service: ";
+    /** Log message for IllegalInputExceptions. */
+    private static final String ILLEGAL_INPUT_EX_MSG = "Illegal input. Throwing RemoteException to service: ";
+
+    /** Log message for InoperableStateExceptions. */
+    private static final String INOP_STATE_EX_MSG = "Controller in inoperable state. Throwing RemoteException to service: ";
+
+    /** Log message for UnknownTicketExceptions. */
+    private static final String UNKNOWN_TICKET_EX_MSG = "Ticket is unknown. Throwing RemoteException to service: ";
 
     /**
      * Default constructor.
@@ -71,11 +79,14 @@ public final class Authentication implements AuthenticationIF {
             return MoriaController.initiateAuthentication(attributes, returnURLPrefix, returnURLPostfix,
                     forceInteractiveAuthentication, servicePrincipal);
         } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
+            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
-        } catch (MoriaControllerException mce) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, mce);
-            throw new RemoteException(mce.getMessage());
+        } catch (IllegalInputException iie) {
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
+            throw new RemoteException(iie.getMessage());
+        } catch (InoperableStateException ise) {
+            messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
+            throw new RemoteException(ise.getMessage());
         }
     }
 
@@ -95,11 +106,14 @@ public final class Authentication implements AuthenticationIF {
                     servicePrincipal);
             return mapToAttributeArray(returnAttributes, null);
         } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
+            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
-        } catch (MoriaControllerException mce) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, mce);
-            throw new RemoteException(mce.getMessage());
+        } catch (IllegalInputException iie) {
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
+            throw new RemoteException(iie.getMessage());
+        } catch (InoperableStateException ise) {
+            messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
+            throw new RemoteException(ise.getMessage());
         }
     }
 
@@ -115,12 +129,15 @@ public final class Authentication implements AuthenticationIF {
         try {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
             return mapToAttributeArray(returnAttributes, serviceTicket);
-        } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
-            throw new RemoteException(ae.getMessage());
-        } catch (MoriaControllerException mce) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, mce);
-            throw new RemoteException(mce.getMessage());
+        } catch (IllegalInputException iie) {
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
+            throw new RemoteException(iie.getMessage());
+        } catch (InoperableStateException ise) {
+            messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
+            throw new RemoteException(ise.getMessage());
+        } catch (UnknownTicketException ute) {
+            messageLogger.logWarn(UNKNOWN_TICKET_EX_MSG + servicePrincipal, ute);
+            throw new RemoteException(ute.getMessage());
         }
     }
 
@@ -136,11 +153,14 @@ public final class Authentication implements AuthenticationIF {
         try {
             return MoriaController.verifyUserExistence(username, servicePrincipal);
         } catch (AuthorizationException ae) {
-            messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, ae);
+            messageLogger.logWarn(AUTHZ_EX_MSG + servicePrincipal, ae);
             throw new RemoteException(ae.getMessage());
-        } catch (MoriaControllerException mce) {
-            messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, mce);
-            throw new RemoteException(mce.getMessage());
+        } catch (IllegalInputException iie) {
+            messageLogger.logWarn(ILLEGAL_INPUT_EX_MSG + servicePrincipal, iie);
+            throw new RemoteException(iie.getMessage());
+        } catch (InoperableStateException ise) {
+            messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, ise);
+            throw new RemoteException(ise.getMessage());
         }
     }
 
