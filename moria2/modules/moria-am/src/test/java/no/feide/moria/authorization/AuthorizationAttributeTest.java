@@ -20,7 +20,6 @@
 
 package no.feide.moria.authorization;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -47,7 +46,6 @@ public class AuthorizationAttributeTest extends TestCase {
      */
     public void testNewAuthorizationAttribute() {
         AuthorizationAttribute attribute;
-        String attrName = "attr1";
 
         attribute = new AuthorizationAttribute("attr1", true, 1);
 
