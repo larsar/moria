@@ -82,7 +82,7 @@ $deniedSessionsAuthentication
 <th class="thstat">Attributes</th>
 </tr>
 
-#foreach( $wsName in $wsStats.keySet() )
+#foreach( $wsName in $sortedWsNames)
 <tr>
 <td>$wsName</td>
 <td class="tdstat">$wsStats.get($wsName).get("activeSessions")</td>

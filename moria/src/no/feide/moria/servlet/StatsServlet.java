@@ -20,6 +20,7 @@ package no.feide.moria.servlet;
 import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Enumeration;
 
@@ -134,7 +135,10 @@ public class StatsServlet extends VelocityServlet {
             /* Web Services */
             HashMap wsStats = stats.getStats();
             context.put("wsStats", wsStats);
+            Object[] sortedWsNames =  wsStats.keySet().toArray();
+            Arrays.sort(sortedWsNames);
 
+            context.put("sortedWsNames", sortedWsNames);
             context.put("deniedSessionsAuthentication", new Integer(stats.getDeniedSessionsAuthentication()));
 
             return getTemplate("stats.vtl");
