@@ -12,8 +12,7 @@
   <name>Moria Web Frontends</name>
   <id>moria-web</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
-  <package>no.feide.moria.servlet</package>
-
+  <package>no.feide.moria.*</package>
   <shortDescription>Moria web frontends (HTML and SOAP)</shortDescription>
 
   <description/>

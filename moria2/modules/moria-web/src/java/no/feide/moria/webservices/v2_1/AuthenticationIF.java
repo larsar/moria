@@ -143,7 +143,7 @@ public interface AuthenticationIF extends Remote {
      * @return true if the user is found.
      * @throws RemoteException
      *          If anything fails during the call.
-     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#getUserExistence(java.lang.String)
+     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#verifyUserExistence(java.lang.String)
      */
     boolean verifyUserExistence(String username) throws RemoteException;
 
@@ -152,7 +152,7 @@ public interface AuthenticationIF extends Remote {
      *
      * @param groupname
      *          The groupname to be validated.
-     * @Return True if the group exists.
+     * @return True if the group exists.
      * @throws RemoteException
      *           If anything fails during the call.
      */

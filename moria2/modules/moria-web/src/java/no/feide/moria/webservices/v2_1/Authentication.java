@@ -353,7 +353,7 @@ public final class Authentication implements AuthenticationIF {
      *
      * @param groupname
      *          The groupname to be validated.
-     * @Return True if the group exists.
+     * @return True if the group exists.
      * @throws RemoteException
      *           If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.AuthenticationIF#verifyGroupExistence(java.lang.String)
