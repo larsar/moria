@@ -74,11 +74,12 @@ public class BackendIndex {
                     
                     // Sanity check.
                     if (urls.size() == 0) {
-                    	log.config("Backend index is empty");
-                    	throw new ConfigurationException("Backend index is empty");
+                    	log.config("Backend index is empty for domain "+domain);
+                    	throw new ConfigurationException("Backend index is empty for domain "+domain);
                     }
                     
                     urlMap.put(domain, urls);
+                    urls.clear();
                 }
                 
             }
