@@ -151,8 +151,8 @@ $Id$
       </p>
 
       <p> A client element consists of the following: <ol>
-          <li> A required name attribute which is the same as the principal
-          used for the external authentication. </li>
+          <li> A required <i>name</i> attribute which is the same as the
+          principal used for the external authentication. </li>
 
           <li><i>DisplayName</i> element that contains the full name to the
           web service. This is the name that presented on the login page.
@@ -176,6 +176,11 @@ $Id$
           not to list the home organization as a affiliated organization.
           <i>The <i>Affiliation</i> element is not currently in use, but
           should be present for future authorization use.</i> </li>
+
+          <li><i>OrgsAllowed </i>is used to determine the organizations which
+          are allowed to use a specific service. The element contains<i>
+          Organization</i> elements that contains the short name of each
+          organization that can use the service.</li>
 
           <li> <i>Attributes</i> contains the attributes that the web service
           is granted access to. The element contains <i>Attribute</i> elements
@@ -237,13 +242,16 @@ $Id$
       &lt;Language&gt;no&lt;/Language&gt;<br /> &lt;Affiliation&gt;<br /> <ul>
       &lt;Organization name="uninett.no"/&gt;<br /> &lt;Organization
       name="uio.no"/&gt;<br /> </ul> &lt;/Affiliation&gt;<br />
-      &lt;Attributes&gt;<br /> <ul> &lt;Attribute name="attr1" sso="true"
-      secLevel="0"/&gt;<br /> &lt;Attribute name="attr2" sso="true"
-      secLevel="1"/&gt;<br /> &lt;Attribute name="attr3" sso="false"
-      secLevel="2"/&gt;<br /> </ul> &lt;Attribute name="tgt" sso="false"
-      secLevel="0"/&gt;<br /> &lt;/Attributes&gt;<br />
-      &lt;Operations&gt;<br /> <ul> &lt;Operation name="DirectAuth"/&gt;<br />
-      &lt;Operation name="InteractiveAuth"/&gt;<br /> &lt;Operation
+      &lt;OrgsAllowed&gt;<br /> <ul> &lt;Organization
+      name="uninett.no"/&gt;<br /> &lt;Organization name="uio.no"/&gt;<br />
+      </ul> &lt;/OrgsAllowed&gt;<br /> &lt;Attributes&gt;<br /> <ul>
+      &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;<br />
+      &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;<br />
+      &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;<br /> </ul>
+      &lt;Attribute name="tgt" sso="false" secLevel="0"/&gt;<br />
+      &lt;/Attributes&gt;<br /> &lt;Operations&gt;<br /> <ul> &lt;Operation
+      name="DirectAuth"/&gt;<br /> &lt;Operation
+      name="InteractiveAuth"/&gt;<br /> &lt;Operation
       name="VerifyUserExistence"/&gt;<br /> </ul> &lt;Operation
       name="ProxyAuth"/&gt;<br /> &lt;/Operations&gt;<br />
       &lt;Subsystems&gt;<br /> <ul> &lt;Subsystem name="sub1"/&gt;<br />
@@ -255,14 +263,16 @@ $Id$
       &lt;Language&gt;no&lt;/Language&gt;<br /> &lt;Affiliation&gt;<br /> <ul>
       &lt;Organization name="uninett.no"/&gt;<br /> &lt;Organization
       name="uio.no"/&gt;<br /> </ul> &lt;/Affiliation&gt;<br />
-      &lt;Attributes&gt;<br /> <ul> &lt;Attribute name="attr1" sso="true"
-      secLevel="0"/&gt;<br /> &lt;Attribute name="attr2" sso="true"
-      secLevel="1"/&gt;<br /> &lt;Attribute name="attr3" sso="false"
-      secLevel="2"/&gt;<br /> </ul> &lt;/Attributes&gt;<br />
-      &lt;Operations&gt;<br /> <ul> &lt;Operation name="ProxyAuth"/&gt;<br />
-      </ul> &lt;/Operations&gt;<br /> &lt;Subsystems&gt;<br />
-      &lt;/Subsystems&gt;<br /> </ul>&lt;/Client&gt;
-      </ul>&lt;/ClientAuthorizationConfig&gt;<br /> </p>
+      &lt;OrgsAllowed&gt;<br /> <ul> &lt;Organization
+      name="uninett.no"/&gt;<br /> &lt;Organization name="uio.no"/&gt;<br />
+      </ul> &lt;/OrgsAllowed&gt;<br /> &lt;Attributes&gt;<br /> <ul>
+      &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;<br />
+      &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;<br />
+      &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;<br /> </ul>
+      &lt;/Attributes&gt;<br /> &lt;Operations&gt;<br /> <ul> &lt;Operation
+      name="ProxyAuth"/&gt;<br /> </ul> &lt;/Operations&gt;<br />
+      &lt;Subsystems&gt;<br /> &lt;/Subsystems&gt;<br /> </ul> &lt;/Client&gt;
+      </ul> &lt;/ClientAuthorizationConfig&gt;<br /> </p>
     </section>
 
     <section name="Store manager">
