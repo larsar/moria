@@ -54,7 +54,7 @@ extends TestCase {
     public void setUp() {
 
         config = new Properties();
-        config.setProperty("directoryConfiguration", "src/test/conf/DummyConfiguration.xml");
+        config.setProperty("no.feide.moria.directory.configuration", "src/test/conf/DummyConfiguration.xml");
         goodCredentials = new Credentials("user@some.realm", "password");
 
     }

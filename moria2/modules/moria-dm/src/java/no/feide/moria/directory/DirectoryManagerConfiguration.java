@@ -33,7 +33,7 @@ public class DirectoryManagerConfiguration {
      * @param config
      *            The Directory Manager configuration passed on from
      *            <code>DirectoryManager.setConfig(Properties)</code>. Must
-     *            include the property <code>directoryConfiguration</code>.
+     *            include the property <code>no.feide.moria.directory.configuration</code>.
      */
     public DirectoryManagerConfiguration(final Properties config) {
 
@@ -42,9 +42,9 @@ public class DirectoryManagerConfiguration {
             throw new IllegalArgumentException("Configuration properties cannot be NULL");
 
         // Preparing to read configuration from file.
-        final String configFile = (String) config.get("directoryConfiguration");
+        final String configFile = (String) config.get("no.feide.moria.directory.configuration");
         if (configFile == null || configFile.equals(""))
-            throw new DirectoryManagerConfigurationException("Property directoryConfiguration not set)");
+            throw new DirectoryManagerConfigurationException("Property no.feide.moria.directory.configuration not set)");
 
         // Read index (not the index files themselves, mind you) and backend
         // configuration.
