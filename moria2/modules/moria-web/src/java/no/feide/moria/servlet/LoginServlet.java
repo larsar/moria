@@ -20,6 +20,8 @@
 
 package no.feide.moria.servlet;
 
+import no.feide.moria.controller.AuthorizationException;
+import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.UnknownTicketException;
@@ -129,8 +131,12 @@ public class LoginServlet extends HttpServlet {
             serviceProperties = MoriaController.getServiceProperties(loginTicketId);
             /* Seclevel */
             request.setAttribute("secLevel", "" + MoriaController.getSecLevel(loginTicketId));
+        } catch (AuthorizationException e) {
+            errorType = "authorization";
         } catch (UnknownTicketException e) {
             errorType = "unknownTicket";
+        } catch (IllegalInputException e) {
+            errorType = "illegalInput";
         } catch (InoperableStateException e) {
             errorType = "inoperableState";
         }
