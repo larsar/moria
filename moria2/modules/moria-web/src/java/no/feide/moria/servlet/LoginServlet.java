@@ -20,6 +20,7 @@
 
 package no.feide.moria.servlet;
 
+import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.UnknownTicketException;
 
@@ -34,11 +35,20 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 /**
+ * Use this servlet to bootstrap the system.
+ * Set &lt;load-on-startup&gt;1&lt;/load-on-startup&gt; in web.xml.
+ * 
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
  * @version $Revision$
  */
 public class LoginServlet extends HttpServlet {
 
+    /**
+     * Intitiates the controller.
+     */
+    public void init() {
+        MoriaController.initController(getServletContext());
+    }
 
     /**
      * Handles the GET requests.
@@ -121,6 +131,8 @@ public class LoginServlet extends HttpServlet {
             request.setAttribute("secLevel", "" + MoriaController.getSecLevel(loginTicketId));
         } catch (UnknownTicketException e) {
             errorType = "unknownTicket";
+        } catch (InoperableStateException e) {
+            errorType = "inoperableState";
         }
 
         /* Error message */
