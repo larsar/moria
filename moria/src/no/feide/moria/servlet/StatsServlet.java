@@ -60,24 +60,6 @@ public class StatsServlet extends VelocityServlet {
     /** Statistics */
     private StatsStore stats = StatsStore.getInstance();
    
-    /**
-     * Some basic initialization.
-     * @throws ServletException If a <code>SessionException</code> or a
-     *                          <code>ConfigurationException</code> is caught.
-     */
-    public void init()
-    throws ServletException {
-        log.finer("init()");
-    }
-
-
-    /**
-     * Stops the background maintenance thread.
-     */
-    public void destroy() {
-        log.finer("destroy()");
-    }
-   
 
 
     /**
@@ -95,9 +77,8 @@ public class StatsServlet extends VelocityServlet {
             Properties p = new Properties();
             String path = Configuration.getProperty("no.feide.moria.servlet.TemplateDir");
             
-            
-            //            p.setProperty("file.resource.loader.cache", "true");
-            //p.setProperty("file.resource.loader.modificationCheckInterval","0");
+            p.setProperty("file.resource.loader.cache", "true");
+            p.setProperty("file.resource.loader.modificationCheckInterval","0");
 
             /* If path is null, log it. */ 
             if (path == null) {
@@ -115,9 +96,6 @@ public class StatsServlet extends VelocityServlet {
             throw new IOException("ConfigurationException caught");
         }
     }
-
-
-
 
 
 
@@ -157,8 +135,6 @@ public class StatsServlet extends VelocityServlet {
             HashMap wsStats = stats.getStats();
             context.put("wsStats", wsStats);
 
-            //System.out.println(((HashMap)wsStats.get("demo")).get("createdSessions"));
-            
             context.put("deniedSessionsAuthentication", new Integer(stats.getDeniedSessionsAuthentication()));
 
             return getTemplate("stats.vtl");
