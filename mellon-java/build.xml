@@ -1,0 +1,50 @@
+<project name="Mellon common"
+         default="build"
+         basedir=".">
+
+  <target name="prepare"
+  	 	  description="Prepare for build">
+  	 	  <mkdir dir="dist"/>
+  </target>
+
+  <target name="jaxrpc"
+   	      description="Build all"
+   	      depends="prepare">
+   	      <ant dir="common" target="build"/>
+   	      <ant dir="jaxrpc" target="build"/>
+   	      <ant dir="common" target="servlet"/>
+   	      <copy todir="dist">
+   	        <fileset dir="common/dist" includes="*"/>
+   	        <fileset dir="jaxrpc/dist" includes="*"/>
+   	      </copy> 	      
+  </target>
+
+ <target name="axis"
+   	      description="Build all"
+   	      depends="prepare">
+   	      <ant dir="common" target="build"/>
+   	      <ant dir="axis" target="build"/>
+   	      <ant dir="common" target="servlet"/>
+   	      <copy todir="dist">
+   	        <fileset dir="common/dist" includes="*"/>
+   	        <fileset dir="axis/dist" includes="*"/>
+   	      </copy> 	      
+  </target>
+
+
+  <target name="build"
+   	      description="Build all"
+   	      depends="jaxrpc,axis">
+  </target>
+  
+  <target name="clean"
+  		  description="Clean all">
+  		  <ant dir="common" target="clean"/>
+  		  <ant dir="jaxrpc" target="clean"/>
+  		  <ant dir="axis"   target="clean"/>
+  		  <deltree dir="dist"/>
+  </target>
+  
+  
+
+</project>

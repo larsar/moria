@@ -22,13 +22,13 @@
            destdir="build"
            includes="no/feide/mellon/axis/*,no/feide/mellon/axis/example/*">
       <classpath>
-        <fileset dir="${axis_lib}" includes="*.jar"/>
+        <fileset dir="${axis_libs}" includes="*.jar"/>
         <fileset file="${axis_stubs}"/>
         <fileset dir="../common/dist" includes="*.jar"/>
       </classpath>
     </javac>
       
-      <jar destfile="dist/moriaAxis.jar" basedir="build"/>
+      <jar destfile="dist/moriaAxisConnector.jar" basedir="build"/>
   </target>
 
 
@@ -40,7 +40,7 @@
              packagenames="no.feide.mellon,no.feide.mellon.filter"
              source="1.4"> 
       <classpath>
-        <fileset file="${axis_lib}"/>
+        <fileset file="${axis_libs}"/>
       </classpath>
     </javadoc>
   </target>

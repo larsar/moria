@@ -21,10 +21,10 @@
      </condition>
 
     <mkdir dir="build/api"/>
-    <mkdir dir="build/filter"/>
+    <mkdir dir="build/connector"/>
     <mkdir dir="build/demo/WEB-INF/classes"/>
     <copy todir="build/demo/WEB-INF/lib">
-      <fileset dir="${include_libs}">
+      <fileset dir="${jaxrpc_libs}">
         <include name="**/*.jar"/>
       </fileset>
     </copy>  
@@ -50,31 +50,31 @@
       <arg line="-verbose"/>
       <arg line="config/jaxrpc.xml"/>
     </exec>
-  </target>
-
-  <target name="compile"
-          description="Mellon API: Compile source"
-          depends="wscompile">
-    <javac srcdir="src"
-           debug="true"
-           destdir="build/api"
-           includes="no/feide/mellon/jaxrpc/Moria.java">
-      <classpath>
-        <fileset dir="${include_libs}" includes="*.jar"/>
-      </classpath>
-    </javac>
-  </target>
-  
-  <target name="jar"
-          description="Mellon API: Create JAR file"
-          depends="compile">
+    
     <delete file="dist/feide-mellon-api*.jar"/>
     <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build/api"/>
+    
   </target>
 
   <target name="build"
-          description="Mellon API: All steps necessary to build the JAR"
-          depends="jar,filter:jar,demo:war,test:compile"/>
+          description="Mellon API: build source"
+          depends="wscompile">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build/connector"
+           includes="no/feide/mellon/jaxrpc/*">
+
+      <classpath>
+      	<fileset dir="dist" includes="feide-mellon-api*.jar"/>
+        <fileset dir="${jaxrpc_libs}" includes="*.jar"/>
+        <fileset dir="../common/dist" includes="*.jar"/>
+      </classpath>
+    </javac>
+
+    <delete file="dist/moriaJAXRPCConnector*.jar"/>
+    <jar destfile="dist/moriaJAXRPCConnector.jar" basedir="build/connector"/>
+  </target>
+  
 
   <target name="javadoc"
           description="Mellon API: Generate JavaDoc">
@@ -83,7 +83,7 @@
              packagenames="no.feide.mellon,no.feide.mellon.filter"
              source="1.4"> 
       <classpath>
-         <fileset dir="${include_libs}">
+         <fileset dir="${jaxrpc_libs}">
           <include name="*.jar"/>
         </fileset>
         <fileset file="${servlet_jar}"/>
@@ -99,137 +99,5 @@
   </target>
     
 
-  <!-- Targets to build the Mellon servlet filter. -->
-  <target name="filter:compile"
-          description="Mellon filter: Compile source"
-          depends="jar">
-    <javac srcdir="src"
-           debug="true"
-           destdir="build/filter"
-           includes="no/feide/mellon/filter/*">
-      <classpath>
-        <fileset dir="${include_libs}" includes="*.jar"/>
-        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
-        <fileset file="${servlet_jar}"/>        
-      </classpath>
-    </javac>
-  </target>
 
-  <target name="filter:jar"
-          description="Mellon filter: Create JAR file"
-          depends="filter:compile">
-    <delete file="dist/feide-mellon-filter*.jar"/>
-    <jar destfile="dist/feide-mellon-filter-${mellon_tag}.jar" basedir="build/filter"/>
-  </target>
-
-  
-  <!-- Targets to build a Mellon servlet demo. -->
-  <target name="demo:prepare"
-          description="Mellon demo: Prepare build directory">
-    <mkdir dir="build/demo"/>
-    <mkdir dir="dist"/>
-    <delete file="build/demo/WEB-INF/web.xml"/>
-    <delete file="build/demo/WEB-INF/classes/mellon.properties"/>
-    <delete file="dist/feide-mellon-demo.war"/>
-    <copy file="config/web.xml" toFile="build/demo/WEB-INF/web.xml"/>
-    <echo message="Using config: ${mellon_config}"/>
-    <copy file="${mellon_config}"
-          toFile="build/demo/WEB-INF/classes/mellon.properties"/>
-    <copy todir="build/demo/WEB-INF/lib">
-      <fileset dir="dist" includes="**/feide-mellon*.jar"/>
-    </copy>      
-  </target>
-  
-  <target name="demo:compile"
-          description="Mellon demo: Compile source"
-          depends="filter:jar,demo:prepare,jar,filter:jar">
-    <javac srcdir="src"
-           debug="true"
-           destdir="build/demo/WEB-INF/classes"
-           includes="no/feide/mellon/servlet/*">
-      <classpath>
-        <fileset dir="${include_libs}" includes="*.jar"/>
-        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
-        <fileset file="${servlet_jar}"/>
-      </classpath>
-    </javac>
-  </target>
-
-  <target name="demo:war"
-          description="Mellon demo: Create WAR file"
-          depends="demo:compile">
-    <jar destfile="dist/feide-mellon-demo.war" basedir="build/demo"/>
-  </target>
-  
-  <target name="demo:build"
-          description="Mellon demo: All steps necessary to build the WAR"
-          depends="demo:war"/>
-  
-
-  <target name="demo:clean"
-          description="Mellon demo: Clean up">
-    <delete dir="build/demo"/>
-  </target>
-  
-  <!-- Targets to build the command-line Mellon test application. -->
-  <target name="test:prepare"
-          description="Mellon test: Prepare">
-    <mkdir dir="build/test"/>
-    <mkdir dir="dist"/>
-  </target>
-  
-  <target name="test:compile"
-          description="Mellon test: Compile source"
-          depends="test:prepare">
-    <javac srcdir="src"
-           debug="true"
-           destdir="build/test"
-           includes="no/feide/mellon/jaxrpc/test/*">
-      <classpath>
-        <fileset dir="${include_libs}" includes="*.jar"/>
-        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
-      </classpath>
-    </javac>
-  </target>
-  
-  <target name="test:run"
-          description="Mellon test: Run the application">
-    <java classname="no.feide.mellon.jaxrpc.test.MellonTest"
-          fork="true">
-      <classpath>
-        <pathelement location="build/test"/>
-        <pathelement location="dist/feide-mellon-api-${mellon_tag}.jar"/>        
-        <fileset dir="${include_libs}">
-          <include name="**/*.jar"/>
-        </fileset>  		        
-      </classpath>
-    </java>
-  </target>
-  
-  <target name="test:clean"
-          description="Mellon test: clean up">
-    <delete dir="build/test"/>
-  </target>
-
-
-  <!-- Target to create the Mellon distribution package. -->
-  <target name="zip"
-          description="Mellon jars, docs and example code in zip-file."
-          depends="jar">
-    <copy todir="build/zip">
-      <fileset dir="dist" includes="**/feide-mellon-api-${mellon_tag}.jar"/>
-      <fileset dir="config" includes="mellon.properties"/>
-      <fileset dir="doc" includes="SimpleCreateAuthSession.java"/>
-      <fileset dir="${include_libs}">
-        <include name="**/*.jar"/>
-      </fileset>
-     </copy>   
-     <copy todir="build/zip/javadoc">
-       <fileset dir="build/javadoc"/>
-     </copy>
-
-     <zip destfile="dist/mellon.zip">
-       <fileset dir="build/zip"/>
-     </zip>
-  </target>
 </project>

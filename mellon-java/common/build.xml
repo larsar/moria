@@ -10,9 +10,10 @@
   <target name="prepare"
           description="Mellon API: Prepare build directory">
  
+    <mkdir dir="build/utils"/>
     <mkdir dir="build/filter"/>
     <mkdir dir="build/demo/WEB-INF/classes"/>
-    <copy todir="build/demo/WEB-INF/lib" file="${axis_stubs}"/>
+    <copy todir="build/demo/WEB-INF/lib" file="${soap_stubs}"/>
     <mkdir dir="dist"/>
     
     <mkdir dir="build/demo"/>
@@ -40,9 +41,9 @@
            destdir="build/demo/WEB-INF/classes"
            includes="no/feide/mellon/servlet/example/*">
       <classpath>
-        <fileset dir="${axis_lib}" includes="*.jar"/>
+        <fileset dir="${soap_libs}" includes="*.jar"/>
         <fileset dir="dist" includes="*.jar"/>
-        <fileset file="${axis_stubs}"/>
+        <fileset file="${soap_stubs}"/>
         <fileset file="${servlet_jar}"/>
       </classpath>
     </javac>
@@ -52,11 +53,27 @@
       <fileset dir="dist" includes="**/feide-mellon*.jar"/>
       <fileset dir="dist" includes="*.jar"/>
       <fileset file="${soap_connector}"/>
-      <fileset dir="${axis_lib}" includes="*.jar"/>
+      <fileset dir="${soap_libs}" includes="*.jar"/>
     </copy>      
       
       <jar destfile="dist/feide-mellon-demo.war" basedir="build/demo"/>
   </target>
+
+ <target name="utils"
+          description="Mellon utils: Compile source"
+          depends="prepare">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build/utils"
+           includes="no/feide/mellon/*">
+      <classpath>
+        <fileset dir="${soap_libs}" includes="*.jar"/>
+        <fileset file="${soap_stubs}"/>
+      </classpath>
+    </javac>
+    <jar destfile="dist/moriaUtils.jar" basedir="build/utils"/>
+    </target>
+
 
  <target name="filter"
           description="Mellon demo: Compile source"
@@ -66,13 +83,13 @@
            destdir="build/filter"
            includes="no/feide/mellon/servlet/MoriaAuthenticationFilter.java">
       <classpath>
-        <fileset dir="${axis_lib}" includes="*.jar"/>
-        <fileset file="${axis_stubs}"/>
+        <fileset dir="${soap_libs}" includes="*.jar"/>
+        <fileset file="${soap_stubs}"/>
         <fileset file="${servlet_jar}"/>
       </classpath>
     </javac>
     <jar destfile="dist/moriaAuthenticationFilter.jar" basedir="build/filter"/>
-    </target>
+ </target>
 
 
    

@@ -102,7 +102,7 @@ public class MoriaAuthenticationFilter implements Filter {
 		}
     	
     	try {
-			moria.connect("demo", "demo");
+			moria.connect( System.getProperty("no.feide.mellon.serviceUsername"), System.getProperty("no.feide.mellon.servicePassword"));
     	}
     	
     	catch (ServiceException e) {
