@@ -4,8 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
-import java.util.prefs.InvalidPreferencesFormatException;
-import java.util.prefs.Preferences;
 import java.util.HashMap;
 import javax.xml.rpc.Stub;
 import no.feide.moria.service.*;
@@ -34,14 +32,13 @@ public class Moria {
         log.finer("Moria()");
         
         // Fix some properties.
-        Preferences prefs = Preferences.userNodeForPackage(Moria.class);
-        System.setProperty("javax.net.ssl.trustStore", prefs.get("trustStore", null));
-        System.setProperty("javax.net.ssl.trustStorePassword", prefs.get("trustStorePassword", null));
+        System.setProperty("javax.net.ssl.trustStore", System.getProperty("no.feide.mellon.trustStore"));
+        System.setProperty("javax.net.ssl.trustStorePassword", System.getProperty("no.feide.mellon.trustStorePassword"));
         
         // Create service proxy and set credentials.
         stub = (Stub)(new FeideAuthentication_Impl().getAuthenticationIFPort());
-        stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, prefs.get("serviceUsername", null));
-        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, prefs.get("servicePassword", null));
+        stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, System.getProperty("no.feide.mellon.serviceUsername"));
+        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, System.getProperty("no.feide.mellon.servicePassword"));
 	AuthenticationIF service = (AuthenticationIF)stub;
     }
 
