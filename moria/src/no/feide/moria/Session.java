@@ -28,7 +28,7 @@ public class Session {
     private int failedLogins = 0;
 
     /** The user for this session, set after a successful authentication. */
-    private static User user = null;
+    private static User user;
     
     /** Used to read preferences. */
     private Preferences prefs = Preferences.userNodeForPackage(Session.class);
@@ -61,6 +61,7 @@ public class Session {
 	this.urlPrefix = urlPrefix;
         this.urlPostfix = urlPostfix;
 	this.client = client;
+        user = null;
     }
     
 
@@ -138,7 +139,6 @@ public class Session {
     public String getRedirectURL() {
         
         String retval = "";
-        log.info("user = "+user);
         if (user == null) {
             retval = prefs.get("LoginURL", null)+"?id="+sessionID;
         } else {
