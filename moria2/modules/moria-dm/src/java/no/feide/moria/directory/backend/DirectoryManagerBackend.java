@@ -34,7 +34,7 @@ public interface DirectoryManagerBackend {
      *             If the authentication fails.
      */
     public HashMap authenticate(Credentials userCredentials, String[] attributeRequest)
-    throws BackendException;
+    throws AuthenticationFailedException;
 
 
     /**
