@@ -368,11 +368,27 @@ public class MoriaControllerTest extends TestCase {
         } catch (UnknownTicketException success) {
         }
 
-        /* Normal use */
+        /* Force authentication */
+          loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+                                                                        validPrincipal);
         Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
         String ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
+        String newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, true,
+                                                                         validPrincipal);
 
-        String newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+          try {
+              MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
+              fail("UnknownTicketException should be raised, authentication attempt requires interactive authentication.");
+          } catch (UnknownTicketException success) {
+          }
+
+        /* Normal use */
+        loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+                                                                        validPrincipal);
+        tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        ssoTicketId = (String) tickets.get(MoriaController.SSO_TICKET);
+
+        newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                          validPrincipal);
         String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
         Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
