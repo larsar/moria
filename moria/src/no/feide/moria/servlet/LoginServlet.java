@@ -54,6 +54,7 @@ import no.feide.moria.User;
 import no.feide.moria.BackendException;
 import no.feide.moria.SessionStoreTask;
 import no.feide.moria.authorization.WebService;
+import no.feide.moria.stats.StatsStore;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.app.Velocity;
@@ -75,7 +76,9 @@ public class LoginServlet extends VelocityServlet {
     
     /** Used for logging. */
     private static Logger log = Logger.getLogger(LoginServlet.class.toString());
-    
+    /** Statistics */
+    private StatsStore stats = StatsStore.getInstance();
+
     /** Constant for property lookup. */
     private static String NOSESSION  = "nosession";
 

@@ -16,6 +16,21 @@
 	    no.feide.moria.servlet.LoginServlet
         </servlet-class>
     </servlet>   
+
+    <servlet>
+        <servlet-name>
+	    Stats
+        </servlet-name>
+        <servlet-class>
+	    no.feide.moria.servlet.StatsServlet
+        </servlet-class>
+    </servlet>   
+
+    <servlet-mapping>
+        <servlet-name>Stats</servlet-name>
+        <url-pattern>/Stats</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
         <url-pattern>/Login</url-pattern>

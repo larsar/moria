@@ -28,11 +28,15 @@ import java.util.Enumeration;
 import java.util.logging.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 import no.feide.moria.authorization.WebService;
+import no.feide.moria.stats.StatsStore;
 
 public class SessionStore {
     
     /** Used for logging. */
     private static Logger log = Logger.getLogger(SessionStore.class.toString());
+
+    /** Statistics */
+    private StatsStore stats = StatsStore.getInstance();
 
     /** Static pointer to singleton object. */
     static private SessionStore me;
@@ -209,6 +213,7 @@ public class SessionStore {
                 String key = (String) iterator.next();
                 Session session = (Session) sessions.get(key);
                 double now = new Date().getTime();
+                String wsName = session.getID();
 
                 if (session.isAuthenticated()) {
 
@@ -216,12 +221,14 @@ public class SessionStore {
                     if (session.isLocked() && 
                         !session.isValid(now-timeoutSso)) {
                             log.info("Invalidating SSO session (timeout): "+session.getID());
+                            stats.sessionTimeout(wsName, "SSO");
                             invalidatedSessions.add(session);
                     }
 
                     /* Web service to slow to fetch user attributes */
                     else if (!session.isValid(now-authTimeoutSec)) {
                             log.info("Invalidating authenticated session (timeout): "+session.getID());
+                            stats.sessionTimeout(wsName, "AUTH");
                             invalidatedSessions.add(session);
                     }
                         
@@ -232,6 +239,7 @@ public class SessionStore {
                 else {
                     if (!session.isValid(now-timeout)) {
                         log.info("Invalidating session (timeout): "+session.getID());
+                        stats.sessionTimeout(wsName, "USER");
                         invalidatedSessions.add(session);
                     }
                 }

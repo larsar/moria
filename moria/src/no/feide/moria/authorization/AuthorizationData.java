@@ -76,6 +76,7 @@ public class AuthorizationData {
         return authData;
     }
     
+
     /**
      * Regenerate the web service data structure if the xml
      * configuration file has been changed since last update.

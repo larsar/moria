@@ -44,7 +44,7 @@ import no.feide.moria.Credentials;
 import no.feide.moria.authorization.WebService;
 import no.feide.moria.authorization.AuthorizationData;
 import no.feide.moria.authorization.AuthorizationTask;
-
+import no.feide.moria.stats.StatsStore;
 
 public class AuthenticationImpl
 implements AuthenticationIF, ServiceLifecycle {
@@ -57,6 +57,9 @@ implements AuthenticationIF, ServiceLifecycle {
     
     /** Session store. */
     private SessionStore sessionStore;
+
+    /** Statistics module */
+    private StatsStore stats = StatsStore.getInstance();
       
     /** Timer for updating the web service authorization module. */
     private Timer authTimer = new Timer(true);
@@ -93,7 +96,7 @@ implements AuthenticationIF, ServiceLifecycle {
 	log.finer("init(Object)");
 
 	ctx = (ServletEndpointContext)context;
-       
+
         try {
             
             sessionStore = SessionStore.getInstance();
@@ -207,9 +210,11 @@ implements AuthenticationIF, ServiceLifecycle {
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         if (ws == null) {
             log.warning(log_prefix+"DENIED, Unauthorized");
+            stats.createSessionAttempt(serviceName, "AUTHN");
             throw new RemoteException("Web Service not authorized for use with Moria");
         } else if (!ws.allowAccessToAttributes(attributes)) {
             log.warning(log_prefix+"DENIED, Authorization faliure");
+            stats.createSessionAttempt(serviceName, "AUTHO");
             throw new RemoteException("Access to one or more attributes prohibited");
         }
 
@@ -221,6 +226,7 @@ implements AuthenticationIF, ServiceLifecycle {
             if (denySso) 
                 session.denySso();
 
+            stats.createSessionAttempt(serviceName, "SUCCESS");
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");
