@@ -92,6 +92,8 @@ import org.apache.axis.encoding.ser.VectorSerializerFactory;
 public class DemoServlet
 extends HttpServlet {
 
+    // TODO: Read configuration from file to allow for flexible deployment.
+    
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(DemoServlet.class);
 
@@ -102,6 +104,7 @@ extends HttpServlet {
      * </i>.
      */
     private final String[] ATTRIBUTE_REQUEST = {"eduPersonOrgDN", "eduPersonAffiliation"};
+    //private final String[] ATTRIBUTE_REQUEST = {"eduPersonAffiliation"};
 
     /**
      * The service endpoint. <br>
@@ -110,6 +113,7 @@ extends HttpServlet {
      * <code>"http://localhost:8080/moria/v1_0/Authentication"</code>.
      */
     private final String SERVICE_ENDPOINT = "http://localhost:8080/moria/v1_0/Authentication";
+    //private final String SERVICE_ENDPOINT = "https://moria.uio.no/moria2/v2_0/Authentication";
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -124,6 +128,7 @@ extends HttpServlet {
      * Current value is <code>"test"</code>.
      */
     private final String CLIENT_USERNAME = "test";
+    //private final String CLIENT_USERNAME = "demo";
 
     /**
      * The password used by this demo service when accessing Moria. <br>
@@ -131,12 +136,14 @@ extends HttpServlet {
      * Current value is <code>"test"</code>.
      */
     private final String CLIENT_PASSWORD = "test";
+    //private final String CLIENT_PASSWORD = "demo";
 
     /**
      * Used when mapping the remote <code>Attribute</code> type to the local
      * <code>Attribute</code> class.
      */
     private final QName ATTRIBUTE_QNAME = new QName("https://login.feide.no/moria/v1_0/Authentication", "Attribute");
+    //private final QName ATTRIBUTE_QNAME = new QName("https://login.feide.no/moria/v2_0/Authentication", "Attribute");
 
 
     /**
@@ -159,43 +166,45 @@ extends HttpServlet {
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
     throws IOException, ServletException {
 
-        // Do we have a ticket?
-        String ticket = request.getParameter(PARAM_TICKET);
-        if (ticket == null) {
-
-            // No ticket; redirect for authentication.
-            try {
-                String redirectURL = initiateAuthentication(ATTRIBUTE_REQUEST, request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
-                response.sendRedirect(redirectURL);
-            } catch (ServiceException e) {
-                throw new ServletException(e);
-            }
-
-        } else {
-
-            // We have a ticket; get and display attributes.
-            try {
-                Attribute[] attributes = getUserAttributes(ticket);
-                PrintWriter out = response.getWriter();
-                out.println("<html><body>");
-                out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
-                for (int i = 0; i < attributes.length; i++) {
-                    String name = attributes[i].getName();
-                    out.println("<tr><td>" + name + "</td>");
-                    String[] values = attributes[i].getValues();
-                    for (int j = 0; j < values.length; j++) {
-                        if (j > 0)
-                            out.println("<tr><td></td>");
-                        out.println("<td>" + values[j] + "</td></tr>");
-                    }
-                }
-                out.println("</table>");
-                out.println("</html></body>");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+        // Be sure to dump all exceptions.
+        try {
+        
+	        // Do we have a ticket?
+	        String ticket = request.getParameter(PARAM_TICKET);
+	        if (ticket == null) {
+	
+	            // No ticket; redirect for authentication.
+	            String redirectURL = initiateAuthentication(ATTRIBUTE_REQUEST, request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
+	            response.sendRedirect(redirectURL);
+	
+	        } else {
+	
+	            // We have a ticket; get and display attributes.
+	            Attribute[] attributes = getUserAttributes(ticket);
+	            PrintWriter out = response.getWriter();
+	            out.println("<html><body>");
+	            out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
+	            for (int i = 0; i < attributes.length; i++) {
+	                String name = attributes[i].getName();
+	                out.println("<tr><td>" + name + "</td>");
+	                String[] values = attributes[i].getValues();
+	                for (int j = 0; j < values.length; j++) {
+	                    if (j > 0)
+	                        out.println("<tr><td></td>");
+	                    out.println("<td>" + values[j] + "</td></tr>");
+	                }
+	            }
+	            out.println("</table>");
+	            out.println("</html></body>");
+	
+	        }
+	        
+        } catch (ServiceException e) {
+            log.logCritical("ServiceException caught", e);
+            throw new ServletException(e);
+        } catch (RemoteException e) {
+            log.logCritical("RemoteException caught", e);
+            throw new ServletException(e);
         }
 
     }
@@ -238,7 +247,6 @@ extends HttpServlet {
         Call call = new Call(new URL(SERVICE_ENDPOINT + "?WSDL"));
         call.setUsername(CLIENT_USERNAME);
         call.setPassword(CLIENT_PASSWORD);
-        //call.setPassword("test");
         final Object[] parameters = {ATTRIBUTE_REQUEST, urlPrefix, urlPostfix, new Boolean(false)};
 
         // Performing call.
