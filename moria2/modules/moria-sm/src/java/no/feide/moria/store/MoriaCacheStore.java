@@ -39,7 +39,6 @@ import org.jboss.cache.lock.TimeoutException;
 
 /**
  * Distributed store implementation using JBoss Cache.
- *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
@@ -77,10 +76,10 @@ implements MoriaStore {
     private static final String DATA_ATTRIBUTE = "MoriaData";
 
     /**
-     * The common hashmap key for the userorg attribute 
+     * The common hashmap key for the userorg attribute
      */
     private static final String USERORG_ATTRIBUTE = "Userorg";
-    
+
     /** The name of configuration file property. */
     private static final String CACHE_CONFIG_PROPERTY_NAME = "no.feide.moria.store.cachestoreconf";
 
@@ -325,13 +324,25 @@ implements MoriaStore {
 
 
     /**
+     * @param attributes
+     *            Cannot be <code>null</code>.
+     * @param userorg
+     *            Must be a non-empty string.
      * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
+     * @throws MoriaStoreException
+     * @throws IllegalArgumentException
+     *             If <code>attributes</code> is <code>null</code>, or
+     *             <code>userorg</code> is <code>null</code> or an empty
+     *             string.
      */
     public String cacheUserData(final HashMap attributes, final String userorg)
     throws MoriaStoreException {
 
-        /* Validate argument. */
-        if (attributes == null) { throw new IllegalArgumentException("attributes cannot be null"); }
+        // Sanity checks.
+        if (attributes == null)
+            throw new IllegalArgumentException("Attributes cannot be null");
+        if ((userorg == null) || (userorg.length() == 0))
+            throw new IllegalArgumentException("User organization must be a non-empty string");
 
         CachedUserData userData = new CachedUserData(attributes);
         /* Create new SSO ticket with null-value servicePrincipal */
@@ -616,12 +627,14 @@ implements MoriaStore {
         }
     }
 
+
     /**
      * @see no.feide.moria.store.MoriaStore#getServicePrincipal(java.lang.String)
      */
 
     public String getTicketServicePrincipal(final String ticketId, MoriaTicketType ticketType)
-            throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    throws InvalidTicketException, NonExistentTicketException,
+    MoriaStoreException {
 
         /* Validate parameter. */
         if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
@@ -635,9 +648,11 @@ implements MoriaStore {
 
         return ticket.getServicePrincipal();
     }
-    
+
+
     public void setTicketUserorg(final String ticketId, MoriaTicketType ticketType, String userorg)
-         throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    throws InvalidTicketException, NonExistentTicketException,
+    MoriaStoreException {
 
         /* Validate parameter. */
         if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
@@ -654,8 +669,11 @@ implements MoriaStore {
         insertIntoStore(ticket);
     }
 
+
     public String getTicketUserorg(final String ticketId, MoriaTicketType ticketType)
-       throws InvalidTicketException, NonExistentTicketException, MoriaStoreException {
+    throws InvalidTicketException, NonExistentTicketException,
+    MoriaStoreException {
+
         /* Validate parameter. */
         if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
 
@@ -818,11 +836,7 @@ implements MoriaStore {
         }
 
         // Return the node.
-        return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), 
-                               (String) node.get(PRINCIPAL_ATTRIBUTE), 
-                               (Long) node.get(TTL_ATTRIBUTE), 
-                               (MoriaStoreData) node.get(DATA_ATTRIBUTE), 
-                               (String) node.get(USERORG_ATTRIBUTE));
+        return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node.get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE), (MoriaStoreData) node.get(DATA_ATTRIBUTE), (String) node.get(USERORG_ATTRIBUTE));
 
     }
 
