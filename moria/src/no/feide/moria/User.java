@@ -223,12 +223,12 @@ public class User {
      */
     // TODO:
     // Should return a HashMap.
-    public UserAttribute[] lookup(String[] attributes)
+    public HashMap lookup(String[] attributes)
     throws BackendException {
         log.finer("lookup(String[])");
         try {
             // Translate from BasicAttribute to UserAttribute.
-            Vector newAttrs = new Vector();
+            HashMap newAttrs = new HashMap();
             NamingEnumeration oldAttrs = ldap.getAttributes(rdn, attributes).getAll();
             BasicAttribute oldAttr = null;
             while (oldAttrs.hasMore()) {
@@ -236,9 +236,9 @@ public class User {
                 Vector newValues = new Vector();
                 for (int i=0; i<oldAttr.size(); i++)
                     newValues.add(new String((String)oldAttr.get(i)));
-                newAttrs.add(new UserAttribute(oldAttr.getID(), newValues));
+                newAttrs.put(oldAttr.getID(), newValues);
             }
-            return (UserAttribute[])newAttrs.toArray(new UserAttribute[] {});
+            return newAttrs;
         }
         catch (NamingException e) {
             log.severe("NamingException caught and re-thrown as BackendException");
