@@ -297,7 +297,10 @@ public class InformationServlet extends HttpServlet {
         // update cookie if language has changed
         boolean changelanguage = false;
         if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
-            response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
+            response.addCookie(RequestUtil.createCookie(
+                    (String) config.get(RequestUtil.PROP_COOKIE_LANG),
+                    request.getParameter(RequestUtil.PARAM_LANG),
+                    new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
             changelanguage = true;
         }
         Map userData = null;
@@ -333,9 +336,13 @@ public class InformationServlet extends HttpServlet {
             request.setAttribute("tabledata", tabledata);
 
             /* Configured values */
-            request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, RequestUtil.parseConfig(config, RequestUtil.PROP_ORG, bundle.getLocale().getLanguage()));
-            request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(config, RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
-            request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_INFORMATION_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + ticketId);
+            request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS,
+                                 RequestUtil.parseConfig(config, RequestUtil.PROP_ORG, bundle.getLocale().getLanguage()));
+            request.setAttribute(RequestUtil.ATTR_LANGUAGES,
+                                 RequestUtil.parseConfig(config, RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
+            request.setAttribute(RequestUtil.ATTR_BASE_URL,
+                                 config.getProperty(RequestUtil.PROP_INFORMATION_URL_PREFIX) + "?"
+                                 + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + ticketId);
             request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
 
             // only print language menu if SSO is enabled
@@ -407,8 +414,8 @@ public class InformationServlet extends HttpServlet {
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
             log.logCritical("Configuration: " + config.toString());
-            String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) +
-                 "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
+            String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX)
+                 + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
             log.logCritical("Redirect URL: " + redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             response.setHeader("Location", redirectURL);

@@ -509,7 +509,9 @@ public final class RequestUtil {
      * @throws MissingResourceException
      *             If the resource bundle cannot be found.
      */
-    public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final String langFromCookie, final String serviceLang, final String browserLang, final String moriaLang) {
+    public static ResourceBundle getBundle(final String bundleName, final String requestParamLang,
+            final String langFromCookie, final String serviceLang,
+            final String browserLang, final String moriaLang) {
 
         // Sanity checks.
         if (bundleName == null || bundleName.equals(""))

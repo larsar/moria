@@ -85,7 +85,19 @@ extends HttpServlet {
      * @see RequestUtil#PROP_LOGIN_DEFAULT_LANGUAGE
      * @see RequestUtil#PROP_LOGIN_URL_PREFIX
      */
-    private final String[] REQUIRED_PARAMETERS = {RequestUtil.PROP_COOKIE_DENYSSO, RequestUtil.PROP_LOGIN_TICKET_PARAM, RequestUtil.PROP_COOKIE_SSO, RequestUtil.PROP_COOKIE_LANG, RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE, RequestUtil.PROP_COOKIE_DENYSSO_TTL, RequestUtil.PROP_COOKIE_ORG, RequestUtil.PROP_COOKIE_ORG_TTL, RequestUtil.PROP_COOKIE_SSO_TTL, RequestUtil.PROP_COOKIE_LANG_TTL, RequestUtil.PROP_LOGIN_URL_PREFIX};
+    private final String[] REQUIRED_PARAMETERS = {
+        RequestUtil.PROP_COOKIE_DENYSSO,
+        RequestUtil.PROP_LOGIN_TICKET_PARAM,
+        RequestUtil.PROP_COOKIE_SSO,
+        RequestUtil.PROP_COOKIE_LANG,
+        RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE,
+        RequestUtil.PROP_COOKIE_DENYSSO_TTL,
+        RequestUtil.PROP_COOKIE_ORG,
+        RequestUtil.PROP_COOKIE_ORG_TTL,
+        RequestUtil.PROP_COOKIE_SSO_TTL,
+        RequestUtil.PROP_COOKIE_LANG_TTL,
+        RequestUtil.PROP_LOGIN_URL_PREFIX
+    };
 
 
     /**
@@ -139,7 +151,8 @@ extends HttpServlet {
                 final String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_SSO), request.getCookies());
 
                 if (ssoTicketId != null) {
-                    serviceTicket = MoriaController.attemptSingleSignOn(request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM)), ssoTicketId);
+                    serviceTicket = MoriaController.attemptSingleSignOn(
+                            request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM)), ssoTicketId);
 
                     // Redirect back to web service.
                     response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -199,7 +212,8 @@ extends HttpServlet {
             denySSOStr = "false";
 
         // Set cookie to remember user's SSO choice.
-        final Cookie denySSOCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO), denySSOStr, new Integer((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO_TTL)).intValue());
+        final Cookie denySSOCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO),
+                denySSOStr, new Integer((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO_TTL)).intValue());
         response.addCookie(denySSOCookie);
         request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(denySSO));
 
@@ -209,13 +223,16 @@ extends HttpServlet {
         if (org == null || org.equals("") || org.equals("null")) {
             showLoginPage(request, response, RequestUtil.ERROR_NO_ORG);
             return;
-        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE)).containsValue(org)) {
+        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG,
+                    (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE)).containsValue(org)) {
             showLoginPage(request, response, RequestUtil.ERROR_INVALID_ORG);
             return;
         }
 
         // Store user's organization selection in cookie.
-        final Cookie orgCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getParameter(RequestUtil.PARAM_ORG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
+        final Cookie orgCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_ORG),
+                request.getParameter(RequestUtil.PARAM_ORG),
+                new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
         response.addCookie(orgCookie);
 
         /* Attempt login */
@@ -248,7 +265,9 @@ extends HttpServlet {
 
         // If we didn't disallow SSO, then store the SSO ticket in a cookie.
         if (!denySSO) {
-            final Cookie ssoTicketCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO), (String) tickets.get(MoriaController.SSO_TICKET), new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
+            final Cookie ssoTicketCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO),
+                    (String) tickets.get(MoriaController.SSO_TICKET),
+                    new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
             response.addCookie(ssoTicketCookie);
         }
 
@@ -282,7 +301,8 @@ extends HttpServlet {
 
         // Get the login ticket name and set the base authentication page URL.
         final String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
-        request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + loginTicketId);
+        request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?"
+                + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + loginTicketId);
 
         // Get service properties and set security level.
         try {
@@ -310,12 +330,16 @@ extends HttpServlet {
         String langFromCookie = null;
         if (request.getCookies() != null)
             langFromCookie = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
-        final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN, request.getParameter(RequestUtil.PARAM_LANG), langFromCookie, serviceLang, request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
+        final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN,
+                request.getParameter(RequestUtil.PARAM_LANG), langFromCookie, serviceLang,
+                request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
         request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
 
         /* Configured values */
-        request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, bundle.getLocale().getLanguage()));
-        request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
+        request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, RequestUtil.parseConfig(getConfig(),
+                RequestUtil.PROP_ORG, bundle.getLocale().getLanguage()));
+        request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(),
+                RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
 
         // Can we get organization from URL parameter?
         String selectedOrg = request.getParameter(RequestUtil.PARAM_ORG);
@@ -336,7 +360,9 @@ extends HttpServlet {
         // Did the user select a different language?
         request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
         if (request.getParameter(RequestUtil.PARAM_LANG) != null)
-            response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
+            response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG),
+                    request.getParameter(RequestUtil.PARAM_LANG),
+                    new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
 
         /* Service attributes */
         if (serviceProperties != null) {

@@ -98,7 +98,16 @@ extends HttpServlet {
     private Properties config = null;
 
     /** Required parameters. */
-    private String[] REQUIRED_PARAMETERS = {"MASTER_ATTRIBUTE_REQUEST", "SLAVE_ATTRIBUTE_REQUEST", "SERVICE_ENDPOINT", "MASTER_CLIENT_USERNAME", "MASTER_CLIENT_PASSWORD", "SLAVE_CLIENT_USERNAME", "SLAVE_CLIENT_PASSWORD", "ATTRIBUTE_QNAME"};
+    private String[] REQUIRED_PARAMETERS = {
+        "MASTER_ATTRIBUTE_REQUEST",
+        "SLAVE_ATTRIBUTE_REQUEST",
+        "SERVICE_ENDPOINT",
+        "MASTER_CLIENT_USERNAME",
+        "MASTER_CLIENT_PASSWORD",
+        "SLAVE_CLIENT_USERNAME",
+        "SLAVE_CLIENT_PASSWORD",
+        "ATTRIBUTE_QNAME"
+    };
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -146,7 +155,9 @@ extends HttpServlet {
             if (ticket == null) {
 
                 // No ticket; redirect for authentication.
-                String redirectURL = initiateAuthentication(convert(config.getProperty(RequestUtil.PROP_DEMO_MASTER_ATTRIBUTE_REQUEST)), request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
+                String redirectURL = initiateAuthentication(
+                        convert(config.getProperty(RequestUtil.PROP_DEMO_MASTER_ATTRIBUTE_REQUEST)),
+                        request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
                 response.sendRedirect(redirectURL);
 
             } else {
@@ -273,7 +284,10 @@ extends HttpServlet {
         Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
         call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME));
         call.setPassword(config.getProperty(RequestUtil.PROP_DEMO_MASTER_PASSWORD));
-        final Object[] parameters = {convert(config.getProperty(RequestUtil.PROP_DEMO_MASTER_ATTRIBUTE_REQUEST)), urlPrefix, urlPostfix, new Boolean(false)};
+        final Object[] parameters = {
+            convert(config.getProperty(RequestUtil.PROP_DEMO_MASTER_ATTRIBUTE_REQUEST)),
+                    urlPrefix, urlPostfix, new Boolean(false)
+        };
 
         // Performing call.
         return (String) call.invoke(new QName("initiateAuthentication"), parameters);
@@ -322,7 +336,8 @@ extends HttpServlet {
         final Object[] parameters = {serviceTicket};
 
         // Perform the call.
-        final Object returnedAttributes = call.invoke(new QName(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT), "getUserAttributes"), parameters);
+        final Object returnedAttributes = call.invoke(new QName(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT),
+                                                                "getUserAttributes"), parameters);
 
         // Convert and return.
         return (Attribute[]) returnedAttributes;
@@ -414,7 +429,8 @@ extends HttpServlet {
         final Object[] parameters = {convert(config.getProperty(RequestUtil.PROP_DEMO_SLAVE_ATTRIBUTE_REQUEST)), proxyTicket};
 
         // Perform the call.
-        final Object returnedAttributes = call.invoke(new QName(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT), "proxyAuthentication"), parameters);
+        final Object returnedAttributes = call.invoke(new QName(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT),
+                                                                "proxyAuthentication"), parameters);
 
         // Convert and return.
         return (Attribute[]) returnedAttributes;
