@@ -1,4 +1,4 @@
-<project name="W3LS (Mellon)"
+<project name="Mellon JAX-RPC"
          default="build"
          basedir=".">
 
