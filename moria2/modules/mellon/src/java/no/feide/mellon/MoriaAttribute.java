@@ -18,7 +18,7 @@
  * $Id$
  */
 
-package no.feide.mellon.demo;
+package no.feide.mellon;
 
 import java.io.Serializable;
 
@@ -35,7 +35,7 @@ import org.apache.axis.encoding.ser.BeanSerializer;
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
-public final class Attribute implements Serializable {
+public final class MoriaAttribute implements Serializable {
 
     /** The name of this Attribute. */
     private String name = null;
@@ -44,7 +44,7 @@ public final class Attribute implements Serializable {
     private String[] values = null;
 
     /** Type metadata. */
-    private static TypeDesc typeDesc = new TypeDesc(Attribute.class);
+    private static TypeDesc typeDesc = new TypeDesc(MoriaAttribute.class);
 
     static {
         typeDesc.setXmlType(new QName("http://localhost:8080/moria/v2_1/Authentication", "Attribute"));
