@@ -3,11 +3,9 @@ package no.feide.moria.directory.backend;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.index.IndexedReference;
-import no.feide.moria.log.MessageLogger;
 
 import org.jdom.Element;
 
@@ -18,11 +16,11 @@ import org.jdom.Element;
 public class DummyBackend
 implements DirectoryManagerBackend {
 
-    /** Message logger. */
-    private final MessageLogger log = new MessageLogger(DummyBackend.class);
-
-    /** Internal representation of user elements and their attributes. */
-    private HashMap userMap;
+    /**
+     * Maps user names (converted to lowercase) to <code>DummyUser</code>
+     * elements.
+     */
+    private HashMap users;
 
 
     /**
@@ -46,35 +44,36 @@ implements DirectoryManagerBackend {
         final Element dummy = config.getChild("Dummy");
 
         // Parse any user elements.
-        userMap = new HashMap();
-        final Iterator users = dummy.getChildren("User").iterator();
-        while (users.hasNext()) {
+        users = new HashMap();
+        final Iterator userElements = dummy.getChildren("User").iterator();
+        while (userElements.hasNext()) {
 
             // Parse any attribute elements.
-            HashMap attributeMap = new HashMap();
-            final Element user = (Element) users.next();
-            final Iterator attributes = user.getChildren("Attribute").iterator();
-            while (attributes.hasNext()) {
+            HashMap attributes = new HashMap();
+            final Element user = (Element) userElements.next();
+            final Iterator attributeElements = user.getChildren("Attribute").iterator();
+            while (attributeElements.hasNext()) {
 
                 // Parse any value elements.
-                ArrayList valueList = new ArrayList();
-                final Element attribute = (Element) attributes.next();
-                final Iterator values = attribute.getChildren("Value").iterator();
-                while (values.hasNext()) {
+                ArrayList values = new ArrayList();
+                final Element attribute = (Element) attributeElements.next();
+                final Iterator valueElements = attribute.getChildren("Value").iterator();
+                while (valueElements.hasNext()) {
 
                     // Parse the attribute values.
-                    final Element value = (Element) values.next();
-                    valueList.add(value.getText());
+                    final Element value = (Element) valueElements.next();
+                    values.add(value.getText());
 
                 }
 
                 // Map an attribute to its values.
-                attributeMap.put(attribute.getAttribute("name").getValue().toLowerCase(), valueList);
+                attributes.put(attribute.getAttribute("name").getValue().toLowerCase(), values);
 
             }
 
-            // Map an attribute to a user.
-            userMap.put(user.getAttribute("name").getValue().toLowerCase(), attributeMap);
+            // Add a new user.
+            DummyUser newUser = new DummyUser(user.getAttribute("name").getValue(), user.getAttribute("password").getValue(), attributes);
+            users.put(user.getAttribute("name").getValue().toLowerCase(), newUser);
 
         }
 
@@ -82,12 +81,15 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Does nothing.
+     * Does nothing, but needed to fulfill the
+     * <code>DirectoryManagerBackend</code> interface.
+     * @param reference
+     *            Ignored.
      * @see DirectoryManagerBackend#open(IndexedReference)
      */
     public void open(final IndexedReference reference) {
 
-        // Ignored.
+        // Does nothing.
 
     }
 
@@ -100,10 +102,9 @@ implements DirectoryManagerBackend {
      */
     public boolean userExists(final String username) {
 
-        // Fake a test.
         if (username == null)
             return false;
-        return userMap.containsKey(username.toLowerCase());
+        return users.containsKey(username.toLowerCase());
 
     }
 
@@ -120,43 +121,26 @@ implements DirectoryManagerBackend {
         if (userCredentials == null)
             throw new IllegalArgumentException("Credentials cannot be NULL");
 
-        // "Authentication", sort of.
-        final String username = userCredentials.getUsername().toLowerCase();
-        final String password = userCredentials.getPassword();
-        if ((userMap.containsKey(username)) && password.equals(username)) {
+        // Find and authenticate user.
+        DummyUser user = (DummyUser) users.get(userCredentials.getUsername());
+        if ((user != null) && (user.authenticate(userCredentials.getUsername(), userCredentials.getPassword()))) {
 
-            // Successful authentication; user found.
-            HashMap requestedAttributes = new HashMap();
-            if ((attributeRequest != null) && (attributeRequest.length > 0)) {
-
-                // Some attributes were requested.
-                HashMap allAttributes = (HashMap) userMap.get(username);
-                for (int i = 0; i < attributeRequest.length; i++)
-                    if (allAttributes.containsKey(attributeRequest[i].toLowerCase())) {
-
-                        // Requested attribute found.
-                        List requestedValues = (List) allAttributes.get(attributeRequest[i].toLowerCase());
-                        requestedAttributes.put(attributeRequest[i], requestedValues.toArray(new String[] {}));
-
-                    }
-            }
-
-            // Return found attributes.
-            return requestedAttributes;
+            // Successful authentication; return any requested user attributes.
+            return user.getAttributes(attributeRequest);
 
         } else {
 
             // Bad authentication.
-            throw new AuthenticationFailedException('\"' + username + "\" failed authentication");
+            throw new AuthenticationFailedException("User \"" + userCredentials.getUsername() + "\" failed authentication");
 
         }
 
     }
 
-
     /**
-     * Pro-forma declaration of the <code>close()</code> method. Does nothing
-     * in this case.
+     * Does nothing, but needed to fulfill the
+     * <code>DirectoryManagerBackend</code> interface.
+     * @see DirectoryManagerBackend#close()
      */
     public void close() {
 
