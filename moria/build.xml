@@ -19,6 +19,12 @@
     <mkdir dir="build.moria/WEB-INF/classes"/>
     <mkdir dir="build.mellon/WEB-INF/classes"/>
     <mkdir dir="dist"/>
+    <mkdir dir="build.moria/templates"/>
+    <copy todir="build.moria/templates">
+      <fileset dir="doc/templates">
+	<include name="**/*.vtl"/>
+      </fileset>
+    </copy>  
   </target>
 
   <target name="all:clean"
@@ -51,7 +57,10 @@
           depends="all:prepare">
     <delete file="dist/feide-moria.war"/>
     <jar jarfile="dist/feide-moria.war">
-      <fileset dir="build.moria" includes="WEB-INF/**"/>
+      <fileset dir="build.moria">
+        <include name="WEB-INF/**"/>
+        <include name="templates/**"/>
+      </fileset>
     </jar>
   </target>
 
