@@ -195,7 +195,7 @@ implements AuthenticationIF, ServiceLifecycle {
         String serviceName = null;
         if (p != null)
             serviceName = p.getName();
-	log.info("Client service requesting session: "+serviceName);
+	log.fine("Client service requesting session: "+serviceName);
         WebService ws = AuthorizationData.getInstance().getWebService(serviceName);
         
         if (ws == null) {

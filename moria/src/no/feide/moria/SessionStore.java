@@ -170,7 +170,7 @@ public class SessionStore {
     throws SessionException {
         log.finer("getSession(String)");
         if (sessionID == null || !sessions.containsKey(sessionID)) {
-            log.severe("No such session: "+sessionID);
+            log.fine("No such session: "+sessionID);
             throw new NoSuchSessionException("No such session: "+sessionID);
         } else
             return (Session)sessions.get(sessionID);
@@ -229,14 +229,14 @@ public class SessionStore {
                 /* Look for timed out SSO sessions. */
                 if (session.isAuthenticated() && session.isLocked()) {
                     if (!session.isValid(new Date().getTime()-timeoutSso)) {
-                        log.info("Invalidating SSO session (timeout): "+session.getID());
+                        log.fine("Invalidating SSO session (timeout): "+session.getID());
                         invalidatedSessions.add(session);
                     }
                 }
                 
                 else {
                     if (!session.isValid(new Date().getTime()-timeout)) {
-                        log.info("Invalidating session (timeout): "+session.getID());
+                        log.fine("Invalidating session (timeout): "+session.getID());
                         invalidatedSessions.add(session);
                     }
                 }

@@ -429,10 +429,12 @@ public class LoginServlet extends VelocityServlet {
         }
         
         catch (NoSuchSessionException e) {
+            log.warning("Session not found: "+id);
             return genLoginTemplate(request, response, context, null, NOSESSION);
         }
 
         catch (SessionException e) {
+            log.warning("Session exception:\n"+e);
             return genLoginTemplate(request, response, context, null, GENERIC);
         }
     }

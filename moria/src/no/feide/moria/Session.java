@@ -113,7 +113,7 @@ public class Session {
         
         this.noneSsoAttributes = (String[]) noneSsoAttributes.toArray(new String[noneSsoAttributes.size()]);
         this.allowSso = (webService.allowSsoForAttributes(attributes));
-        log.config("Allow SSO: "+this.allowSso+" ID: "+this.sessionID);
+        log.fine("Allow SSO: "+this.allowSso+" ID: "+this.sessionID);
     }
 
 
