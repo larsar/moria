@@ -52,8 +52,6 @@ public class BackendIndex {
     throws BackendException, ConfigurationException {
         log.finer("lookup(String)");
         
-		ArrayList urls = new ArrayList();
-        
         // Initialize the hash map, if we haven't already.
         synchronized (initialized) {
             if (!initialized.booleanValue()) {
@@ -64,6 +62,7 @@ public class BackendIndex {
                     domain = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".domain");
                     if (domain == null)
                         break;  // No more domains.
+					ArrayList urls = new ArrayList();
                     for (int j = 1; ; j++) {
                     	url = Configuration.getProperty("no.feide.moria.backend.ldap"+i+".url"+j);
                     	if (url == null)
@@ -79,7 +78,6 @@ public class BackendIndex {
                     }
                     
                     urlMap.put(domain, urls);
-                    urls.clear();
                 }
                 
             }
@@ -92,7 +90,7 @@ public class BackendIndex {
             throw new BackendException("Illegal user identifier; missing @: "+domain);
         } 
         domain = domain.substring(domain.indexOf('@')+1);
-        urls = (ArrayList)urlMap.get(domain);
+        ArrayList urls = (ArrayList)urlMap.get(domain);
         
         // Sanity check.
         if (urls == null) {
