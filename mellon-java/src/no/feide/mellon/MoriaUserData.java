@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.Iterator;
 
+import no.feide.moria.service.Attribute;
 
-import no.feide.login.moria.Authentication.Attribute;
 
 /**
  * @author Lars Preben S. Arnesen
