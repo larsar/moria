@@ -27,7 +27,9 @@
  
     <mkdir dir="dist"/>
     <mkdir dir="dist/doc"/>
-    <mkdir dir="dist/doc/javadoc"/>
+    <mkdir dir="dist/doc/javadoc"/>    
+    <mkdir dir="dist/doc/html"/>
+    <mkdir dir="dist/doc/pdf"/>
     <mkdir dir="build/WEB-INF/classes/templates"/>
     <copy file="jaxrpc-ri-runtime.xml"
           todir="build/WEB-INF"/>
@@ -115,6 +117,24 @@
         <include name="no/feide/moria/authorization/**"/>
       </fileset>
     </jar>
+  </target>
+
+  <target name="docbook"
+          description="Convert docbook documents to html/pdf">
+    <mkdir dir="dist/doc/html"/>
+    <mkdir dir="dist/doc/pdf"/>
+    <mkdir dir="dist/doc/html/images"/>
+  <copy todir="dist/doc/html/images">
+    <fileset dir="doc/design/diagrams">
+      <include name="*png"/>
+    </fileset>
+  </copy>
+  <exec executable="doc/bin/gendoc">
+     <arg line="doc/design dist/doc/html html" />
+  </exec>
+  <exec executable="gendoc">
+     <arg line="doc/design dist/doc/pdf pdf" />
+  </exec>
   </target>
 
   <target name="javadoc"
