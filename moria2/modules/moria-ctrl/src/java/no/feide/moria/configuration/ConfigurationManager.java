@@ -169,9 +169,15 @@ public final class ConfigurationManager {
         /* Timer delay */
         final int timerDelay;
         final String timerDelayStr = cmProps.getProperty(PROPS_PREFIX + TIMER_DELAY);
-        if (timerDelayStr == null || timerDelayStr.equals("")) { throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties cannot be a null value."); }
+        if (timerDelayStr == null || timerDelayStr.equals("")) {
+            throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY
+                    + "' in configuration manager properties cannot be a null value.");
+        }
         timerDelay = new Integer(timerDelayStr).intValue();
-        if (timerDelay < 1) { throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY + "' in configuration manager properties must be >= 1."); }
+        if (timerDelay < 1) {
+            throw new ConfigurationManagerException("'" + PROPS_PREFIX + TIMER_DELAY
+                    + "' in configuration manager properties must be >= 1.");
+        }
 
         /* Create listener for every module config file */
         for (int i = 0; i < NEEDS_LISTENER.length; i++) {
@@ -322,10 +328,12 @@ public final class ConfigurationManager {
 
         } catch (FileNotFoundException e) {
             props = null;
-            messageLogger.logCritical("Watched file disappeared from the file system, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
+            messageLogger.logCritical("Watched file disappeared from the file system, fileChangeEvent cancelled. File: "
+                    + configurationFile.getAbsolutePath());
         } catch (IOException e) {
             props = null;
-            messageLogger.logCritical("IOException during reading of authorization database, fileChangeEvent cancelled. File: " + configurationFile.getAbsolutePath());
+            messageLogger.logCritical("IOException during reading of authorization database, fileChangeEvent cancelled. File: "
+                    + configurationFile.getAbsolutePath());
         }
 
         if (props != null) {

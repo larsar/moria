@@ -104,7 +104,9 @@ public final class AuthorizationManager {
             throw new IllegalConfigException("allowSSO has to be set.");
         } else {
             allowSSOStr = element.getAttribute("sso").getValue();
-            if (!(allowSSOStr.equals("true") || allowSSOStr.equals("false"))) { throw new IllegalConfigException("allowSSO has to be 'true' or 'false'"); }
+            if (!(allowSSOStr.equals("true") || allowSSOStr.equals("false"))) {
+                throw new IllegalConfigException("allowSSO has to be 'true' or 'false'");
+            }
         }
 
         if (element.getAttribute("secLevel") != null) {
@@ -175,11 +177,16 @@ public final class AuthorizationManager {
 
         if (element == null) { throw new IllegalArgumentException("Element cannot be null"); }
 
-        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Subsystem") && !element.getName().equalsIgnoreCase("Organization")) { throw new IllegalConfigException("Element must be of type 'Operation', 'Subsystem' or 'Organization'"); }
+        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Subsystem")
+            && !element.getName().equalsIgnoreCase("Organization")) {
+            throw new IllegalConfigException("Element must be of type 'Operation', 'Subsystem' or 'Organization'");
+        }
 
         if (element.getAttribute("name") == null) { throw new IllegalConfigException("Element's name attribute must be set."); }
 
-        if (element.getAttributeValue("name").equalsIgnoreCase("")) { throw new IllegalConfigException("Element's name attribute cannot be an empty string."); }
+        if (element.getAttributeValue("name").equalsIgnoreCase("")) {
+            throw new IllegalConfigException("Element's name attribute cannot be an empty string.");
+        }
 
         return element.getAttributeValue("name");
     }
@@ -209,7 +216,10 @@ public final class AuthorizationManager {
         /* Validate element */
         if (element == null) { throw new IllegalArgumentException("Element cannot be null."); }
 
-        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") && !element.getName().equalsIgnoreCase("Affiliation") && !element.getName().equalsIgnoreCase("OrgsAllowed")) { throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems', 'Affiliation' or 'OrgsAllowed'"); }
+        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems")
+            && !element.getName().equalsIgnoreCase("Affiliation") && !element.getName().equalsIgnoreCase("OrgsAllowed")) {
+            throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems', 'Affiliation' or 'OrgsAllowed'");
+        }
 
         /* Create AuthorizationAttribute of all child elements */
         final Iterator it = (element.getChildren()).iterator();
@@ -325,7 +335,9 @@ public final class AuthorizationManager {
 
         if (element == null) { throw new IllegalArgumentException("Element cannot be null"); }
 
-        if (!element.getName().equalsIgnoreCase("ClientAuthorizationConfig")) { throw new IllegalConfigException("Wrong type of element: " + element.getName()); }
+        if (!element.getName().equalsIgnoreCase("ClientAuthorizationConfig")) {
+            throw new IllegalConfigException("Wrong type of element: " + element.getName());
+        }
 
         final List children = element.getChildren("Client");
         final Iterator it = children.iterator();
@@ -377,7 +389,9 @@ public final class AuthorizationManager {
         if (!activated) { throw new NoConfigException(); }
 
         /* Validate input parameters */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string."); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string.");
+        }
 
         return (AuthorizationClient) authzClients.get(servicePrincipal);
     }
@@ -566,7 +580,9 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate parameters */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -596,7 +612,9 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException, UnknownAttributeException {
 
         /* Validate arguments */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
         if (requestedAttributes == null) { throw new IllegalArgumentException("requestedAttributes cannot be null"); }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
@@ -626,7 +644,9 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -652,7 +672,9 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -678,7 +700,9 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -704,7 +728,9 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+        if (servicePrincipal == null || servicePrincipal.equals("")) {
+            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
+        }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }

@@ -143,7 +143,9 @@ final class AuthorizationClient {
      *             <code>operations</code>, or <code>attributes</code> are
      *             <code>null</code> or an empty string (where applicable).
      */
-      AuthorizationClient(final String name, final String displayName, final String url, final String language, final String home, final HashSet affiliation, final HashSet orgsAllowed, final HashSet operations, final HashSet subsystems, final HashMap attributes) {
+      AuthorizationClient(final String name, final String displayName, final String url, final String language,
+                          final String home, final HashSet affiliation, final HashSet orgsAllowed,
+                          final HashSet operations, final HashSet subsystems, final HashMap attributes) {
 
         if (name == null || name.equals("")) { throw new IllegalArgumentException("Name must be a non empty string."); }
 
@@ -352,7 +354,13 @@ final class AuthorizationClient {
         if (object == this) { return true; }
         if (object instanceof AuthorizationClient) {
             final AuthorizationClient client = (AuthorizationClient) object;
-            if (client.getName().equals(name) && client.getDisplayName().equals(displayName) && client.getURL().equals(url) && client.getLanguage().equals(language) && client.getHome().equals(home) && client.getAffiliation().equals(affiliation) && client.getOrgsAllowed().equals(orgsAllowed) && client.getOperations().equals(operations) && client.getSubsystems().equals(subsystems) && client.getAttributes().equals(attributes)) { return true; }
+            if (client.getName().equals(name) && client.getDisplayName().equals(displayName)
+                && client.getURL().equals(url) && client.getLanguage().equals(language)
+                && client.getHome().equals(home) && client.getAffiliation().equals(affiliation)
+                && client.getOrgsAllowed().equals(orgsAllowed) && client.getOperations().equals(operations)
+                && client.getSubsystems().equals(subsystems) && client.getAttributes().equals(attributes)) {
+                return true;
+            }
         }
         return false;
     }
@@ -393,7 +401,9 @@ final class AuthorizationClient {
      */
     public String toString() {
 
-        return "Name: " + name + " DisplayName: " + displayName + " URL: " + url + " Language: " + language + " Home: " + home + " Affiliation: " + affiliation + " Operations: " + operations + "Attributes: " + attributes;
+        return "Name: " + name + " DisplayName: " + displayName + " URL: " + url
+               + " Language: " + language + " Home: " + home + " Affiliation: " + affiliation
+               + " Operations: " + operations + "Attributes: " + attributes;
     }
 
 
