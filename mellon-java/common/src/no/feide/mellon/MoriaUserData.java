@@ -23,7 +23,7 @@ import java.util.Vector;
 import java.util.Iterator;
 
 
-import no.feide.login.moria.Authentication.Attribute;
+import no.feide.moria.service.Attribute;
 
 /**
  * @author Lars Preben S. Arnesen
