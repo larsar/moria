@@ -47,7 +47,7 @@ public final class Attribute implements Serializable {
     private static TypeDesc typeDesc = new TypeDesc(Attribute.class);
 
     static {
-        typeDesc.setXmlType(new QName("http://localhost:8080/moria/v1_0/Authentication", "Attribute"));
+        typeDesc.setXmlType(new QName("http://localhost:8080/moria/v2_0/Authentication", "Attribute"));
         ElementDesc elemField = new org.apache.axis.description.ElementDesc();
 
         elemField.setFieldName("name");
