@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.naming.AuthenticationException;
+import javax.naming.AuthenticationNotSupportedException;
 import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.LimitExceededException;
@@ -282,6 +283,13 @@ implements DirectoryManagerBackend {
 
                         // Authentication failed, but we may have other
                         // references.
+                        log.logInfo("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
+                        continue;
+
+                    } catch (AuthenticationNotSupportedException e) {
+
+                        // Password authentication not supported for the DN.
+                        // We may still have other references.
                         log.logInfo("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
                         continue;
 
