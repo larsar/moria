@@ -184,7 +184,7 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logWarn("Unable to close the backend connection", e);
+                            log.logWarn("Unable to close the backend connection to " + references[j], e);
                         }
 
                 }
@@ -251,7 +251,7 @@ implements DirectoryManagerBackend {
                             // No user element found. Try to guess the RDN.
                             rdn = userCredentials.getUsername();
                             rdn = guessedAttribute + '=' + rdn.substring(0, rdn.indexOf('@'));
-                            log.logWarn("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn);
+                            log.logInfo("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn);
 
                         }
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
@@ -267,7 +267,7 @@ implements DirectoryManagerBackend {
 
                         // Authentication failed, but we may have other
                         // references.
-                        log.logWarn("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j]);
+                        log.logInfo("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j]);
                         continue;
 
                     }
@@ -358,7 +358,7 @@ implements DirectoryManagerBackend {
             // Did we get an attribute back at all?
             Attribute oldAttr = oldAttrs.get(attributes[i]);
             if (oldAttr == null)
-                log.logWarn("Requested attribute " + attributes[i] + " not found on " + url);
+                log.logInfo("Requested attribute " + attributes[i] + " not found on " + url);
             else {
 
                 // Map the attribute values to String[].
@@ -441,7 +441,7 @@ implements DirectoryManagerBackend {
         } catch (NameNotFoundException e) {
 
             // Element not found. Possibly non-existing reference.
-            log.logWarn("Could not find " + pattern + " on " + url); // Necessary?
+            log.logInfo("Could not find " + pattern + " on " + url); // Necessary?
             return null;
 
         } catch (NamingException e) {
