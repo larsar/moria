@@ -157,8 +157,6 @@ implements AuthenticationIF, ServiceLifecycle {
     throws RemoteException {
         log.finer("requestSession(String[], String, String, boolean)");
         
-        log.info("ATTR: "+attributes[0]);
-
         /* If no attributes are given, then create an empty attribute
          * array. */
         if (attributes == null) {
