@@ -122,8 +122,7 @@ public class MoriaControllerTest extends TestCase {
      * @see MoriaController#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean,
             *      java.lang.String)
      */
-    public void testInitiateMoriaAuthentication()
-            throws AuthorizationException, IllegalInputException, UnknownTicketException, InoperableStateException {
+    public void testInitiateMoriaAuthentication() throws MoriaControllerException {
 
         controllerInitialization();
 
@@ -178,8 +177,8 @@ public class MoriaControllerTest extends TestCase {
         }
 
         /* Legal use */
-        String ticket;
-        ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
+        String ticket = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
+                                                               validPrincipal);
         assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
 
         ticket =
@@ -187,9 +186,7 @@ public class MoriaControllerTest extends TestCase {
         assertNotNull("Login ticket should be valid", MoriaController.getServiceProperties(ticket));
     }
 
-    public void testAttemptLogin() throws UnknownTicketException, InoperableStateException,
-                                          IllegalInputException, AuthenticationException, AuthorizationException,
-                                          DirectoryUnavailableException {
+    public void testAttemptLogin() throws MoriaControllerException {
         String validSSOTicketId = "1234";
         String validLoginTicketId = "4321";
 
@@ -302,9 +299,7 @@ public class MoriaControllerTest extends TestCase {
         validateMaps(expectedAttrs, actualAttrs);
     }
 
-    public void testAttemptSingleSignOn() throws UnknownTicketException, InoperableStateException,
-                                                 IllegalInputException, AuthorizationException,
-                                                 AuthenticationException, DirectoryUnavailableException {
+    public void testAttemptSingleSignOn() throws MoriaControllerException {
         /* Check controller initialization */
         controllerInitialization();
 
@@ -359,9 +354,7 @@ public class MoriaControllerTest extends TestCase {
         validateMaps(expectedAttrs, actualAttrs);
     }
 
-    public void testGetUserAttributes() throws IllegalInputException, InoperableStateException, UnknownTicketException,
-                                               AuthorizationException, AuthenticationException,
-                                               DirectoryUnavailableException {
+    public void testGetUserAttributes() throws MoriaControllerException {
         /* Check controller initialization */
         controllerInitialization();
 
@@ -537,7 +530,6 @@ public class MoriaControllerTest extends TestCase {
         MoriaController.getSecLevel(ticket);
     }
 
-    // TODO: Implement directNonInteractiveAuthentication
     public void testDirectNonInteractiveAuthentication() throws IllegalInputException, InoperableStateException,
                                                                 AuthorizationException, AuthenticationException {
         controllerInitialization();
@@ -618,7 +610,96 @@ public class MoriaControllerTest extends TestCase {
 
     }
 
-    // TODO: Implement proxyAuthentication
+    public void testProxyAuthentication() throws MoriaControllerException {
+        controllerInitialization();
+
+        String validProxyTicketId = "1234";
+
+        /* Invalid arguments */
+        try {
+            MoriaController.proxyAuthentication(null, validProxyTicketId, validPrincipal);
+            fail("IllegalInputException should be raised, attributes is null.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.proxyAuthentication(validAttrs, null, validPrincipal);
+            fail("IllegalInputException should be raised, proxyTicketId is null.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.proxyAuthentication(validAttrs, "", validPrincipal);
+            fail("IllegalInputException should be raised, proxyTicketId is an emtpy string.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.proxyAuthentication(validAttrs, validProxyTicketId, null);
+            fail("IllegalInputException should be raised, servicePrincipal is null.");
+        } catch (IllegalInputException success) {
+        }
+        try {
+            MoriaController.proxyAuthentication(validAttrs, validProxyTicketId, "");
+            fail("IllegalInputException should be raised, servicePrincipal is an emtpy string.");
+        } catch (IllegalInputException success) {
+        }
+
+        /* Illegal attributes */
+
+        try {
+            MoriaController.proxyAuthentication(validAttrs, validProxyTicketId, validPrincipal);
+            fail("IllegalInputException should be raised, servicePrincipal is an emtpy string.");
+        } catch (IllegalInputException success) {
+        }
+
+        String[] attrsProxy = new String[]{"tgt"};
+        String loginTicketId = MoriaController.initiateAuthentication(attrsProxy, validPrefix, validPostfix, false,
+                                                                      validPrincipal);
+        Map tickets = MoriaController.attemptLogin(loginTicketId, null, validUsername, validPassword);
+        Map resultAttrs = MoriaController.getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET),
+                                                         validPrincipal);
+        /* Ticket generation */
+        String tgt = (String) resultAttrs.get("tgt");
+        assertNotNull("TGT should not be null", tgt);
+
+        /* Asking for more attributes than the ones that has been cached */
+        String proxyTicket = MoriaController.getProxyTicket(tgt, validPrincipal, "sub1");
+        try {
+            MoriaController.proxyAuthentication(new String[]{"attr1", "attr2", "attr3"}, proxyTicket, "sub1");
+            fail("AuthorizationException should be raised, asking for non-cached attributes.");
+        }  catch (AuthorizationException success) {
+        }
+        /* Ticket should be removed now due to the unauthorized request above */
+        try {
+            MoriaController.proxyAuthentication(new String[]{"attr1", "attr2"}, proxyTicket, "sub1");
+            fail("UnknownTicketException should be raised, proxy ticket should have been removed.");
+        }  catch (UnknownTicketException success) {
+        }
+
+        /* Unauthorized attributes */
+        proxyTicket = MoriaController.getProxyTicket(tgt, validPrincipal, "sub1");
+        try {
+            MoriaController.proxyAuthentication(new String[]{"doesNotExist"}, proxyTicket, "sub1");
+            fail("AuthorizationException should be raised, asking for non-cached attributes.");
+        }  catch (AuthorizationException success) {
+        }
+
+        proxyTicket = MoriaController.getProxyTicket(tgt, validPrincipal, "sub1");
+        resultAttrs = MoriaController.proxyAuthentication(new String[]{"attr1", "attr2"}, proxyTicket, "sub1");
+
+        Map expected = new HashMap();
+        expected.put("attr1", "value1");
+        expected.put("attr2", "value2");
+
+        /* Check attributes */
+        validateMaps(expected, resultAttrs);
+
+        /* Ticket should be removed after use */
+        try {
+            MoriaController.proxyAuthentication(new String[]{"attr1", "attr2"}, proxyTicket, "sub1");
+            fail("UnknownTicketException should be raised, proxy ticket have been used.");
+        }  catch (UnknownTicketException success) {
+        }
+    }
     // TODO: Implement getProxyTicket
     // TODO: Implement verifyUserExistence
+    // TODO: Implement invalidateSSOTicket
 }
