@@ -18,17 +18,20 @@ public class IndexedReference {
      * @param explicitReference
      *            <code>true</code> if this is a fully qualified reference to
      *            an external element, otherwise <code>false</code>.
+     * @throws NullPointerException
+     *             If <code>references</code> is <code>null</code>.
      * @throws IllegalArgumentException
-     *             If <code>references</code> is either <code>null</code> or
-     *             an empty array.
+     *             If <code>references</code> is an an empty array.
      */
     public IndexedReference(String[] references, boolean explicitReference) {
 
         super();
 
         // Sanity check.
-        if ((references == null) || (references.length == 0))
-            throw new IllegalArgumentException("References cannot be NULL or an empty string");
+        if (references == null)
+            throw new NullPointerException("References cannot be NULL");
+        if (references.length == 0)
+            throw new IllegalArgumentException("References cannot be an empty array");
 
         // Assignments.
         myReferences = (String[]) references.clone();
