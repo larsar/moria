@@ -483,4 +483,13 @@ public class Session {
         cachedAttributes = attrs;
     }
     
+    
+    /**
+     * Return the attributes that the web service has requested from Moria.
+	 * @return request Array of attributes
+	 */
+	public String[] getRequestedAttributes() {
+    	return request;
+    }
+    
 }
