@@ -81,6 +81,9 @@
     <copy todir="target/docs/moria-web" failonerror="false">
       <fileset dir="modules/moria-web/target/docs"/>
     </copy>
+    <copy todir="target/docs/mellon" failonerror="false">
+      <fileset dir="modules/mellon/target/docs"/>
+    </copy>
 
   </goal>
 
