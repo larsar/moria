@@ -21,11 +21,23 @@
     <servlet-class>no.feide.moria.servlet.LoginServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-
+ 
+  <servlet>
+    <servlet-name>AxisServlet</servlet-name>
+    <servlet-class>no.feide.moria.servlet.SimpleAxisServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  
   <servlet>
     <servlet-name>Logout</servlet-name>
     <servlet-class>no.feide.moria.servlet.LogoutServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
+  </servlet>  
+
+  <servlet>
+    <servlet-name>InformationServlet</servlet-name>
+    <servlet-class>no.feide.moria.servlet.InformationServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
   </servlet>
   
   <servlet>
@@ -35,23 +47,15 @@
   </servlet>
 
   <servlet>
-    <servlet-name>AxisServlet</servlet-name>
-    <servlet-class>no.feide.moria.servlet.SimpleAxisServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>InformationServlet</servlet-name>
-    <servlet-class>no.feide.moria.servlet.InformationServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
+    <servlet-name>BackendStatus</servlet-name>
+    <servlet-class>no.feide.moria.servlet.BackendStatusServlet</servlet-class>
+    <load-on-startup>6</load-on-startup>
+  </servlet>  
   
    <servlet>
     <servlet-name>Information.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/information.jsp</jsp-file>
-  </servlet>
-  
-  
+  </servlet> 
 
   <servlet>
     <servlet-name>Status.JSP</servlet-name>
@@ -126,6 +130,11 @@
   <servlet-mapping>
     <servlet-name>Demo</servlet-name>
     <url-pattern>/Demo</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>BackendStatus</servlet-name>
+    <url-pattern>/BackendStatus</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
