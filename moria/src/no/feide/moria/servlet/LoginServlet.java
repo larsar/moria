@@ -207,11 +207,14 @@ public class LoginServlet extends VelocityServlet {
         String sessionID = null;
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
-        
+        log.info("DEBUG: 1");
         if (session != null) {
+        log.info("DEBUG: 2");
             sessionID = session.getID();
 
+        log.info("DEBUG: 3");
             if (!session.authenticationInitiated()) {
+        log.info("DEBUG: 4");
                 log.warning("User tried to authenticate without requesting login page first. "+session.getID());
                 throw new Exception("Login page has to be requested before attempting login.");
             }
@@ -219,39 +222,52 @@ public class LoginServlet extends VelocityServlet {
         }
 
         if (acceptLanguage == null || acceptLanguage.equals("")) 
+        log.info("DEBUG: 5");
             acceptLanguage = "no";
 
         StringTokenizer tokenizer = new StringTokenizer(acceptLanguage, ",");
         Locale locale = null;
+        log.info("DEBUG: 6");
 
         /* Find fallback resource bundle. */
         try {
+        log.info("DEBUG: 7");
             fallback = ResourceBundle.getBundle(bundleName, new Locale("bogus"));
         }
         catch (MissingResourceException e) {
+        log.info("DEBUG: 8");
             /* No fallback */
         }            
 
         /* Parse Accept-Language and find matching resource bundle */
         while (tokenizer.hasMoreTokens()) {
+        log.info("DEBUG: 9");
             String lang = tokenizer.nextToken();
             int index;
+        log.info("DEBUG: 10");
 
             /* Languages are devided by ";" */
             if ((index = lang.indexOf(";")) != -1) {
+        log.info("DEBUG: 11");
                 lang = lang.substring(0, index);
             }
+        log.info("DEBUG: 12");
 
             lang = lang.trim();
+        log.info("DEBUG: 13");
 
             /* Language and country is devided by "-" (optional) */
             if ((index = lang.indexOf("-")) != -1) {
+        log.info("DEBUG: 14");
                 lang = lang.substring(0, index);
             }
+        log.info("DEBUG: 15");
             
             
             locale = new Locale(lang);
+        log.info("DEBUG: 16");
             bundle = ResourceBundle.getBundle(bundleName, locale);
+        log.info("DEBUG: 17");
 
             /* Abort search if a bundle (not fallback) is found */
             if (bundle != fallback) 
@@ -263,23 +279,27 @@ public class LoginServlet extends VelocityServlet {
 
         }
 
+        log.info("DEBUG: 18");
 
 
         /* Should never happen, but just in case. */
         if (bundle == null)
             bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
        
+        log.info("DEBUG: 19");
 
         String wsName = null;
         String wsURL  = null;
 
         if (session != null) {
+        log.info("DEBUG: 20");
             wsName = session.getWebService().getName();
             wsURL  = session.getWebService().getUrl();
         }
 
         /* Set template-variables from properties */
         for (Enumeration e = bundle.getKeys(); e.hasMoreElements();) {
+        log.info("DEBUG: 21");
             String key = (String) e.nextElement();
             String value = bundle.getString(key);
             int index;
@@ -294,9 +314,11 @@ public class LoginServlet extends VelocityServlet {
         }   
 
         /* Get realm from cookie. */
+        log.info("DEBUG: 22");
         Cookie[] cookies = request.getCookies();
         context.put("preset_realm", "");
         for (int i = 0; i < cookies.length; i++) {
+        log.info("DEBUG: 23");
             if (cookies[i].getName().equals("realm")) {
                 context.put("preset_realm", cookies[i].getValue());
             }
@@ -304,16 +326,19 @@ public class LoginServlet extends VelocityServlet {
 
         /* Set or reset error messages */
         if (errorType != null) {
+        log.info("DEBUG: 24");
             context.put("errorMessage", context.get("error_"+errorType));
             context.put("errorDescription", context.get("error_"+errorType+"_desc"));
         }
      
         else {
+        log.info("DEBUG: 25");
             context.remove("errorMessage");
             context.remove("errorDescription");
         }
 
         if (sessionID != null) { 
+        log.info("DEBUG: 26");
             context.put("loginURL", loginURL+"?id="+sessionID);
 
             String secLevel = session.getAttributesSecLevel().toLowerCase();
@@ -321,9 +346,11 @@ public class LoginServlet extends VelocityServlet {
 
             /* Detailed list of attributes */
             if (showAllAttributes) {
+        log.info("DEBUG: 27");
                 Vector attrNames = new Vector();
                 HashMap attributes = session.getWebService().getAttributes();
                 for (Iterator it = attributes.keySet().iterator(); it.hasNext();) {
+        log.info("DEBUG: 28");
                     attrNames.add(context.get("ldap_"+it.next()));
                 }
                 context.put("attrNames", attrNames);
@@ -335,6 +362,7 @@ public class LoginServlet extends VelocityServlet {
                     context.put("showHideLink", "");
             }
             else if (context.get("attrs_show") != null) {
+        log.info("DEBUG: 29");
                 context.put("showHideLink", "<A href=\""+loginURL+"?id="+sessionID+"&showAttrs=yes\">"+context.get("attrs_show")+"</A>");
             }
             else 
@@ -344,6 +372,7 @@ public class LoginServlet extends VelocityServlet {
             /* If no sessionID then remove loginURL */
             context.remove("loginURL");
 
+        log.info("DEBUG: 30");
         
 
 
