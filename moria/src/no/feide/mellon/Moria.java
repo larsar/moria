@@ -28,7 +28,6 @@ import no.feide.moria.service.*;
 /**
  * Represents the interface to Moria, hiding the internals of the
  * Mellon-Moria communication.
- * @author Cato Olsen
  */
 public class Moria {
     
@@ -43,22 +42,14 @@ public class Moria {
     
     
     /**
-     * Private constructor. Will prepare SSL and JAX-RPC stub.
+     * Private constructor. Will prepare JAX-RPC stub.
      */
     private Moria() {
         log.finer("Moria()");
-        
-        // Fix some properties.
-	String s = System.getProperty("no.feide.mellon.trustStore");
-	log.config("no.feide.mellon.trustStore="+s);
-        System.setProperty("javax.net.ssl.trustStore", s);
-	s = System.getProperty("no.feide.mellon.trustStorePassword");
-	log.config("no.feide.mellon.trustStorePassword="+s);
-        System.setProperty("javax.net.ssl.trustStorePassword", s);
-        
+                
         // Create service proxy and set credentials.
         stub = (Stub)(new FeideAuthentication_Impl().getAuthenticationIFPort());
-	s = System.getProperty("no.feide.mellon.serviceUsername");
+	String s = System.getProperty("no.feide.mellon.serviceUsername");
 	log.config("no.feide.mellon.serviceUsername="+s);
         stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, s);
 	s = System.getProperty("no.feide.mellon.servicePassword");
