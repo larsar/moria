@@ -1,0 +1,193 @@
+<project name="W3LS (Mellon/Moria)"
+         default="all:build"
+         basedir=".">
+
+  <!-- User's properties override project defaults. -->
+  <property file="${user.home}/build.properties"/>
+  <property file="build.properties"/>
+
+
+
+  <!-- Targets to build the Mellon API. -->
+  <target name="prepare"
+          description="Mellon API: Prepare build directory">
+     <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
+        <os family="windows"/>
+     </condition>
+     <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.sh">
+        <not>
+           <os family="windows"/>
+        </not>
+     </condition>
+
+    <mkdir dir="build/api"/>
+    <mkdir dir="build/filter"/>
+    <mkdir dir="build/demo/WEB-INF/classes"/>
+    <copy todir="build/demo/WEB-INF/lib">
+      <fileset dir="${include_libs}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </copy>  
+    <mkdir dir="dist"/>
+  </target>
+
+  <target name="wsdl"
+          description="Prepare WSDL file">
+    <mkdir dir="build/WEB-INF/classes"/>
+    <copy file="${wsdl_file}"
+          todir=""/>
+    <exec executable="sed" output="Authentication.wsdl">
+      <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! ${wsdl_file}"/>
+    </exec>
+  </target>
+
+  <target name="wscompile"
+          description="Mellon API: Generate JAX-RPC client stubs"
+          depends="prepare,wsdl">
+    <exec executable="${wscompile}">
+      <arg line="-gen:client"/>
+      <arg line="-d build/api"/>
+      <arg line="-verbose"/>
+      <arg line="config/jaxrpc.xml"/>
+    </exec>
+  </target>
+
+  <target name="compile"
+          description="Mellon API: Compile source"
+          depends="wscompile">
+    <javac srcdir="."
+           debug="true"
+           destdir="build/api"
+           includes="no/feide/mellon/*"
+           excludes="no/feide/mellon/servlet/*,no/feide/mellon/filter/*">
+      <classpath>
+        <fileset dir="${include_libs}" includes="*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+  
+  <target name="jar"
+          description="Mellon API: Create JAR file"
+          depends="compile">
+    <delete file="dist/feide-mellon-api*.jar"/>
+    <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build/api"/>
+  </target>
+
+  <target name="build"
+          description="Mellon API: All steps necessary to build the JAR"
+          depends="jar,filter:jar,demo:war"/>
+
+  <target name="javadoc"
+          description="Mellon API: Generate JavaDoc">
+    <javadoc sourcepath="."
+             destdir="build/javadoc"
+             packagenames="no.feide.mellon,no.feide.mellon.filter"
+             source="1.4"> 
+      <classpath>
+         <fileset dir="${include_libs}">
+          <include name="*.jar"/>
+        </fileset>
+        <fileset file="${servlet_jar}"/>
+      </classpath>
+    </javadoc>
+  </target>
+
+  <target name="clean"
+          description="Mellon API: Clean up">
+    <delete dir="build"/>
+    <delete dir="dist"/>
+  </target>
+    
+
+  <!-- Targets to build the Mellon servlet filter. -->
+  <target name="filter:compile"
+          description="Mellon filter: Compile source"
+          depends="jar">
+    <javac srcdir="."
+           debug="true"
+           destdir="build/filter"
+           includes="no/feide/mellon/filter/*">
+      <classpath>
+        <fileset dir="lib/" includes="*.jar"/>
+        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
+        <fileset file="${servlet_jar}"/>        
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="filter:jar"
+          description="Mellon filter: Create JAR file"
+          depends="filter:compile">
+    <delete file="dist/feide-mellon-filter*.jar"/>
+    <jar destfile="dist/feide-mellon-filter-${mellon_tag}.jar" basedir="build/filter"/>
+  </target>
+
+  
+  <!-- Targets to build a Mellon servlet demo. -->
+  <target name="demo:prepare"
+          description="Mellon demo: Prepare build directory">
+    <mkdir dir="build/demo"/>
+    <mkdir dir="dist"/>
+    <delete file="build/demo/WEB-INF/web.xml"/>
+    <delete file="build/demo/WEB-INF/classes/mellon.properties"/>
+    <delete file="dist/feide-mellon-demo.war"/>
+    <copy file="config/web.xml" toFile="build/demo/WEB-INF/web.xml"/>
+    <echo message="Using config: ${mellon_config}"/>
+    <copy file="${mellon_config}"
+          toFile="build/demo/WEB-INF/classes/mellon.properties"/>
+    <copy todir="build/demo/WEB-INF/lib">
+      <fileset dir="dist" includes="**/feide-mellon*.jar"/>
+    </copy>      
+  </target>
+  
+  <target name="demo:compile"
+          description="Mellon demo: Compile source"
+          depends="filter:jar,demo:prepare,jar,filter:jar">
+    <javac srcdir="src"
+           debug="true"
+           destdir="build/demo/WEB-INF/classes"
+           includes="no/feide/mellon/servlet/*">
+      <classpath>
+        <fileset dir="lib/" includes="*.jar"/>
+        <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
+        <fileset file="${servlet_jar}"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="demo:war"
+          description="Mellon demo: Create WAR file"
+          depends="demo:compile">
+    <jar destfile="dist/feide-mellon-demo.war" basedir="build/demo"/>
+  </target>
+  
+  <target name="demo:build"
+          description="Mellon demo: All steps necessary to build the WAR"
+          depends="demo:war"/>
+  
+
+  <target name="demo:clean"
+          description="Mellon demo: Clean up">
+    <delete dir="build/demo"/>
+  </target>
+
+  <target name="zip"
+          description="Mellon jars, docs and example code in zip-file."
+          depends="jar">
+    <copy todir="build/zip">
+      <fileset dir="dist" includes="**/feide-mellon-api-${mellon_tag}.jar"/>
+      <fileset dir="config" includes="mellon.properties"/>
+      <fileset dir="doc" includes="SimpleCreateAuthSession.java"/>
+      <fileset dir="${include_libs}">
+        <include name="**/*.jar"/>
+      </fileset>
+     </copy>   
+     <copy todir="build/zip/javadoc">
+       <fileset dir="build/javadoc"/>
+     </copy>
+
+     <zip destfile="dist/mellon.zip">
+       <fileset dir="build/zip"/>
+     </zip>
+  </target>
+</project>
