@@ -31,6 +31,14 @@ implements DirectoryManagerBackend {
      */
     public UserAttribute[] authenticate(Credentials userCredentials, String[] attributeRequest)
     throws BackendException {
+        
+        // Sanity check.
+        if (userCredentials == null) {
+            
+            // Bad authentication.
+            throw new AuthenticationFailedException("Anonymous user cannot be authenticated");
+            
+        }
 
         // "Authentication", sort of.
         String username = userCredentials.getUsername();
@@ -60,6 +68,10 @@ implements DirectoryManagerBackend {
      *         <code>Affiliate</code>. If not, will contain an empty array.
      */
     private UserAttribute[] prepareAttributes(String[] attributeRequest) {
+        
+        // Sanity check.
+        if (attributeRequest == null)
+            return new UserAttribute[] {};
 
         // Check whether eduPersonAffiliation exists in the attribute request.
         for (int i = 0; i < attributeRequest.length; i++)
