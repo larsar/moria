@@ -17,7 +17,7 @@
  */
 package no.feide.moria.directory;
 
-import java.util.prefs.Preferences;
+import java.util.Properties;
 
 /**
  * The Directory Manager (DM) component. Responsible for all backend
@@ -30,8 +30,12 @@ public class DirectoryManager {
     /**
      * @param config
      */
-    public void setConfig(Preferences config) {
-        // TODO: Implement.
+    public void setConfig(Properties config)
+    throws DirectoryManagerConfigurationException {
+        
+        // Pass on to the configuration handler.
+        DirectoryManagerConfiguration.read(config);
+        
     }
 
 }
