@@ -33,6 +33,12 @@
     <servlet-class>no.feide.moria.servlet.ClientServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
+  
+  <servlet>
+    <servlet-name>Demo</servlet-name>
+    <servlet-class>no.feide.moria.servlet.DemoServlet</servlet-class>
+    <load-on-startup>6</load-on-startup>
+  </servlet>
 
   <servlet>
     <servlet-name>AxisServlet</servlet-name>
@@ -131,6 +137,11 @@
   <servlet-mapping>
     <servlet-name>Client</servlet-name>
     <url-pattern>/Client</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>Demo</servlet-name>
+    <url-pattern>/Demo</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
