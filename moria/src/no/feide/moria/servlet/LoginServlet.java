@@ -300,13 +300,8 @@ public class LoginServlet extends VelocityServlet {
         String id = request.getParameter("id");
         
         try {
-            
             Session session = sessionStore.getSession(id);
-           
-            
-            // Should also generate new sessionID
-            // (SessionStore.confirmSession()) to avoid the web
-            // service to do authentication without users intervention.
+            sessionStore.renameSession(session);
             return genLoginTemplate(request, response, context, session.getID(), null);
         }
         
@@ -315,7 +310,6 @@ public class LoginServlet extends VelocityServlet {
         }
 
         catch (SessionException e) {
-            
             return genLoginTemplate(request, response, context, null, GENERIC);
         }
     }
