@@ -163,7 +163,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="authentication_model.png" format="PNG" />
+          <imagedata fileref="diagrams/moria.png" format="PNG" />
         </imageobject>
       </mediaobject>
     </figure>

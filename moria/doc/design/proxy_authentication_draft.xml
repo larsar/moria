@@ -140,7 +140,7 @@
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="proxy.eps" format="EPS" />
+            <imagedata fileref="diagrams/proxy.png" format="EPS" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -192,7 +192,7 @@
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="kerberos.eps" format="EPS" />
+            <imagedata fileref="diagrams/kerberos.png" format="EPS" />
           </imageobject>
         </mediaobject>
       </figure>

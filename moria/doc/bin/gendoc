@@ -1,0 +1,60 @@
+#!/bin/bash
+
+
+src=$PWD/$1
+out=$PWD/$2
+type=$3
+
+
+# Abort if directory (with xml files) isn't specified
+if [ ! "$src" ] ; then
+  echo "No source directory is specified."
+  exit -1
+fi
+
+# Abort if no ouput directory is specified
+if [ ! "$out" ] ; then
+  echo "No ouput directory is specified."
+  exit -1
+fi
+
+# Abort if no ouput directory is specified
+if [ ! "$type" ] ; then
+  echo "No type is specified (html, pdf)."
+  exit -1
+fi
+
+
+# Check if directory exists and jump into it
+if [ -d "$src" ] ; then
+  cd $src
+else
+  echo "$src is not a directory"
+  exit -1
+fi
+
+# Check if output directory exists
+if [ ! -d "$out" ] ; then
+  echo "$out is not a directory"
+  exit -1
+fi
+
+
+# Run docbook utils for all xml files
+for f in *.xml ; do 
+  doc=`echo $f|sed -e s/\.xml//`
+ 
+  if [ $type == "pdf" ] ; then
+    docbook2pdf -o $out $src/$doc.xml
+
+  elif [ $type == "html" ] ; then
+    mkdir "$out/$doc"
+    docbook2html -o $out/$doc $src/$doc.xml
+  
+  else
+    echo "Nothing to do for $type conversion."
+  fi  
+  
+done
+
+
