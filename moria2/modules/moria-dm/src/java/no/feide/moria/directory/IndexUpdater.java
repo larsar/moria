@@ -90,7 +90,7 @@ extends TimerTask {
      *             If the index file does not exist, or if unable to read from
      *             the file, or if unable to instantiate the index as a
      *             <code>DirectoryManagerIndex</code> object.
-     * @see File#lastModified()
+     * @see java.io.File#lastModified()
      * @see DirectoryManager#setConfig(Properties)
      */
     protected DirectoryManagerIndex readIndex() {
