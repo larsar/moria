@@ -32,8 +32,7 @@ $Id$
     <section name="Introduction">
 
       <p>
-        Moria is implemented as a <emph>web service</emph>, thus requires that
-        the web service uses SOAP to talk to Moria. The easiest way to use Moria is
+        Moria is implemented with a SOAP interface. The easiest way to use Moria is
         to use a SOAP implementation for the same programming language used
         by the service (that are going to use Moria). See the last section
         for more information about SOAP implementations for different programming
@@ -51,7 +50,7 @@ $Id$
 
     <section name="WSDL Interface">
       <p>
-        The WSDL interface defines Moria's API and is best documented by looking at
+        The WSDL interface defines Moria's API and is best documented by 
         the WSDL it self and the
         <a href="moria-web/apidocs/index.html">Javadoc for the classes used to implement Moria</a>. A
         deployed Moria instance has it's own auto-generated WSDL, available via HTTP.
