@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import no.feide.moria.directory.backend.AuthenticationFailedException;
-import no.feide.moria.directory.backend.BackendException;
 
 import junit.framework.Assert;
 import junit.framework.Test;
@@ -32,7 +31,7 @@ extends TestCase {
 
     /** The user credentials used. */
     private static Credentials goodCredentials = new Credentials("user@some.realm", "password");
-    
+
     /** Non-existing user credentials. */
     private static Credentials badCredentials = new Credentials("foo", "bar");
 
@@ -41,10 +40,10 @@ extends TestCase {
 
     /** The expected attribute values. */
     private static final String[] goodValues = {"someValue"};
-    
+
     /** The Directory Manager instance. */
     private DirectoryManager dm;
-    
+
     /** The dummy configuration file. */
     private static final String goodConfiguration = "src/test/conf/DummyConfiguration.xml";
 
@@ -89,23 +88,22 @@ extends TestCase {
         config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
 
         try {
-            
+
             // Test successful authentication.
             dm.setConfig(config);
             HashMap attributes = dm.authenticate(goodCredentials, new String[] {});
-            
+
             // Verify attributes.
             Assert.assertEquals("Attributes were returned", attributes.size(), 0);
-         
-            
+
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
             Assert.fail("Unexpected DirectoryManagerException");
         }
 
     }
-    
-    
+
+
     /**
      * Successful authentication with attribute request.
      */
@@ -116,26 +114,26 @@ extends TestCase {
         config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
 
         try {
-            
+
             // Test successful authentication.
             dm.setConfig(config);
             HashMap attributes = dm.authenticate(goodCredentials, goodRequest);
-            
+
             // Verify attributes.
             Assert.assertNotNull("No attributes returned", attributes);
             Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.size());
-            String[] values = (String[])attributes.get(goodRequest[0]);
+            String[] values = (String[]) attributes.get(goodRequest[0]);
             Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
             Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
-            
+
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
             Assert.fail("Unexpected AuthenticationFailedException");
         }
 
     }
-    
-    
+
+
     /**
      * Failed authentication without any attribute request.
      */
@@ -146,28 +144,28 @@ extends TestCase {
         config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
 
         try {
-            
+
             // Test unsuccessful authentication.
-            dm.setConfig(config);     
+            dm.setConfig(config);
             HashMap attributes = null;
             attributes = dm.authenticate(badCredentials, new String[] {});
             Assert.assertNull("Attributes were returned", attributes);
             Assert.fail("Bad authentication succeeded");
-            
+
         } catch (AuthenticationFailedException e) {
             // Expected.
         }
 
     }
-    
-    
+
+
     /**
      * Authentication attempt without configuration set.
      */
     public void testNoConfiguration() {
 
         try {
-            
+
             // Test authentication without configuration.
             HashMap attributes = null;
             attributes = dm.authenticate(goodCredentials, goodRequest);
@@ -182,72 +180,71 @@ extends TestCase {
         }
 
     }
-    
-    
+
+
     /**
      * Test configuration with missing index file.
      */
     public void testMissingIndexFile() {
-        
+
         // Set configuration properties.
         Properties config = new Properties();
         config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, "src/test/conf/MissingIndexFileConfiguration.xml");
 
         try {
-            
+
             // Test bogus config.
-            dm.setConfig(config);   
-            Assert.fail("Managed to set up bad configuration");                
-            
+            dm.setConfig(config);
+            Assert.fail("Managed to set up bad configuration");
+
         } catch (DirectoryManagerConfigurationException e) {
             // Expected.
-        }            
-        
+        }
+
     }
-    
+
+
     /**
      * Test configuration with bad configuration file.
      */
     public void testBadConfigurationFile() {
-        
+
         // Set configuration properties.
         Properties config = new Properties();
         config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, "src/test/conf/BadConfiguration.xml");
 
         try {
-            
+
             // Test bogus config.
             dm.setConfig(config);
             Assert.fail("Managed to set up bad configuration");
-         
-            
+
         } catch (DirectoryManagerConfigurationException e) {
             // Expected.
         }
-        
+
     }
-    
-    
+
+
     /**
      * Test configuration with missing index update frequency.
      */
     public void testMissingIndexUpdateFrequency() {
-        
+
         // Set configuration properties.
         Properties config = new Properties();
         config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, "src/test/conf/MissingIndexUpdateFrequencyConfiguration.xml");
 
         try {
-            
+
             // Test bogus config.
             dm.setConfig(config);
             Assert.fail("Managed to set up bad configuration");
-         
-            
+
         } catch (DirectoryManagerConfigurationException e) {
             // Expected.
         }
-        
-    }    
+
+    }
 
 }
