@@ -21,11 +21,21 @@ import javax.xml.rpc.ServiceException;
 
 public interface MoriaConnectorIF {
 	
+	/** 
+	 * @see no.feide.mellon.MoriaConnector#requestSession(java.lang.String[], java.lang.String, java.lang.String, boolean)
+	 */
 	public  String requestSession(String[] attributes, String urlPrefix, String urlPostfix, 
 								 boolean denySso) throws RemoteException;
 	
+	/** 
+	 * @see no.feide.mellon.MoriaConnector#getAttributes(java.lang.String)
+	 */
 	public MoriaUserAttribute[] getAttributes(String ticket) throws RemoteException;
 	
+	
+	/** 
+	 * @see no.feide.mellon.MoriaConnector#connect(java.lang.String, java.lang.String)
+	 */
 	public void connect(String username, String password) throws ServiceException;
 
 }

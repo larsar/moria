@@ -38,7 +38,7 @@ public class MoriaUserData {
 	/** 
 	 * Constructor. Converts a set of user data, delivered from Moria, to an
 	 * internal data structure.
-	 * @param moriaUserData
+	 * @param attributes A list of attributes that should be retrieved from Moria
 	 */
 	public MoriaUserData(MoriaUserAttribute[] attributes) {
 		
@@ -60,7 +60,7 @@ public class MoriaUserData {
 	/**
 	 * Returns true if the user has been authenticated. If no data has been
 	 * retreieved from Moria,
-	 * @return true/false
+	 * @return <code>true/false</code>
 	 */
 	public boolean isAuthenticated() {
 		return userData != null;
@@ -72,7 +72,7 @@ public class MoriaUserData {
 	 * attribute has a single value. If it is a multi value attribute, only the
 	 * first element is returned.
 	 * @param attributeName Name of the attribute that contains the value.
-	 * @return The attribute
+	 * @return <code>value</code> The attribute
 	 */
 	public String getSingleValueAttribute(String attributeName) {
 		Vector values = (Vector) userData.get(attributeName);
@@ -88,7 +88,7 @@ public class MoriaUserData {
 	 * a Vector with only one element. Multi value attribtues are returned as
 	 * a Vector with all attributes in it.
 	 * @param attributeName
-	 * @return The Vector with all values for a attribtue.
+	 * @return <code>attributes</code> The Vector with all values for a attribtue.
 	 */
 	public String[] getMultiValueAttribute(String attributeName) {
 		Vector attributes = (Vector) userData.get(attributeName);
@@ -102,7 +102,7 @@ public class MoriaUserData {
 	 * the object's toString method.
 	 * @param attributeName
 	 * @param value
-	 * @return
+	 * @return <code>true/false</code>
 	 */
 	public boolean attributeContainsValue(String attributeName, String value) {
 		Vector values = (Vector) userData.get(attributeName);
@@ -120,7 +120,7 @@ public class MoriaUserData {
 	
 	/**
 	 * Return all user data.
-	 * @return HashMap with all attributes.
+	 * @return <code>userData</code> HashMap with all attributes.
 	 */
 	public HashMap getUserData() {
 		return userData;
@@ -155,5 +155,4 @@ public class MoriaUserData {
 			}
 		}
 	}
-	
 }
