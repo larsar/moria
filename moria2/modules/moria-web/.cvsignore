@@ -3,6 +3,7 @@ maven.log
 target
 .classpath
 .project
+.settings
 *.ipr
 *.iws
 *.iml
