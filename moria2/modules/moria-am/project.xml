@@ -2,6 +2,11 @@
 
 <!-- $Id$ -->
 
+<!DOCTYPE project [
+	  <!ENTITY % locator-entities SYSTEM "file:locator.ent">
+	  %locator-entities;
+	  ]>
+
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Authorization manager</name>
@@ -16,14 +21,9 @@
   <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-am</siteDirectory>
 
   <dependencies>
-    <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.0b10</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
+    &dep-jdom;
+    &dep-moria-log;
+    &dep-log4j;
   </dependencies>
 
 </project>

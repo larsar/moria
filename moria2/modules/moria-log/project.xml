@@ -2,6 +2,11 @@
 
 <!-- $Id$ -->
 
+<!DOCTYPE project [
+	  <!ENTITY % locator-entities SYSTEM "file:locator.ent">
+	  %locator-entities;
+	  ]>
+
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Log API</name>
@@ -16,14 +21,7 @@
   <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-log</siteDirectory>
 
   <dependencies>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.8</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
+    &dep-log4j;
   </dependencies>
 
 </project>
