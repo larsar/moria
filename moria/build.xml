@@ -116,7 +116,7 @@
           description="Process Moria WAR file with wsdeploy"
 	  depends="moria:create-war">
     <delete file="dist/tmp-feide-moria.war"/>
-    <exec executable="${jwsdp_home}/bin/wsdeploy.sh">
+    <exec executable="${jaxrpc_home}/bin/wsdeploy.sh">
       <arg line="-o"/>
       <arg line="dist/feide-moria.war"/>
       <arg line="dist/feide-moria-ws.war"/>
@@ -124,9 +124,22 @@
     </exec>
   </target>
 
+  <target name="moria:export-wsdl"
+          description="Export wsdl-file from war."
+	  depends="moria:process-war">
+    <mkdir dir="dist/tmp"/>
+    <exec executable="jar" dir="dist/tmp">
+      <arg line="-xf ../feide-moria.war WEB-INF/FeideAuthentication.wsdl"/>
+    </exec>
+    <exec executable="sed" output="FeideAuthentication.wsdl">
+      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/FeideAuthentication.wsdl"/>
+    </exec>
+    <delete dir="dist/tmp"/>
+  </target>
+
   <target name="moria:deploy"
           description="Deploy Moria to Tomcat"
-	  depends="moria:process-war">
+	  depends="moria:export-wsdl">
     <deploy url="${jwsdp_manager_url}"
             username="${jwsdp_manager_username}"
             password="${jwsdp_manager_password}"
@@ -152,23 +165,11 @@
           depends="all:prepare,moria:prepare:prod,moria:process-war">
   </target>
 
-  <target name="mellon:get-wsdl"
-          description="Extract wsdl-file from war."
-	  depends="moria:process-war">
-    <mkdir dir="dist/tmp"/>
-    <exec executable="jar" dir="dist/tmp">
-      <arg line="-xf ../feide-moria.war WEB-INF/FeideAuthentication.wsdl"/>
-    </exec>
-    <exec executable="sed" output="FeideAuthentication.wsdl">
-      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/FeideAuthentication.wsdl"/>
-    </exec>
-    <delete dir="dist/tmp"/>
-  </target>
 
   <target name="mellon:generate-stubs"
           description="Generate Mellon-side stubs from WSDL"
           depends="all:prepare">
-    <exec executable="${jwsdp_home}/bin/wscompile.sh">
+    <exec executable="${jaxrpc_home}/bin/wscompile.sh">
       <arg line="-gen:client"/>
       <arg line="-d build.mellon/WEB-INF/classes"/>
       <arg line="mellon/config/jaxrpc.xml"/>
@@ -239,7 +240,7 @@
   <target name="mellon-test:generate-stubs"
           description="Generate Mellon test client stubs"
           depends="mellon-test:prepare">
-    <exec executable="${jwsdp_home}/bin/wscompile.sh">
+    <exec executable="${jaxrpc_home}/bin/wscompile.sh">
       <arg line="-gen:client"/>
       <arg line="-d build"/>
       <arg line="build.mellon/config.xml"/>
