@@ -42,7 +42,7 @@ public class MoriaLifeCycleListener implements ServletContextListener {
      * @param event The notification event.
      * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
      */
-    public void contextInitialized(final ServletContextEvent event) {
+    public final void contextInitialized(final ServletContextEvent event) {
         if (messageLogger == null)
             messageLogger = new MessageLogger(MoriaLifeCycleListener.class);
 
@@ -61,7 +61,7 @@ public class MoriaLifeCycleListener implements ServletContextListener {
      * @param event The notification event.
      * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
      */
-    public void contextDestroyed(final ServletContextEvent event) {
+    public final void contextDestroyed(final ServletContextEvent event) {
         if (messageLogger == null)
             messageLogger = new MessageLogger(MoriaLifeCycleListener.class);
 

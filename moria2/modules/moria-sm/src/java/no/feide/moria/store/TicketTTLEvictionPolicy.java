@@ -110,14 +110,14 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.eviction.EvictionPolicy#getRegions()
      */
-    public Region[] getRegions() {
+    public final Region[] getRegions() {
         return regionManager.getRegions();
     }
 
     /**
      * @see org.jboss.cache.eviction.EvictionPolicy#evict(org.jboss.cache.Fqn)
      */
-    public void evict(Fqn fqn)
+    public final void evict(final Fqn fqn)
             throws Exception {
         cache.evict(fqn);
     }
@@ -125,7 +125,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.eviction.EvictionPolicy#getChildrenNames(org.jboss.cache.Fqn)
      */
-    public Set getChildrenNames(Fqn fqn) {
+    public final Set getChildrenNames(final Fqn fqn) {
         try {
             return cache.getChildrenNames(fqn);
         } catch (LockingException le) {
@@ -138,14 +138,14 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.eviction.EvictionPolicy#hasChild(org.jboss.cache.Fqn)
      */
-    public boolean hasChild(Fqn fqn) {
+    public final boolean hasChild(final Fqn fqn) {
         return cache.hasChild(fqn);
     }
 
     /**
      * @see org.jboss.cache.eviction.EvictionPolicy#getCacheData(org.jboss.cache.Fqn, java.lang.Object)
      */
-    public Object getCacheData(Fqn fqn, Object key) {
+    public final Object getCacheData(final Fqn fqn, final Object key) {
         try {
             return cache.get(fqn, key);
         } catch (LockingException le) {
@@ -158,14 +158,14 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.eviction.EvictionPolicy#getWakeupIntervalSeconds()
      */
-    public int getWakeupIntervalSeconds() {
+    public final int getWakeupIntervalSeconds() {
         return wakeUpIntervalSeconds;
     }
 
     /**
      * @see org.jboss.cache.TreeCacheListener#nodeAdded(org.jboss.cache.Fqn)
      */
-    public void nodeAdded(Fqn fqn) {
+    public final void nodeAdded(final Fqn fqn) {
         if (!fqn.equals(ROOT)) {
             Region region = regionManager.getRegion(fqn.toString());
             if (region != null) {
@@ -179,7 +179,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.TreeCacheListener#nodeRemoved(org.jboss.cache.Fqn)
      */
-    public void nodeRemoved(Fqn fqn) {
+    public final void nodeRemoved(final Fqn fqn) {
         Region region = regionManager.getRegion(fqn.toString());
         if (region != null) {
             region.setAddedNode(fqn);
@@ -191,20 +191,20 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.TreeCacheListener#nodeEvicted(org.jboss.cache.Fqn)
      */
-    public void nodeEvicted(Fqn fqn) {
+    public final void nodeEvicted(final Fqn fqn) {
     }
 
     /**
      * @see org.jboss.cache.TreeCacheListener#nodeModified(org.jboss.cache.Fqn)
      */
-    public void nodeModified(Fqn fqn) {
+    public final void nodeModified(final Fqn fqn) {
         nodeVisited(fqn);
     }
 
     /**
      * @see org.jboss.cache.TreeCacheListener#nodeVisited(org.jboss.cache.Fqn)
      */
-    public void nodeVisited(Fqn fqn) {
+    public final void nodeVisited(final Fqn fqn) {
         Region region = regionManager.getRegion(fqn.toString());
         if (region != null) {
             region.setVisitedNode(fqn);
@@ -216,7 +216,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.TreeCacheListener#cacheStarted(org.jboss.cache.TreeCache)
      */
-    public void cacheStarted(TreeCache treeCache) {
+    public final void cacheStarted(final TreeCache treeCache) {
         messageLogger.logInfo("Starting eviction policy using provider: " + this.getClass().getName());
         parseConfig(treeCache.getEvictionPolicyConfig());
         regionManager = new RegionManager(this);
@@ -241,14 +241,14 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     /**
      * @see org.jboss.cache.TreeCacheListener#cacheStopped(org.jboss.cache.TreeCache)
      */
-    public void cacheStopped(TreeCache treeCache) {
+    public final void cacheStopped(final TreeCache treeCache) {
         evictionTimer.cancel();
     }
 
     /**
      * @see org.jboss.cache.TreeCacheListener#viewChange(org.jgroups.View)
      */
-    public void viewChange(View view1) {
+    public final void viewChange(final View view1) {
     }
 
     /**
@@ -257,7 +257,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      *
      * @param config configuration for this eviction policy
      */
-    void parseConfig(Element config) {
+    final void parseConfig(final Element config) {
         if (config == null)
             throw new IllegalArgumentException("config cannot be null");
 
@@ -311,7 +311,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      * @param attributeName the name of the requested attribute.
      * @return the value of the requested attribute, null if no attribute exists in element.
      */
-    String getAttribute(Element element, String attributeName) {
+    final String getAttribute(final Element element, final String attributeName) {
         NodeList nodes = element.getElementsByTagName(ATTRIBUTE_NAME);
 
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -337,7 +337,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      * @param trim Whether or not to trim whitespace before returing.
      * @return A concatenated string of the text of the child nodes of the element.
      */
-    String getElementContent(Element element, boolean trim) {
+    final String getElementContent(final Element element, final boolean trim) {
         NodeList nodes = element.getChildNodes();
         String attributeText = "";
 
@@ -358,7 +358,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      *
      * @return Array containing the region values.
      */
-    RegionValue[] getRegionValues() {
+    final RegionValue[] getRegionValues() {
         return regionValues;
     }
 
@@ -368,7 +368,7 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      * @param fqn Fully quailified name.
      * @return A region value.
      */
-    RegionValue getRegionValue(String fqn) {
+    final RegionValue getRegionValue(final String fqn) {
 
         for (int i = 0; i < regionValues.length; i++) {
             if (fqn.equals(ROOT.toString() + regionValues[i].regionName))
@@ -383,14 +383,14 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
      */
     class RegionValue {
 
-	/** Region name. */
+        /** Region name. */
         String regionName;
 
-	/** Time to live. */
+        /** Time to live. */
         long timeToLive;
 
-	/** String representation.
-	 * @return The string representation. */
+        /** String representation.
+         * @return The string representation. */
         public String toString() {
             return "[" + regionName + ", " + timeToLive + "]";
         }

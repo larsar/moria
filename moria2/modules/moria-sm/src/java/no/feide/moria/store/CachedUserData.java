@@ -52,7 +52,7 @@ public final class CachedUserData implements MoriaStoreData {
      * @param name Attribute name.
      * @param data Attribute data.
      */
-    public void addAttribute(String name, Object data) {
+    public void addAttribute(final String name, final Object data) {
         this.attributes.put(name, data);
     }
 

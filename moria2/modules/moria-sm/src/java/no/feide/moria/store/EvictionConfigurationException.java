@@ -33,7 +33,7 @@ public class EvictionConfigurationException extends RuntimeException {
      * @param message
      *            The exception message.
      */
-    public EvictionConfigurationException(String message) {
+    public EvictionConfigurationException(final String message) {
         super(message);
     }
 
@@ -42,7 +42,7 @@ public class EvictionConfigurationException extends RuntimeException {
      * @param cause
      *            The exception cause.
      */
-    public EvictionConfigurationException(Throwable cause) {
+    public EvictionConfigurationException(final Throwable cause) {
         super(cause);
     }
 
@@ -54,7 +54,7 @@ public class EvictionConfigurationException extends RuntimeException {
      * @param cause
      *            The exception cause.
      */
-    public EvictionConfigurationException(String message, Throwable cause) {
+    public EvictionConfigurationException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

@@ -1449,7 +1449,7 @@ public final class MoriaController {
      * @throws AuthenticationException
      *                          If the user's organization is not found.
      */
-    private static String getUserOrg(String userId, String password) throws AuthenticationException {
+    private static String getUserOrg(final String userId, final String password) throws AuthenticationException {
         String org = directoryManager.getRealm(userId);
         if (org == null) {
             throw new AuthenticationException();

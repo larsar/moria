@@ -69,7 +69,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
     /**
      * @see org.jboss.cache.eviction.EvictionAlgorithm#process(org.jboss.cache.eviction.Region)
      */
-    public void process(final Region region)
+    public final void process(final Region region)
             throws EvictionException {
 
         while (true) {
@@ -176,7 +176,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
 
         private final Fqn fqn;
 
-        public NodeEntry(Long evictionTime, Fqn fqn) {
+        public NodeEntry(final Long evictionTime, final Fqn fqn) {
             this.evictionTime = evictionTime;
             this.fqn = fqn;
         }

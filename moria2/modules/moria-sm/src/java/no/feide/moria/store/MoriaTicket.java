@@ -258,7 +258,7 @@ final class MoriaTicket implements Serializable {
      * Associates a userorg with this ticket.
      * @param org The userorg.
      */
-    public void setUserorg(String org) {
+    public void setUserorg(final String org) {
         userorg = org;
     }
 

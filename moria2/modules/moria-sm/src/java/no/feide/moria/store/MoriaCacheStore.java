@@ -131,7 +131,7 @@ implements MoriaStore {
      *             If defaultTTL is null.
      * @see no.feide.moria.store.MoriaStore#setConfig(java.util.Properties)
      */
-    public synchronized void setConfig(Properties properties)
+    public synchronized void setConfig(final Properties properties)
     throws MoriaStoreConfigurationException {
 
         synchronized (isConfigured) {
@@ -788,7 +788,7 @@ implements MoriaStore {
      *          If ticketId is null or zero length.
      * @see no.feide.moria.store.MoriaTicket#getServicePrincipal()
      */
-    public String getTicketServicePrincipal(final String ticketId, MoriaTicketType ticketType)
+    public String getTicketServicePrincipal(final String ticketId, final MoriaTicketType ticketType)
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
 
@@ -821,7 +821,7 @@ implements MoriaStore {
      *          If ticketId is null or zero length.
      *  @see no.feide.moria.store.MoriaStore#setTicketUserorg(String, MoriaTicketType, String)
      */
-    public void setTicketUserorg(final String ticketId, MoriaTicketType ticketType, String userorg)
+    public void setTicketUserorg(final String ticketId, final MoriaTicketType ticketType, final String userorg)
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
 
@@ -856,7 +856,7 @@ implements MoriaStore {
      *          If ticketId is null or zero length.
      * @see no.feide.moria.store.MoriaStore#getTicketUserorg(String, MoriaTicketType)
      */
-    public String getTicketUserorg(final String ticketId, MoriaTicketType ticketType)
+    public String getTicketUserorg(final String ticketId, final MoriaTicketType ticketType)
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
 

@@ -114,7 +114,7 @@ public class InformationServlet extends HttpServlet {
      * @see AttribsHandler
      *      AttribsData
      */
-    public synchronized HashMap getAttribs() {
+    public final synchronized HashMap getAttribs() {
          if (feideattribs_stored == null) {
           Properties config = getConfig();
           if (config != null) {
@@ -146,7 +146,7 @@ public class InformationServlet extends HttpServlet {
      * @param bundle Resource bundle for language.
      * @return Vector with table data.
      */
-    private Vector printTableToVector(Map userData, ResourceBundle bundle) {
+    private Vector printTableToVector(final Map userData, final ResourceBundle bundle) {
 
         /* Stores the data in a temporary vector */
         Vector temp = new Vector();
@@ -252,7 +252,7 @@ public class InformationServlet extends HttpServlet {
      *           If the Moria controller throws an exception.
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         if (getAttribs() == null) throw new IOException("feideattribs.xml not parsed");
 
@@ -370,7 +370,7 @@ public class InformationServlet extends HttpServlet {
      *           If the Moria controller throws an exception.
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    public final void doPost(final HttpServletRequest request, final HttpServletResponse response)
     throws ServletException, IOException {
 
         String jspLocation = getServletContext().getInitParameter("jsp.location");

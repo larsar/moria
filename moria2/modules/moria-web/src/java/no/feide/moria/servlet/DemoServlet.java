@@ -303,7 +303,7 @@ extends HttpServlet {
      *             If the remote call failed for some reason.
      * @see #initiateAuthentication(String[], String, String, boolean)
      */
-    private Attribute[] getUserAttributes(String serviceTicket)
+    private Attribute[] getUserAttributes(final String serviceTicket)
     throws MalformedURLException, RemoteException {
 
         // Get configuration
@@ -465,7 +465,7 @@ extends HttpServlet {
      *         return an empty array if <code>commaSeparatedList</code> is
      *         <code>null</code> or an empty string.
      */
-    private String[] convert(String commaSeparatedList) {
+    private String[] convert(final String commaSeparatedList) {
 
         // Sanity checks.
         if ((commaSeparatedList == null) || (commaSeparatedList.length() == 0))

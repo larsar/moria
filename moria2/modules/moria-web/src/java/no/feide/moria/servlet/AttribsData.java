@@ -38,17 +38,17 @@ import java.util.Comparator;
 
 public class AttribsData implements Comparator {
 
-    /** Used for sorting the attributes */
+    /** Used for sorting the attributes. */
     private int idx;
 
-    /** Used for storing all info about a attribute */
+    /** Used for storing all info about a attribute. */
     private HashMap hashmap;
 
     /**
      * Constructor.
      * @param index order in xml file.
      */
-    public AttribsData(int index) {
+    public AttribsData(final int index) {
        idx = index;
        hashmap = new HashMap();
     }
@@ -61,7 +61,7 @@ public class AttribsData implements Comparator {
      * @return < 0 if object 1 index is less than object 2, > 0 if object 2 index i larger.
      * @see Comparator#compare
      */
-    public int compare(Object ad1, Object ad2) {
+    public final int compare(final Object ad1, final Object ad2) {
         AttribsData adata1 = (AttribsData) ad1;
         AttribsData adata2 = (AttribsData) ad2;
         return adata1.idx - adata2.idx;
@@ -73,7 +73,7 @@ public class AttribsData implements Comparator {
      * @param ad Object to compare.
      * @return true if equal.
      */
-    public boolean equals(Object ad) {
+    public final boolean equals(final Object ad) {
         AttribsData adata = (AttribsData) ad;
         return idx == adata.idx;
     }
@@ -86,7 +86,7 @@ public class AttribsData implements Comparator {
      * @throws IllegalArgumentException
      *          If name or data is null or zero length.
      */
-    public void addData(String name, String data) {
+    public final void addData(final String name, final String data) {
         if (name == null || name.equals("")) {
             throw new IllegalArgumentException("name must be a non-empty string.");
         }
@@ -103,7 +103,7 @@ public class AttribsData implements Comparator {
      * @throws IllegalArgumentException
      *          If name is null or zero length.
      */
-    public String getData(String name) {
+    public final String getData(final String name) {
         if (name == null || name.equals("")) {
             throw new IllegalArgumentException("name must be a non-empty string.");
         }

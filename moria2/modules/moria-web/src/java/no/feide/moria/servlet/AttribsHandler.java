@@ -82,7 +82,8 @@ public class AttribsHandler extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#startElement
      *          for information about the parameters
      */
-    public void startElement(String namespaceURI, String sName, String qName, Attributes attrs) throws SAXException {
+    public final void startElement(final String namespaceURI, final String sName, final String qName, final Attributes attrs)
+        throws SAXException {
         String eName = sName;
         if ("".equals(eName)) eName = qName;
 
@@ -110,7 +111,7 @@ public class AttribsHandler extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#endElement
      *          for information about the parameters
      */
-    public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
+    public final void endElement(final String namespaceURI, final String sName, final String qName) throws SAXException {
         String eName = sName;
         if ("".equals(eName)) eName = qName;
 
@@ -135,7 +136,7 @@ public class AttribsHandler extends DefaultHandler {
      * @see org.xml.sax.helpers.DefaultHandler#characters
      *          for information about the parameters
      */
-    public void characters(char[] buf, int offset, int len) throws SAXException {
+    public final void characters(final char[] buf, final int offset, final int len) throws SAXException {
         String s = new String(buf, offset, len);
         currentchars += s;
     }
@@ -146,7 +147,7 @@ public class AttribsHandler extends DefaultHandler {
      * Each element in the returned HashMap is an AttribsData instance
      * @return The parsed attributes.
      */
-    public HashMap getAttribs() {
+    public final HashMap getAttribs() {
         return adata;
     }
 
