@@ -33,16 +33,10 @@ public class DummyDirectoryManagerTest
 extends TestCase {
 
     /** Working credentials. */
-    private static final Credentials goodCredentials = new Credentials("user@some.realm", "user@some.realm");
+    private static final Credentials goodCredentials = new Credentials("user@some.realm", "password");
 
     /** Non-working credentials. */
     private static final Credentials[] badCredentials = {new Credentials("user@another.realm", "password"), new Credentials("test@feide.no", "Test"), null};
-
-    /** The attribute request used. */
-    private static final String[] goodRequest = {"someAttribute"};
-
-    /** The expected attribute values. */
-    private static final String[] goodValues = {"someValue"};
 
     /** The Directory Manager instance. */
     private DirectoryManager dm;
@@ -92,9 +86,15 @@ extends TestCase {
 
         try {
 
-            // Test successful authentication.
+            // Test successful authentication with empty array request.
             dm.setConfig(config);
             HashMap attributes = dm.authenticate(goodCredentials, new String[] {});
+
+            // Verify attributes.
+            Assert.assertEquals("Attributes were returned", attributes.size(), 0);
+
+            // Test successful authentication with null request.
+            attributes = dm.authenticate(goodCredentials, null);
 
             // Verify attributes.
             Assert.assertEquals("Attributes were returned", attributes.size(), 0);
@@ -116,18 +116,25 @@ extends TestCase {
         Properties config = new Properties();
         config.setProperty(DirectoryManagerConfiguration.CONFIGURATION_PROPERTY, goodConfiguration);
 
+        // Requested attributes and expected values. Note that each attribute is
+        // assumed to only return one value.
+        final String[] requestedAttributes = {"attr1", "attr2", "attr3"};
+        final String[] expectedValues = {"value1", "value2", "value3"};
+
         try {
 
             // Test successful authentication.
             dm.setConfig(config);
-            HashMap attributes = dm.authenticate(goodCredentials, goodRequest);
+            HashMap attributes = dm.authenticate(goodCredentials, requestedAttributes);
 
             // Verify attributes.
             Assert.assertNotNull("No attributes returned", attributes);
-            Assert.assertEquals("Unexpected number of attributes returned after authentication", goodRequest.length, attributes.size());
-            String[] values = (String[]) attributes.get(goodRequest[0]);
-            Assert.assertEquals("Unexpected number of attribute values returned after authentication", values.length, goodValues.length);
-            Assert.assertEquals("Attribute values doesn't match", values[0], goodValues[0]);
+            Assert.assertEquals("Unexpected number of attributes returned after authentication", requestedAttributes.length, attributes.size());
+            for (int i = 0; i < requestedAttributes.length; i++) {
+                String[] returnedValues = (String[]) attributes.get(requestedAttributes[i]);
+                Assert.assertEquals("Unexpected number of attribute values returned after authentication", 1, returnedValues.length);
+                Assert.assertEquals("Attribute values doesn't match", returnedValues[0], expectedValues[i]);
+            }
 
         } catch (AuthenticationFailedException e) {
             e.printStackTrace();
@@ -173,7 +180,7 @@ extends TestCase {
 
             // Test authentication without configuration.
             HashMap attributes = null;
-            attributes = dm.authenticate(goodCredentials, goodRequest);
+            attributes = dm.authenticate(goodCredentials, null);
             Assert.assertNull("Attributes were returned", attributes);
             Assert.fail("Authentication without configuration succeeded");
 
