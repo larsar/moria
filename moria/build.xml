@@ -21,10 +21,20 @@
     <mkdir dir="dist"/>
     <mkdir dir="build.moria/templates"/>
     <copy todir="build.moria/templates">
-      <fileset dir="doc/templates">
+      <fileset dir="moria/templates">
 	<include name="**/*.vtl"/>
       </fileset>
     </copy>  
+    <copy todir="build.moria/WEB-INF/classes">
+      <fileset dir="moria/templates">
+	<include name="**/*.properties"/>
+      </fileset>
+    </copy>  
+    <copy file="moria/config/jaxrpc-ri.xml" todir="build.moria/WEB-INF"/>
+    <copy file="moria/config/web.xml"       todir="build.moria/WEB-INF"/>
+    <copy file="mellon/config/web.xml"      todir="build.mellon/WEB-INF"/>
+    <copy file="moria/config/preferences_dev.xml" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
+    <copy file="mellon/config/preferences_dev.xml" tofile="build.mellon/WEB-INF/classes/Mellon.xml"/>
   </target>
 
   <target name="all:clean"
@@ -35,6 +45,16 @@
     <delete dir="dist"/>
     <delete file="FeideAuthentication?WSDL"/>
     <delete file="FeideAuthentication.wsdl"/>
+  </target>
+
+  <target name="moria:prepare:prod"
+          description="Copy Moria's preferences.xml to target directory">
+	  <copy file="moria/config/preferences.xml" tofile="build.moria/WEB-INF/classes/Moria.xml"/>
+  </target>
+
+  <target name="mellon:prepare:prod"
+          description="Copy Mellon's preferences.xml to target directory">
+	  <copy file="mellon/config/preferences.xml" tofile="mellon.mellon/WEB-INF/classes/Mellon.xml"/>
   </target>
 
   <target name="all:rebuild"
@@ -48,8 +68,18 @@
           depends="all:prepare">
     <javac srcdir="src"
            destdir="build.moria/WEB-INF/classes"
-           classpath="${jwsdp_jars}:${moria_jars}"
-           includes="no/feide/moria/**"/>
+           includes="no/feide/moria/**">
+	   <classpath>
+                <fileset dir="lib/">
+                  <include name="*.jar"/>
+                </fileset>
+                <fileset dir="moria/lib/">
+                  <include name="*.jar"/>
+                </fileset>
+	      <pathelement path="${moria_jars}"/>
+	   </classpath>
+    </javac>
+
   </target>
 
   <target name="moria:create-war"
@@ -101,18 +131,22 @@
           description="Build and redeploy Moria"
           depends="moria:compile,moria:create-war,moria:process-war,moria:undeploy,moria:deploy"/>
 
-
+  <target name="moria:prod"
+          description="Build and assemble war file for production"
+          depends="moria:compile,moria:prepare:prod,moria:create-war,moria:process-war">
+  </target>
 
   <target name="mellon:get-wsdl"
-          description="Download Moria WSDL">
-    <delete file="FeideAuthentication?WSDL"/>
-    <delete file="FeideAuthentication.wsdl"/>
-    <exec executable="lynx">
-      <arg line="-auth=${jwsdp_manager_username}:${jwsdp_manager_password}"/>
-      <arg line="-cmd_script=lynx.script"/>
-      <arg line="${wsdl_url}"/>
+          description="Extract wsdl-file from war.">
+
+    <mkdir dir="dist/tmp"/>
+    <exec executable="jar" dir="dist/tmp">
+      <arg line="-xf ../feide-moria.war WEB-INF/FeideAuthentication.wsdl"/>
     </exec>
-    <move file="FeideAuthentication?WSDL" tofile="FeideAuthentication.wsdl"/>
+    <exec executable="sed" output="FeideAuthentication.wsdl">
+      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/FeideAuthentication.wsdl"/>
+    </exec>
+    <delete dir="dist/tmp"/>
   </target>
 
   <target name="mellon:generate-stubs"
@@ -130,9 +164,18 @@
           depends="all:prepare">
     <javac srcdir="src"
            destdir="build.mellon/WEB-INF/classes"
-           classpath="${jwsdp_jars}"
            includes="no/feide/mellon/**"
-           excludes="no/feide/mellon/test/*"/>
+           excludes="no/feide/mellon/test/*">
+	   <classpath>
+                <fileset dir="lib/">
+                  <include name="*.jar"/>
+                </fileset>
+                <fileset dir="mellon/lib/">
+                  <include name="*.jar"/>
+                </fileset>
+	      <pathelement path="${moria_jars}"/>
+	   </classpath>
+    </javac>
   </target>
 
   <target name="mellon:create-war"
@@ -169,6 +212,10 @@
           description="Build and redeploy Mellon"
           depends="mellon:generate-stubs,mellon:compile,mellon:create-war,mellon:undeploy,mellon:deploy"/>
 
+  <target name="mellon:prod"
+          description="Build and assemble war file for production"
+          depends="mellon:generate-stubs,mellon:compile,mellon:prepare:prod,mellon:create-war">
+  </target>
 
   <!-- Old Mellon JAX-RPC test -->
   <target name="mellon-test:prepare"
