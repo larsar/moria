@@ -28,6 +28,9 @@ public class DirectoryManagerConfiguration {
 
     /** The message logger. */
     private final MessageLogger log = new MessageLogger(DirectoryManagerConfiguration.class);
+    
+    /** The required configuration file property, for external reference. */
+    public final static String CONFIGURATION_PROPERTY = "no.feide.moria.directory.configuration";
 
 
     /**
@@ -45,7 +48,7 @@ public class DirectoryManagerConfiguration {
             throw new IllegalArgumentException("Configuration properties cannot be NULL");
 
         // Preparing to read configuration from file.
-        final String configFile = (String) config.get("no.feide.moria.directory.configuration");
+        final String configFile = (String) config.get(CONFIGURATION_PROPERTY);
         if (configFile == null || configFile.equals(""))
             throw new DirectoryManagerConfigurationException("Property no.feide.moria.directory.configuration not set)");
 
