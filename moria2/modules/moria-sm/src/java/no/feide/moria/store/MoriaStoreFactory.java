@@ -40,8 +40,10 @@ public final class MoriaStoreFactory {
      * Static factory method creates an instance of MoriaStore.
      *
      * @return instance of MoriaStore implementation
+     * @throws MoriaStoreException
+     *         the constructor of returned implementation may throw this
      */
-    public static MoriaStore createMoriaStore() {
+    public static MoriaStore createMoriaStore() throws MoriaStoreException {
         // TODO: Read class to instantiate from config
         return new MoriaCacheStore();
     }
