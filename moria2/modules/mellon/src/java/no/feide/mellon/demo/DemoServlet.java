@@ -28,6 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -530,14 +533,13 @@ extends HttpServlet {
      */
     private Properties getConfig() {
 
-        // Validate configuration, and check whether we have a fallback.
+        // Read properties. Need work...
+        Properties config = new Properties();
         try {
-            config = (Properties) getServletContext().getAttribute(PROP_CONFIG);
-        } catch (ClassCastException e) {
-            System.err.println("Unable to get configuration from context");
+            config.load(new FileInputStream(new File(PROP_CONFIG_FILENAME)));
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read configuration");
         }
-        if (config == null)
-            throw new IllegalStateException("Configuration is not set");
 
         // Are we missing some required properties?
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
