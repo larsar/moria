@@ -65,16 +65,6 @@ public class LoginServlet extends VelocityServlet {
         log.finer("loadConfiguration(ServletConfig)");
 
 
-        if (System.getProperty("no.feide.moria.config.file") == null) {
-            log.fine("no.feide.moria.config.file not set; default is \"/moria.properties\"");
-            System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
-        }
-        else {
-            log.fine("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
-            System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
-        }
-
-
         loginURL = System.getProperty("no.feide.moria.LoginURL");
 
         Properties p = new Properties();
