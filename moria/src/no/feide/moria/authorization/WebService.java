@@ -92,7 +92,7 @@ public class WebService {
         boolean allow = true;
         for (int i = 0; i < requestedAttributes.length; i++) {
             String attrName = requestedAttributes[i];
-            if (!attributes.containsKey(attrName) || !((Boolean) attributes.get(attrName)).booleanValue()) {
+            if (!attributes.containsKey(attrName) || !((Attribute) attributes.get(attrName)).allowSso()) {
                 allow = false;
                 break;
             }
@@ -148,8 +148,20 @@ public class WebService {
                 /* Add */
                 if (add) {
                     Attribute addAttr = (Attribute) changes.get(attrName);
-                    Attribute origAttrs = (Attribute) allAttributes.get(attrName);
-                    attributes.put(attrName, new Boolean((addAttr.allowSso() && origAttrs.allowSso())));
+                    Attribute origAttr = (Attribute) allAttributes.get(attrName);
+                    Attribute existingAttr = (Attribute) attributes.get(attrName);
+                    int secLevel;
+
+                    if (existingAttr != null)
+                        secLevel = existingAttr.getSecLevel();
+                    else
+                        secLevel = origAttr.getSecLevel();
+
+                    if (addAttr.getSecLevel() > secLevel)
+                        secLevel = addAttr.getSecLevel();
+
+                    //                    attributes.put(attrName, new Boolean((addAttr.allowSso() && origAttr.allowSso())));
+                    attributes.put(attrName, new Attribute(attrName, (addAttr.allowSso() && origAttr.allowSso()), secLevel));
                 }
                 
                 /* Remove */
@@ -157,6 +169,25 @@ public class WebService {
                     attributes.remove(attrName);
                 }
         }
+    }
+
+
+
+    /**
+     * Return name of security level for a given set of attributes.
+     * @param requestedAttributes Names of all requested attributes.
+     */
+    public String secLevelNameForAttributes(String requestedAttributes[]) {
+        int highestLevel = 1;
+
+        for (int i = 0; i < requestedAttributes.length; i++) {
+            String attrName = requestedAttributes[i];
+            int attrSecLevel = ((Attribute) attributes.get(attrName)).getSecLevel();
+            if (attributes.containsKey(attrName) &&  attrSecLevel > highestLevel) {
+                highestLevel = attrSecLevel;
+            }
+        }
+        return Attribute.secLevelName(highestLevel);
     }
 
 

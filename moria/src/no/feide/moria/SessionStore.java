@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import no.feide.moria.authorization.WebService;
 
 public class SessionStore {
     
@@ -141,7 +142,7 @@ public class SessionStore {
      *               May be <code>null</code>.
      * @return A new session.
      */
-    public Session createSession(String[] attributes, String prefix, String postfix, Principal client)
+    public Session createSession(String[] attributes, String prefix, String postfix, Principal client, WebService ws)
     throws SessionException {
         log.finer("createSession(String[], String, String, Principal)");
 
@@ -149,7 +150,7 @@ public class SessionStore {
         // Authorize client service; attribute request valid?
         
         String sessionID = generateSessionID();
-        Session session = new Session(sessionID, attributes, prefix, postfix, client);
+        Session session = new Session(sessionID, attributes, prefix, postfix, client, ws);
         synchronized (sessions) {
             sessions.put(sessionID, session);
         }

@@ -176,8 +176,7 @@ implements AuthenticationIF, ServiceLifecycle {
         }
 
         try {
-            Session session = sessionStore.createSession(attributes, prefix, postfix, p);
-            session.setWebService(ws);
+            Session session = sessionStore.createSession(attributes, prefix, postfix, p, ws);
             return session.getRedirectURL();
         } catch (SessionException e) {
             log.severe("SessionException caught and re-thrown as RemoteException");

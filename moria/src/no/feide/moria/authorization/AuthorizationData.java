@@ -211,17 +211,21 @@ public class AuthorizationData {
                already exist. */
             if (existing != null &&
                 !existing.containsKey(name)) { 
-                log.warning("No such attribute: "+name); }
-
-            else if (sso != null) {
-                if (sso.equals("true"))
-                    attributes.put(name, new Attribute(name, true, level));
-                else
-                    /* Default value for SSO is false. */
-                    attributes.put(name, new Attribute(name, false, level));
+                log.warning("No such attribute: "+name); 
             }
+
             else
-                attributes.put(name, new Attribute(name));
+                attributes.put(name, new Attribute(name, sso, level));
+                
+//             else if (sso != null) {
+//                 if (sso.equals("true"))
+//                     attributes.put(name, new Attribute(name, true, level));
+//                 else
+//                     /* Default value for SSO is false. */
+//                     attributes.put(name, new Attribute(name, false, level));
+//             }
+//             else
+//                 attributes.put(name, new Attribute(name));
         }
 
         return attributes;
@@ -325,22 +329,6 @@ public class AuthorizationData {
 
 
 
-    /**
-     * Return name of security level for a given set of attributes.
-     * @param requestedAttributes Names of all requested attributes.
-     */
-    public String secLevelNameForAttributes(String requestedAttributes[]) {
-        int highestLevel = 1;
-
-        for (int i = 0; i < requestedAttributes.length; i++) {
-            String attrName = requestedAttributes[i];
-            int attrSecLevel = ((Attribute) attributes.get(attrName)).getSecLevel();
-            if (attributes.containsKey(attrName) &&  attrSecLevel > highestLevel) {
-                highestLevel = attrSecLevel;
-            }
-        }
-        return Attribute.secLevelName(highestLevel);
-    }
 
 
 

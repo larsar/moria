@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
 import no.feide.moria.authorization.WebService;
-import no.feide.moria.authorization.AuthorizationData;
 
 public class Session {
     
@@ -59,10 +58,11 @@ public class Session {
      *                value. May be <code>null</code>.
      * @param client The client service identifier.
      */
-    protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client) {
+    protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client, WebService ws) {
         log.finer("Session(String, String[], String)");
         
-        this. attributesSecLevel = AuthorizationData.getInstance().secLevelNameForAttributes(attributes);
+        webService = ws;
+        this.attributesSecLevel = ws.secLevelNameForAttributes(attributes);
         this.sessionID = sessionID;
         this.request = attributes;
 	this.urlPrefix = urlPrefix;

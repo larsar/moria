@@ -33,7 +33,7 @@ public class Attribute {
      * @param name Attribute name
      * @param sso Allow use of SSO with this attribute
      */
-    protected Attribute(String name, boolean sso, String secLevelStr) {
+    protected Attribute(String name, String ssoStr, String secLevelStr) {
         log.finer("Attribute(String, boolean, String)");
 
         /* Set security level */
@@ -45,12 +45,21 @@ public class Attribute {
             log.warning("Invalid security level: \""+secLevelStr+"\" Set to default (HIGH).");
         }
 
-        secLevel = ((Integer) secLevels.get(secLevelStr)).intValue();
 
+        if (ssoStr == null)
+            ssoStr = "false";
+
+        secLevel = ((Integer) secLevels.get(secLevelStr)).intValue();
+        sso = new Boolean(ssoStr.equals("true"));
         this.name = name;
-        this.sso = new Boolean(sso);
     }
 
+
+    protected Attribute(String name, boolean sso, int secLevel) {
+        this.name = name;
+        this.sso  = new Boolean(sso);
+        this.secLevel = secLevel;
+    }
     
     /** Return security level */
     public int getSecLevel() {
