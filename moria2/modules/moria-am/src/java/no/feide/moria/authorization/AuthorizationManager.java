@@ -196,7 +196,7 @@ public final class AuthorizationManager {
         /* Validate element */
         if (element == null) { throw new IllegalArgumentException("Element cannot be null."); }
 
-        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") && !element.getName().equalsIgnoreCase("Affiliation")&& !element.getName().equalsIgnoreCase("OrgsAllowed")) { throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems', 'Affiliation' or 'OrgsAllowed'"); }
+        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") && !element.getName().equalsIgnoreCase("Affiliation") && !element.getName().equalsIgnoreCase("OrgsAllowed")) { throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems', 'Affiliation' or 'OrgsAllowed'"); }
 
         /* Create AuthorizationAttribute of all child elements */
         final Iterator it = (element.getChildren()).iterator();
@@ -216,7 +216,17 @@ public final class AuthorizationManager {
      * @return A new object representing the client service.
      * @throws IllegalConfigException
      *             if the <i>name </i> attribute is not set for the given
-     *             element.
+     *             element, or if any of the following tags are missing:
+     *             <ul><i>
+     *             <li>DisplayName
+     *             <li>URL
+     *             <li>Language
+     *             <li>Home
+     *             <li>Attributes
+     *             <li>Operations
+     *             <li>Affiliation
+     *             <li>OrgsAllowed
+     *             </i></ul>
      * @throws IllegalArgumentException
      *             If <code>element</code> is <code>null</code>.
      */
@@ -244,23 +254,41 @@ public final class AuthorizationManager {
         if (name == null || name.equals(""))
             throw new IllegalConfigException("Name attribute must be a non empty string.");
 
-        // Get other content.
+        // Get other content. Error logging is done in called method.
         displayName = getChildContent(element, "DisplayName");
         url = getChildContent(element, "URL");
         language = getChildContent(element, "Language");
         home = getChildContent(element, "Home");
-        attrs = parseAttributesElem(element.getChild("Attributes"));
-        oper = parseListElem(element.getChild("Operations"));
-        affil = parseListElem(element.getChild("Affiliation"));
-        orgsAllowed = parseListElem(element.getChild("OrgsAllowed"));
+
+        // Parse attributes element.
+        Element child = element.getChild("Attributes");
+        if (child == null)
+            throw new IllegalConfigException("Attributes tag (Attributes) not found");
+        attrs = parseAttributesElem(child);
+
+        // Parse operations element.
+        child = element.getChild("Operations");
+        if (child == null)
+            throw new IllegalConfigException("Operations tag (Operations) not found");
+        oper = parseListElem(child);
+
+        // Parse affiliation element.
+        child = element.getChild("Affiliation");
+        if (child == null)
+            throw new IllegalConfigException("Affiliations tag (Affiliation) not found");
+        affil = parseListElem(child);
+
+        // Parse allowed organizations element.
+        child = element.getChild("OrgsAllowed");
+        if (child == null)
+            throw new IllegalConfigException("Organizations allowed tag (OrgsAllowed) not found");
+        orgsAllowed = parseListElem(child);
 
         // Parse subsystems element, if it exists.
-        Element child = element.getChild("Subsystems");
+        child = element.getChild("Subsystems");
         if (child != null)
             subsys = parseListElem(child);
-        else
-            System.err.println("Subsystems is NULL!!!");
-        
+
         return new AuthorizationClient(name, displayName, url, language, home, affil, orgsAllowed, oper, subsys, attrs);
     }
 
@@ -309,7 +337,7 @@ public final class AuthorizationManager {
 
         final String value = element.getChildText(childName);
         if (value == null) {
-            throw new IllegalConfigException(childName + " cannot be null");
+            throw new IllegalConfigException(childName + " tag not found");
         } else {
             return value;
         }
@@ -398,16 +426,17 @@ public final class AuthorizationManager {
 
         return authzClient.allowOperations(requestedOperations);
     }
-    
+
+
     /**
      * Checks if the organization is allowed to use the service
-     * 
      * @param servicePrincipal
      *            the indentifier of the client
      * @param userorg
      *            the user's organization
-     * @return true if the organization is allowed to use the service, false if the client does 
-     * 		      not exists, or if the organization is not allowed to use the service.
+     * @return true if the organization is allowed to use the service, false if
+     *         the client does not exists, or if the organization is not allowed
+     *         to use the service.
      * @throws UnknownServicePrincipalException
      *             if the servicePrincipal does not exist
      */
@@ -569,7 +598,8 @@ public final class AuthorizationManager {
 
         return new HashSet(authzClient.getAttributes().keySet());
     }
-    
+
+
     /**
      * Returns the organizations that can use this service.
      * @param servicePrincipal
@@ -591,7 +621,6 @@ public final class AuthorizationManager {
 
         return authzClient.getOrgsAllowed();
     }
-
 
 
     /**
