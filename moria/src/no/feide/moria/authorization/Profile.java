@@ -60,7 +60,7 @@ public class Profile {
         log.finer("ssoForAttribute(Attribute)");
 
         if (attribute == null || attributes.get(attribute) == null)
-            retrn false;
+            return false;
 
         return (((Boolean) attributes.get(attribute)).booleanValue() && attribute.allowSso());
     }
