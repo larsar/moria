@@ -19,5 +19,13 @@
     <p>
 			An error occured processing the request.
     </p>
+    
+<%if (request.getAttribute("error") != null) {%>
+
+	<!-- Display error message. -->
+	<font color="red"><%=request.getAttribute("error")%></font>
+
+<%}%>
+    
   </body>
 </html>
