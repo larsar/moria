@@ -28,6 +28,7 @@ import no.feide.moria.store.InvalidTicketException;
 import no.feide.moria.store.MoriaAuthnAttempt;
 import no.feide.moria.store.MoriaStore;
 import no.feide.moria.store.MoriaStoreFactory;
+import no.feide.moria.store.MoriaStoreException;
 import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
 import no.feide.moria.log.MessageLogger;
@@ -54,14 +55,44 @@ public class MoriaController {
     private static ConfigurationManager configManager;
 
     /**
-     * The single instance of the configuration manager
+     * The single instance of the authorization manager
      */
     private static AuthorizationManager authzManager;
 
     /**
+     * The single instance of the directory manager
+     */
+    private static AuthorizationManager directoryManager;
+
+    /**
      * Flag set to true if the controller has been initialized
      */
-    private static Boolean ready = new Boolean(false);
+    private static Boolean isInitialized = new Boolean(false);
+
+    /**
+     * Flag set to true if the controller and all modules are ready
+     */
+    private static boolean ready = false;
+
+    /**
+     * Flag set to true if the authorization manager is ready
+     */
+    private static boolean amReady = false;
+
+    /**
+     * Flag set to true if the directory manager is ready
+     */
+    private static boolean dmReady = false;
+
+    /**
+     * Flag set to true if the store manager is ready
+     */
+    private static boolean smReady = false;
+
+    /**
+     * Flag set to true if the web module is ready
+     */
+    private static boolean webReady = false;
 
     /**
      * The servlet context for the servlets using the controller
@@ -79,25 +110,31 @@ public class MoriaController {
     private static MessageLogger messageLogger;
 
     synchronized static void init() {
-        synchronized (ready) {
+        synchronized (isInitialized) {
             // TODO: Implemented just to get the current code running
-            if (ready.booleanValue()) {
+            if (isInitialized.booleanValue()) {
                 return;
             }
-            ready = new Boolean(true);
+            isInitialized = new Boolean(true);
 
-            accessLogger = new AccessLogger();
-            messageLogger = new MessageLogger(MoriaController.class);
 
-            // TODO: Ensure single instance of store
-            store = MoriaStoreFactory.createMoriaStore();
+            try {
+                store = MoriaStoreFactory.createMoriaStore();
+            } catch (MoriaStoreException e) {
+                // TODO: Log and throw exception
+            }
 
             // TODO: Should use value specified on the command line, in startup servlet or something
             // like that
-            if (System.getProperty("no.feide.moria.configuration.cm") == null)
-                System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
-            if (System.getProperty("no.feide.moria.store.randomid.nodeid") == null)
-                System.setProperty("no.feide.moria.store.randomid.nodeid", "no1");
+            if (System.getProperty("no.feide.moria.configuration.base") == null)
+                System.setProperty("no.feide.moria.configuration.base", MoriaController.class.getResource("/cm-test-valid.properties").getPath());
+            if (System.getProperty("no.feide.moria.store.nodeid") == null)
+                System.setProperty("no.feide.moria.store.nodeid", "no1");
+
+            /* Logging */
+            accessLogger = new AccessLogger();
+            messageLogger = new MessageLogger(MoriaController.class);
+
 
             /* Authorization manager */
             authzManager = new AuthorizationManager();
@@ -115,16 +152,22 @@ public class MoriaController {
     }
 
     /**
-     * Shut down the controller.
+     * Shut down the controller. All ready status fields are set to false;
      */
     synchronized static void stop() {
-        synchronized (ready) {
-            if (ready.booleanValue()) {
+        synchronized (isInitialized) {
+            if (isInitialized.booleanValue()) {
+                authzManager = null;
+                amReady = false;
                 configManager.stop();
                 configManager = null;
+                directoryManager = null;
+                dmReady = false;
                 store = null;
-                authzManager = null;
-                ready = new Boolean(false);
+                smReady = false;
+                servletContext = null;
+                ready = false;
+                isInitialized = new Boolean(false);
             }
         }
     }
@@ -173,9 +216,9 @@ public class MoriaController {
      */
     public static String initiateAuthentication(final String[] attributes, final String returnURLPrefix,
                                                 final String returnURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
-            throws AuthorizationException, IllegalInputException {
+            throws AuthorizationException, IllegalInputException, InoperableStateException {
 
-        if (!ready.booleanValue()) {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
 
@@ -221,8 +264,11 @@ public class MoriaController {
         }
 
         /* Create authentication attempt */
-        return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix,
-                forceInteractiveAuthentication, servicePrincipal);
+        try {
+            return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, forceInteractiveAuthentication, servicePrincipal);
+        } catch (MoriaStoreException e) {
+            throw new InoperableStateException("Moria is unavailable, store is down");
+        }
     }
 
     /**
@@ -235,7 +281,7 @@ public class MoriaController {
     public static Map getUserAttributes(final String serviceTicket, final String servicePrincipal) throws AuthorizationException,
             IllegalInputException {
         // TODO: Implement
-        if (!ready.booleanValue()) {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
         return null;
@@ -253,7 +299,7 @@ public class MoriaController {
     public static Map directNonInteractiveAuthentication(final String[] attributes, final String userId, final String password,
                                                          final String servicePrincipal) throws AuthorizationException, IllegalInputException {
         // TODO: Implement
-        if (!ready.booleanValue()) {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
         return null;
@@ -270,7 +316,7 @@ public class MoriaController {
     public static Map proxyAuthentication(final String[] attributes, final String proxyTicket, final String servicePrincipal)
             throws AuthorizationException, IllegalInputException {
         // TODO: Implement
-        if (!ready.booleanValue()) {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
         return null;
@@ -287,7 +333,7 @@ public class MoriaController {
     public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal,
                                         final String servicePrincipal) throws AuthorizationException, IllegalInputException {
         // TODO: Implement
-        if (!ready.booleanValue()) {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
         return null;
@@ -303,7 +349,7 @@ public class MoriaController {
     public static boolean verifyUserExistence(final String username, final String servicePrincipal) throws AuthorizationException,
             IllegalInputException {
         // TOOD: Implement
-        if (!ready.booleanValue()) {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
         return false;
@@ -320,16 +366,33 @@ public class MoriaController {
         if (module.equals(ConfigurationManager.MODULE_AM)) {
             if (authzManager != null) {
                 authzManager.setConfig(properties);
+                amReady = true;
+            }
+        } else if (module.equals(ConfigurationManager.MODULE_DM)) {
+            if (directoryManager != null) {
+                directoryManager.setConfig(properties);
+                dmReady = true;
+            }
+        } else if (module.equals(ConfigurationManager.MODULE_SM)) {
+            if (store != null) {
+                store.setConfig(properties);
+                smReady = true;
             }
         } else if (module.equals(ConfigurationManager.MODULE_WEB)) {
             if (servletContext != null) {
-                System.out.println("Setting context");
                 servletContext.setAttribute("config", properties);
+                webReady = true;
             } else {
                 // TODO: Log event
                 // MessageLogger.logCritical("Servlet context not set. Config cannot be updated.");
             }
         }
+
+        /* If all modules are ready, the controller is ready */
+        if (isInitialized.booleanValue() && amReady && dmReady && smReady && webReady) {
+            ready = true;
+        }
+
     }
 
     /**
@@ -380,8 +443,8 @@ public class MoriaController {
      * @return a HashMap with service properties
      * @throws UnknownTicketException if the ticket does not point to a authentication attempt
      */
-    public static HashMap getServiceProperties(String loginTicketId) throws UnknownTicketException {
-        if (!ready.booleanValue()) {
+    public static HashMap getServiceProperties(String loginTicketId) throws UnknownTicketException, InoperableStateException {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
         /* Validate arguments */
@@ -393,8 +456,11 @@ public class MoriaController {
         try {
             authnAttempt = store.getAuthnAttempt(loginTicketId, true);
         } catch (InvalidTicketException e) {
-            // TODO: Log? (should have been logged by sublayer)
+            // TODO: Log
             throw new UnknownTicketException("Ticket does not exist");
+        } catch (MoriaStoreException e) {
+            // TODO: Log
+            throw new InoperableStateException("Moria is unavailable, store is down");
         }
 
         try {
@@ -412,8 +478,8 @@ public class MoriaController {
      * @return int describing the security level for the requested attributes in the authentication attempt
      * @throws UnknownTicketException if the ticket does is invalid
      */
-    public static int getSecLevel(String loginTicketId) throws UnknownTicketException {
-        if (!ready.booleanValue()) {
+    public static int getSecLevel(String loginTicketId) throws UnknownTicketException, InoperableStateException {
+        if (!ready) {
             throw new IllegalStateException("Controller not initialized");
         }
         /* Validate argument */
@@ -425,8 +491,11 @@ public class MoriaController {
         try {
             authnAttempt = store.getAuthnAttempt(loginTicketId, true);
         } catch (InvalidTicketException e) {
-            // TODO: Log?, should have been logged extensively in the store
+            // TODO: Log
             throw new UnknownTicketException("Ticket does not exist.");
+        } catch (MoriaStoreException e) {
+            // TODO: Log
+            throw new InoperableStateException("Moria is unavailable, store is down");
         }
 
         try {
