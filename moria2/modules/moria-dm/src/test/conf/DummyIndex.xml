@@ -2,11 +2,11 @@
 
 <Index>
 	
-	<Exception id="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base"/>
-	<Exception id="user1@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base"/>
-	<Exception id="user2@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base"/>	
-	<Exception id="user3@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base"/>	
-	<Exception id="user4@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base"/>	
-	<Exception id="user5@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base"/>				
+	<Exception id="user@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="some.realm"/>
+	<Exception id="user1@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="some.realm"/>
+	<Exception id="user2@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="some.realm"/>	
+	<Exception id="user3@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="some.realm"/>	
+	<Exception id="user4@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="another.realm"/>	
+	<Exception id="user5@some.realm" reference="ldap://my.ldap.server:636/dc=search,dc=base" realm="another.realm"/>				
 	
 </Index>
