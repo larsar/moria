@@ -106,22 +106,23 @@
     </exec>
   </target>
 
+  <!-- Used to generate a "fresh" WSDL to use as a pattern when writing your own. -->
   <target name="moria:wsdl"
           description="Moria: Export WSDL from WAR"
           depends="moria:wsdeploy">
     <mkdir dir="dist/tmp"/>
     <exec executable="jar" dir="dist/tmp">
-      <arg line="-xf ../feide-moria.war WEB-INF/FeideAuthentication.wsdl"/>
+      <arg line="-xf ../feide-moria.war WEB-INF/Authentication-GENERATED.wsdl"/>
     </exec>
-    <exec executable="sed" output="FeideAuthentication.wsdl">
-      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/FeideAuthentication.wsdl"/>
+    <exec executable="sed" output="Authentication-GENERATED.wsdl">
+      <arg line="'s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}!' dist/tmp/WEB-INF/Authentication-GENERATED.wsdl"/>
     </exec>
     <delete dir="dist/tmp"/>
   </target>
 
   <target name="moria:build"
           description="Moria: Build deployable WAR"
-          depends="moria:wsdl">
+          depends="moria:wsdeploy">
     <delete file="dist/feide-moria-authorization.jar"/>
     <jar jarfile="dist/feide-moria-authorization.jar">
       <fileset dir="build.moria/WEB-INF/classes">
@@ -171,7 +172,7 @@
   <target name="moria:clean"
           description="Moria: Clean up">
     <delete dir="build.moria"/>
-    <delete file="FeideAuthentication.wsdl"/>
+    <delete file="Authentication-GENERATED.wsdl"/>
   </target>
 
 
