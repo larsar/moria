@@ -469,10 +469,13 @@ public class LoginServlet extends MoriaServlet {
             }
         } 
         
+
         catch (BackendException e) {
             
             log.severe("BackendException caught and re-thrown as ServletException\n"+e);
-            return genLoginTemplate(request, response, context, null, GENERIC);
+			//return genLoginTemplate(request, response, context, null, GENERIC);
+			// TODO: Throw other than BackedException when catching a known exception. 
+			return genLoginTemplate(request, response, context, null, AUTHFAILED);
         } 
 
         catch (SessionException e) {
