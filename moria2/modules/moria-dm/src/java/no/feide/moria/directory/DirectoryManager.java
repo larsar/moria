@@ -1,6 +1,10 @@
 package no.feide.moria.directory;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Properties;
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
 import no.feide.moria.directory.backend.AuthenticationFailedException;
@@ -33,8 +37,9 @@ public class DirectoryManager {
      * Set the directory manager's configuration.
      * @param config
      *            The configuration. Must include the property
-     *            <code>no.feide.moria.directory.configuration</code> that points to a file
-     *            containing the Directory Manager configuration.
+     *            <code>no.feide.moria.directory.configuration</code> that
+     *            points to a file containing the Directory Manager
+     *            configuration.
      */
     public static void setConfig(final Properties config) {
 
@@ -67,11 +72,14 @@ public class DirectoryManager {
         // TODO: Gracefully handle switch between index classes?
         Constructor constructor = null;
         try {
-            constructor = currentConfiguration.getIndexClass().getConstructor(null);
-            index = (DirectoryManagerIndex) constructor.newInstance(null);
-        } catch (NoSuchMethodException e) {
-            throw new DirectoryManagerConfigurationException("Cannot find index constructor", e);
-        } catch (Exception e) {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(currentConfiguration.getIndexFile()));
+            index = (DirectoryManagerIndex) in.readObject();
+            //constructor =
+            // currentConfiguration.getIndexClass().getConstructor(null);
+            //index = (DirectoryManagerIndex) constructor.newInstance(null);
+        } catch (IOException e) {
+            throw new DirectoryManagerConfigurationException("Unable to read index from file " + currentConfiguration.getIndexFile(), e);
+        } catch (ClassNotFoundException e) {
             throw new DirectoryManagerConfigurationException("Unable to instantiate index object", e);
         }
 
@@ -116,11 +124,11 @@ public class DirectoryManager {
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend();
         // TODO: Use secondary lookup results as fallback.
-        String reference = (String)index.lookup(userCredentials.getUsername()).get(0);
-        if (reference != null)
-            backend.open(reference);
+        List references = index.lookup(userCredentials.getUsername());
+        if (references != null)
+            backend.open((String) references.get(0));
         else
-            throw new AuthenticationFailedException("User "+userCredentials.getUsername()+" is unknown");
+            throw new AuthenticationFailedException("User " + userCredentials.getUsername() + " is unknown");
         UserAttribute[] attributes = backend.authenticate(userCredentials, attributeRequest);
         backend.close();
         return attributes;
