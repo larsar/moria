@@ -1,5 +1,5 @@
 <project name="Mellon"
-         default="build"
+         default="jaxrpc"
          basedir=".">
 
   <target name="prepare"
@@ -12,6 +12,7 @@
    	      depends="prepare">
    	      <ant dir="jaxrpc" target="jaxrpc:wscompile"/>
    	      <ant dir="common" target="common:build"/>
+   	      <ant dir="jaxrpc" target="jaxrpc:compile"/>
    	      <ant dir="common" target="common:servlet"/>
    	      <copy todir="dist">
    	        <fileset dir="common/dist" includes="*"/>
@@ -19,7 +20,7 @@
    	      </copy> 	      
   </target>
 
- <target name="axis"
+ <!-- target name="axis"
    	      description="Build all"
    	      depends="prepare,jaxrpc">
    	      <ant dir="common" target="common:build"/>
@@ -29,12 +30,21 @@
    	        <fileset dir="common/dist" includes="*"/>
    	        <fileset dir="axis/dist" includes="*"/>
    	      </copy> 	      
-  </target>
+  </target -->
 
 
   <target name="build"
-   	      description="Build all"
-   	      depends="jaxrpc,axis">
+   	      description="Build all (that is, too much)"
+   	      depends="prepare">
+    <ant dir="jaxrpc" target="jaxrpc:wscompile"/>
+    <ant dir="common" target="common:build"/>
+    <ant dir="axis" target="axis:build"/>
+    <ant dir="common" target="common:servlet"/>
+    <copy todir="dist">
+      <fileset dir="common/dist" includes="*"/>
+      <fileset dir="axis/dist" includes="*"/>
+      <fileset dir="jaxrpc/dist" includes="*"/>
+    </copy>    
   </target>
   
   <target name="clean"
