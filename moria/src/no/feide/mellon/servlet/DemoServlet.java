@@ -72,12 +72,17 @@ public class DemoServlet extends HttpServlet {
         if (userData == null) {
             out.println("<H1>NOT authenticated!</H1>");
             out.println("The user has not been authenticated. The AuthenticationFilter is probably disabled. This should not happen if the filter is configured correct.");
+            return;
         }
 
         /* The user has been authenticated. */
         else {
             out.println("<H1>Access granted</H1>");
         }
+
+        /* Logout */
+        out.println("[<a href=\""+request.getRequestURL().toString()+"?logout"+"\">Logout</a>]<BR>");
+
 
         /* The user has been authenticated, but the userData hash is
          * empty. */
@@ -88,7 +93,6 @@ public class DemoServlet extends HttpServlet {
         /* Create a table with the contents of the userData hash. */
         else {
             /* Logout link */
-            out.println("[<a href=\""+request.getRequestURL().toString()+"?logout"+"\">Logout</a>]<BR>");
 
             out.println("<B>You have been authenticated and the following attributes are now stored in the HttpSession of the web service:</B></BR></BR>");
             
