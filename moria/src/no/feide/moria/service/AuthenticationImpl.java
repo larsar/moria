@@ -300,6 +300,12 @@ implements AuthenticationIF, ServiceLifecycle {
             // Look up session and check the client identity.
             Session session = sessionStore.getSessionAuthenticated(id);
             validateClient(ctx.getUserPrincipal(), session);
+            
+            // Check if the current session is locked (awaits authentication).
+            if (session.isLocked()) {
+            	log.warning("Web service '"+ctx.getUserPrincipal()+"' tries to use a locked session ("+session.getID()+')');
+            	throw new RemoteException("Web service '"+ctx.getUserPrincipal()+"' tries to use a locked session ("+session.getID()+')');
+            }
 
             // Parse and return attributes.
             HashMap result = session.getAttributes();
@@ -351,12 +357,6 @@ implements AuthenticationIF, ServiceLifecycle {
 		if (!session.getWebService().getId().equals(serviceName)) {
 			log.warning("Web service '"+serviceName+"' failed authorization");
 			throw new RemoteException("Web service '"+serviceName+"' failed authorization");
-		}
-	
-		// Check if the current session is locked.
-		if (session.isLocked()) {
-			log.warning("Web service '"+serviceName+"' tries to use a locked session ("+session.getID()+')');
-			throw new RemoteException("Web service '"+serviceName+"' tries to use a locked session ("+session.getID()+')');
 		}
 		
 		// Seems the web service is validated after all.
