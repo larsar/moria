@@ -55,7 +55,7 @@ public final class RequestUtil {
     /**
      * Property name for: Ticket ID.
      */
-    public static final String PROP_TICKET_PARAM = PATH_PREFIX + "login.ticket_param";
+    public static final String PROP_LOGIN_TICKET_PARAM = PATH_PREFIX + "login.ticket_param";
     /**
      * Property name for: Organization.
      */
@@ -63,7 +63,7 @@ public final class RequestUtil {
     /**
      * Property name for: Default language.
      */
-    public static final String PROP_DEFAULT_LANGUAGE = PATH_PREFIX + "login.default_language";
+    public static final String PROP_LOGIN_DEFAULT_LANGUAGE = PATH_PREFIX + "login.default_language";
     /**
      * Property name for: Language.
      */
@@ -71,7 +71,7 @@ public final class RequestUtil {
     /**
      * Property name for: URL prefix.
      */
-    public static final String PROP_URL_PREFIX = PATH_PREFIX + "login.url_prefix";
+    public static final String PROP_LOGIN_URL_PREFIX = PATH_PREFIX + "login.url_prefix";
     /**
      * Property name for: Common.
      */
@@ -100,6 +100,10 @@ public final class RequestUtil {
      * Property name for: TTL of cookie.
      */
     public static final String PROP_COOKIE_SSO_TTL = PATH_PREFIX + "cookie.sso.ttl";
+    /**
+     * Property name for: Logout URL.
+     */
+    public static final String PROP_LOGOUT_URL_PARAM = PATH_PREFIX + "logout.url_param";
 
     /**
      * Bundle for the login page.

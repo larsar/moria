@@ -55,12 +55,6 @@ public final class LogoutServlet extends HttpServlet {
     /** The logger used in this class. */
     private MessageLogger messageLogger;
 
-    /** Constant holding the property name of the SSO cookie. */
-    private static final String SSO_COOKIE_PROPERTY_NAME = "no.feide.moria.web.sso_cookie.name";
-
-    /** Constant holding the property name of the url parameter. */
-    private static final String URL_PARAM_PROPERTY_NAME = "no.feide.moria.web.logout.url_param";
-
     /**
      * Intitiates the servlet.
      */
@@ -80,11 +74,11 @@ public final class LogoutServlet extends HttpServlet {
 
         Properties config = RequestUtil.getConfig(getServletContext());
 
-        String ssoCookieName = config.getProperty(SSO_COOKIE_PROPERTY_NAME);
+        String ssoCookieName = config.getProperty(RequestUtil.PROP_COOKIE_SSO);
 
         if (ssoCookieName == null || ssoCookieName.equals("")) {
             ssoCookieName = "MoriaSSOCookie";
-            messageLogger.logWarn("Parameter: " + SSO_COOKIE_PROPERTY_NAME + " not set in config. Using default value: "
+            messageLogger.logWarn("Parameter: " + RequestUtil.PROP_COOKIE_SSO + " not set in config. Using default value: "
                     + ssoCookieName);
         }
 
@@ -128,18 +122,19 @@ public final class LogoutServlet extends HttpServlet {
 
         /* Remove cookie if set. */
         if (cookieValue != null) {
-            Cookie ssoCookie = RequestUtil.createCookie(config.getProperty(SSO_COOKIE_PROPERTY_NAME), cookieValue, 0);
+            Cookie ssoCookie = RequestUtil.createCookie(config.getProperty(RequestUtil.PROP_COOKIE_SSO), cookieValue, 0);
             response.addCookie(ssoCookie);
         }
 
         /* If redirect url is given in the request; redirect. Else
          * display default response page.
          */
-        String urlParam = config.getProperty(URL_PARAM_PROPERTY_NAME);
+        String urlParam = config.getProperty(RequestUtil.PROP_LOGOUT_URL_PARAM);
 
         if (urlParam == null) {
-            urlParam = "url";
-            messageLogger.logWarn("Parameter: " + URL_PARAM_PROPERTY_NAME + " not set in config. Using default value: " + urlParam);
+            urlParam = "redirURL";
+            messageLogger.logWarn("Parameter: " + RequestUtil.PROP_LOGOUT_URL_PARAM + " not set in config. Using default value: "
+                    + urlParam);
         }
 
         String url = request.getParameter(urlParam);
@@ -176,10 +171,11 @@ public final class LogoutServlet extends HttpServlet {
         /* Resource bundle. */
         String langFromCookie = null;
         if (request.getCookies() != null) {
-            langFromCookie = RequestUtil.getCookieValue((String)RequestUtil.getConfig(getServletContext()).get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
+            langFromCookie = RequestUtil.getCookieValue((String) RequestUtil.getConfig(getServletContext()).get(
+                    RequestUtil.PROP_COOKIE_LANG), request.getCookies());
         }
-        ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), langFromCookie, null,
-                request.getHeader("Accept-Language"), "en");
+        ResourceBundle bundle = RequestUtil.getBundle("logout", request.getParameter("lang"), langFromCookie, null, request
+                .getHeader("Accept-Language"), "en");
         request.setAttribute("bundle", bundle);
 
         RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("Logout.JSP");

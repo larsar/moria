@@ -54,7 +54,7 @@ public class ClientServlet extends HttpServlet {
 
         // Do not have ticket
         // - Contact dsssfsd
-        if (request.getParameter(RequestUtil.PROP_TICKET_PARAM) == null) {
+        if (request.getParameter(RequestUtil.PROP_LOGIN_TICKET_PARAM) == null) {
             RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/client.jsp");
             rd.include(request, response);
         }
@@ -95,7 +95,7 @@ public class ClientServlet extends HttpServlet {
 
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
-            String redirectURL = config.getProperty(RequestUtil.PROP_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_TICKET_PARAM) + "=" + moriaID;
+            String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             response.setHeader("Location", redirectURL);
         } else {
@@ -103,6 +103,4 @@ public class ClientServlet extends HttpServlet {
             rd.include(request, response);
         }
     }
-
-
 }
