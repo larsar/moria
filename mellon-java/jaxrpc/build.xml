@@ -6,7 +6,7 @@
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
 
-  <target name="prepare"
+  <target name="jaxrpc:prepare"
           description="Mellon API: Prepare build directory">
      <condition property="wscompile" value="${jwsdp_home}/jaxrpc-1.0.3/bin/wscompile.bat">
         <os family="windows"/>
@@ -28,7 +28,7 @@
     <mkdir dir="dist"/>
   </target>
 
-  <target name="wsdl"
+  <target name="jaxrpc:wsdl"
           description="Prepare WSDL file">
     <mkdir dir="build/WEB-INF/classes"/>
     <copy file="${wsdl_file}"
@@ -38,9 +38,9 @@
     </exec>
   </target>
 
-  <target name="wscompile"
+  <target name="jaxrpc:wscompile"
           description="Mellon API: Generate JAX-RPC client stubs"
-          depends="prepare,wsdl">
+          depends="jaxrpc:prepare,jaxrpc:wsdl">
     <exec executable="${wscompile}">
       <arg line="-gen:client"/>
       <arg line="-d build/api"/>
@@ -51,9 +51,9 @@
     <jar destfile="dist/feide-mellon-api-${mellon_tag}.jar" basedir="build/api"/>    
   </target>
 
-  <target name="build"
+  <target name="jaxrpc:build"
           description="Mellon API: build source"
-          depends="wscompile">
+          depends="jaxrpc:wscompile">
     <javac srcdir="src"
            debug="true"
            destdir="build/connector"
@@ -69,7 +69,7 @@
   </target>
   
 
-  <target name="javadoc"
+  <target name="jaxrpc:javadoc"
           description="Mellon API: Generate JavaDoc">
     <javadoc sourcepath="."
              destdir="build/javadoc"
@@ -84,7 +84,7 @@
     </javadoc>
   </target>
 
-  <target name="clean"
+  <target name="jaxrpc:clean"
           description="Mellon API: Clean up">
     <delete dir="build"/>
     <delete dir="dist"/>
