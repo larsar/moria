@@ -29,6 +29,11 @@ import java.io.Serializable;
 import org.apache.log4j.Logger;
 
 /**
+ * Logs generic messages from the system, may include ticket id
+ * and/or exception.
+ *
+ * Supports four loglevels: Debug, Info, Warn, Critical.
+ *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
