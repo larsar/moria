@@ -23,15 +23,9 @@
 
     <!-- Axis deps -->
     &dep-axis;
-    &dep-axis-ant;
     &dep-jaxrpc;
     &dep-saaj;
-    &dep-wsdl4j;
     &dep-commons-discovery;
-
-    <!-- Moria Modules deps -->
-    &dep-moria-log;
-    &dep-moria-attribute;
 
     <!-- Misc deps -->
     &dep-log4j;
@@ -40,6 +34,7 @@
     &dep-xerces-xercesImpl;
     &dep-xerces-xmlParserAPIs;
     &dep-jdom;
+    &dep-commons-logging;
 
   </dependencies>
 
