@@ -118,7 +118,7 @@ public class AuthenticationFilter implements Filter {
                  * session. The user should be redirected to this
                  * URL. */
                 try {
-                     redirectURL = moria.requestSession(System.getProperty("no.feide.mellon.requestedAttributes").split(","), backToMellonURL, "");
+                     redirectURL = moria.requestSession(System.getProperty("no.feide.mellon.requestedAttributes").split(","), backToMellonURL, "", false);
                 }
                 
                 catch (MoriaException e) {
