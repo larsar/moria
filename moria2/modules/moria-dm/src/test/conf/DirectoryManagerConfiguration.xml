@@ -2,6 +2,12 @@
 
 <DirectoryManagerConfiguration>
 
-  <IndexClass>test</IndexClass>
+  <Index>
+    <Class name="no.feide.moria.directory.DummyIndex"/>
+  </Index>
+  
+  <Backend>
+    <Class name="no.feide.moria.directory.DummyBackend"/>
+  </Backend>
 
 </DirectoryManagerConfiguration>
