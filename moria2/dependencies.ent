@@ -1,0 +1,350 @@
+<!-- $Id$ -->
+
+<!ENTITY dep-concurrent "
+  <dependency>
+    <groupId>concurrent</groupId>
+    <artifactId>concurrent</artifactId>
+    <version>1.3.4</version>
+    <type>jar</type>
+    <url>http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html</url>
+    <properties>
+	 <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-trove "
+  <dependency>
+    <groupId>trove</groupId>
+    <artifactId>trove</artifactId>
+    <version>1.0.2</version>
+    <type>jar</type>
+    <url>http://trove4j.sourceforge.net/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-javagroups "
+  <dependency>
+    <groupId>javagroups</groupId>
+    <artifactId>jgroups-all</artifactId>
+    <version>2.2.1</version>
+    <type>jar</type>
+    <url>http://www.jgroups.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jboss-aop "
+  <dependency>
+    <groupId>jboss</groupId>
+    <artifactId>jboss-aop</artifactId>
+    <version>4.0.0DR4-200404301333</version>
+    <type>jar</type>
+    <url>http://www.jboss.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jboss-cache "
+  <dependency>
+    <groupId>jboss</groupId>
+    <artifactId>jboss-cache</artifactId>
+    <version>4.0.0DR4-200404301333</version>
+    <type>jar</type>
+    <url>http://www.jboss.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jboss-common "
+  <dependency>
+    <groupId>jboss</groupId>
+    <artifactId>jboss-common</artifactId>
+    <version>4.0.0DR4-200404301333</version>
+    <type>jar</type>
+    <url>http://www.jboss.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jboss-j2ee "
+  <dependency>
+    <groupId>jboss</groupId>
+    <artifactId>jboss-j2ee</artifactId>
+    <version>4.0.0DR4-200404301333</version>
+    <type>jar</type>
+    <url>http://www.jboss.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jboss-jmx "
+  <dependency>
+    <groupId>jboss</groupId>
+    <artifactId>jboss-jmx</artifactId>
+    <version>4.0.0DR4-200404301333</version>
+    <type>jar</type>
+    <url>http://www.jboss.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jboss-system "
+  <dependency>
+    <groupId>jboss</groupId>
+    <artifactId>jboss-system</artifactId>
+    <version>4.0.0DR4-200404301333</version>
+    <type>jar</type>
+    <url>http://www.jboss.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-xerces-xercesImpl "
+  <dependency>
+    <groupId>xerces</groupId>
+    <artifactId>xercesImpl</artifactId>
+    <version>2.6.2</version>
+    <type>jar</type>
+    <url>http://xml.apache.org/xerces2-j/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-xerces-xmlParserAPIs "
+  <dependency>
+    <groupId>xerces</groupId>
+    <artifactId>xmlParserAPIs</artifactId>
+    <version>2.2.1</version>
+    <type>jar</type>
+    <url>http://xml.apache.org/xerces2-j/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+
+<!ENTITY dep-log4j "
+  <dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.8</version>
+    <type>jar</type>
+    <url>http://logging.apache.org/log4j/docs/index.html</url>xo
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-commons-logging "
+  <dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <version>1.0.3</version>
+    <type>jar</type>
+    <url>http://jakarta.apache.org/commons/logging/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jdom "
+  <dependency>
+    <groupId>jdom</groupId>
+    <artifactId>jdom</artifactId>
+    <version>1.0b10</version>
+    <type>jar</type>
+    <url>http://www.jdom.org/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-servlet-api "
+  <dependency>
+    <groupId>tomcat</groupId>
+    <artifactId>servlet-api</artifactId>
+    <version>5.0.18</version>
+    <type>jar</type>
+    <url>http://jakarta.apache.org/tomcat/</url>
+    <properties>
+      <war.bundle>false</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jsp-api "
+  <dependency>
+    <groupId>tomcat</groupId>
+    <artifactId>jsp-api</artifactId>
+    <version>5.0.18</version>
+    <type>jar</type>
+    <url>http://jakarta.apache.org/tomcat/</url>
+    <properties>
+      <war.bundle>false</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-axis "
+  <dependency>
+    <groupId>axis</groupId>
+    <artifactId>axis</artifactId>
+    <version>1.1</version>
+    <type>jar</type>
+    <url>http://ws.apache.org/axis/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-axis-ant "
+  <dependency>
+    <groupId>axis</groupId>
+    <artifactId>axis-ant</artifactId>
+    <version>1.1</version>
+    <type>jar</type>
+    <url>http://ws.apache.org/axis/</url>
+    <properties>
+      <war.bundle>false</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-jaxrpc "
+  <dependency>
+    <groupId>jaxrpc</groupId>
+    <artifactId>jaxrpc</artifactId>
+    <version>1.1</version>
+    <type>jar</type>
+    <url>http://java.sun.com/xml/jaxrpc/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-saaj "
+  <dependency>
+    <groupId>saaj</groupId>
+    <artifactId>saaj</artifactId>
+    <version>1.4</version>
+    <type>jar</type>
+    <url>http://java.sun.com/xml/saaj/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-wsdl4j "
+  <dependency>
+    <groupId>wsdl4j</groupId>
+    <artifactId>wsdl4j</artifactId>
+    <version>1.4</version>
+    <type>jar</type>
+    <url>http://www-124.ibm.com/developerworks/projects/wsdl4j/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-commons-discovery "
+  <dependency>
+    <groupId>commons-discovery</groupId>
+    <artifactId>commons-discovery</artifactId>
+    <version>0.2</version>
+    <type>jar</type>
+    <url>http://jakarta.apache.org/commons/discovery/</url>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!-- Moria modules -->
+
+<!ENTITY dep-moria-am "
+  <dependency>
+    <groupId>moria</groupId>
+    <artifactId>moria-am</artifactId>
+    <version>1.0-b1-SNAPSHOT</version>
+    <type>jar</type>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-moria-ctrl "
+  <dependency>
+    <groupId>moria</groupId>
+    <artifactId>moria-ctrl</artifactId>
+    <version>1.0-b1-SNAPSHOT</version>
+    <type>jar</type>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+">
+
+<!ENTITY dep-moria-dm "
+  <dependency>
+    <groupId>moria</groupId>
+    <artifactId>moria-dm</artifactId>
+    <version>1.0-b1-SNAPSHOT</version>
+    <type>jar</type>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-moria-log "
+  <dependency>
+    <groupId>moria</groupId>
+    <artifactId>moria-log</artifactId>
+    <version>1.0-b1-SNAPSHOT</version>
+    <type>jar</type>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">
+
+<!ENTITY dep-moria-sm "
+  <dependency>
+    <groupId>moria</groupId>
+    <artifactId>moria-sm</artifactId>
+    <version>1.0-b1-SNAPSHOT</version>
+    <type>jar</type>
+    <properties>
+      <war.bundle>true</war.bundle>
+    </properties>
+  </dependency>
+  ">

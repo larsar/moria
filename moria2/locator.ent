@@ -1,0 +1,2 @@
+<!ENTITY % dependencies SYSTEM "file:dependencies.ent">
+%dependencies;
