@@ -3,7 +3,7 @@
           "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <article>
 <artheader>
-  <title>The auth_feide module for Apache 2.0</title>
+  <title>The auth_mellon module for Apache 2.0</title>
   <author>
     <firstname>Øyvind</firstname>
     <surname>Grønnesby</surname>
@@ -11,8 +11,8 @@
 </artheader>
 <section><title>Introduction</title>
   <para>
-    mod_auth_feide is an authentication module for Apache built on top of the
-    libfeide library (distributed with this document).  It works in a simple
+    mod_auth_mellon is an authentication module for Apache built on top of the
+    libmellon library (distributed with this document).  It works in a simple
     fashion, redirecting users to a webpage at login.feide.no where the users
     can authenticate themselves with username and password before being
     redirected back to the resource they requested before authentication.
@@ -35,7 +35,7 @@
   <section><title>Summary</title>
     <orderedlist>
       <listitem><para><userinput>cd src</userinput></para></listitem>
-      <listitem><para><userinput>make libfeide.a</userinput></para></listitem>
+      <listitem><para><userinput>make libmellon.a</userinput></para></listitem>
       <listitem><para><userinput>cd ../apache</userinput></para></listitem>
       <listitem>
         <para>
@@ -44,35 +44,35 @@
 	</para>
       </listitem>
       <listitem><para><userinput>make</userinput></para></listitem>
-      <listitem><para><userinput>$PATH_TO_APACHE/bin/apxs -i -a -n auth_feide mod_auth_feide.la</userinput></para></listitem>
+      <listitem><para><userinput>$PATH_TO_APACHE/bin/apxs -i -a -n auth_mellon mod_auth_mellon.la</userinput></para></listitem>
     </orderedlist>
   </section>
 </section>
 <section><title>Configuration</title>
-  <section><title>FeideVariable</title>
+  <section><title>MellonVariable</title>
     <para>
       FEIDE works by redirecting users to the authentication service, and
-      getting redirected back.  auth_feide knows that the user has been
+      getting redirected back.  auth_mellon knows that the user has been
       authenticated when a GET variable is added to the URL that the
       user requests.  The webserver can decide the name of this variable,
-      and it is set with FeideVariable.
+      and it is set with MellonVariable.
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideVariable id</userinput></para>
+      <para><userinput>MellonVariable id</userinput></para>
     </section>
   </section>
-  <section><title>FeideUrl</title>
+  <section><title>MellonUrl</title>
     <para>
       The URL to the authentication service.
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideUrl https://login.feide.no/moria/Authentication</userinput></para>
+      <para><userinput>MellonUrl https://login.feide.no/moria/Authentication</userinput></para>
     </section>
   </section>
-  <section><title>FeideServerUser</title>
+  <section><title>MellonServerUser</title>
     <para>
       The authentication service uses HTTP Basic Authentication to protect
-      access to it from different clients (client like auth_feide).  This
+      access to it from different clients (client like auth_mellon).  This
       sets the authentication username.
     </para>
     <para>
@@ -80,81 +80,81 @@
       authentication service administrators.
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideServerUser uio</userinput></para>
+      <para><userinput>MellonServerUser uio</userinput></para>
     </section>
   </section>
-  <section><title>FeideServerPassword</title>
+  <section><title>MellonServerPassword</title>
     <para>
-      The HTTP Basic Authentication password to go with FeideServerUser.
+      The HTTP Basic Authentication password to go with MellonServerUser.
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideServerPassword turnips</userinput></para>
+      <para><userinput>MellonServerPassword turnips</userinput></para>
     </section>
   </section>
-  <section><title>FeideDomain</title>
+  <section><title>MellonDomain</title>
     <para>
       To separate between different resources that need authentication
-      you set different FeideDomains for the resources.
+      you set different MellonDomains for the resources.
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideDomain internweb</userinput></para>
+      <para><userinput>MellonDomain internweb</userinput></para>
     </section>
   </section>
 
-  <section><title>FeideRequire</title>
+  <section><title>MellonRequire</title>
     <para>
       This controls access for "authenticated" users.  When they are being
       redirected from the authentication service to the resource they
-      requested, auth_feide will query the authentication service for
+      requested, auth_mellon will query the authentication service for
       attributes that contain information about the user.  Then they will
-      be matched against the different FeideRequire statements.
-      FeideRequire takes multiple arguments, where the first argument is
+      be matched against the different MellonRequire statements.
+      MellonRequire takes multiple arguments, where the first argument is
       always the name of the attribute followed by a list of values.  There
       is an implicit OR between the different values in the list.  If you
       want to have an AND between the different values, you would have to
-      put them on separate lines (yes, multiple FeideRequire statements are
+      put them on separate lines (yes, multiple MellonRequire statements are
       allowed).
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideRequire eduPersonAffiliation student</userinput></para>
+      <para><userinput>MellonRequire eduPersonAffiliation student</userinput></para>
     </section>
   </section>
 
-  <section><title>FeideCacheSize</title>
+  <section><title>MellonCacheSize</title>
     <para>
-      The auth_feide module will cache authentications locally so that
+      The auth_mellon module will cache authentications locally so that
       the user won't have to be redirected to the authentication service
-      for each request.  FeideCacheSize says how many authentications the
+      for each request.  MellonCacheSize says how many authentications the
       server will cache.  Note that unlike the above configuration directives
       this is for the whole server.
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideCacheSize 500</userinput></para>
+      <para><userinput>MellonCacheSize 500</userinput></para>
     </section>
   </section>
-  <section><title>FeideCacheAge</title>
+  <section><title>MellonCacheAge</title>
     <para>
       How long the cached authentications be valid.
       This is also a global configuration directive.  The value is given
       in seconds.
     </para>
     <section><title>Example</title>
-      <para><userinput>FeideCacheAge 300</userinput></para>
+      <para><userinput>MellonCacheAge 300</userinput></para>
     </section>
   </section>
 </section>
 <section><title>Configuration example</title>
 <screen>
-FeideCacheSize 500     # 500 authorizations will be cached
-FeideCacheAge  250     # a cached auth will be valid 250 seconds
+MellonCacheSize 500     # 500 authorizations will be cached
+MellonCacheAge  250     # a cached auth will be valid 250 seconds
 
 &lt;Directory "/home/www/htdocs/secret"&gt;
-  FeideVariable id
-  FeideUrl https://login.feide.no/moria/Authentication
-  FeideServerUser server_user
-  FeideServerPassword sekrit
-  FeideRequire eduPersonAffiliation student employee
-  FeideDomain "Secret stuff"
+  MellonVariable id
+  MellonUrl https://login.feide.no/moria/Authentication
+  MellonServerUser server_user
+  MellonServerPassword sekrit
+  MellonRequire eduPersonAffiliation student employee
+  MellonDomain "Secret stuff"
 &lt;/Directory&gt;
 </screen>
 </section>
