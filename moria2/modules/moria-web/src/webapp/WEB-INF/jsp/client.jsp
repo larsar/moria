@@ -1,4 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page import="java.util.Iterator,
+                 java.util.Map"%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <head>
@@ -16,7 +17,7 @@
     if (request.getParameter("urlPrefix") != null)
         urlPrefix = request.getParameter("urlPrefix");
     else
-        urlPrefix = request.getRequestURL().toString();
+        urlPrefix = request.getRequestURL().toString()+"?moriaID=";
     if (request.getParameter("urlPostfix") != null)
         urlPostfix = request.getParameter("urlPostfix");
     else
@@ -56,6 +57,18 @@ Force: <br/>
     <font color="red"><%= request.getAttribute("error") %></font>
   <%}%>
 <%}%>
+<table border="1">
+  <% if (request.getAttribute("attributes") != null) {
+      Map attrs = (Map) request.getAttribute("attributes");
+      Iterator it = attrs.keySet().iterator();
+      while (it.hasNext()) {
+       String key = (String) it.next();
+       String[] values = (String[]) attrs.get(key);%>
+       <tr><td><%=key%></td><td><%for (int i = 0; i < values.length; i++) { %><%=values[i]%> <%}%></td></tr>
+      <%}%>
+
+    <%= request.getAttribute("error") %>
+  <%}%>
 
 </body>
 </html>

@@ -24,6 +24,7 @@ import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.InoperableStateException;
+import no.feide.moria.controller.MoriaControllerException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -52,22 +53,26 @@ public class ClientServlet extends HttpServlet {
 
        // Do not have ticket
         // - Contact dsssfsd
-        if (request.getParameter(RequestUtil.PROP_LOGIN_TICKET_PARAM) == null) {
-            /* Process jsp */
-            RequestDispatcher rd = getServletContext().getNamedDispatcher("Client.JSP");
-            rd.forward(request, response);
+        String loginTicketId = request.getParameter("moriaID");
+        if (loginTicketId != null) {
+            try {
+
+                request.setAttribute("attributes", MoriaController.getUserAttributes(loginTicketId,"test"));
+            } catch (MoriaControllerException e) {
+                request.setAttribute("error", e);
+            }
         }
-
-
         // Have ticket
         // - show
 
+            RequestDispatcher rd = getServletContext().getNamedDispatcher("Client.JSP");
+            rd.forward(request, response);
 
     }
 
     public final void doPost(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
-        // TODO: Do not throw exceptions, set INTERNAL SERVER ERRROR status
+
         String jspLocation = getServletContext().getInitParameter("jsp.location");
         String moriaID = null;
         boolean error = false;
