@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <name>Moria NextGen Web frontend</name>
+  <id>moria-web</id>
+  <package>no.feide.moria.web</package>
+
+  <dependencies>
+    <dependency>
+      <id>servletapi</id>
+      <version>2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>moria-ng</groupId>
+      <artifactId>moria-store</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>moria-ng</groupId>
+      <artifactId>moria-am</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>moria-ng</groupId>
+      <artifactId>moria-dm</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+  </dependencies>
+
+</project>
