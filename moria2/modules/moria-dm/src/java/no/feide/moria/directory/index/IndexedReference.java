@@ -6,8 +6,6 @@ package no.feide.moria.directory.index;
  */
 public class IndexedReference {
 
-    private final String myName;
-
     private final String[] myReferences;
 
     private final boolean explicit;
@@ -15,39 +13,26 @@ public class IndexedReference {
 
     /**
      * Constructor. Creates a new indexed reference.
-     * @param name
-     *            The index reference's name.
      * @param references
      *            One or more external references. Cannot be <code>null</code>.
      * @param explicitReference
      *            <code>true</code> if this is a fully qualified reference to
      *            an external element, otherwise <code>false</code>.
+     * @throws IllegalArgumentException
+     *             If <code>references</code> is either <code>null</code> or
+     *             an empty array.
      */
-    public IndexedReference(String name, String[] references, boolean explicitReference) {
+    public IndexedReference(String[] references, boolean explicitReference) {
 
         super();
 
-        // Sanity checks.
-        if (name == null)
-            throw new IllegalArgumentException("Name cannot be NULL");
+        // Sanity check.
         if ((references == null) || (references.length == 0))
             throw new IllegalArgumentException("References cannot be NULL or an empty string");
 
         // Assignments.
-        myName = new String(name);
-        myReferences = (String[])references.clone();
+        myReferences = (String[]) references.clone();
         explicit = explicitReference;
-
-    }
-
-
-    /**
-     * Get the index reference's name.
-     * @return The index reference's name.
-     */
-    public String getName() {
-
-        return myName;
 
     }
 
@@ -58,7 +43,7 @@ public class IndexedReference {
      */
     public String[] getReferences() {
 
-        return (String[])myReferences.clone();
+        return (String[]) myReferences.clone();
 
     }
 
