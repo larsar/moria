@@ -205,12 +205,11 @@ public class LoginServlet extends MoriaServlet {
      */
     private Template genLoginTemplate(HttpServletRequest request, HttpServletResponse response, Context context, Session session, String errorType) throws ParseErrorException, ResourceNotFoundException, MissingResourceException, Exception {
 
-        String bundleName = "login";
-        String acceptLanguage = request.getHeader("Accept-Language");
+        //String bundleName = "login";  Was not used.
+        //String acceptLanguage = request.getHeader("Accept-Language");  Was not used.
         String sessionID = null;
         String selectedLanguage = defaultLang;
         ResourceBundle bundle = null;
-        ResourceBundle fallback = null;
 
         if (session != null) {
             sessionID = session.getID();
