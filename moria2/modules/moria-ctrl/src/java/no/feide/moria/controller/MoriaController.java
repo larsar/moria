@@ -200,6 +200,17 @@ public class MoriaController {
         //   throw new UnknownTicketException("Single Sign-On failed for ticket: " + loginTicket);
         // TODO: Implement
         // TODO: Must return two tickets SSO + service
+
+        /* Validate arguments */
+
+        /* Get cached attributes */
+
+        /* Put transient attributes into authnattempt */
+
+        /* Get service ticket */
+
+        /* Return service ticket */
+
         return null;
     }
 
@@ -378,6 +389,13 @@ public class MoriaController {
         if (!ready) {
             throw new InoperableStateException("Controller is not ready");
         }
+
+        /* Validate arguments */
+
+        /* Get authnattempt */
+
+        /* Return attributes from authnattempt */
+
         return null;
     }
 
@@ -397,6 +415,15 @@ public class MoriaController {
         if (!ready) {
             throw new IllegalStateException("Controller is not ready");
         }
+
+        /* Validate arguments */
+
+        /* Authorize service */
+
+        /* Authenticate */
+
+        /* Return attributes */
+
         return null;
     }
 
@@ -415,6 +442,15 @@ public class MoriaController {
         if (!ready) {
             throw new IllegalStateException("Controller is not ready");
         }
+
+        /* Validate arguments */
+
+        /* Authorize service */
+
+        /* Get cached attributes */
+
+        /* Return attributes */
+
         return null;
     }
 
@@ -433,6 +469,17 @@ public class MoriaController {
         if (!ready) {
             throw new IllegalStateException("Controller is not ready");
         }
+
+        /* Validate arguments */
+
+        /* Authorize creation of proxy ticket */
+
+        /* Authorize for use with subsystem */
+
+        /* Create proxyTicket */
+
+        /* Return proxyTicket */
+
         return null;
     }
 
@@ -449,6 +496,15 @@ public class MoriaController {
         if (!ready) {
             throw new InoperableStateException("Controller is not ready");
         }
+
+        /* Validate arguments */
+
+        /* Authorization */
+
+        /* Verify user (call DM) */
+
+        /* Return result */
+
         return false;
     }
 
