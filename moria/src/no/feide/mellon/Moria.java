@@ -49,13 +49,11 @@ public class Moria {
                 
         // Create service proxy and set credentials.
         stub = (Stub)(new FeideAuthentication_Impl().getAuthenticationIFPort());
-	String s = System.getProperty("no.feide.mellon.serviceUsername");
-	log.config("no.feide.mellon.serviceUsername="+s);
+	    String s = System.getProperty("no.feide.mellon.serviceUsername");
+	    log.config("no.feide.mellon.serviceUsername="+s);
         stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, s);
-	s = System.getProperty("no.feide.mellon.servicePassword");
-	log.config("no.feide.mellon.servicePassword="+s);
-        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, s);
-	AuthenticationIF service = (AuthenticationIF)stub;
+        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, System.getProperty("no.feide.mellon.servicePassword"));
+	    AuthenticationIF service = (AuthenticationIF)stub;
     }
 
     
@@ -93,7 +91,7 @@ public class Moria {
     throws MoriaException {
         log.finer("requestSession(String[], String, String)");
         
-	AuthenticationIF service = (AuthenticationIF)stub;
+	    AuthenticationIF service = (AuthenticationIF)stub;
         try {
             return service.requestSession(attributes, prefix, postfix);
         } catch (RemoteException e) {
@@ -134,9 +132,9 @@ public class Moria {
      * @return The service's endpoint address.
      */
     public String getServiceAddress() {
-	log.finer("getServiceAddress()");
+	    log.finer("getServiceAddress()");
 
-	return (String)stub._getProperty(Stub.ENDPOINT_ADDRESS_PROPERTY);
+	    return (String)stub._getProperty(Stub.ENDPOINT_ADDRESS_PROPERTY);
     }
 
     
