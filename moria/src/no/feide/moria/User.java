@@ -29,10 +29,10 @@ public class User {
     /**
      * The LDAP context, initialized by
      * <code>authenticate(String, String)</code>. */
-    private static InitialLdapContext ldap;
+    private InitialLdapContext ldap;
     
     /** Used to store the user element's relative DN. */
-    private static String rdn;  
+    private String rdn;  
        
     /**
      * Constructor. Used internally in
@@ -114,11 +114,11 @@ public class User {
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
             env.put(Context.PROVIDER_URL, ldapURL);
             env.put(Context.REFERRAL, "throw");  // To catch referrals.
-            ldap = new InitialLdapContext(env, null);
+            InitialLdapContext ldap = new InitialLdapContext(env, null);
 	    log.config("Connected to "+env.get(Context.PROVIDER_URL));
             ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-            rdn = ldapSearch(usernameAttribute+'='+username);
+            String rdn = ldapSearch(ldap, usernameAttribute+'='+username);
             if (rdn == null) {
                 // No user element found.
                 log.fine("No subtree match for "+usernameAttribute+'='+username+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
@@ -149,12 +149,13 @@ public class User {
     /**
      * Do a subtree search for an element given a pattern. Only the first
      * element found is considered. Any referrals are followed recursively.
+     * @param ldap The LDAP context.
      * @param pattern The search pattern.
      * @return The element's relative DN, or <code>null</code> if none was
      *         found.
      * @throws BackendException If a NamingException occurs.
      */
-    private static String ldapSearch(String pattern)
+    private static String ldapSearch(InitialLdapContext ldap, String pattern)
     throws BackendException {
         log.finer("ldapSearch(String)");
         
@@ -182,7 +183,7 @@ public class User {
                 log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to referral "+refEnv.get(Context.PROVIDER_URL));
                 ldap.close();
                 ldap = new InitialLdapContext(refEnv, null);
-                return ldapSearch(pattern);
+                return ldapSearch(ldap, pattern);
                 
             }
             
