@@ -225,9 +225,19 @@ implements AuthenticationIF, ServiceLifecycle {
     
     
     /**
-     * 
+     * Authenticates the user directly, bypassing the normal web-based redirect
+     * loop.
+     * @param id A valid session ID returned from use of
+     *           <code>requestSession</code>.
+     * @param username The user's username.
+     * @param password The user's password.
+     * @return The updated session ID, or <code>null</code> if the
+     *         authentication failed.
+     * @throws RemoteException If a BackendException or SessionException is
+     *                         caught, or if the web service is not allowed to
+     *                         use direct authentication.
      */
-    public boolean authenticateUser(String id, String username, String password)
+    public String authenticateUser(String id, String username, String password)
     throws RemoteException {
     	log.finer("authenticateUser(String, String, String)");
     	
@@ -242,7 +252,7 @@ implements AuthenticationIF, ServiceLifecycle {
     	try {
 
     		// Look up session and check the client identity.
-    		Session session = sessionStore.getSessionAuthenticated(id);
+    		Session session = sessionStore.getSessionLogin(id);
     		validateClient(ctx.getUserPrincipal(), session);
 
     		// Is the client allowed to do direct authentication at all?
@@ -252,7 +262,10 @@ implements AuthenticationIF, ServiceLifecycle {
     		}
     		
     		// Create credentials and do authentication.
-    		return session.authenticateUser(new Credentials(username, password));
+    		if (session.authenticateUser(new Credentials(username, password)))
+    			return session.getID();
+    		else
+    			return null;
 
     	} catch (BackendException e) {
     		log.severe("BackendException caught and re-thrown as RemoteException");
