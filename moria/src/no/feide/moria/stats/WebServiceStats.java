@@ -48,7 +48,9 @@ public class WebServiceStats {
         "timeoutMellon",
         "sessionDeniedURL",
         "sessionDeniedAuthZ",
-        "logout"
+        "logout",
+		"authLimitExeeded"
+
     };
 
 
