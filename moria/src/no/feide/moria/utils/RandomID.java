@@ -41,14 +41,14 @@ public final class RandomID {
             /* part of the first of three bytes */
             if (idx >= len)
                 break;
-            b = ((int) a[idx++]) & 255;
+            b = a[idx++] & 255;
             x = b >> 2;
             sb.append((char) CHAR_64[x]);
 
             /* part of the first and part of the second of three bytes */
             x = (b & 3) << 4;
             if (idx < len) {
-                b = ((int) a[idx++]) & 255;
+                b = a[idx++] & 255;
                 x |= b >> 4;
                 sb.append((char) CHAR_64[x]);
             } else {
@@ -61,7 +61,7 @@ public final class RandomID {
             /* part of the second and part of the third of three bytes */ 
             x = (b & 15) << 2;
             if (idx < len) {
-                b = ((int) a[idx++]) & 255;
+                b = a[idx++] & 255;
                 x |= b >> 6;
                 sb.append((char) CHAR_64[x]);
             } else {
@@ -77,17 +77,6 @@ public final class RandomID {
         return sb.toString();
     }
 
-    /**
-     * Encodes a byte array according to the rules of BASE64.
-     *
-     * @param      a the array to encode
-     * @return     a <code>String</code> string containing the BASE64
-     *             version of the array
-     * @author     Sverre H. Huseby
-     */
-    private static String b64(byte[] a) {
-        return b64(a, a.length);
-    }
 
     /**
      * Initializes this class by fetching an instance of the SHA1PRNG
@@ -136,7 +125,7 @@ public final class RandomID {
      * @author     Sverre H. Huseby
      */
     public static String generateID(int minbits) {
-        int numbytes, q, b;
+        int numbytes;
 
         init();
 
