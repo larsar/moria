@@ -2,23 +2,24 @@
 
 <DirectoryManagerConfiguration>
 
-	<Index file="src/test/conf/DummyIndex.object"
-           update="120"/>
+  <Index
+     file="REPLACE_WITH_REALPATH/../../../../moria-dm/src/test/conf/DummyIndex.object"
+     update="1"/>
 
-	<Backend class="no.feide.moria.directory.backend.DummyBackendFactory">
-	    <Dummy>
-			<User name="user@some.realm" password="password">
-				<Attribute name="attr1">
-					<Value>value1</Value>
-				</Attribute>
-				<Attribute name="attr2">
-					<Value>value2</Value>
-				</Attribute>
-				<Attribute name="attr3">
-					<Value>value3</Value>
-				</Attribute>
-			</User>
-		</Dummy>
-	</Backend>
-
+  <Backend
+     class="no.feide.moria.directory.backend.DummyBackendFactory">
+    <Dummy>
+      <User name="user@some.realm" password="password">
+	<Attribute name="attr1">
+	  <Value>value1</Value>
+	</Attribute>
+	<Attribute name="attr2">
+	  <Value>value2</Value>
+	</Attribute>
+	<Attribute name="attr3">
+	  <Value>value3</Value>
+	</Attribute>
+      </User>
+    </Dummy>
+  </Backend>
 </DirectoryManagerConfiguration>
