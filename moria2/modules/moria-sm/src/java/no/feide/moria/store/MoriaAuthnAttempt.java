@@ -21,11 +21,12 @@
 package no.feide.moria.store;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * This class is used for holding the state through an authentication. From
  * initiation by the service through to the final retrival of user data.
- * 
+ *
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
@@ -44,12 +45,12 @@ public final class MoriaAuthnAttempt implements Serializable {
     private final boolean forceInterativeAuthentication;
 
     /** Transient attributes returned from a directory that is not to be cached */
-    private String[] transientAttributes;
+    private HashMap transientAttributes;
 
     /**
      * Construct an instance. Usually based on data given in an initial request
      * by a remote service.
-     * 
+     *
      * @param requestedAttributes
      *            the attributes the remote service requires
      * @param returnURLPrefix
@@ -70,7 +71,7 @@ public final class MoriaAuthnAttempt implements Serializable {
 
     /**
      * Get the string array containing the requested attributes.
-     * 
+     *
      * @return the attributes requested by the invoking service
      */
     public String[] getRequestedAttributes() {
@@ -78,28 +79,28 @@ public final class MoriaAuthnAttempt implements Serializable {
     }
 
     /**
-     * Get the string array containing the transient attributes.
-     * 
+     * Get the  the transient attributes.
+     *
      * @return the short-lived user attributes
      */
-    public String[] getTransientAttributes() {
-        return (String[]) transientAttributes.clone();
+    public HashMap getTransientAttributes() {
+        return (HashMap) transientAttributes.clone();
     }
 
     /**
      * Set the user data that have been retrived from a directory for this
      * authentication attempt.
-     * 
+     *
      * @param transientAttributes
      *            the short-lived user attributes
      */
-    void setTransientAttributes(String[] transientAttributes) {
+    void setTransientAttributes(HashMap transientAttributes) {
         this.transientAttributes = transientAttributes;
     }
 
     /**
      * Get the initial part of the return url.
-     * 
+     *
      * @return the return url prefix
      */
     public String getReturnURLPrefix() {
@@ -108,7 +109,7 @@ public final class MoriaAuthnAttempt implements Serializable {
 
     /**
      * Get the end part of the return url.
-     * 
+     *
      * @return the return url postfix
      */
     public String getReturnURLPostfix() {
@@ -119,7 +120,7 @@ public final class MoriaAuthnAttempt implements Serializable {
 
     /**
      * Check wheter or not SSO should be refused even if possible.
-     * 
+     *
      * @return true for forced authentication
      */
     public boolean isForceInterativeAuthentication() {
