@@ -72,6 +72,9 @@ extends HttpServlet {
      * <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
      * <li><code>RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE</code>
      * <li><code>RequestUtil.PROP_LOGIN_URL_PREFIX</code>
+     * <li><code>RequestUtil.FAQ_LINK</code>
+     * <li><code>RequestUtil.PROP_FAQ_STATUS</code>
+     * <li><code>RequestUtil.PROP_FAQ_OWNER</code>
      * </ul>
      * @see RequestUtil#PROP_COOKIE_SSO
      * @see RequestUtil#PROP_COOKIE_SSO_TTL
@@ -84,6 +87,7 @@ extends HttpServlet {
      * @see RequestUtil#PROP_LOGIN_TICKET_PARAM
      * @see RequestUtil#PROP_LOGIN_DEFAULT_LANGUAGE
      * @see RequestUtil#PROP_LOGIN_URL_PREFIX
+     * @see RequestUtil#PROP_FAQ_STATUS
      */
     private static final String[] REQUIRED_PARAMETERS = {
         RequestUtil.PROP_COOKIE_DENYSSO,
@@ -97,7 +101,8 @@ extends HttpServlet {
         RequestUtil.PROP_COOKIE_SSO_TTL,
         RequestUtil.PROP_COOKIE_LANG_TTL,
         RequestUtil.PROP_LOGIN_URL_PREFIX,
-        RequestUtil.FAQ_LINK
+        RequestUtil.FAQ_LINK,
+        RequestUtil.PROP_FAQ_STATUS
     };
 
 

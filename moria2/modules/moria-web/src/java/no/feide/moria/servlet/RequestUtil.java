@@ -250,6 +250,21 @@ public final class RequestUtil {
     public static final String FAQ_LINK = PATH_PREFIX + "faqlink";
     
     /**
+     * URL to the Status servlet, as shown on the FAQ page.<br>
+     * <em>This property is required.</em>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "faq.status"</code>.
+     */
+    public static final String PROP_FAQ_STATUS = PATH_PREFIX + "faq.status";
+    
+    /**
+     * Organization name of the Moria owner, as shown on the FAQ page.<br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "faq.owner"</code>.
+     */
+    public static final String PROP_FAQ_OWNER = PATH_PREFIX + "faq.owner";
+    
+    /**
      * Link to pictures from the information service.
      */
     public static final String PIC_LINK = PATH_PREFIX + "piclink";
@@ -410,73 +425,6 @@ public final class RequestUtil {
      * Error type: User must supply username and password.
      */
     public static final String ERROR_NO_CREDENTIALS = "noCredentials";
-
-    /**
-     * Used to build the QName for mapping remote Attribute type to local type.
-     * <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.attributeNamespaceURI"</code>.
-     */
-    public static final String PROP_DEMO_ATTRIBUTE_NAMESPACE_URI = PATH_PREFIX + "demo.attributeNamespaceURI";
-
-    /**
-     * The service endpoint. <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.serviceEndpoint"</code>.
-     */
-    public static final String PROP_DEMO_SERVICE_ENDPOINT = PATH_PREFIX + "demo.serviceEndpoint";
-
-    /**
-     * A comma-separated list of attributes requested by the main service. <br>
-     * <br>
-     * Current value is
-     * <code>PATH_PREFIX + "demo.master.attributeRequest"</code>.
-     */
-    public static final String PROP_DEMO_MASTER_ATTRIBUTE_REQUEST = PATH_PREFIX + "demo.master.attributeRequest";
-
-    /**
-     * The username used by DemoServlet to access Moria2 as a main service. <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.master.username"</code>.
-     */
-    public static final String PROP_DEMO_MASTER_USERNAME = PATH_PREFIX + "demo.master.username";
-
-    /**
-     * The password used by DemoServlet to access Moria2 as a main service. <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.master.password"</code>.
-     */
-    public static final String PROP_DEMO_MASTER_PASSWORD = PATH_PREFIX + "demo.master.password";
-
-    /**
-     * A comma-separated list of attributes requested by the subservice. <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.slave.attributeRequest"</code>.
-     */
-    public static final String PROP_DEMO_SLAVE_ATTRIBUTE_REQUEST = PATH_PREFIX + "demo.slave.attributeRequest";
-
-    /**
-     * The username used to access Moria2 as a subservice. <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.slave.username"</code>.
-     */
-    public static final String PROP_DEMO_SLAVE_USERNAME = PATH_PREFIX + "demo.slave.username";
-
-    /**
-     * The password used to access Moria2 as a subservice. <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.slave.password"</code>.
-     */
-    public static final String PROP_DEMO_SLAVE_PASSWORD = PATH_PREFIX + "demo.slave.password";
-
-    /**
-     * The URL that the user should be redirected to in order to complete
-     * logout. <br>
-     * <br>
-     * Current value is <code>PATH_PREFIX + "demo.logout.url"</code>.
-     */
-    public static final String PROP_DEMO_LOGOUT_URL = PATH_PREFIX + "demo.logout.url";
-
 
     /**
      * Default private constructor.
