@@ -361,7 +361,7 @@ public final class RequestUtil {
             throw new IllegalArgumentException("cookieName must be a non-empty string");
         }
         if (cookies == null) {
-            throw new IllegalArgumentException("cookies cannot be null");
+            return null;
         }
 
         String value = null;

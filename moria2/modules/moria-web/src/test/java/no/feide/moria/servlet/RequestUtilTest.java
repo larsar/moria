@@ -47,11 +47,7 @@ public class RequestUtilTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        try {
-            RequestUtil.getCookieValue("foo", null);
-            fail("IllegalArgumentException should be raised, null value");
-        } catch (IllegalArgumentException success) {
-        }
+        assertNull("Should be null",RequestUtil.getCookieValue("foo", null));
 
         /* Match */
         String name = "name";
