@@ -1,4 +1,7 @@
 <%@ page
+			language="java"
+			errorPage="/Error"
+			session="false"
 			contentType="text/html; charset=ISO-8859-1"
 			pageEncoding="ISO-8859-1"
 			import="no.feide.moria.servlet.RequestUtil,
@@ -87,7 +90,8 @@ function fokuser(){document.loginform.username.focus();}
    </tr>
 <%}%>
 
-<% if (request.getAttribute(RequestUtil.ATTR_ERROR_TYPE) == null || !request.getAttribute(RequestUtil.ATTR_ERROR_TYPE).equals(RequestUtil.ERROR_UNKNOWN_TICKET)) { %>
+<% String errorType = (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE);
+   if (errorType == null || !(errorType.equals(RequestUtil.ERROR_UNKNOWN_TICKET) || errorType.equals(RequestUtil.ERROR_MORIA_DOWN))) { %>
   <tr valign="top">
     <td width="20%">
       <table summary="" cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF">
@@ -120,7 +124,7 @@ function fokuser(){document.loginform.username.focus();}
             String longName = (String) it.next();
             String shortName  = (String) orgNames.get(longName);
         %>
-	    <option <%if (request.getAttribute(RequestUtil.ATTR_SELECTED_ORG).equals(shortName)) {%>selected=="true" <%}%>value="<%=shortName%>"><%=longName%></option>
+	    <option <%if (request.getAttribute(RequestUtil.ATTR_SELECTED_ORG) != null && request.getAttribute(RequestUtil.ATTR_SELECTED_ORG).equals(shortName)) {%>selected=="true" <%}%>value="<%=shortName%>"><%=longName%></option>
         <%}%>
 		</select>
 		</td>
