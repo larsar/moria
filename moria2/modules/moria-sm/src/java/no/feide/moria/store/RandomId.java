@@ -25,25 +25,21 @@ import java.security.SecureRandom;
 import java.util.Date;
 
 /**
- * Returns an id that's random and unique across a cluster of JVMs.
- *
- * Each JVM needs to be configured with an unique node id, identifying each
- * node. This is done by setting the system property <code>no.feide.moria.store.nodeid</code>.
- * The value must be a ascii string of 3 character length.
- *
- * The returned id is an encoded String (pseudo Base64, see method
- * documentation for details) constructed from the node id, the current time
- * and a random string. This should guarantee unique ids across the cluster and
- * node restarts.
- *
+ * Returns an id that's random and unique across a cluster of JVMs. Each JVM
+ * needs to be configured with an unique node id, identifying each node. This is
+ * done by setting the system property <code>no.feide.moria.store.nodeid</code>.
+ * The value must be a ascii string of 3 character length. The returned id is an
+ * encoded String (pseudo Base64, see method documentation for details)
+ * constructed from the node id, the current time and a random string. This
+ * should guarantee unique ids across the cluster and node restarts.
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class RandomId {
 
     /**
-     * The id of this instance (JVM).  Used to guaratee unique
-     * ids across the cluster.
+     * The id of this instance (JVM). Used to guaratee unique ids across the
+     * cluster.
      */
     private static byte[] nodeId;
 
@@ -57,7 +53,7 @@ public final class RandomId {
         String nodeIdProperty = System.getProperty(nodeIdPropertyName);
 
         if (nodeIdProperty == null || nodeIdProperty.length() != 3) {
-            throw new RuntimeException(nodeIdPropertyName + " is null or has illegal value");
+            throw new RuntimeException("Local node ID property '" + nodeIdPropertyName + "' must be 3 characters, not '" + nodeIdProperty + "'");
         } else {
             nodeId = nodeIdProperty.getBytes();
         }
@@ -76,15 +72,17 @@ public final class RandomId {
     /** The number of random bits to get from the PRNG. */
     private static final int NO_OF_RANDOM_BITS = 384;
 
+
     /**
      * Default private constructor.
      */
     private RandomId() {
+
     }
+
 
     /**
      * Generate a new random id.
-     *
      * @return a 79 character random string
      */
     public static String newId() {
@@ -95,7 +93,8 @@ public final class RandomId {
         /* Round up number of bytes if the bits don't divide by eight */
         int noOfRandomBytes = NO_OF_RANDOM_BITS / 8;
 
-        if ((NO_OF_RANDOM_BITS % 8) != 0) noOfRandomBytes++;
+        if ((NO_OF_RANDOM_BITS % 8) != 0)
+            noOfRandomBytes++;
 
         /* Get the randomness */
         byte[] randomBytes = new byte[noOfRandomBytes];
@@ -111,20 +110,16 @@ public final class RandomId {
         return pseudoBase64Encode(id);
     }
 
+
     /**
      * Takes a byte array and returns a string encoded with a slightly modified
-     * version of Base64.
-     *
-     * The difference compared to standard Base64 is that the extra two chars;
-     * "+" and "/" have been exchanged for the more url-friendly "-" and "*",
-     * and the resulting string is not padded with = as required by the spec
-     * (rfc 2045).
-     *
-     * Parts of code Copyright (c) 2003, Sverre H. Huseby
-     * &lt;shh@thathost.com&gt;
-     *
+     * version of Base64. The difference compared to standard Base64 is that the
+     * extra two chars; "+" and "/" have been exchanged for the more
+     * url-friendly "-" and "*", and the resulting string is not padded with =
+     * as required by the spec (rfc 2045). Parts of code Copyright (c) 2003,
+     * Sverre H. Huseby &lt;shh@thathost.com&gt;
      * @param bytes
-     *          the data to convert
+     *            the data to convert
      * @return the encoded version of the input
      */
     static String pseudoBase64Encode(final byte[] bytes) {
@@ -146,7 +141,8 @@ public final class RandomId {
         for (byteOffset = 0;;) {
 
             /* Six first bits of the first of three bytes */
-            if (byteOffset >= bytes.length) break;
+            if (byteOffset >= bytes.length)
+                break;
             currentByte = ((int) bytes[byteOffset++]) & 255;
             charOffset = currentByte >> 2;
             finalId.append((char) CHAR_64[charOffset]);
@@ -181,15 +177,16 @@ public final class RandomId {
         return finalId.toString();
     }
 
+
     /**
      * Takes a long value (64 bit) and returns it as an eight element byte
      * array.
-     *
      * @param in
-     *          the long value to be converted
+     *            the long value to be converted
      * @return a byte array representation of the long value given as input
      */
     static byte[] longToByteArray(final long in) {
+
         /* Make a copy that we can harass. */
         long local = in;
 
