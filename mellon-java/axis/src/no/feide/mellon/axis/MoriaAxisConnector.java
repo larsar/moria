@@ -24,9 +24,9 @@ import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
-import no.feide.login.moria.r001.Authentication.Attribute;
-import no.feide.login.moria.r001.Authentication.AuthenticationIFBindingStub;
-import no.feide.login.moria.r001.Authentication.AuthenticationLocator;
+import no.feide.login.moria.v1_0.Authentication.Attribute;
+import no.feide.login.moria.v1_0.Authentication.AuthenticationIFBindingStub;
+import no.feide.login.moria.v1_0.Authentication.AuthenticationLocator;
 
 
 /**
