@@ -4,13 +4,12 @@
 
 <project>
   <extend>${basedir}/../../project.xml</extend>
-  <name>Moria Web frontend</name>
+  <name>Moria Web Frontends</name>
   <id>moria-web</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
   <package>no.feide.moria.servlet</package>
 
-  <shortDescription>The web fronted of Moria, containing the external
-    HTML and SOAP interfaces.</shortDescription>
+  <shortDescription>Moria web frontends (HTML and SOAP)</shortDescription>
 
   <description/>
 
@@ -22,6 +21,19 @@
       <artifactId>servletapi</artifactId>
       <version>2.4-20030804.000000</version>
       <type>jar</type>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.6.2</version>
+      <type>jar</type>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
     </dependency>
 
     <dependency>
@@ -39,6 +51,9 @@
       <artifactId>axis-ant</artifactId>
       <version>1.1</version>
       <type>jar</type>
+      <properties>
+        <war.bundle>false</war.bundle>
+      </properties>
     </dependency>
 
     <dependency>
@@ -76,6 +91,9 @@
       <artifactId>commons-logging</artifactId>
       <version>1.0.3</version>
       <type>jar</type>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
     </dependency>
 
     <dependency>
@@ -83,6 +101,9 @@
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
       <type>jar</type>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
     </dependency>
 
     <dependency>
@@ -90,15 +111,8 @@
       <artifactId>commons-discovery</artifactId>
       <version>0.2</version>
       <type>jar</type>
-    </dependency>
-<!--
-    <dependency>
-      <groupId>moria</groupId>
-      <artifactId>moria-sm</artifactId>
-      <version>1.0-b1-SNAPSHOT</version>
-      <type>jar</type>
       <properties>
-	<war.bundle>true</war.bundle>
+        <war.bundle>true</war.bundle>
       </properties>
     </dependency>
 
@@ -111,7 +125,7 @@
 	<war.bundle>true</war.bundle>
       </properties>
     </dependency>
-
+<!--
     <dependency>
       <groupId>moria</groupId>
       <artifactId>moria-dm</artifactId>
@@ -121,10 +135,10 @@
 	<war.bundle>true</war.bundle>
       </properties>
     </dependency>
-
+-->
     <dependency>
       <groupId>moria</groupId>
-      <artifactId>moria-cm</artifactId>
+      <artifactId>moria-ctrl</artifactId>
       <version>1.0-b1-SNAPSHOT</version>
       <type>jar</type>
       <properties>
@@ -144,40 +158,31 @@
 
     <dependency>
       <groupId>moria</groupId>
-      <artifactId>moria-ctrl</artifactId>
+      <artifactId>moria-sm</artifactId>
       <version>1.0-b1-SNAPSHOT</version>
       <type>jar</type>
       <properties>
 	<war.bundle>true</war.bundle>
       </properties>
     </dependency>
--->
+
   </dependencies>
 
   <build>
-
     <resources>
       <resource>
-        <directory>${basedir}/src/conf</directory>
+        <directory>src/conf</directory>
         <includes>
           <include>*.xml</include>
           <include>*.properties</include>
         </includes>
       </resource>
-        <resource>
-          <directory>${basedir}/src/bundles</directory>
-          <includes>
-            <include>*.properties</include>
-          </includes>
-        </resource>
-<!--
       <resource>
-        <directory>${project.generated.src.dir}/no/feide/login/moria/v1_1/Authentication</directory>
+        <directory>${basedir}/src/bundles</directory>
         <includes>
-          <include>*.wsdd</include>
+          <include>*.properties</include>
         </includes>
       </resource>
--->
     </resources>
   </build>
 </project>
