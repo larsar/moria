@@ -23,6 +23,7 @@ package no.feide.moria.configuration;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
+import junit.framework.Assert;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -87,5 +88,19 @@ public class ConfigurationManagerTest extends TestCase {
 
         System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
         confMan = new ConfigurationManager();
+        Assert.assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
+    }
+
+    /**
+     * Test the stop method.
+     *
+     * @see ConfigurationManager#stop()
+     */
+    public void testStop() throws ConfigurationManagerException {
+        System.setProperty("no.feide.moria.configuration.cm", "/cm-test-valid.properties");
+        ConfigurationManager confMan = new ConfigurationManager();
+        Assert.assertEquals("Number of file listeners doesn't match.", 4, confMan.numFileListeners());
+        confMan.stop();
+        Assert.assertEquals("Number of file listeners doesn't match.", 0, confMan.numFileListeners());
     }
 }
