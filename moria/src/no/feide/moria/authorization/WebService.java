@@ -333,6 +333,24 @@ public class WebService {
 	}
 
 	/**
+	 * Return true if the supplied organization name is in the affiliation list.
+	 * @param affiliation The name of the affiliation
+	 * @return boolean
+	 */
+	public boolean hasAffiliation(String affiliation) {
+		
+		if (affiliation == null)
+			return false;
+		
+		for (int i = 0; i < affiliations.length; i++) {
+			if (affiliations[i].equals(affiliation))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * @param allowLocalAuth True if the web service allows secondary authentication methods,
 	 * else false.
 	 */
