@@ -109,7 +109,7 @@ public class LoginServlet extends MoriaServlet {
         
         try {
             
-            /* Set default language */
+            /* Set default language */ 
             defaultLang = Configuration.getProperty("no.feide.moria.defaultLanguage");
 
             /* Login URL */
@@ -205,20 +205,24 @@ public class LoginServlet extends MoriaServlet {
      */
     private Template genLoginTemplate(HttpServletRequest request, HttpServletResponse response, Context context, Session session, String errorType) throws ParseErrorException, ResourceNotFoundException, MissingResourceException, Exception {
 
-        //String bundleName = "login";  Was not used.
-        //String acceptLanguage = request.getHeader("Accept-Language");  Was not used.
         String sessionID = null;
-        String selectedLanguage = defaultLang;
         ResourceBundle bundle = null;
-
+		String selectedLanguage = null;
+		String wsDefaultLang = session.getWebService().getDefaultLang();
+ 		
         if (session != null) {
-            sessionID = session.getID();
+        	sessionID = session.getID();
         }
-
+        
+        if (selectedLanguage == null)
+        	selectedLanguage = wsDefaultLang;
+ 
+        if (selectedLanguage == null)
+        	selectedLanguage = defaultLang; 
+ 
         context.put("availableLanguages", availableLanguages);
 
-
-        HashMap bundleData = getBundle("login", request, response, defaultLang);
+        HashMap bundleData = getBundle("login", request, response, defaultLang, wsDefaultLang);
         bundle = (ResourceBundle) bundleData.get("bundle");
         selectedLanguage = (String) bundleData.get("selectedLanguage");
 
@@ -234,19 +238,24 @@ public class LoginServlet extends MoriaServlet {
 
         loadBundleIntoContext(bundle, context, wsName, wsURL);
 
-        /* Get realm from cookie or parameter. */
+        /* Get preselected realm first from URL parameter, then cookie and finally get it
+         * from the web service configuration */
         String realm = "";
-        realm = request.getParameter("realm");
-            
+        realm = request.getParameter("realm"); 
+        
         if (realm == null) {
             realm = getCookieValue("realm", request);
         }
-
+       
+        if (realm == null || realm.equals("")) {
+        	realm = session.getWebService().getDefaultOrg();
+        }
+      	
         context.put("selectedRealm", realm);
 
         /* List of organizations (for drop down menu) */
         HashMap orgShorts = Configuration.getOrgShorts(selectedLanguage);
-        if (orgShorts == null)
+        if (orgShorts == null) 
             orgShorts = Configuration.getOrgShorts(defaultLang);
 
         String[] sortedOrgNames = (String[]) orgShorts.keySet().toArray(new String[orgShorts.size()]);

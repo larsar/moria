@@ -91,7 +91,7 @@ public class MoriaServlet extends VelocityServlet {
 
 
 
-    HashMap getBundle(String bundleName, HttpServletRequest request, HttpServletResponse response, String defaultLang) {
+    HashMap getBundle(String bundleName, HttpServletRequest request, HttpServletResponse response, String defaultLang, String wsDefaultLang) {
         Locale locale = null;
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
@@ -103,12 +103,15 @@ public class MoriaServlet extends VelocityServlet {
         if (acceptLanguage == null) 
             acceptLanguage = "";
 
-        /* Select language. Prefer: URL parameter, Cookie, Browser setting */
+        /* Select language. Prefer: URL parameter, Cookie, Web Service configuration, Browser setting */
         String overrideLang = request.getParameter("lang");
         if (overrideLang == null) 
             overrideLang = getCookieValue("lang", request);
 
-        if (overrideLang != "") {
+        if (overrideLang == null || overrideLang.equals("")) 
+        	overrideLang = wsDefaultLang;
+        
+        if (overrideLang != null && !overrideLang.equals("")) {
             setCookieValue("lang", overrideLang, response);
             acceptLanguage =  overrideLang;
         }

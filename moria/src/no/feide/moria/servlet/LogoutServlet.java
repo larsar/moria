@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import no.feide.moria.Configuration;
+import no.feide.moria.ConfigurationException;
 import no.feide.moria.NoSuchSessionException;
 import no.feide.moria.Session;
 import no.feide.moria.SessionException;
@@ -56,7 +58,7 @@ public class LogoutServlet extends MoriaServlet {
      * @return Template to be used for request
      */   
     public Template handleRequest( HttpServletRequest request,
-                                   HttpServletResponse response, Context context ) throws ServletException {        
+                                   HttpServletResponse response, Context context ) throws ServletException, ConfigurationException {        
         
         log.finer("handleRequest(HttpServletRequest, HttpServletResponse, Context)");
         
@@ -96,7 +98,7 @@ public class LogoutServlet extends MoriaServlet {
             return null;
         }
 
-        HashMap bundleData = getBundle("logout", request, response, "nb");
+        HashMap bundleData = getBundle("logout", request, response, Configuration.getProperty("no.feide.moria.defaultLanguage"), null);
         ResourceBundle bundle = (ResourceBundle) bundleData.get("bundle");
 
         loadBundleIntoContext(bundle, context, null, null);
