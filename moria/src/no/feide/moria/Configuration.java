@@ -64,7 +64,7 @@ public class Configuration {
         "no.feide.moria.sessionLifetime.authenticated",
         "no.feide.moria.sessionLifetime.sso",
         "no.feide.moria.defaultLanguage",
-        "no.feide.moria.backend.ldap.url1",
+        //"no.feide.moria.backend.ldap.url1",  Was used for LIMS. Removed temporarily.
         "no.feide.moria.backend.ldap.usernameAttribute",
         "no.feide.moria.availableLanguages",
         "no.feide.moria.organizationNames"
