@@ -47,10 +47,11 @@ function fokuser(){document.loginform.username.focus();}
     <td valign="top">
     <img src="/element/varseltrekant.png" alt="feilmelding"/>
     </td>
-    <td valign="middle" width="99%">
+    <td valign="middle" width="60%">
     <b>$errorMessage</b><br/>
-    $errorDescription
+    <i>$errorDescription</i>
     </td>
+    <td width="39%">&nbsp;</td>
     </tr>
     </table>
     </td>
@@ -67,11 +68,18 @@ function fokuser(){document.loginform.username.focus();}
               <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
                 <tbody>
                   <tr>
-                    <td align="left" nowrap ="nowrap"><font size="">
-                      $form_username<br>
-                      <input type="text" size="8" value="" name="username">@&nbsp;<input type="text" size="8" value="$preset_realm" name="realm"><br>
+                    <td align="left" nowrap ="nowrap">
+		      $form_username<br/>
+                      <input type="text" size="8" value="" name="username"></td>
+		    <td><br/>@</td>
+		    <td>
+		      $form_org<br/>
+		    <input type="text" size="8" value="$preset_realm" name="realm"><br></td>
+</tr>
+<tr>
+<td colspan="3">
                       $form_password<br>
-                      <input type="password" size="16" value="" name="password"></font>
+                      <input type="password" size="16" value="" name="password">
                     </td>
                   </tr>
                   <tr>
@@ -101,13 +109,14 @@ function fokuser(){document.loginform.username.focus();}
         <td><img src="/element/listepunkt.gif" alt="-"/></td>
         <td>$expl_data <BR/>
 
+<!--
 $showHideLink<BR/>
 
 
 #foreach( $attrName in $attrNames )
     $attrName<BR/>
 #end
-
+-->
         </td>
       </tr>
       <tr>
