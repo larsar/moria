@@ -317,6 +317,8 @@ public final class RequestUtilTest extends TestCase {
         final TreeMap actual;
         expected.put("University of Oslo", "uio.no");
         expected.put("UNINETT", "uninett.no");
+        expected.put("Oslo University College", "hio.no");
+        expected.put("Finnmark University College", "hifm.no");
 
         /* Correct syntax */
         actual = RequestUtil.parseConfig(props, RequestUtil.PROP_ORG, "en");
