@@ -1,6 +1,5 @@
 package no.feide.moria.directory.index;
 
-import java.util.List;
 
 /**
  * This is the interface used to access an underlying index implementation.
