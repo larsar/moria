@@ -44,24 +44,17 @@ public class Credentials {
      * @param password
      *            The user's password. May not be <code>null</code> or an
      *            empty string.
-     * @throws NullPointerException
-     *             If either <code>username</code> or <code>password</code>
-     *             is <code>null</code>.
      * @throws IllegalArgumentException
-     *             If either <code>username</code> or <code>password</code>
-     *             is an empty string.
+     *             If <code>username</code> or <code>password</code>
+     *             is null or an empty string.
      */
     public Credentials(final String username, final String password) {
 
         // Sanity checks.
-        if (username == null)
-            throw new NullPointerException("User name cannot be NULL");
-        if (username.length() == 0)
-            throw new IllegalArgumentException("User name cannot be an empty string");
-        if (password == null)
-            throw new NullPointerException("Password cannot be NULL");
-        if (password.length() == 0)
-            throw new IllegalArgumentException("Password cannot be an empty string");
+        if (username == null || username.length() == 0)
+            throw new IllegalArgumentException("User name must be a non-empty string.");
+        if (password == null || password.length() == 0)
+            throw new IllegalArgumentException("Password must be a non-empty string.");
 
         this.username = username;
         this.password = password;

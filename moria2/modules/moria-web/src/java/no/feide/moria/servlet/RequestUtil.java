@@ -842,7 +842,7 @@ public final class RequestUtil {
     static Properties getConfig(final ServletContext context) {
 
         /* Validate parameters */
-        if (context == null) { throw new IllegalArgumentException("context must be a non-empty string"); }
+        if (context == null) { throw new IllegalArgumentException("context cannot be null."); }
 
         final Properties config;
 

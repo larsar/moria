@@ -686,8 +686,6 @@ public final class MoriaController {
      *            The organization the user comes from, or null if unknown.
      * @throws AuthorizationException
      *             If the authorization failed.
-     * @throws NullPointerException
-     *             If servicePrincipal is null.
      * @throws IllegalArgumentException
      *             If servicePrincipal is an empty string or the operation
      *             is wrong.
@@ -698,9 +696,9 @@ public final class MoriaController {
         final AccessStatusType statusType;
 
         /* Validate arguments */
-        if (servicePrincipal == null) {
-            throw new NullPointerException("'servicePrincipal' cannot be null.");
-        } else if (servicePrincipal == "") { throw new IllegalArgumentException("'servicePrincipal' cannot be an empty string."); }
+        if (servicePrincipal == null ||servicePrincipal == "") {
+            throw new IllegalArgumentException("'servicePrincipal' must be a non-empty string."); 
+        }
 
         /* Set logging status type */
         if (operation == DIRECT_AUTH_OPER) {
@@ -830,7 +828,7 @@ public final class MoriaController {
 
             // The ticket was found, but was invalid.
             accessLogger.logService(AccessStatusType.INVALID_SERVICE_TICKET, servicePrincipal, serviceTicketId, null);
-            messageLogger.logWarn(CAUGHT_INVALID_TICKET + ", service (" + servicePrincipal + ") tried to fetch attributes to late", serviceTicketId, e);
+            messageLogger.logWarn(CAUGHT_INVALID_TICKET + ", service (" + servicePrincipal + ") tried to fetch attributes too late", serviceTicketId, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
 
         } catch (MoriaStoreException e) {

@@ -163,7 +163,7 @@ public final class ConfigurationManager {
         } catch (FileNotFoundException e) {
             throw new ConfigurationManagerException("Configuration manager's configuration file not found: " + cmPropsFile);
         } catch (IOException e) {
-            throw new ConfigurationManagerException("IOException while loading configuration managers properties file: " + cmPropsFile, e);
+            throw new ConfigurationManagerException("IOException while loading configuration manager's properties file: " + cmPropsFile, e);
         }
 
         /* Timer delay */

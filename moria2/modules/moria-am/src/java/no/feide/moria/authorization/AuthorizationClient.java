@@ -161,7 +161,7 @@ final class AuthorizationClient {
 
         if (operations == null) { throw new IllegalArgumentException("Operations cannot be null."); }
 
-        if (attributes == null) { throw new IllegalArgumentException("Attribtues cannot be null."); }
+        if (attributes == null) { throw new IllegalArgumentException("Attributes cannot be null."); }
 
         // Assign.
         this.name = name;

@@ -128,7 +128,7 @@ final class MoriaTicket implements Serializable {
                 }
             } else {
                 if (!(data instanceof CachedUserData)) {
-                    throw new IllegalArgumentException("For sso, tg and proxy ticket data must be CachedUserData");
+                    throw new IllegalArgumentException("For sso, ticket granting and proxy tickets, data must be CachedUserData");
                 }
             }
         }

@@ -335,7 +335,7 @@ implements MoriaStore {
         if (data != null && data instanceof MoriaAuthnAttempt)
             authnAttempt = (MoriaAuthnAttempt) data;
         else
-            throw new InvalidTicketException("No authentication attempt associated with ticket '" + ticketId + "'");
+            throw new InvalidTicketException("No authentication attempt associated with ticket. [" + ticketId + "]");
 
         /* Delete the ticket if so indicated. */
         if (!keep) {
@@ -520,9 +520,9 @@ implements MoriaStore {
     MoriaStoreException {
 
         /* Validate arguments. */
-        if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalArgumentException("ticketId must be a non-empty string"); }
+        if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalArgumentException("ssoTicketId must be a non-empty string"); }
 
-        if (targetServicePrincipal == null || targetServicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
+        if (targetServicePrincipal == null || targetServicePrincipal.equals("")) { throw new IllegalArgumentException("targetServicePrincipal must be a non-empty string"); }
 
         MoriaTicket ssoTicket = getFromStore(MoriaTicketType.SSO_TICKET, ssoTicketId);
 
@@ -760,7 +760,7 @@ implements MoriaStore {
     throws NonExistentTicketException, MoriaStoreException {
 
         /* Validate parameter. */
-        if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
+        if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalArgumentException("ssoTicketId must be a non-empty string."); }
 
         MoriaTicket ssoTicket = getFromStore(MoriaTicketType.SSO_TICKET, ssoTicketId);
 
@@ -793,7 +793,7 @@ implements MoriaStore {
     MoriaStoreException {
 
         /* Validate parameter. */
-        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
+        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketId must be non-empty string."); }
 
         MoriaTicket ticket = getFromStore(ticketType, ticketId);
 
@@ -826,7 +826,7 @@ implements MoriaStore {
     MoriaStoreException {
 
         /* Validate parameter. */
-        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
+        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketId must be non-empty string."); }
 
         MoriaTicket ticket = getFromStore(ticketType, ticketId);
 
@@ -861,7 +861,7 @@ implements MoriaStore {
     MoriaStoreException {
 
         /* Validate parameter. */
-        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketType cannot be null."); }
+        if (ticketId == null || ticketId.equals("")) { throw new IllegalArgumentException("ticketId must be non-empty string."); }
 
         MoriaTicket ticket = getFromStore(ticketType, ticketId);
 
@@ -917,7 +917,7 @@ implements MoriaStore {
         if (ticketTypes == null || ticketTypes.length < 1) { throw new IllegalArgumentException("ticketTypes cannot be null or zero length."); }
 
         /*
-         * Check if it still is valid. We let the dedicated vacuming-service
+         * Check if it still is valid. We let the dedicated vacuuming service
          * take care of removing it at later time, so we just throw an
          * exception.
          */
@@ -1010,9 +1010,9 @@ implements MoriaStore {
         try {
             node = store.get(fqn);
         } catch (LockingException e) {
-            throw new MoriaStoreException("Locking of store failed for ticket '" + ticketId + "'", e);
+            throw new MoriaStoreException("Locking of store failed for ticket. [" + ticketId + "]", e);
         } catch (TimeoutException e) {
-            throw new MoriaStoreException("Access to store timed out for ticket '" + ticketId + "'", e);
+            throw new MoriaStoreException("Access to store timed out for ticket. [" + ticketId + "]", e);
         }
 
         // Sanity check.
