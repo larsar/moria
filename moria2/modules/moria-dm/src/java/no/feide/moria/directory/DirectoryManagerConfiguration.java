@@ -21,6 +21,8 @@ package no.feide.moria.directory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Properties;
 import org.jdom.Attribute;
@@ -93,11 +95,13 @@ public class DirectoryManagerConfiguration {
         // configuration.
         Element rootElement = null;
         try {
-            rootElement = (new SAXBuilder()).build(new File(configFile)).getRootElement();
+            rootElement = (new SAXBuilder()).build(new File(new URI(configFile))).getRootElement();
         } catch (IOException e) {
             throw new DirectoryManagerConfigurationException("Unable to read from configuration file \"" + configFile + '\"', e);
         } catch (JDOMException e) {
             throw new DirectoryManagerConfigurationException("Unable to parse configuration file \"" + configFile + '\"', e);
+        } catch (URISyntaxException e) {
+            throw new DirectoryManagerConfigurationException("Illegal configuration property \"" + CONFIGURATION_PROPERTY + "\"");
         }
         parseIndexConfig(rootElement);
         backendConfiguration = parseBackendConfig(rootElement);
