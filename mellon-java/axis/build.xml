@@ -19,7 +19,8 @@
           description="Mellon API: Prepare build directory"> 
     <mkdir dir="build"/>
     <mkdir dir="build/connector"/>
-    <mkdir dir="build/wsdl"/>
+    <mkdir dir="build/wsdl_src"/>
+    <mkdir dir="build/wsdl_build"/>
     <mkdir dir="dist"/>
   </target>
 
@@ -66,14 +67,24 @@
       <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! '${wsdl_file}'"/>
     </exec>
   		  
-    <axis-wsdl2java output="build/wsdl" 
-                    testcase="true"  
+    <axis-wsdl2java output="build/wsdl_src" 
+                    testcase="false"  
                     verbose="true" 
                     url="Authentication.wsdl"> 
-      <mapping namespace="http://login.feide.no/moria" package="no.feide.moria"/> 
+      <mapping namespace="https://login.feide.no/moria" package="no.feide.moria"/> 
     </axis-wsdl2java> 
+    
+    <javac srcdir="build/wsdl_src"
+           debug="true"
+           destdir="build/wsdl_build"
+           includes="no/feide/login/moria/Authentication/*">
+      <classpath>
+        <fileset dir="${axis_libs}" includes="*.jar"/>
+      </classpath>
+    </javac>
+    
 
-    <jar destfile="dist/feide-mellon-api.jar" basedir="build/wsdl"/>    
+    <jar destfile="dist/feide-mellon-api.jar" basedir="build/wsdl_build"/>    
   </target>
   
 
