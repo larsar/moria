@@ -176,16 +176,14 @@ extends HttpServlet {
         out.println("<p><b>Status:</b><br/>" + statusMsg + "</p>");
         
         // Prepare to check test users.
-        out.println("<table border=1><tr><th>Test users</th><th>Organization</th><th>Status</th></tr>");
+        out.println("<table border=1><tr><th>Organization</th><th>Status</th></tr>");
   
         // Start checking a new user.
-        
         for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
             BackendStatusUser userData = (BackendStatusUser) backendDataUsers.get(key);
-            out.println("<tr><td>" +  userData.getName() + "</td>");
+            out.println("<tr><td>" + userData.getOrganization() + "</td>");
             try {
-                out.println("<td>" + MoriaController.getUserOrg(userData.getName()) + "</td>");
                 final Map attributes = MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE},
                         userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
         	
@@ -193,15 +191,20 @@ extends HttpServlet {
                 out.println("<td>OK</td>");
             
             } catch (AuthenticationException e) {
-                out.println("<td>unknown</td><td> Failed authentication; check configuration</td></tr>");            
+                log.logWarn("Authentication failed for: " + userData.getName() + ", contact: " + userData.getContact());
+                out.println("<td> Failed authentication; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");
             } catch (DirectoryUnavailableException e) {
-                out.println("<td> Directory unavailable</td></tr>");            
+                log.logWarn("The directory is unavailable for: " + userData.getName() + ", contact: " + userData.getContact());
+                out.println("<td> Directory unavailable. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
             } catch (AuthorizationException e) {
-                out.println("<td> Failed authorization; check configuration</td></tr>");            
+                log.logWarn("Authorization failed for: " + userData.getName() + ", contact: " + userData.getContact());
+                out.println("<td> Failed authorization; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
             } catch (IllegalInputException e) {
-                out.println("<td> Illegal input; check configuration</td></tr>");            
+                log.logWarn("Illegal input for: " + userData.getName() + ", contact: " + userData.getContact());
+                out.println("<td> Illegal input; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
             } catch (InoperableStateException e) {
-                out.println("<td> Inoperable state; check configuration</td></tr>");            
+                log.logWarn("Inoperable state for: " + userData.getName() + ", contact: " + userData.getContact());
+                out.println("<td> Inoperable state; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
             } finally {
             
                 // Finish the table row.

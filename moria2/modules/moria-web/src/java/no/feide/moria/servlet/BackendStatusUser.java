@@ -33,7 +33,9 @@ public class BackendStatusUser {
 
     private String name;
     private String password; 
-
+    private String organization;
+    private String contact;
+    
     /**
      * Constructor.
      * 
@@ -43,6 +45,8 @@ public class BackendStatusUser {
     public BackendStatusUser() {
        name = null;
        password = null;
+       organization = null;
+       contact = null;
     }
     
     /**
@@ -62,17 +66,50 @@ public class BackendStatusUser {
     }
     
     /**
+     *  Set the organization
+     * @param organization the organization
+     */
+    public void setOrganization(final String organization) {
+        this.organization = organization;
+    }
+    
+    /**
+     * Set the contact
+     * @param contact
+     */
+    public void setContact(final String contact) {
+        this.contact = contact;
+    }
+    
+    /**
      * Returns the user name
      * @return the user name
      */
     public String getName() {
         return name;
     }
+    
     /**
      * Returns the user password
      * @return the user password
      */
     public String getPassword() {
         return password;
+    }
+    
+    /**
+     * Returns the organization
+     * @return the organization
+     */
+    public String getOrganization() {
+        return organization;
+    }
+    
+    /**
+     * Returns the contact
+     * @return the contact
+     */
+    public String getContact() {
+        return contact;
     }
   }

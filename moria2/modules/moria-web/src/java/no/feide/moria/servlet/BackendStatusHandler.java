@@ -112,6 +112,12 @@ public class BackendStatusHandler extends DefaultHandler {
             else if (eName.equals("Password")) {
                 currentuser.setPassword(currentchars);
             }
+           else if (eName.equals("Organization")) {
+               currentuser.setOrganization(currentchars);
+           }
+           else if (eName.equals("Contact")) {
+               currentuser.setContact(currentchars);
+           }
         }
     }
     
