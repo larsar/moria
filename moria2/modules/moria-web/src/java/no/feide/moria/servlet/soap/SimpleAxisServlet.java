@@ -78,7 +78,7 @@ public final class SimpleAxisServlet extends AxisServlet {
      *          The outgoing HTTP reponse object.
      */
     public void doGet(final HttpServletRequest request, final HttpServletResponse response) {
-
+        
         /* Avoid null-pointer exceptions. */
         if (request == null) {
             messageLogger.logCritical("Response object cannot be null", new NullPointerException("request is null"));
@@ -221,7 +221,7 @@ public final class SimpleAxisServlet extends AxisServlet {
      *            The outgoing HTTP response object.
      */
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
-
+               
         /* Avoid null-pointer exceptions. */
         if (request == null) {
             messageLogger.logCritical("Response object cannot be null", new NullPointerException("request is null"));
@@ -232,7 +232,7 @@ public final class SimpleAxisServlet extends AxisServlet {
             messageLogger.logCritical("Response object cannot be null", new NullPointerException("response is null"));
             return;
         }
-
+        
         /* Supposed to boost performace. */
         response.setBufferSize(8192);
 
@@ -258,7 +258,7 @@ public final class SimpleAxisServlet extends AxisServlet {
          * request.
          */
         MessageContext messageContext = createMessageContext(axisEngine, request, response);
-
+        
         /* Set the username given in the request. */
         messageContext.setUsername(request.getRemoteUser());
 
@@ -299,10 +299,10 @@ public final class SimpleAxisServlet extends AxisServlet {
         } catch (IOException ioe) {
             handleException("Unable to get InputStream from request", ioe, request, response);
             return;
-        }
+        }      
 
         /* Add the request message to the message context. */
-        messageContext.setRequestMessage(requestMessage);
+        messageContext.setRequestMessage(requestMessage);       
 
         /* Get the SOAP action header from the HTTP request. */
         String soapAction = request.getHeader("SOAPAction");
@@ -312,11 +312,11 @@ public final class SimpleAxisServlet extends AxisServlet {
          * the request uri.
          */
         if (soapAction == null)
-            soapAction = request.getRequestURI();
-
+            soapAction = request.getRequestURI();       
+        
         /* Add the SOAP action to the message context. */
         messageContext.setUseSOAPAction(true);
-        messageContext.setSOAPActionURI(soapAction);
+        messageContext.setSOAPActionURI(soapAction);       
 
         /* Create session wrapper for the HTTP session. */
         messageContext.setSession(new AxisHttpSession(request));
@@ -328,9 +328,17 @@ public final class SimpleAxisServlet extends AxisServlet {
         try {
             axisEngine.invoke(messageContext);
         } catch (AxisFault af) {
-            handleException("Invocation of the axis engine failed", af, request, response);
+            
+            if (af.getFaultString().startsWith("No such operation")) {
+                // Convert an AxisFault with faultString "No such operation '*'" to a IllegalInputException.                
+                IllegalInputException e = new IllegalInputException(af.getFaultString());
+                handleException("Invocation of the Axis engine failed", e, request, response);
+            } else
+                // All other Axis exceptions.
+                handleException("Invocation of the axis engine failed", af, request, response);
+            
             return;
-        }
+        }        
 
         /* Read response message from engine. */
         Message responseMessage = messageContext.getResponseMessage();
@@ -360,6 +368,7 @@ public final class SimpleAxisServlet extends AxisServlet {
             handleException("Unable to write response to client", e, request, response);
             return;
         }
+        
     }
 
     /**
@@ -430,28 +439,32 @@ public final class SimpleAxisServlet extends AxisServlet {
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         /* Get the exception cause. */
-        final Throwable cause = exception.getCause();
+        Throwable cause = null;
+        if (exception instanceof AxisFault)
+            cause = exception.getCause();
+        else
+            cause = exception;
 
         /* Used later to get the JSP for handling HTML output. */
         RequestDispatcher requestDispatcher;
 
         /* Set up the error response specially for SOAP requests. */
         if (request.getMethod().equals("POST") && request.getHeader("SOAPAction") != null) {
-
+            
             /* Set the faultCode and faultString elements, depending on exception. */
-            if (cause instanceof SOAPException) {
+            if (cause instanceof SOAPException) {            
                 
                 /* A known type of exception. */
                 request.setAttribute("faultCode", ((SOAPException) cause).getFaultcode());
                 request.setAttribute("faultString", ((SOAPException) cause).getFaultstring());
                 
-            } else if (cause instanceof RemoteException) {
+            } else if (cause instanceof RemoteException) {               
                 
                 // An older type of exception handling, replaced by the v2.1 SOAP interface onwards.
                 request.setAttribute("faultCode", "Server");
                 request.setAttribute("faultString", cause.getMessage());
                 
-            } else {
+            } else {              
                 
                 /* An unknown type of exception. Should not happen. */
                 InternalException internal = new InternalException("");
@@ -465,7 +478,7 @@ public final class SimpleAxisServlet extends AxisServlet {
             messageLogger.logWarn("Replying with SOAP Fault - faultCode: '" + 
                                    request.getAttribute("faultCode") + 
                                    "' faultString: '" + 
-                                   request.getAttribute("faultString") + "'");
+                                   request.getAttribute("faultString") + "'");       
             
             /* Get the request dispatcher. */
             requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-SOAP-Error.JSP");
