@@ -53,8 +53,8 @@ public class MellonTest {
 			// Check whether the user exists at all.
 			AuthenticationIF service = (AuthenticationIF)stub;
 			System.err.println("User "+username+" exists: "+service.verifyUserExistence(username));
-			System.err.println("Group "+groupname+" exists: "+service.verifyGroupExistence(groupname));
-			System.err.println("User "+username+" in group "+groupname+": "+service.verifyUserInGroup(username, groupname));
+			//System.err.println("Group "+groupname+" exists: "+service.verifyGroupExistence(groupname));
+			//System.err.println("User "+username+" in group "+groupname+": "+service.verifyUserInGroup(username, groupname));
 			
 			// Request a new session.
 			String[] attributeRequest = {"eduPersonAffiliation", "eduPersonOrgDN"};
