@@ -112,7 +112,7 @@ public class MoriaUserData {
 		
 		/* Loop through all values for an attribute. */
 		for (Enumeration e = values.elements(); e.hasMoreElements(); ) {
-			if (e.nextElement().toString().equals(value))
+			if (e.nextElement().toString().equalsIgnoreCase(value))
 				return true;
 		}
 		return false;
