@@ -21,10 +21,9 @@
 package no.feide.moria.servlet;
 
 import no.feide.moria.controller.MoriaController;
-import no.feide.moria.store.InvalidTicketException;
+import no.feide.moria.controller.UnknownTicketException;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,8 +32,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
-//import no.feide.moria.controller.MoriaController;
 
 /**
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -53,25 +50,93 @@ public class LoginServlet extends HttpServlet {
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
+        showLoginPage(request, response, null);
+    }
+
+    public final void doPost(final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException, ServletException {
+        Properties config = getConfig();
+
+        /* Login ticket */
+        String loginTicketId = request.getParameter(config.getProperty("loginTicketID"));
+
+        /* SSO ticket */
+        String ssoTicketId = request.getParameter(config.getProperty("ssoTicketID"));
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String org = request.getParameter("org");
+
+        /* Parse username */
+        if (username.indexOf("@") != -1) {
+            org = username.substring(username.indexOf("@") + 1, username.length());
+        }
+
+        /* Validate input */
+        if (username == null || username.equals("")) {
+            showLoginPage(request, response, "nocred");
+        } else if (password == null || password.equals("")) {
+            showLoginPage(request, response, "nocred");
+        } else if (org == null || org.equals("") || org.equals("null")) {
+            showLoginPage(request, response, "noorg");
+        } else if (RequestUtil.parseConfig(getConfig(), "org", "en").get(org) == null) { // TODO: Requires english bundle
+            showLoginPage(request, response, "errorg");
+        }
+
+        // TODO: Attempt login
+        // TODO: GEt redirect url
+        // TODO: Set SSO ticket in cookie
+        // TODO: Redirect to web service if successful
+
+        // TODO: If error other than UnknownTicketException, show loginpage with correct error
+    }
+
+    /**
+     * Displays the login page. The method fills the request object with values and
+     * then pass the request to the jsp.
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException
+     */
+    private void showLoginPage(final HttpServletRequest request, final HttpServletResponse response, String errorType)
+            throws IOException, ServletException {
+
         // TODO: Do not throw exceptions, set INTERNAL SERVER ERRROR status
         String jspLocation = getServletContext().getInitParameter("jsp.location");
         Properties config = getConfig();
+        HashMap serviceProperties = null;
 
         /* Ticket */
-        String loginTicket = request.getParameter(config.getProperty("loginTicketID"));
+        String loginTicketId = request.getParameter(config.getProperty("loginTicketID"));
 
-        /* Service properties */
-        HashMap serviceProperties;
+        /* Base URL */
+        request.setAttribute("baseURL", config.getProperty("loginURLPrefix") + "?" + config.getProperty("loginTicketID") + "=" + loginTicketId);
+
         try {
-            serviceProperties = MoriaController.getServiceProperties(loginTicket);
-        } catch (InvalidTicketException e) {
-            throw new ServletException(e);
-            // TODO: Should catch InvalidTicketException/ControllerException and display error
+            /* Service properties */
+            serviceProperties = MoriaController.getServiceProperties(loginTicketId);
+            /* Seclevel */
+            request.setAttribute("secLevel", "" + MoriaController.getSecLevel(loginTicketId));
+        } catch (UnknownTicketException e) {
+            errorType = "unknownTicket";
         }
 
+        /* Error message */
+        request.setAttribute("errorType", errorType);
+
         /* Resource bundle */
-        ResourceBundle bundle = RequestUtil.getBundle("login", request.getParameter("lang"), request.getCookies(),
-                (String) serviceProperties.get("lang"), request.getHeader("Accept-Language"), "en");
+        String serviceLang = null;
+        if (serviceProperties != null) {
+            serviceLang = (String) serviceProperties.get("lang");
+        }
+        ResourceBundle bundle = RequestUtil.getBundle("login",
+                request.getParameter("lang"),
+                request.getCookies(),
+                serviceLang,
+                request.getHeader("Accept-Language"),
+                "en");
         request.setAttribute("bundle", bundle);
 
         /* Configured values */
@@ -79,23 +144,30 @@ public class LoginServlet extends HttpServlet {
         request.setAttribute("languages", RequestUtil.parseConfig(getConfig(), "lang", "common"));
 
         /* Selected realm */
-        String selectedRealm = RequestUtil.getCookieValue("realm", request.getCookies());
-        if (selectedRealm == null || selectedRealm.equals("")) {
-            selectedRealm = (String) serviceProperties.get("home");
+        String selectedOrg = request.getParameter("org");
+        if (selectedOrg == null || selectedOrg.equals("")) {
+            RequestUtil.getCookieValue("org", request.getCookies());
+            if (selectedOrg == null || selectedOrg.equals("")) {
+                if (serviceProperties != null) {
+                    selectedOrg = (String) serviceProperties.get("home");
+                }
+            }
         }
-        request.setAttribute("selectedRealm", selectedRealm);
+        request.setAttribute("selectedOrg", selectedOrg);
+
 
         /* Selected language */
         request.setAttribute("selectedLang", bundle.getLocale());
+        if (request.getParameter("lang") != null) {
+            // TODO: Cookie TTL should come from config
+            response.addCookie(RequestUtil.createCookie("lang", request.getParameter("lang"), 7));
+        }
 
         /* Service attributes */
-        request.setAttribute("clientName", (String) serviceProperties.get("displayName"));
-        request.setAttribute("clientURL", (String) serviceProperties.get("url"));
-
-        /* Seclevel */
-        // TODO: Set based on requested attributes
-        request.setAttribute("secLevel", "low");
-
+        if (serviceProperties != null) {
+            request.setAttribute("clientName", (String) serviceProperties.get("displayName"));
+            request.setAttribute("clientURL", (String) serviceProperties.get("url"));
+        }
 
         // TODO: Include instead of forward
         /* Process jsp */
@@ -103,13 +175,18 @@ public class LoginServlet extends HttpServlet {
         rd.include(request, response);
     }
 
-
+    /**
+     * Get the config from the context. The configuration is expected to be set
+     * by the controller before requests are sent to this servlet.
+     *
+     * @return the configuration
+     * @throws IllegalStateException if the config is not set in the context
+     */
     private Properties getConfig() {
         Properties config;
 
         /* Validate config */
         try {
-            ServletContext context = getServletContext();
             config = (Properties) getServletContext().getAttribute("config");
         } catch (ClassCastException e) {
             // TODO: Log
