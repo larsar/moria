@@ -33,8 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.axis.AxisEngine;
 import org.apache.axis.AxisFault;
 import org.apache.axis.Constants;
+import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
 import org.apache.axis.handlers.soap.SOAPService;
+import org.apache.axis.transport.http.AxisHttpSession;
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.axis.transport.http.ServletEndpointContextImpl;
@@ -63,7 +65,7 @@ public class SimpleAxisServlet extends AxisServlet {
     }
 
     public void init() {
-        //super.init();
+        super.init();
         /* Read value from context-param set in web.xml */
         JSP_LOCATION = getServletContext().getInitParameter("jsp.location");
     }
@@ -92,20 +94,20 @@ public class SimpleAxisServlet extends AxisServlet {
         try {
             printWriter = response.getWriter();
         } catch (IOException ioe) {
-            handleException("Unable to get response writer", ioe, response);
+            handleException("Unable to get response writer", ioe, request, response);
             return;
         }
-
-        /* Context used by the axis engine to handle the request */
-        MessageContext messageContext = createMessageContext(axisEngine, request, response);
 
         /* Retrive axis engine */
         try {
             axisEngine = getEngine();
         } catch (AxisFault fault) {
-            handleException("Unable to get AxisEngine", fault, response);
+            handleException("Unable to get AxisEngine", fault, request, response);
             return;
         }
+
+        /* Context used by the axis engine to handle the request */
+        MessageContext messageContext = createMessageContext(axisEngine, request, response);
 
         /* Identify service */
         String serviceName = request.getServletPath();
@@ -113,13 +115,13 @@ public class SimpleAxisServlet extends AxisServlet {
         try {
             service = axisEngine.getService(serviceName);
         } catch (AxisFault fault) {
-            handleException("Unable to get SOAPService", fault, response);
+            handleException("Unable to get SOAPService", fault, request, response);
             return;
         }
 
         /* Throw NullPointerException and return if service is null */
         if (service == null) {
-            handleException("No SOAPService object returned", new NullPointerException("service is null"), response);
+            handleException("No SOAPService object returned", new NullPointerException("service is null"), request, response);
             return;
         }
 
@@ -127,7 +129,7 @@ public class SimpleAxisServlet extends AxisServlet {
         try {
             messageContext.setService(service);
         } catch (AxisFault af) {
-            handleException("Unable to set SOAPService in messageContext", af, response);
+            handleException("Unable to set SOAPService in messageContext", af, request, response);
             return;
         }
 
@@ -147,7 +149,7 @@ public class SimpleAxisServlet extends AxisServlet {
             try {
                 service.generateWSDL(messageContext);
             } catch (AxisFault af) {
-                handleException("Unable to generate WSDL", af, response);
+                handleException("Unable to generate WSDL", af, request, response);
                 return;
             }
 
@@ -157,7 +159,7 @@ public class SimpleAxisServlet extends AxisServlet {
 
             /* Throw exception and return if the WSDL data was not generated */
             if (wsdl == null) {
-                handleException("No WSDL data available", new NullPointerException("wsdl is null"), response);
+                handleException("No WSDL data available", new NullPointerException("wsdl is null"), request, response);
                 return;
             }
 
@@ -170,7 +172,7 @@ public class SimpleAxisServlet extends AxisServlet {
             try {
                 xmlSerializer.serialize(wsdl);
             } catch (IOException ioe) {
-                handleException("Unable to serialize WSDL", ioe, response);
+                handleException("Unable to serialize WSDL", ioe, request, response);
                 return;
             }
 
@@ -186,11 +188,11 @@ public class SimpleAxisServlet extends AxisServlet {
             /* Set the service name as attribute for the JSP */
             request.setAttribute("serviceName", serviceName);
 
-            /* Log and return if dispatch fails */ 
+            /* Log and return if dispatch fails */
             try {
                 requestDispatcher.forward(request, response);
             } catch (Exception e) {
-                handleException("Unable to dispatch request to " + JSP_LOCATION + "/axis.jsp", e, response);
+                handleException("Unable to dispatch request to " + JSP_LOCATION + "/axis.jsp", e, request, response);
                 return;
             }
         }
@@ -209,18 +211,142 @@ public class SimpleAxisServlet extends AxisServlet {
 
         /* Supposed to boost performace */
         response.setBufferSize(8192);
+
+        /* The access point to the AXIS subsystem */
+        AxisEngine axisEngine = null;
+
+        /* The objecte representing the incoming SOAP message */
+        Message requestMessage = null;
+
+        /* The object representing the requested web service */
+        SOAPService service = null;
+
+        /* Retrive instance of AXIS engine */
+        try {
+            axisEngine = getEngine();
+        } catch (AxisFault fault) {
+            handleException("Unable to get AxisEngine", fault, request, response);
+            return;
+        }
+
+        /*
+         * Create message context used by the AXIS subsystem to handle the
+         * request
+         */
+        MessageContext messageContext = createMessageContext(axisEngine, request, response);
+
+        /* Identify service */
+        String serviceName = request.getServletPath();
+
+        /*
+         * Retrive SOAP service object. Throw NullPointerException and return
+         * if SOAP service is null
+         */
+        try {
+            service = axisEngine.getService(serviceName);
+        } catch (AxisFault fault) {
+            handleException("Unable to get SOAPService", fault, request, response);
+            return;
+        }
+
+        if (service == null) {
+            handleException("No SOAPService object returned", new NullPointerException("service is null"), request, response);
+            return;
+        }
+
+        /* Add the SOAP service to message context */
+        try {
+            messageContext.setService(service);
+        } catch (AxisFault af) {
+            handleException("Unable to set SOAPService in messageContext", af, request, response);
+            return;
+        }
+
+        /*
+         * Create request message. Log and return if we can't get input stream
+         * from request
+         */
+        try {
+            requestMessage = new Message(request.getInputStream(), false, request.getHeader("Content-Type"), request
+                    .getHeader("Content-Location"));
+        } catch (IOException ioe) {
+            handleException("Unable to get InputStream from request", ioe, request, response);
+            return;
+        }
+
+        /* Add the request message to the message context */
+        messageContext.setRequestMessage(requestMessage);
+
+        /* Get the SOAP action header from the HTTP request */
+        String soapAction = request.getHeader("SOAPAction");
+
+        /*
+         * If the SoapAction header is undefined we set the variable equal to
+         * the request uri
+         */
+        if (soapAction == null) soapAction = request.getRequestURI();
+
+        /* Add the SOAP action to the message context */
+        messageContext.setUseSOAPAction(true);
+        messageContext.setSOAPActionURI(soapAction);
+
+        /* Create session wrapper for the HTTP session */
+        messageContext.setSession(new AxisHttpSession(request));
+
+        /*
+         * Invoke the engine and thereby process the request, log and return if
+         * it fails
+         */
+        try {
+            axisEngine.invoke(messageContext);
+        } catch (AxisFault af) {
+            handleException("Invocation of the axis engine failed", af, request, response);
+            return;
+        }
+
+        /* Read response message from engine */
+        Message responseMessage = messageContext.getResponseMessage();
+
+        /* Log and return if no response */
+        if (responseMessage == null) {
+            handleException("No response from engine", new NullPointerException("responseMessage is null"), request, response);
+            return;
+        }
+
+        /*
+         * If we're unable to retrive the content type, set it to a default
+         * value
+         */
+        try {
+            response.setContentType(responseMessage.getContentType(messageContext.getSOAPConstants()));
+        } catch (AxisFault af) {
+            handleException("Unable to retrive content type of response", af, request, response);
+            // TODO: Verify default content type for SOAP messages
+            response.setContentType("application/soap+xml");
+        }
+
+        /* Write message to client */
+        try {
+            responseMessage.writeTo(response.getOutputStream());
+        } catch (Exception e) {
+            handleException("Unable to write response to client", e, request, response);
+            return;
+        }
     }
 
     /**
-     * Create MessageContext
+     * Create a new MessageContext, initialized with some standard values.
      * 
      * @param axisEngine
+     *            the AxisEngine that will be used to handle SOAP operations
      * @param request
+     *            the incoming request
      * @param response
-     * @return
+     *            the outgoing response
+     * @return a initiated MessageContext
      */
     private MessageContext createMessageContext(AxisEngine axisEngine, HttpServletRequest request, HttpServletResponse response) {
-        /* */
+        /* Create new message context */
         MessageContext messageContext = new MessageContext(axisEngine);
 
         /* Set the transport */
@@ -254,16 +380,6 @@ public class SimpleAxisServlet extends AxisServlet {
     }
 
     /**
-     * Log exception and print user friendly error message to client
-     * 
-     * @param exception
-     *            the exception to be handled
-     */
-    private void handleException(Exception exception, HttpServletResponse response) {
-        handleException(null, exception, response);
-    }
-
-    /**
      * Log exception with message and print user friendly error message to
      * client
      * 
@@ -274,25 +390,42 @@ public class SimpleAxisServlet extends AxisServlet {
      * @param response
      *            response object for this invocation
      */
-    private void handleException(String message, Exception exception, HttpServletResponse response) {
+    private void handleException(String message, Exception exception, HttpServletRequest request, HttpServletResponse response) {
         // TODO: Implement. Remove throwing of ServletException, print sane
         // message and log exception.
 
-        // We're not able to recover from this
+        /* We're not able to recover from this */
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.setContentType("text/plain; charset=ISO-8859-1");
 
         String logMessage = generateLogMessage(message, exception);
 
-        try {
-            PrintWriter writer = response.getWriter();
-            writer.print(logMessage);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            return;
+        // TODO: Replace with log
+        System.out.print(logMessage);
+
+        /* Get JSP for handling HTML output */
+        RequestDispatcher requestDispatcher;
+
+        /* Set up the error response specially for SOAP requests */
+        if (request.getMethod().equals("POST") && request.getHeader("SOAPAction") != null) {
+            requestDispatcher = request.getRequestDispatcher(JSP_LOCATION + "/axis-soap-error.jsp");
+            response.setContentType("application/soap+xml; charset=utf-8");
+            response.setCharacterEncoding("UTF-8");
+        } else {
+            requestDispatcher = request.getRequestDispatcher(JSP_LOCATION + "/axis-error.jsp");
+
+            /* Set the attributs for the response and the JSP */
+            response.setContentType("text/html; charset=utf-8");
+            response.setCharacterEncoding("UTF-8");
+            request.setAttribute("logMessage", logMessage);
         }
 
-        System.out.print(logMessage);
+        /* Log and return if dispatch fails */
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (Exception e) {
+            // TODO: Log
+            return;
+        }
     }
 
     /**
@@ -304,23 +437,23 @@ public class SimpleAxisServlet extends AxisServlet {
      *            exception to get stacktrace from. May be null.
      * @return the final log string
      */
-    private static String generateLogMessage(final String message, final Exception exception) throws IllegalArgumentException {
+    private static String generateLogMessage(final String message, final Exception exception) {
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuffer buffer = new StringBuffer();
+        final String lineSeparator = System.getProperty("line.separator");
 
         buffer.append(message != null ? "\"" + message + "\"" : "\"-\"");
-        buffer.append(System.getProperty("line.separator"));
+        buffer.append(lineSeparator);
 
+        /* Capture stacktrace from exception */
         if (exception != null) {
-
-            /* Capture stacktrace */
-            OutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
+            final OutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
 
             exception.printStackTrace(printStream);
             printStream.flush();
 
-            buffer.append(outputStream.toString() + System.getProperty("line.separator"));
+            buffer.append(outputStream.toString() + lineSeparator);
         }
 
         return buffer.toString();
