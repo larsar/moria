@@ -21,16 +21,16 @@ import no.feide.moria.log.MessageLogger;
 public class DirectoryManager {
 
     /** Internal representation of the index. */
-    private static DirectoryManagerIndex index;
+    private DirectoryManagerIndex index;
 
     /** Internal representation of the backend factory. */
-    private static DirectoryManagerBackendFactory backendFactory;
+    private DirectoryManagerBackendFactory backendFactory;
 
     /** The message logger. */
-    private final static MessageLogger log = new MessageLogger(DirectoryManager.class);
+    private final MessageLogger log = new MessageLogger(DirectoryManager.class);
 
     /** The current (valid) Directory Manager configuration. */
-    private static DirectoryManagerConfiguration currentConfiguration = null;
+    private DirectoryManagerConfiguration currentConfiguration = null;
 
 
     /**
@@ -41,7 +41,7 @@ public class DirectoryManager {
      *            points to a file containing the Directory Manager
      *            configuration.
      */
-    public static void setConfig(final Properties config) {
+    public void setConfig(final Properties config) {
 
         // Update current configuration.
         try {
@@ -116,7 +116,7 @@ public class DirectoryManager {
      *             error is encountered when operating the backend, including if
      *             the authentication fails.
      */
-    public static UserAttribute[] authenticate(final Credentials userCredentials, final String[] attributeRequest)
+    public UserAttribute[] authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws BackendException {
 
         // TODO: Implement a backend pool.
