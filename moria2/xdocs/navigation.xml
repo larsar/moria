@@ -35,7 +35,16 @@ $Id$
 	        <item name="Introduction" href="index.html"/>
 			<item name="Service Integration" href="howto_service_overview.html"/>
 	    	<item name="Design" href="design.html"/>
-	    	<item name="Configuration" href="configuration.html"/>
+	    	<item name="Configuration" href="config_introduction.html">
+		    	<item name="Base Configuration" href="config_base_configuration.html"/>
+		    	<item name="Configuration Manager" href="config_configuration_manager.html"/>
+		    	<item name="Store Manager" href="config_store_manager.html"/>
+		    	<item name="Directory Manager" href="config_directory_manager.html"/>
+		    	<item name="Authorization Manager" href="config_authorization_manager.html"/>
+		    	<item name="Web Module" href="config_web_module.html"/>
+		    	<item name="Logging" href="config_logging.html"/>
+		    </item>
+	    	
 	    	<item name="Building" href="building.html"/>
 
 	    	<item name="Modules" href="design.html#Moria_Internals" collapse="false">

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Logging</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body> 
+        <section name="Logging">
+            <p>
+            Configuration of the log API is basically limited to producing a
+            suitable log4j configuration. See log4j's 
+            <a href="http://logging.apache.org/log4j/docs/documentation.html">documentation</a>
+            and the distributed examples for more information.
+            </p>
+            <p>
+            The only special case to consider is the access log. The logger's
+            identifier will always the fully qualified path of the
+            <code>AccessLogger</code> class itself. To isolate the access log it
+            is therefore important to define the logger that catches the
+            <code>AccessLogger</code> output before any other loggers catching
+            output from the <code>no.feide.moria</code> hierarchy. Also, all
+            logging from the <code>AccessLogger</code> is done at log4j level
+            <code>WARN</code>, so to disable access logging define the log level
+            at a higher level than this.
+            </p>
+        </section>
+    </body>
+</document>

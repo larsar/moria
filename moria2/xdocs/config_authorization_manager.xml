@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Authorization Manager</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body> 
+        <section name="Authorization Manager">
+            <p>
+            The Authorization Manager is configured by an XML file which
+            contains a <i>ClientAuthorizationConfig</i> element, which in turn
+            contains a <i>Client</i> element for every client service allowed to
+            use Moria.
+            </p>
+            <p>
+            The actual service authentication is performed outside of Moria (by
+            the application server) so password and/or certificates must be
+            configured in the server that performs the authentication (for
+            example, <a href="http://httpd.apache.org/">Apache</a> or
+            <a href="http://www.caucho.com/">Resin</a>).
+            </p>
+            <!--
+            TODO: NEED AN UPDATE! 
+            <p><a href="authorization.dtd">DTD for the authorization configuration file</a>.</p>
+            -->
+            <p>
+            A <i>Client</i> element consists of the following:
+            <ol>
+                <li>
+                A required <i>name</i> attribute which is identical to the
+                principal used for the client service's external authentication.
+                </li>
+                <li>
+                A <i>DisplayName</i> child element with a text child element
+                containing the full name of the client service. This is the
+                service name that is presented on the login page.
+                </li>
+                <li>
+                An <i>URL</i> child element with a text child element containing
+                an URL pointing to the main page of the client service. This URL
+                is used to connect a link from the displayed client service name
+                (on the login page) to a page where the client service may
+                describe itself to the user.                
+                </li>
+                <li>
+                A <i>Home</i> child element with a text child element that
+                specifies which organization the client service belongs to. The
+                short-form organization names should be consistent with
+                short-form organization names appearing elsewhere in other
+                configuration files, such as the <a href="#Web Module">Web
+                Module</a> configuration file.
+                <i>Not currently used.</i>
+                <!--
+                TODO: Is this actually not used?
+                -->
+                </li>
+                <li>
+                A <i>Language</i> child element with a text child element that
+                gives the default language used on the web interfaces (such as
+                the login web page) for this client service. This language will
+                be used as the default language for the login page if the user
+                has not previously selected another language. If not present the
+                system-wide Moria default language will be used instead. Note
+                that this two-character language code must match one of the
+                two-character language codes defined in the
+                <a href="#Web Module">Web Module</a> configuration file.
+                </li>
+                <li>
+                An <i>Affiliation</i> child element containing one or more
+                <i>Organization</i> child elements, which again contain a text
+                child element. The text child element should match the
+                short-form organization names defined in the
+                <a href="#Web Module">Web Module</a> configuration file. Users
+                belonging to one of these affiliated organizations may be
+                authenticated against a secondary (or tertiary, and so on)
+                authentication server (or location within the same
+                authentication server) when using this service. This allows an
+                organization to publish a service for which only a certain set
+                of users may be authenticated without allowing these users to
+                access other services (unless their organization is also
+                affiliated with these services, of course).
+                <!--
+                TODO: Remember to update this description as the intended functionality is added.
+                -->
+                </li>
+                <li>
+                An <i>OrgsAllowed</i> child element containing one or more
+                <i>Organization</i> child elements, which again contain a text
+                child element. The text child element should match the
+                short-form organization names defined in the
+                <a href="#Web Module">Web Module</a> configuration file. Users
+                belonging to one of these allowed organizations may access this
+                client service; others cannot.
+                </li>
+                <li>
+                An <i>Attributes</i> child element containing one or more
+                <i>Attribute</i> child elements. The <i>Attribute</i> child
+                element(s) contain the attributes <i>name</i> (gives the
+                physical name of a physical user attribute the client service is
+                allowed to read), <i>sso</i> (true or false; tells whether the
+                client service is allowed to read this attribute when using
+                SSO), and <i>secLevel</i> (used to classify an attribute request
+                according to security level and optionally display a
+                warning/description to the user on the login page). Note that
+                for a client service to be allowed a ticket granting ticket the
+                configuration must be allowed to read the <i>tgt</i> attribute
+                and use it for SSO.
+                </li>
+                <li>
+                The <i>Operations</i> child element contains one or more
+                <i>Operation</i> child elements for those operations the client
+                service is allowed to perform. The <i>Operation</i> child
+                element has an attribute <i>name</i> specifying the allowed
+                operation's name. The following operations are defined:
+                <table>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Explanation</th>
+                    </tr>
+                    <tr>
+                        <td><i>InteractiveAuth</i></td>
+                        <td>Allow normal interactive authentication.</td>
+                    </tr>
+                    <tr>
+                        <td><i>DirectAuth</i></td>
+                        <td>Allow the user's username/password to be sent
+                            through the client service. Handle with care, as
+                            this is a potential security pitfall.</td>
+                    </tr>
+                    <tr>
+                        <td><i>ProxyAuth</i></td>
+                        <td>Allows a subsystem to perform user authentication
+                            using a proxy ticket.</td>
+                    </tr>
+                    <tr>
+                        <td><i>VerifyUserExistence</i></td>
+                        <td>Allows the client service to check whether a given
+                            user actually exists.</td>
+                    </tr>
+                </table>
+                </li>
+                <li>
+                The <i>Subsystems</i> child element contains a
+                <i>Subsystem</i> child element for every secondary client
+                service the primary client service is allowed to use proxy
+                authentication in cooperation with (that is, which secondary
+                client service(s) are allowed to make use of proxy tickets
+                issued to the primary client service). Each
+                secondary client service must be configured to be allowed to use
+                the operation <i>ProxyAuth</i>.
+                </li>
+            </ol>
+            </p>
+            <p>
+            Example Authorization Manager configuration file:
+            </p>
+            <source>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
+&lt;ClientAuthorizationConfig&gt;
+    &lt;Client name="test"&gt;
+        &lt;DisplayName&gt;Foobar&lt;/DisplayName&gt;
+        &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;
+        &lt;Home&gt;uio.no&lt;/Home&gt;
+        &lt;Language&gt;no&lt;/Language&gt;
+        &lt;Affiliation&gt;
+            &lt;Organization name="uninett.no"/&gt;
+            &lt;Organization name="uio.no"/&gt;
+        &lt;/Affiliation&gt;
+        &lt;OrgsAllowed&gt;
+            &lt;Organization name="uninett.no"/&gt;
+            &lt;Organization name="uio.no"/&gt;
+       &lt;/OrgsAllowed&gt;        
+        &lt;Attributes&gt;
+            &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;
+            &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;
+            &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;
+            &lt;Attribute name="tgt"   sso="true" secLevel="0"/&gt;
+        &lt;/Attributes&gt;
+        &lt;Operations&gt;
+            &lt;Operation name="DirectAuth"/&gt;
+            &lt;Operation name="InteractiveAuth"/&gt;
+            &lt;Operation name="VerifyUserExistence"/&gt;
+            &lt;Operation name="ProxyAuth"/&gt;
+        &lt;/Operations&gt;
+        &lt;Subsystems&gt;
+            &lt;Subsystem name="sub1"/&gt;
+            &lt;Subsystem name="sub2"/&gt;
+        &lt;/Subsystems&gt;
+    &lt;/Client&gt;
+    
+    &lt;Client name="sub1"&gt;
+        &lt;DisplayName&gt;Subsystem 1&lt;/DisplayName&gt;
+        &lt;URL&gt;http://www.feide.no/&lt;/URL&gt;
+        &lt;Home&gt;uio.no&lt;/Home&gt;
+        &lt;Language&gt;no&lt;/Language&gt;
+        &lt;Affiliation&gt;
+            &lt;Organization name="uninett.no"/&gt;
+            &lt;Organization name="uio.no"/&gt;
+        &lt;/Affiliation&gt;
+        &lt;OrgsAllowed&gt;
+            &lt;Organization name="uninett.no"/&gt;
+            &lt;Organization name="uio.no"/&gt;
+        &lt;/OrgsAllowed&gt;
+        &lt;Attributes&gt;
+            &lt;Attribute name="attr1" sso="true" secLevel="0"/&gt;
+            &lt;Attribute name="attr2" sso="true" secLevel="1"/&gt;
+            &lt;Attribute name="attr3" sso="false" secLevel="2"/&gt;
+        &lt;/Attributes&gt;
+        &lt;Operations&gt;
+            &lt;Operation name="ProxyAuth"/&gt;
+        &lt;/Operations&gt;
+        &lt;Subsystems&gt;
+        &lt;/Subsystems&gt;
+    &lt;/Client&gt;
+&lt;/ClientAuthorizationConfig&gt;
+            </source>
+        </section>
+    </body>
+</document>

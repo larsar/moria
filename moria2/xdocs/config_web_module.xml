@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Web Module</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body>
+        <section name="Web Module">
+            <p>
+            The Web Module's configuration contains settings (such as language
+            and cookie information) used by the various servlets that represents
+            Moria. The most important servlets are the login and logout
+            servlets, the Axis servlet (which handles the SOAP interface of
+            Moria) and a few utility type servlets, such as the demo servlet and
+            the information servlet.
+            </p>
+            <p>
+            It is important that there exist a language bundle for the default
+            language; otherwise the the login and logout servlet will fail
+            whenever they try to use this default language.
+            </p>
+            <subsection name="Core Properties">
+                <p>
+                The core properties required for Moria are as follows:
+                </p>
+                <ul>
+                    <li>
+                    <code>no.feide.moria.web.login.url_prefix</code>
+                    <p>
+                    The URL of the login servlet itself. The example file below
+                    assumes Moria is deployed locally.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.logout.url_param</code>
+                    <p>
+                    The name of the parameter used to contain the redirect URL
+                    when logging out.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.lang_common</code>
+                    <p>
+                    A comma-separated list of abbreviations and HTML display
+                    names for available languages. The list elements themselves
+                    consists of a two-character language code (consistency is
+                    required throughout the various configuration files, such as
+                    the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    file), a colon, and the HTML display name. The example file
+                    below configures Norwegian (bokmål) and English.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.org_<i>XX</i></code>
+                    <p>
+                    These properties contain a comma-separated list of
+                    organization names to display when using the language with
+                    two-character code <i>XX</i>. The list elements themselves
+                    consist of a unique organization name (consistency is
+                    required throughout the various configuration files, such as
+                    the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    file), a colon, and the HTML display name. The example file
+                    below configures Norwegian (bokmål) and English for one
+                    imaginary organization.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.login.ticket_param</code>
+                    <p>
+                    The name of the URL parameter containing the Moria ticket
+                    ID.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.cookie.denysso.name</code>
+                    <p>
+                    The name of the cookie used to disallow SSO, if so chosen by
+                    the user.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.cookie.denysso.ttl</code>
+                    <p>
+                    The time to live, in hours, for the cookie used to disallow
+                    SSO.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.cookie.sso.name</code>
+                    <p>
+                    The name of the cookie used to carry SSO ticket ID.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.cookie.sso.ttl</code>
+                    <p>
+                    The time to live, in hours, for the cookie used to carry SSO
+                    ticket ID.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.cookie.lang.name</code>
+                    <p>
+                    The name of the cookie used to store the user's preferred
+                    language.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.login.default_language</code>
+                    <p>
+                    The default Moria language, which should match one of the 
+                    two-letter language abbreviations already defined. The
+                    example file below will use English.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.cookie.org.name</code>
+                    <p>
+                    The name of the cookie used to store a user's previously
+                    selected organization.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.cookie.org.ttl</code>
+                    <p>
+                    The time to live, in hours, for the cookie used to store the 
+                    user's previously selected organization.
+                    </p>
+                    </li>           
+                </ul>
+            </subsection>
+            <subsection name="Demo Servlet Properties">
+                <p>
+                The following properties are exclusively used by the demo
+                servlet, but are required nonetheless:
+                </p>
+                <ul>
+                    <li>
+                    <code>no.feide.moria.web.demo.attributeNamespaceURI</code>
+                    <p>
+                    Used to construct the QName for mapping "remote"
+                    <code>Attribute</code> type to a local type. Although the
+                    demo servlet is not "remote" as such, it accesses Moria
+                    through SOAP just as any other Moria client application,
+                    thus requiring this mapping.
+                    <!--
+                    TODO: Remove reference to login.feide.no and update DemoServlet.
+                    -->
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.serviceEndpoint</code>
+                    <p>
+                    The service endpoint. The example file below assumes Moria
+                    is deployed locally, and will use version 2.0 of the SOAP
+                    interface.
+                    </p> 
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.master.attributeRequest</code>
+                    <p>
+                    A comma-separated list of attributes requested by the master
+                    (in the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    referred to as a "service") demo service. The example file
+                    below will cause the demo servlet to request the attributes
+                    <i>someAttribute</i> as well as the virtual (meaning it
+                    doesn't exist physically in the actual user element)
+                    attribute <i>tgt</i>, which is the ticket granting ticket.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.master.username</code>
+                    <p>
+                    The username used by the demo servlet to access Moria as a
+                    master (in the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    referred to as a "service") client service. The application
+                    server's user database must be configured accordingly.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.master.password</code>
+                    <p>
+                    The password used by the demo servlet to access Moria as a
+                    master (in the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    referred to as a "service") client service. The application
+                    server's user database must be configured accordingly.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.slave.attributeRequest</code>
+                    <p>
+                    A comma-separated list of attributes requested by the slave
+                    (in the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    referred to as a subservice) demo service. The example file
+                    below will cause the demo servlet to request the attribute
+                    <i>anotherAttribute</i>.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.slave.username</code>
+                    <p>
+                    The username used by the demo servlet to access Moria as a
+                    slave (in the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    referred to as a "subservice") client service. The
+                    application server's user database must be configured
+                    accordingly.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.demo.slave.password</code>
+                    <p>
+                    The password used by the demo servlet to access Moria as a
+                    slave (in the
+                    <a href="#Authorization Manager">Authorization Manager</a>
+                    referred to as a "subservice") client service. The
+                    application server's user database must be configured
+                    accordingly.
+                    </p>
+                    </li>
+                </ul>
+            </subsection>
+            <subsection name="Information Servlet Properties">
+                <p>
+                The following required properties are used by the information
+                servlet:
+                </p>
+                <ul>
+                    <li>
+                    <code>no.feide.moria.web.information.feideattribs_xml</code>
+                    <p>
+                    Gives the path and name of the file containing the actual
+                    attribute descriptions. The XML file contains a root element
+                    <i>AttributeFile</i> with one or more <i>Attribute</i> child
+                    elements. Each <i>Attribute</i> element must contain the
+                    child elements <i>Key</i> (which has a text child element
+                    giving the physical attribute name), <i>ResourceBundle</i>
+                    (which has a text child element providing the localized
+                    description text for the attribute), <i>Relevance</i> (which
+                    has a text child element that is either
+                    <code>Mandatory</code> or <code>Optional</code>), and
+                    <i>Link</i> (which has a text child element that gives the
+                    URL of this attribute to a web page describing the
+                    attribute).
+                    </p> 
+                    <p>
+                    Example attribute description file:
+                    </p>
+                    <source>
+&lt;?xml version='1.0' encoding='utf-8'?>
+
+&lt;attributefile>
+
+    &lt;attribute&gt; 
+        &lt;key&gt;mail&lt;/key&gt;
+        &lt;resourcebundle&gt;rb_mail&lt;/resourcebundle&gt;
+        &lt;relevance&gt;Mandatory&lt;/relevance&gt;
+        &lt;link&gt;http://www.feide.no/dokumenter/feide-schema-current.html#mail&lt;/link&gt;
+    &lt;/attribute>&gt;
+
+&lt;/attributefile>
+                    </source>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.information.url_prefix</code>
+                    <p>
+                    Should give the URL used to access to the information
+                    servlet.
+                    </p>
+                    </li>
+                </ul>
+            </subsection>
+            <subsection name="Status Servlet Property">
+            <p>
+                The following property are used by the status servlet:
+                </p>
+                <ul>
+                    <li>
+                    <code>no.feide.moria.web.backendstatus.status_xml</code>
+                    <p>Gives the path and name of the file containing the information
+                    about the test-users. The XML file contains a rootelement <i>Testuserlist</i>
+                    with one or more <i>User</i> child elements. Each <i>User</i> element must
+                    contain the child elements <i>Name</i> (which has a text child element
+                    giving the name of a test-user) and <i>Password</i> (which has a text child
+                    element giving the password of a test-user).
+                    </p>
+                    <p>Example of a status.xml file</p>
+                    <source>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
+
+&lt;Testuserlist&gt;
+
+   &lt;User&gt;
+      &lt;Name&gt;test@test.no&lt;/Name&gt;
+      &lt;Password&gt;test&lt;/Password&gt;
+   &lt;/User&gt;
+
+&lt;/Testuserlist&gt;
+			</source>
+			</li>
+		</ul>
+        </subsection>
+            <p>     
+            Example Web Module configuration file:
+            </p>
+            <source>
+#
+# Configuration properties for Moria itself:
+#
+
+# The URL of the login servlet.
+no.feide.moria.web.login.url_prefix=http://localhost:8080/moria/Login
+
+# The name of the parameter used to contain the redirect URL when logging out.
+no.feide.moria.web.logout.url_param=redirUrl
+
+# Abbreviations and display names for available languages.
+no.feide.moria.web.lang_common=nb:Bokm&amp;aring;l,en:English
+
+# Organization names when using the language EN.
+no.feide.moria.web.org_en=my.org:My Organization
+
+# Organization names when using the language NB.
+no.feide.moria.web.org_nb=my.org:Min organisasjon
+
+# Name of URL parameter containing the Moria ticket ID.
+no.feide.moria.web.login.ticket_param=moriaID
+
+# Name of cookie used to disallow SSO.
+no.feide.moria.web.cookie.denysso.name=MoriaDenySSOCookie
+
+# Time to live, in hours, for cookie used to disallow SSO.
+no.feide.moria.web.cookie.denysso.ttl=1
+
+# Name of cookie used to carry SSO ticket ID.
+no.feide.moria.web.cookie.sso.name=MoriaSSOCookie
+
+# Time to live, in hours, for cookie used to carry SSO ticket ID.
+no.feide.moria.web.cookie.sso.ttl=1
+
+# Name of cookie used to store user's preferred language.
+no.feide.moria.web.cookie.lang.name=MoriaUserLanguageCookie
+
+# Time to live, in hours, for cookies used to store user's preferred language.
+no.feide.moria.web.cookie.lang.ttl=1
+
+# Default Moria language.
+no.feide.moria.web.login.default_language=en
+
+# Name of cookie used to store user's previously selected organization.
+no.feide.moria.web.cookie.org.name=MoriaUserOrganizationCookie
+
+# Time to live, in hours, for cookies used to store user's previously selected organization.
+no.feide.moria.web.cookie.org.ttl=1
+
+
+#
+# Configuration properties relevant for the demo service (DemoServlet):
+#
+
+# Used to construct the QName for mapping remote Attribute type to local type.
+no.feide.moria.web.demo.attributeNamespaceURI=https://login.feide.no/moria/v2_0/Authentication
+
+# The service endpoint.
+no.feide.moria.web.demo.serviceEndpoint=http://localhost:8080/moria/v2_0/Authentication
+
+# A comma-separated list of attributes requested by the main service.
+no.feide.moria.web.demo.master.attributeRequest=someAttribute,tgt
+
+# The username used by DemoServlet to access Moria as a main service.
+no.feide.moria.web.demo.master.username=demo_service
+
+# The password used by DemoServlet to access Moria as a main service.
+no.feide.moria.web.demo.master.password=demo_service
+
+# A comma-separated list of attributes requested by the subservice.
+no.feide.moria.web.demo.slave.attributeRequest=anotherAttribute
+
+# The username used to access Moria as a subservice.
+no.feide.moria.web.demo.slave.username=demo_subsystem
+
+# The password used to access Moria as a subservice.
+no.feide.moria.web.demo.slave.password=demo_subsystem
+
+
+#
+# Configuration properties relevant for the information service (InformationServlet):
+#
+
+# Giving the URL to the information servlet.
+no.feide.moria.web.information.url_prefix=http://localhost:8080/moria/Information
+
+# Configuration property for the attribute description file name.
+no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
+
+#
+# Configuration property relevant for the status service (StatusServlet):
+#
+
+# Configuration proprety for the status.xml file.
+no.feide.moria.web.backendstatus.status_xml=/some/path/status.xml
+            </source>
+        </section>
+    </body>
+</document>

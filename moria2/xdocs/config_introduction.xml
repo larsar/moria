@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Introduction</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body>
+        <section name="Introduction">
+            <p>
+            Moria is software for providing authentication over HTTP using
+            multiple directory backends. The software is designed with a servlet
+            frontend both to the service provider and the user; the service
+            frontend is SOAP based, and HTML is used for the interactive user
+            interface.
+            </p>
+            <p>
+            The system design is described in detail in the
+            <a href="design.html">design document</a>.
+            </p>
+            <p>
+            This section describes the configuration and setup of Moria
+            from scratch.
+            </p>
+	        <subsection name="Presentation">
+	            <p>
+	            JSP is used for the user login and logout page and Moria ships
+	            with standard versions of both. In addition there's a number of
+	            other JSPs used. These standard files are contained in the
+	            <code>src/webapp/WEB-INF/jsp</code> directory of the Web Module.
+	            </p>
+	            <p>
+	            There are two ways of replacing the standard JSPs. One can
+	            either replace the files when building the war or additionally
+	            add some new JSPs and provide a customized <code>web.xml</code>
+	            where the servlet definitions for the JSPs are redefined.
+	            </p>
+	            <p>
+	            A property named <code>project.alternative.jsp.location</code>
+	            will be used as source directory for JSP files if defined. All
+	            <code>*.jsp</code> files in this location will end up in the
+	            <code>jsp</code> directory in the resulting WAR file. For ways
+	            to replace the default <code>web.xml</code> file please see the
+	            <a href="http://maven.apache.org/reference/plugins/war/">Maven WAR Plugin</a>
+	            documentation.
+	            </p>
+	            <p>
+	            When replacing the JSPs one may also want to replace the
+	            language files. This can be done by redefining the property
+	            <code>project.resourcebundle.dir</code>, pointing it to a
+	            directory with replacement bundles.
+	            </p>
+	        </subsection>
+        </section>
+    </body>
+</document>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Configuration Manager</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body>
+        <section name="Configuration Manager">
+            <p>
+            The Configuration Manager reads and watches the configuration files
+            for all modules. When a module's configuration file is changed, the
+            Configuration Manager pushes the updated configuration to the
+            relevant module. Configuration files for all modules can be changed
+            during runtime without restart of Moria, but changes in the base
+            configuration (that is, the Configuration Manager's config file)
+            requires a full restart of Moria.
+            </p>
+            <p>
+            All file paths can be given as a full path or relative to the
+            location of the base configuration file.
+            </p>
+            <p>
+            Example Configuration Manager configuration file:
+            </p>
+            <source>
+# Number of seconds between polling the various configuration files (below).
+no.feide.moria.configuration.fileListenerIntervalSeconds=1
+
+# Path to the store manager's configuration file.
+no.feide.moria.configuration.sm=/full/path/sm.properties
+
+# Path to the directory manager's configuration file.
+no.feide.moria.configuration.dm=/full/path/dm.properties
+
+# Path to the authorization manager's configuration file.
+no.feide.moria.configuration.am=../relative/path/am.xml
+
+# Path to the web module's configuration file.
+no.feide.moria.configuration.web=../relative/path/web.properties
+            </source>
+        </section>
+    </body>
+</document>

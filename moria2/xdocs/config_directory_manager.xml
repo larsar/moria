@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Directory Manager</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body> 
+        <section name="Directory Manager">
+            <p>
+            The Directory Manager configuration consists of an XML file and
+            an index file. The index file is actually an instance of
+            <code>no.feide.moria.directory.index.SerializableIndex</code>
+            written to file (using the tool
+            <code>no.feide.moria.directory.index.tools.SerializableIndexCreator</code>,
+            which is described in detail in the Directory Manager
+            <a href="moria-dm/index.html">documentation</a>) which is in turn
+            referenced from the Directory Manager configuration XML file.
+            </p>
+            <p>
+            Two implementations of the Directory Manager backend exists; a JNDI
+            backend, for accessing authentication servers (usually plain old
+            LDAP servers) through JNDI, and a dummy backend, which can be
+            configured to emulate one or more functioning authentication
+            servers.
+            </p>
+            <p>
+            Both backend implementations' configuration file contain one root
+            <i>DirectoryManagerConfiguration</i> element. This in turn contains
+            two child elements; the <i>Index</i> element and the <i>Backend</i>
+            element.
+            </p>
+            <p>
+            The <i>Index</i> element only has two attributes - <i>file</i>,
+            giving the filename (absolute or relative path) of the previously
+            mentioned <code>SerializableIndex</code> file, and <i>update</i>,
+            which is the index update interval in seconds. The update will only
+            occur if the timestamp of the index file has changed.
+            </p>
+            <p>
+            The <i>Backend</i> element differs between backend implementations,
+            but will always include one attribute, <i>class</i>, which states
+            which backend implementation to use. Legal values are
+            <code>no.feide.moria.directory.backend.DummyBackendFactory</code>
+            and
+            <code>no.feide.moria.directory.backend.JNDIBackendFactory</code>.
+            The children of the Backend element varies depending on the
+            implementation given by the <i>class</i> attribute.
+            </p>
+            <subsection name="Dummy Backend">
+                <p>
+                For the dummy backend, the <i>Backend</i> element must contain
+                one <i>Dummy</i> child element. The <i>Dummy</i> element may
+                contain one or more <i>User</i> child elements, with the
+                attributes <i>name</i> (for the user's username) and
+                <i>password</i> (for the user's password). The <i>User</i>
+                element may contain one or more <i>Attribute</i> child elements,
+                with the attribute <i>name</i> (for the attribute's name). The
+                <i>Attribute</i> element must contain one or more <i>Value</i>
+                child elements. The <i>Value</i> element must contain a text
+                child element with an attribute value.
+                </p>
+                <p>
+                Thus for the dummy backend it is possible to configure several
+                users (with passwords) with several attributes that in turn may
+                yield several values.
+                </p>
+                <p>
+                An example Directory Manager configuration file using the dummy
+                backend:
+                </p>
+                <source>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
+&lt;DirectoryManagerConfiguration&gt;
+    &lt;Index file="src/test/conf/DummyIndex.object"
+           update="120"/&gt;
+        &lt;Backend class="no.feide.moria.directory.backend.DummyBackendFactory"&gt;
+            &lt;Dummy&gt;
+                &lt;User name="user@some.realm"
+                      password="password"&gt;
+                    &lt;Attribute name="MyAttribute"&gt;
+                        &lt;Value&gt;MyValue&lt;/Value&gt;
+                    &lt;/Attribute&gt;
+                &lt;/User&gt;
+            &lt;/Dummy&gt;
+        &lt;/Backend&gt;
+&lt;/DirectoryManagerConfiguration&gt;
+                </source>
+                <p>
+                In this example we have configured one user, with a
+                single-valued attribute <i>MyAttribute</i>.
+                </p>
+            </subsection>
+            <subsection name="JNDI Backend">
+                <p>
+                For the JNDI backend, the <i>Backend</i> element must contain
+                one <i>JNDI</i> child element, with the attributes
+                <i>timeout</i> (giving the timeout used when accessing
+                authentication servers), <i>usernameAttribute</i> (used when
+                trying to match a username to a given user), and
+                <i>guessedAttribute</i> (used for guessing on the user
+                Distinguished Name when searching fails). The <i>JNDI</i>
+                element must contain one <i>Security</i> child element. The 
+                <i>Security</i> element must contain one <i>Truststore</i> child
+                element, with the attributes <i>filename</i> (relative or 
+                absolute, to the file containing the truststore with
+                authentication server or CA certificates), and <i>password</i>
+                (to the truststore).
+                </p>
+                <p>
+                Thus for the JNDI backend it is possible to configure how to
+                access and search for users on an authentication server, and how
+                to authenticate the authentication server itself.
+                </p>
+                <p>
+                An example Directory Manager configuration file using the JNDI
+                backend:
+                </p>
+                <source>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
+&lt;DirectoryManagerConfiguration&gt;
+    &lt;Index file="src/test/conf/TestIndex.object"
+           update="120"/&gt;
+    &lt;Backend class="no.feide.moria.directory.backend.JNDIBackendFactory"&gt;
+        &lt;JNDI timeout="10"
+              usernameAttribute="eduPersonPrincipalName"
+              guessedAttribute="uid"&gt;
+            &lt;Security&gt;
+                &lt;Truststore filename="src/test/conf/moria.truststore"
+                            password="changeit"/&gt;
+            &lt;/Security&gt;
+        &lt;/JNDI&gt;
+    &lt;/Backend&gt;
+&lt;/DirectoryManagerConfiguration&gt;
+                </source>
+            </subsection>
+        </section>
+    </body>
+</document>

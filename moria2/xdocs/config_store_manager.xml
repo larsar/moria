@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+    <properties>
+        <title>Configuration - Store Manager</title>
+        <author email="cato.olsen@uninett.no">Cato Olsen</author>
+    </properties>
+    <body> 
+        <section name="Store Manager">
+            <p>
+            The Store Manager's configuration file must contain two
+            properties:
+            </p>
+            <ul>
+                <li>
+                <code>no.feide.moria.store.cachestoreconf</code>
+                <p>
+                Should give the full path to the configuration file for
+                JBossCache. The format of this file is defined in the
+                <a href="http://www.jboss.com/products/jbosscache">JBossCache</a>
+                documentation. The eviction policy configuration must be
+                contained in this file. An example (partial) configuration is
+                </p>
+                <source>
+&lt;Attribute name="EvictionPolicyClass"&gt;
+    no.feide.moria.store.TicketTTLEvictionPolicy
+&lt;/Attribute&gt;
+&lt;Attribute name="EvictionPolicyConfig"&gt;
+    &lt;Config&gt;
+        &lt;Attribute name="wakeUpIntervalSeconds"&gt;60&lt;/Attribute&gt;
+        &lt;Attribute name="maxNodes"&gt;200000&lt;/Attribute&gt;
+        &lt;Region name="Login Ticket"&gt;
+            &lt;Attribute name="timeToLive"&gt;375&lt;/Attribute&gt;
+        &lt;/Region&gt;
+        &lt;Region name="Service Ticket"&gt;
+            &lt;Attribute name="timeToLive"&gt;375&lt;/Attribute&gt;
+        &lt;/Region&gt;
+        &lt;Region name="Single Sign-On Ticket"&gt;
+            &lt;Attribute name="timeToLive"&gt;36000&lt;/Attribute&gt;
+        &lt;/Region&gt;
+        &lt;Region name="Ticket Granting Ticket"&gt;
+            &lt;Attribute name="timeToLive"&gt;4500&lt;/Attribute&gt;
+        &lt;/Region&gt;
+        &lt;Region name="Proxy Ticket"&gt;
+            &lt;Attribute name="timeToLive"&gt;750&lt;/Attribute&gt;
+        &lt;/Region&gt;
+    &lt;/Config&gt;
+&lt;/Attribute&gt;
+                </source>
+                <p>
+                Each regions' name match the actual name of the branch in the
+                cache. The time to live is the time in seconds. The
+                <i>wakeUpIntervalSeconds</i> attribute defines how often the
+                thread doing the evictions should be run. The <i>maxNodes</i>
+                attributes is required by the underlying API but isn't really
+                used in this policy.
+                </p>
+                </li>
+                <li>
+                <code>no.feide.moria.store.real_ttl_percentage</code>
+                <p>
+                The percentage defining the actual ticket time to live. This is
+                used to calculate the actual validity time of tickets. While the
+                time defined in the eviction policy declaration defines the time
+                the tickets will remain in the cache, the time the tickets are
+                valid is a sub one multiple of this. For example, Service
+                Tickets may be configured to stay in the cache for <i>m</i>
+                seconds, but is considered valid for use only <i>n</i> percent
+                of this period if the time to live percentage is set to
+                <i>n</i>. Thus, the real TTL = <i>mn</i>/100.
+                </p>
+                </li>
+            </ul>
+            <p>
+            Example Store Manager configuration file:
+            </p>
+            <source>
+# The configuration for JBossCache:
+no.feide.moria.store.cachestoreconf=/full/path/to/jboss-cache.xml
+
+# The percentage defining the actual (or real) ticket time to live:
+no.feide.moria.store.real_ttl_percentage=80
+            </source>
+        </section>
+    </body>
+</document>
