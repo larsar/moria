@@ -67,16 +67,6 @@ $ httpd \
                 </p>
                 <ul>
                     <li>
-                    <code>no.feide.mellon.demo.attributeNamespaceURI</code>
-                    <p>
-                    Used to construct the QName for mapping "remote"
-                    <code>Attribute</code> type to a local type. Although the
-                    demo servlet is not "remote" as such, it accesses Moria
-                    through SOAP just as any other Moria client application,
-                    thus requiring this mapping.
-                    </p>
-                    </li>
-                    <li>
                     <code>no.feide.mellon.demo.serviceEndpoint</code>
                     <p>
                     The service endpoint. The example file below assumes Moria
@@ -198,9 +188,6 @@ $ httpd \
 #
 # Configuration properties relevant for the demo service (DemoServlet):
 #
-
-# Used to construct the QName for mapping remote Attribute type to local type.
-no.feide.mellon.demo.attributeNamespaceURI=https://login.feide.no/moria/v2_1/Authentication
 
 # The service endpoint.
 no.feide.mellon.demo.serviceEndpoint=http://localhost:8080/moria/v2_1/Authentication
