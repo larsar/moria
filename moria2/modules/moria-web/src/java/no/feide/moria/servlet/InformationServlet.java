@@ -128,13 +128,15 @@ public class InformationServlet extends HttpServlet {
             try {
                String filename = (String) config.get(RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML);
                if ((filename == null) || (filename.equals(""))) {
-                   throw new IllegalStateException("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+                   log.logCritical("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+                   throw new IllegalStateException();
                }
                SAXParser saxParser = factory.newSAXParser();
                saxParser.parse(new File(filename), handler);
                feideattribsMonitor = new FileMonitor(filename);
             } catch (Throwable t) {
-              throw new IllegalStateException("Error parsing feideattribs.xml");
+                log.logCritical("Error parsing feideattribs.xml");
+              throw new IllegalStateException();
             } finally {
               feideattribsStored = handler.getAttribs();
             }
@@ -302,7 +304,8 @@ public class InformationServlet extends HttpServlet {
         request.setAttribute("bundle", bundle);
         String urlPrefix = (String)config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX);
         if ((urlPrefix == null) || (urlPrefix.equals(""))) {
-            throw new IllegalStateException("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+            log.logCritical("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+            throw new IllegalStateException();
         } else {
             request.setAttribute("urlPrefix", urlPrefix);
         }
