@@ -1,5 +1,5 @@
-<project name="W3LS (Mellon/Moria)"
-         default="all:build"
+<project name="W3LS (Mellon)"
+         default="build"
          basedir=".">
 
   <!-- User's properties override project defaults. -->
@@ -109,7 +109,7 @@
            destdir="build/filter"
            includes="no/feide/mellon/filter/*">
       <classpath>
-        <fileset dir="lib/" includes="*.jar"/>
+        <fileset dir="${include_libs}" includes="*.jar"/>
         <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
         <fileset file="${servlet_jar}"/>        
       </classpath>
@@ -144,12 +144,12 @@
   <target name="demo:compile"
           description="Mellon demo: Compile source"
           depends="filter:jar,demo:prepare,jar,filter:jar">
-    <javac srcdir="src"
+    <javac srcdir="."
            debug="true"
            destdir="build/demo/WEB-INF/classes"
            includes="no/feide/mellon/servlet/*">
       <classpath>
-        <fileset dir="lib/" includes="*.jar"/>
+        <fileset dir="${include_libs}" includes="*.jar"/>
         <fileset file="dist/feide-mellon-api-${mellon_tag}.jar"/>
         <fileset file="${servlet_jar}"/>
       </classpath>
