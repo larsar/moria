@@ -28,7 +28,7 @@ import java.util.Date;
  * Returns an id that's random and unique across a cluster of JVMs.
  *
  * Each JVM needs to be configured with an unique node id, identifying each
- * node. This is done by setting the system property <code>no.feide.moria.store.randomid.nodeid</code>.
+ * node. This is done by setting the system property <code>no.feide.moria.store.nodeid</code>.
  * The value must be a ascii string of 3 character length.
  *
  * The returned id is an encoded String (pseudo Base64, see method
@@ -53,12 +53,13 @@ public final class RandomId {
     static {
 
         /* Initiate the node identificator */
-        String property = System.getProperty("no.feide.moria.store.randomid.nodeid");
+        String nodeIdPropertyName = "no.feide.moria.store.nodeid";
+        String nodeIdProperty = System.getProperty(nodeIdPropertyName);
 
-        if (property == null || property.length() != 3) {
-            throw new RuntimeException("no.feide.moria.store.randomid.nodeid is null or has illegal value");
+        if (nodeIdProperty == null || nodeIdProperty.length() != 3) {
+            throw new RuntimeException(nodeIdPropertyName + " is null or has illegal value");
         } else {
-            nodeId = property.getBytes();
+            nodeId = nodeIdProperty.getBytes();
         }
 
         /* Initiate the random generator */
@@ -188,7 +189,9 @@ public final class RandomId {
      *          the long value to be converted
      * @return a byte array representation of the long value given as input
      */
-    static byte[] longToByteArray(long in) {
+    static byte[] longToByteArray(final long in) {
+        /* Make a copy that we can harass. */
+        long local = in;
 
         /* Java long is 64 bits, 8 byte */
         final int longSize = 8;
@@ -200,9 +203,9 @@ public final class RandomId {
          * the array backwards. Right shift eight bits so they may be
          * "extracted" next iteration.
          */
-        for (int i = 7; i > -1; i--) {
-            out[i] = (byte) (in & 0xffL);
-            in >>= 8;
+        for (int i = longSize - 1; i > -1; i--) {
+            out[i] = (byte) (local & 0xffL);
+            local >>= 8;
         }
 
         return out;
