@@ -108,7 +108,7 @@ public class Session {
      *                value. May be <code>null</code>.
      * @param client The client service identifier.
      */
-    protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client, WebService webService) {
+     Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client, WebService webService) {
         log.finer("Session(String, String[], String)");
         
         this.webService = webService;
@@ -342,7 +342,7 @@ public class Session {
      * cause inconsistency if used incorrectly.
      * @param sessionID The new session ID.
      */
-    protected void setID(String sessionID) {
+     void setID(String sessionID) {
         log.finer("setID(String)");
             
         this.sessionID = sessionID;
@@ -375,7 +375,7 @@ public class Session {
      * Returns true if sessions has not timed out. 
      * @param validUntil Milliseconds since epoc
      */
-    protected boolean isValidAt(double time, double lifetime) {
+     boolean isValidAt(double time, double lifetime) {
         return timestamp + lifetime > time;
     }
 

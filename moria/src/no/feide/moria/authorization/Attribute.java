@@ -50,7 +50,7 @@ public class Attribute {
      * @param name Attribute name
      * @param sso Allow use of SSO with this attribute
      */
-    protected Attribute(String name, String ssoStr, String secLevelStr) {
+     Attribute(String name, String ssoStr, String secLevelStr) {
         log.finer("Attribute(String, boolean, String)");
 
         /* Set security level */
@@ -81,7 +81,7 @@ public class Attribute {
      * @param sso  Allow use of SSO
      * @param secLevel Sensitivity/security level of attribute
      */
-    protected Attribute(String name, boolean sso, int secLevel) {
+     Attribute(String name, boolean sso, int secLevel) {
         this.name = name;
         this.sso  = new Boolean(sso);
         this.secLevel = secLevel;

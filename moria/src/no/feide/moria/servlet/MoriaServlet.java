@@ -59,7 +59,7 @@ public class MoriaServlet extends VelocityServlet {
      * @throws IOException If a <code>ConfigurationException</code> is
      *                     caught.
      */
-    protected Properties loadConfiguration(ServletConfig config )
+     Properties loadConfiguration(ServletConfig config )
         throws IOException, FileNotFoundException {
         log.finer("loadConfiguration(ServletConfig)");
 

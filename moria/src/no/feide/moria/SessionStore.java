@@ -100,7 +100,7 @@ public class SessionStore {
      * @throws SessionException If an unique (that is, non-existing) ID
      *                          cannot be generated in 20 tries.
      */
-    protected String generateSessionID()
+     String generateSessionID()
     throws SessionException {
         log.finer("generateSessionID()");
 
@@ -277,7 +277,7 @@ public class SessionStore {
      * username/password), Mellon timeout (to long time to fetch user
      * data), SSO timeout.
      */
-    protected void checkTimeout() {
+     void checkTimeout() {
         
         Vector invalidatedSessions = new Vector();
         Date start = new Date();

@@ -71,7 +71,7 @@ public class WebService {
      * Constructor
      * @param id Unique id for the web service. 
      */ 
-    protected WebService(String id) {
+     WebService(String id) {
         this.id = id;
     }
 
@@ -124,7 +124,7 @@ public class WebService {
      * Flatten all attributes into one HashMap (profiles.attributes +
      * allowedAttributes - deniedAttributes
      */
-    protected void generateAttributeList(HashMap allAttributes) {
+     void generateAttributeList(HashMap allAttributes) {
         log.finer("generateAttributeList(HashMap)");
 
         
@@ -209,7 +209,7 @@ public class WebService {
      * Set web service's allowed attributes
      * @param allowed Allowed attributes
      */
-    protected void setAllowedAttributes(HashMap allowed) {
+     void setAllowedAttributes(HashMap allowed) {
         log.finer("setAllowedAttributes(HashMap)");
         allowedAttributes = allowed;
     }
@@ -218,7 +218,7 @@ public class WebService {
      * Set web service's denied attributes
      * @param denied Denied attributes
      */
-    protected void setDeniedAttributes(HashMap denied) {
+     void setDeniedAttributes(HashMap denied) {
         log.finer("setDeniedAttributes(HashMap)");
         deniedAttributes = denied;
     }
@@ -227,7 +227,7 @@ public class WebService {
      * Set web service's profiles
      * @param profiles Profiles associated with the web service
      */
-    protected void setProfiles(HashMap profiles) {
+     void setProfiles(HashMap profiles) {
         log.finer("setProfiles(HashMap)");
         this.profiles = profiles;
     }
@@ -236,7 +236,7 @@ public class WebService {
      * Set web service's name
      * @param name The name of the web service
      */
-    protected void setName(String name) {
+     void setName(String name) {
         log.finer("setName(String)");
         this.name = name;
     }
@@ -245,7 +245,7 @@ public class WebService {
      * Set web service's home page url
      * @param url URL for the home page of the web service
      */
-    protected void setUrl(String url) {
+     void setUrl(String url) {
         log.finer("setUrl(String)");
         this.url = url;
     }

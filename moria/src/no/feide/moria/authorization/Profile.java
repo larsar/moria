@@ -56,7 +56,7 @@ public class Profile {
      * @param attribute The profile-attribute to check for SSO-use.
      * @return boolean
      */
-    protected boolean ssoForAttribute(Attribute attribute) {
+     boolean ssoForAttribute(Attribute attribute) {
         log.finer("ssoForAttribute(Attribute)");
 
         if (attribute == null || attributes.get(attribute) == null)
@@ -69,7 +69,7 @@ public class Profile {
      * Get the profiles attributes. 
      * @return attributes 
      */
-    protected HashMap getAttributes() {
+     HashMap getAttributes() {
         log.finer("getAttributes()");
 
         return attributes;
@@ -79,7 +79,7 @@ public class Profile {
      * Set the profiles attributes.
      * @param attributes A HashMap with attributes.
      */
-    protected void setAttributes(HashMap attributes) {
+     void setAttributes(HashMap attributes) {
         log.finer("setAttributes(HashMap)");
 
         this.attributes = attributes;
