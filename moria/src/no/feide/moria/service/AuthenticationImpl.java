@@ -43,6 +43,7 @@ import no.feide.moria.authorization.WebService;
 import no.feide.moria.authorization.AuthorizationData;
 import no.feide.moria.authorization.AuthorizationTask;
 import no.feide.moria.stats.StatsStore;
+import no.feide.moria.Utils;
 
 public class AuthenticationImpl
 implements AuthenticationIF, ServiceLifecycle {
@@ -175,14 +176,13 @@ implements AuthenticationIF, ServiceLifecycle {
         /* Check if prefix and postfix, together with a possible
          * session ID, is a valid URL. */
         String simulatedURL = prefix+"MORIAID"+postfix;
-        try {
-            new URL(simulatedURL);
-        } catch (MalformedURLException e) {
+
+        if (!Utils.isLegalURL(simulatedURL)) {
             log.warning(log_prefix+"DENIED, Invalid URL");
             stats.incStatsCounter(serviceName, "sessionDeniedURL");
             throw new RemoteException("Malformed URL: "+simulatedURL);
         }
-
+            
 
         log.info("ServiceName: "+serviceName+", Attrs: "+attributes+", DenySSO: "+denySso+", URL: "+simulatedURL);
 
