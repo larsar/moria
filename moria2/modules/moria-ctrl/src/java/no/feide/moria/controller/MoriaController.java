@@ -836,7 +836,7 @@ public final class MoriaController {
             // Ticket did not exist in the store.
             accessLogger.logService(AccessStatusType.NONEXISTENT_SERVICE_TICKET, servicePrincipal, serviceTicketId, null);
             messageLogger.logWarn(CAUGHT_NONEXISTENT_TICKET + ", service (" + servicePrincipal
-                    + ") tried to fetch attributes to late", serviceTicketId, e);
+                    + ") tried to fetch attributes too late", serviceTicketId, e);
             throw new UnknownTicketException(NONEXISTENT_TICKET);
 
         } catch (InvalidTicketException e) {

@@ -171,6 +171,7 @@ extends HttpServlet {
                 String ticketGrantingTicket = null; // For later use.
 
                 // Get and display attributes.
+                // TODO: Catch exceptions here.
                 Attribute[] attributes = getUserAttributes(ticket);
                 out.println("<table align=\"center\"><tr><td><b>Attribute Name</b></td><td><b>Attribute Value(s)</b></td></tr>");
                 for (int i = 0; i < attributes.length; i++) {
