@@ -1,6 +1,9 @@
 import no.feide.mellon.Moria;
 import no.feide.mellon.MoriaException;
 import java.util.HashMap;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.Iterator;
 
 
 /** This class only provides a simple example of the required code for
@@ -11,8 +14,9 @@ public class SimpleCreateAuthSession {
 
     public SimpleCreateAuthSession() throws Exception {
         
-        /* Read system properties from file */
-        System.getProperties().load(getClass().getResourceAsStream("/mellon.properties"));
+        /* Set username and password to use Moria */
+        System.setProperty("no.feide.mellon.serviceUsername", "demo");
+        System.setProperty("no.feide.mellon.servicePassword", "demo");
 
         /* Create a new instance of Moria */
         Moria moria = Moria.getInstance();
@@ -23,16 +27,26 @@ public class SimpleCreateAuthSession {
          * URL. The URL is constructed from the two last arguments
          * (prefix and pstfix) to requestSession. The sessionID will
          * be concatinated with the prefix and postfix values. */
-        String redirectURL = moria.requestSession(new String[] {"eduPersonAffiliation", "eduPersonOrgDN"}, "http://back.to.webservice?moriaID=", "");
+        String redirectURL = moria.requestSession(new String[] {"eduPersonAffiliation", "eduPersonOrgDN"}, "http://www.feide.no/?moriaID=", "", false);
         
-        System.out.println(redirectURL);
+        
+        System.out.println("\nOpen a web browser and direct it to the following URL: \n"+redirectURL);
 
-        /* When the user returns, the sessionID must be extracted and
-         * sent to Moria. The method moria.getAttributes(moriaID)
-         * returns a HashMap with the user data. If this HashMap is
-         * not null, the user has been successfully authenticated. If
-         * the webservice is allowed to request attributes from Moria,
-         * the HashMap will contain the requested attributes. */
+        
+        /* Read moriaID from prompt */
+        System.out.println("\nAfter FEIDE authentication, cut the moriaID from the URL and paste it here: ");
+        String moriaID = new BufferedReader(new InputStreamReader(System.in)).readLine();
+
+        /* Get user data */
+        HashMap userData = moria.getAttributes(moriaID);
+
+        /* Print all user data */
+        System.out.println("\nThe following data was delivered from Moria:");
+        for (Iterator iterator = userData.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            System.out.println(key+": "+userData.get(key));
+        }
+
     }
 
     
