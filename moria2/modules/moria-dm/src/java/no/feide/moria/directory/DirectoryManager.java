@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Timer;
 
-import no.feide.moria.directory.DirectoryManagerConfigurationException;
 import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
 import no.feide.moria.directory.backend.DirectoryManagerBackend;

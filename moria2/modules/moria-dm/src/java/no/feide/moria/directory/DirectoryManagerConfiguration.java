@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
-import no.feide.moria.directory.DirectoryManagerConfigurationException;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
