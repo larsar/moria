@@ -18,7 +18,7 @@
        basedir="${basedir}"
        postProcessing="false"
        includes="**/${pattern}/**/project.xml"
-       excludes="project.xml"
+       excludes="project.xml,**/${pattern}/moria-demo/project.xml"
        goals="project:install"
        banner="Building"
        ignoreFailures="false"/>
@@ -32,7 +32,7 @@
        basedir="${basedir}"
        postProcessing="false"
        includes="**/${pattern}/**/project.xml"
-       excludes="project.xml"
+       excludes="project.xml,**/${pattern}/moria-demo/project.xml"
        goals="project:deploy"
        banner="Building"
        ignoreFailures="false"/>
@@ -78,7 +78,7 @@
        basedir="${basedir}"
        postProcessing="false"
        includes="**/${pattern}/**/project.xml"
-       excludes="project.xml"
+       excludes="project.xml,**/${pattern}/moria-demo/project.xml"
        goals="site:deploy"
        banner="Deploying site"
        ignoreFailures="false"/>
