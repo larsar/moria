@@ -2,6 +2,11 @@
 
 <!-- $Id$ -->
 
+<!DOCTYPE project [
+	  <!ENTITY % locator-entities SYSTEM "file:locator.ent">
+	  %locator-entities;
+	  ]>
+
 <project>
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Controller</name>
@@ -17,172 +22,30 @@
 
   <dependencies>
 
-    <dependency>
-      <groupId>servletapi</groupId>
-      <artifactId>servletapi</artifactId>
-      <version>2.4-20030804.000000</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
+    <!-- Moria Modules deps -->
+    &dep-moria-am;
+    &dep-moria-dm;
+    &dep-moria-log;
+    &dep-moria-sm;
 
-    <dependency>
-      <groupId>moria</groupId>
-      <artifactId>moria-am</artifactId>
-      <version>1.0-b1-SNAPSHOT</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
+    <!-- Misc deps -->
+    &dep-log4j;
+    &dep-servlet-api;
+    &dep-xerces-xercesImpl;
+    &dep-xerces-xmlParserAPIs;
+    &dep-jdom;
 
+    <!-- JBossCache deps -->
+    &dep-concurrent;
+    &dep-trove;
+    &dep-javagroups;
+    &dep-jboss-aop;
+    &dep-jboss-cache;
+    &dep-jboss-common;
+    &dep-jboss-j2ee;
+    &dep-jboss-jmx;
+    &dep-jboss-system;
+    &dep-commons-logging;
 
-    <!--dependency>
-    <groupId>moria</groupId>
-    <artifactId>moria-dm</artifactId>
-    <version>1.0-b1-SNAPSHOT</version>
-    <type>jar</type>
-    <properties>
-    </properties>
-    </dependency-->
-
-    <dependency>
-      <groupId>moria</groupId>
-      <artifactId>moria-sm</artifactId>
-      <version>1.0-b1-SNAPSHOT</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>moria</groupId>
-      <artifactId>moria-log</artifactId>
-      <version>1.0-b1-SNAPSHOT</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>concurrent</groupId>
-      <artifactId>concurrent</artifactId>
-      <version>1.3.2</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>javagroups</groupId>
-      <artifactId>jgroups-all</artifactId>
-      <version>2.2.1</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-aop</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-cache</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-common</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-jmx</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-system</artifactId>
-      <version>4.0.0DR4</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.8</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.6.2</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xmlParserAPIs</artifactId>
-      <version>2.2.1</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
-
-    <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.0b10</version>
-      <type>jar</type>
-      <properties>
-      </properties>
-    </dependency>
   </dependencies>
-
-  <build>
-    <unitTest>
-      <resources>
-        <resource>
-          <directory>src/test/conf</directory>
-          <includes>
-            <include>**/*.xml</include>
-            <include>**/*.properties</include>
-          </includes>
-        </resource>
-      </resources>
-    </unitTest>
-  </build>
 </project>
