@@ -458,6 +458,14 @@ public final class RequestUtil {
      */
     public static final String PROP_DEMO_SLAVE_PASSWORD = PATH_PREFIX + "demo.slave.password";
 
+    /**
+     * The URL that the user should be redirected to in order to complete
+     * logout. <br>
+     * <br>
+     * Current value is <code>PATH_PREFIX + "demo.logout.url"</code>.
+     */
+    public static final String PROP_DEMO_LOGOUT_URL = PATH_PREFIX + "demo.logout.url";
+
 
     /**
      * Default private constructor.

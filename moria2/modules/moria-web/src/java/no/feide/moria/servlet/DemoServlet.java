@@ -21,7 +21,7 @@
 package no.feide.moria.servlet;
 
 import no.feide.moria.log.MessageLogger;
-import no.feide.moria.webservices.v1_0.Attribute;
+import no.feide.moria.webservices.v2_0.Attribute;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -132,6 +132,13 @@ extends HttpServlet {
         // Be sure to dump all exceptions.
         try {
 
+            // Handle logout request.
+            if (request.getParameter("logout") != null) {
+                
+                // Redirect to the configured logout URL.
+                response.sendRedirect(config.getProperty(RequestUtil.PROP_DEMO_LOGOUT_URL));
+            }
+
             // Get configuration.
             final Properties config = getConfig();
 
@@ -149,6 +156,7 @@ extends HttpServlet {
                 PrintWriter out = response.getWriter();
                 out.println("<html><head><title>Moria Demo Service</title></head><body>");
                 out.println("<h1 align=\"center\">Authentication successful</h1>");
+                out.println("<p align=\"center\"><a href=\"" + config.getProperty(RequestUtil.PROP_DEMO_LOGOUT_URL) + "\">Logout</a></p>");
                 out.println("<i>System '" + config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME) + "':</i>");
                 String ticketGrantingTicket = null; // For later use.
 
@@ -263,7 +271,7 @@ extends HttpServlet {
 
         // Get configuration.
         final Properties config = getConfig();
-        
+
         // Preparing call.
         Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
         call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME));
@@ -301,7 +309,7 @@ extends HttpServlet {
 
         // Get configuration
         final Properties config = getConfig();
-        
+
         // Prepare call.
         Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
         call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME));
@@ -350,7 +358,7 @@ extends HttpServlet {
 
         // Get configuration.
         final Properties config = getConfig();
-        
+
         // Preparing call.
         Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
         call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_MASTER_USERNAME));
@@ -389,7 +397,7 @@ extends HttpServlet {
 
         // Get configuration.
         final Properties config = getConfig();
-        
+
         // Prepare call.
         Call call = new Call(new URL(config.getProperty(RequestUtil.PROP_DEMO_SERVICE_ENDPOINT) + "?WSDL"));
         call.setUsername(config.getProperty(RequestUtil.PROP_DEMO_SLAVE_USERNAME));
