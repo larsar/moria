@@ -65,11 +65,18 @@ implements DirectoryManagerBackend {
     /** The attribute name used to guess a user's (R)DN. */
     private String guessedAttribute;
 
+    /** The session ticket used when logging from this instance. */
+    private String mySessionTicket;
+
 
     /**
      * Protected constructor. Will create an initial default context environment
      * and add support for referrals, a fix for OpenSSL aliases, and enable SSL
      * as default.
+     * @param sessionTicket
+     *            The session ticket for this instance, used when logging. May
+     *            be <code>null</code> (which is treated as an empty string)
+     *            or an empty string.
      * @param timeout
      *            The number of seconds before a connection attempt through this
      *            backend times out.
@@ -93,8 +100,8 @@ implements DirectoryManagerBackend {
      *             If <code>guessedAttributeName</code> or
      *             <code>usernameAttribute</code> is <code>null</code>.
      */
-    protected JNDIBackend(final int timeout, final boolean ssl, final String usernameAttributeName, final String guessedAttributeName)
-    throws IllegalArgumentException {
+    protected JNDIBackend(final String sessionTicket, final int timeout, final boolean ssl, final String usernameAttributeName, final String guessedAttributeName)
+    throws IllegalArgumentException, NullPointerException {
 
         // Assignments, with sanity checks.
         if (usernameAttributeName == null)
@@ -106,18 +113,20 @@ implements DirectoryManagerBackend {
         if (timeout < 0)
             throw new IllegalArgumentException("Timeout must be greater than zero");
         myTimeout = timeout;
+        mySessionTicket = sessionTicket;
+        if (mySessionTicket == null)
+            mySessionTicket = "";
 
         // Create initial context environment.
         defaultEnv = new Hashtable();
         defaultEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        
 
         // To catch referrals.
         defaultEnv.put(Context.REFERRAL, "throw");
 
         // Due to OpenSSL problems.
         defaultEnv.put("java.naming.ldap.derefAliases", "never");
-        
+
         // Use LDAP v3.
         defaultEnv.put("java.naming.ldap.version", "3");
 
@@ -189,7 +198,7 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logWarn("Unable to close the backend connection to " + references[j], e);
+                            log.logWarn("Unable to close the backend connection to " + references[j], mySessionTicket, e);
                         }
 
                 }
@@ -256,7 +265,7 @@ implements DirectoryManagerBackend {
                             // No user element found. Try to guess the RDN.
                             rdn = userCredentials.getUsername();
                             rdn = guessedAttribute + '=' + rdn.substring(0, rdn.indexOf('@'));
-                            log.logInfo("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn);
+                            log.logInfo("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn, mySessionTicket);
 
                         }
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
@@ -267,13 +276,13 @@ implements DirectoryManagerBackend {
                     ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
                     try {
                         ldap.reconnect(null);
-                        log.logDebug("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j]);
+                        log.logInfo("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
                         return getAttributes(ldap, rdn, attributeRequest); // Success.
                     } catch (AuthenticationException e) {
 
                         // Authentication failed, but we may have other
                         // references.
-                        log.logInfo("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j]);
+                        log.logInfo("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
                         continue;
 
                     }
@@ -290,7 +299,7 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logWarn("Unable to close the backend connection to " + references[j], e);
+                            log.logWarn("Unable to close the backend connection to " + references[j], mySessionTicket, e);
                         }
 
                 }
@@ -364,7 +373,7 @@ implements DirectoryManagerBackend {
             // Did we get an attribute back at all?
             Attribute oldAttr = oldAttrs.get(attributes[i]);
             if (oldAttr == null)
-                log.logInfo("Requested attribute '" + attributes[i] + "' not found on '" + url + "'");
+                log.logInfo("Requested attribute '" + attributes[i] + "' not found on '" + url + "'", mySessionTicket);
             else {
 
                 // Map the attribute values to String[].
@@ -447,15 +456,15 @@ implements DirectoryManagerBackend {
         } catch (NameNotFoundException e) {
 
             // Element not found. Possibly non-existing reference.
-            log.logInfo("Could not find " + pattern + " on " + url); // Necessary?
+            log.logInfo("Could not find " + pattern + " on " + url, mySessionTicket); // Necessary?
             return null;
 
         } catch (LimitExceededException e) {
-         
+
             // We hit some configured limit on the server's part.
-            log.logInfo("Search on " + url + " for " + pattern + " exceeded some configured limit");
+            log.logInfo("Search on " + url + " for " + pattern + " exceeded some configured limit", mySessionTicket);
             return null;
-            
+
         } catch (NamingException e) {
 
             // All other exceptions.

@@ -173,6 +173,10 @@ public class DirectoryManager {
 
     /**
      * Check that a user actually exists by polling the underlying backend.
+     * @param sessionTicket
+     *            Passed on to instances of <code>DirectoryManagerBackend</code>,
+     *            for logging purposes. May be <code>null</code> or an empty
+     *            string.
      * @param username
      *            The username to look up.
      * @return <code>true</code> if the user element corresponding to the
@@ -182,14 +186,15 @@ public class DirectoryManager {
      *             <code>setConfig(Properties)</code> first.
      * @see DirectoryManagerBackend#userExists(String)
      */
-    public boolean userExists(final String username) throws BackendException {
+    public boolean userExists(final String sessionTicket, final String username)
+    throws BackendException {
 
         // Sanity check.
         if (configuration == null)
             throw new IllegalStateException("Configuration not set");
 
         // Do the call through a temporary backend instance.
-        DirectoryManagerBackend backend = backendFactory.createBackend();
+        DirectoryManagerBackend backend = backendFactory.createBackend(sessionTicket);
         IndexedReference[] references = index.getReferences(username);
         if (references != null) {
 
@@ -211,6 +216,10 @@ public class DirectoryManager {
 
     /**
      * Forwards an authentication attempt to the underlying backend.
+     * @param sessionTicket
+     *            Passed on to instances of <code>DirectoryManagerBackend</code>,
+     *            for logging purposes. May be <code>null</code> or an empty
+     *            string.
      * @param userCredentials
      *            The user credentials passed on for authentication.
      * @param attributeRequest
@@ -243,8 +252,9 @@ public class DirectoryManager {
      * @see setConfig(Properties)
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
-    public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws AuthenticationFailedException, BackendException {
+    public HashMap authenticate(final String sessionTicket, final Credentials userCredentials, final String[] attributeRequest)
+    throws AuthenticationFailedException, BackendException,
+    IllegalStateException, NullPointerException {
 
         // Sanity checks.
         if (configuration == null)
@@ -255,7 +265,7 @@ public class DirectoryManager {
             throw new AuthenticationFailedException("User credentials cannot be NULL");
 
         // Do the call through a temporary backend instance.
-        DirectoryManagerBackend backend = backendFactory.createBackend();
+        DirectoryManagerBackend backend = backendFactory.createBackend(sessionTicket);
         IndexedReference[] references = index.getReferences(userCredentials.getUsername());
         if (references != null) {
 

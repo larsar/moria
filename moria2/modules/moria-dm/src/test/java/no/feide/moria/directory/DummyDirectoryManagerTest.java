@@ -95,13 +95,13 @@ extends TestCase {
 
             // Test successful authentication with empty array request.
             dm.setConfig(config);
-            HashMap attributes = dm.authenticate(goodCredentials, new String[] {});
+            HashMap attributes = dm.authenticate(null, goodCredentials, new String[] {});
 
             // Verify attributes.
             Assert.assertEquals("Attributes were returned", attributes.size(), 0);
 
             // Test successful authentication with null request.
-            attributes = dm.authenticate(goodCredentials, null);
+            attributes = dm.authenticate(null, goodCredentials, null);
 
             // Verify attributes.
             Assert.assertEquals("Attributes were returned", attributes.size(), 0);
@@ -135,7 +135,7 @@ extends TestCase {
 
             // Test successful authentication.
             dm.setConfig(config);
-            HashMap attributes = dm.authenticate(goodCredentials, requestedAttributes);
+            HashMap attributes = dm.authenticate(null, goodCredentials, requestedAttributes);
 
             // Verify attributes.
             Assert.assertNotNull("No attributes returned", attributes);
@@ -173,7 +173,7 @@ extends TestCase {
 
             // Test successful authentication.
             dm.setConfig(config);
-            HashMap attributes = dm.authenticate(new Credentials("user4@some.realm", "password"), requestedAttributes);
+            HashMap attributes = dm.authenticate(null, new Credentials("user4@some.realm", "password"), requestedAttributes);
 
             // Verify attributes.
             Assert.assertNotNull("No attributes returned", attributes);
@@ -214,7 +214,7 @@ extends TestCase {
             dm.setConfig(config);
             for (int i = 0; i < badCredentials.length; i++) {
                 HashMap attributes = null;
-                attributes = dm.authenticate(badCredentials[i], new String[] {});
+                attributes = dm.authenticate(null, badCredentials[i], new String[] {});
                 Assert.assertNull("Attributes were returned", attributes);
                 Assert.fail("Bad authentication succeeded");
             }
@@ -238,7 +238,7 @@ extends TestCase {
 
             // Test authentication without configuration.
             HashMap attributes = null;
-            attributes = dm.authenticate(goodCredentials, null);
+            attributes = dm.authenticate(null, goodCredentials, null);
             Assert.assertNull("Attributes were returned", attributes);
             Assert.fail("Authentication without configuration succeeded");
 
@@ -271,7 +271,7 @@ extends TestCase {
                 if (badCredentials[i] != null) {
 
                     // Test bad user existence.
-                    Assert.assertFalse("User " + badCredentials[i].getUsername() + " should not exist", dm.userExists(badCredentials[i].getUsername()));
+                    Assert.assertFalse("User " + badCredentials[i].getUsername() + " should not exist", dm.userExists(null, badCredentials[i].getUsername()));
 
                 }
             }
@@ -296,7 +296,7 @@ extends TestCase {
 
             // Test good user existence.
             dm.setConfig(config);
-            Assert.assertTrue("User " + goodCredentials.getUsername() + " should exist", dm.userExists(goodCredentials.getUsername()));
+            Assert.assertTrue("User " + goodCredentials.getUsername() + " should exist", dm.userExists(null, goodCredentials.getUsername()));
 
         } catch (BackendException e) {
             Assert.fail("Unexpected BackendException");

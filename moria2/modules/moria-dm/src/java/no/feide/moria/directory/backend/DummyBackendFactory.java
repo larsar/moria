@@ -50,7 +50,7 @@ implements DirectoryManagerBackendFactory {
      *             element.
      * @see DirectoryManagerBackendFactory#setConfig(Properties)
      */
-    public void setConfig(Element config) {
+    public void setConfig(final Element config) {
 
         // Sanity checks.
         if (config == null)
@@ -65,9 +65,12 @@ implements DirectoryManagerBackendFactory {
 
     /**
      * Creates a new <code>DummyBackend</code> instance.
+     * @param sessionTicket
+     *            Ignored for instances of <code>DummyBackend</code>.
      * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#createBackend()
+     * @see DummyBackend
      */
-    public DirectoryManagerBackend createBackend() {
+    public DirectoryManagerBackend createBackend(final String sessionTicket) {
 
         DummyBackend newBackend = new DummyBackend(myConfig);
         return newBackend;

@@ -161,11 +161,16 @@ implements DirectoryManagerBackendFactory {
 
     /**
      * Creates a new <code>DummyBackend</code> instance.
-     * @see no.feide.moria.directory.backend.DirectoryManagerBackendFactory#createBackend()
+     * @param sessionTicket
+     *            The session ticket passed on to instances of
+     *            <code>DirectoryManagerBackend</code> (actually
+     *            <code>JNDIBackend</code> instances) for logging purposes.
+     *            May be <code>null</code> or an empty string.
+     * @see DirectoryManagerBackendFactory#createBackend(String)
      */
-    public DirectoryManagerBackend createBackend() {
+    public DirectoryManagerBackend createBackend(final String sessionTicket) {
 
-        return new JNDIBackend(backendTimeouts, useSSL, usernameAttribute, guessedAttribute);
+        return new JNDIBackend(sessionTicket, backendTimeouts, useSSL, usernameAttribute, guessedAttribute);
 
     }
 

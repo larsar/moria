@@ -46,7 +46,7 @@ public interface DirectoryManagerBackend {
      * @throws BackendException
      *             If there was a problem accessing the backend.
      */
-    public boolean userExists(String username) throws BackendException;
+    public boolean userExists(final String username) throws BackendException;
 
 
     /**
@@ -65,7 +65,7 @@ public interface DirectoryManagerBackend {
      * @throws BackendException
      *             If there was a problem accessing the backend.
      */
-    public HashMap authenticate(Credentials userCredentials, String[] attributeRequest)
+    public HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException;
 
 

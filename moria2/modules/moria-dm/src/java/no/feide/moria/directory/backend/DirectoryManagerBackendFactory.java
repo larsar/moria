@@ -32,15 +32,20 @@ public interface DirectoryManagerBackendFactory {
      *            The backend configuration. See details for the actual backend
      *            implementation used.
      */
-    public void setConfig(Element config);
+    public void setConfig(final Element config);
 
 
     /**
      * Creates a new instance of a proper directory manager backend.
-     * @param reference
-     *            The backend reference.
+     * @param sessionTicket
+     *            The session ticket belonging to instances of
+     *            <code>DirectoryManagerBackend</code>. Used when logging.
+     *            The actual implementation of
+     *            <code>DirectoryManagerBackend</code> may choose to ignore
+     *            this value, if logging is not an issue. May be
+     *            <code>null</code> or an empty string.
      * @return A new instance of the backend, tied to the proper reference.
      */
-    public DirectoryManagerBackend createBackend();
+    public DirectoryManagerBackend createBackend(final String sessionTicket);
 
 }
