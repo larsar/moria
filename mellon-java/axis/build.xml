@@ -6,9 +6,20 @@
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
 
+  <!-- WSDL generation -->
+  <path id="axis.classpath"> 
+    <fileset dir="${axis_libs}"> 
+      <include name="**/*.jar" /> 
+    </fileset> 
+  </path> 
+  <taskdef resource="axis-tasks.properties" classpathref="axis.classpath" />
+
+
   <target name="axis:prepare"
           description="Mellon API: Prepare build directory"> 
     <mkdir dir="build"/>
+    <mkdir dir="build/connector"/>
+    <mkdir dir="build/wsdl"/>
     <mkdir dir="dist"/>
   </target>
 
@@ -17,7 +28,7 @@
           depends="axis:prepare">
     <javac srcdir="src"
            debug="true"
-           destdir="build"
+           destdir="build/connector"
            includes="no/feide/mellon/axis/*,no/feide/mellon/axis/example/*">
       <classpath>
         <fileset dir="${axis_libs}" includes="*.jar"/>
@@ -25,7 +36,7 @@
         <fileset dir="../common/dist" includes="*.jar"/>
       </classpath>
     </javac>
-    <jar destfile="dist/moriaAxisConnector.jar" basedir="build"/>
+    <jar destfile="dist/moriaAxisConnector.jar" basedir="build/connector"/>
   </target>
 
   <target name="axis:javadoc"
@@ -44,6 +55,26 @@
           description="Mellon API: Clean up">
     <delete dir="build"/>
     <delete dir="dist"/>
+    <delete file="Authentication.wsdl"/>
   </target>
+  
+  <target name="axis:wscompile"
+  		  description="Mellon API: Generate"
+  		  depends="axis:prepare">
+    <copy file="${wsdl_file}" todir=""/>
+    <exec executable="sed" output="Authentication.wsdl">
+      <arg line="s!REPLACE_WITH_ACTUAL_URL!${wsdl_url}! '${wsdl_file}'"/>
+    </exec>
+  		  
+    <axis-wsdl2java output="build/wsdl" 
+                    testcase="true"  
+                    verbose="true" 
+                    url="Authentication.wsdl"> 
+      <mapping namespace="http://login.feide.no/moria" package="no.feide.moria"/> 
+    </axis-wsdl2java> 
+
+    <jar destfile="dist/feide-mellon-api.jar" basedir="build/wsdl"/>    
+  </target>
+  
 
 </project>
