@@ -65,6 +65,7 @@ $deniedSessionsAuthentication
 <th>Active</th>
 <th>Failed auth.</th>
 <th>Sucsessful auth.</th> 
+<th>SSO auth.</th> 
 <th>Denied (URL)</th>
 <th>Denied (attr.)</th>
 <th>Timeout (SSO)</th>
@@ -78,6 +79,7 @@ $deniedSessionsAuthentication
 <td class="num">$activeSessions</td>
 <td class="num">$loginAttemptFailed</td>
 <td class="num">$loginAttemptSuccess</td>
+<td class="num">$loginAttemptSSO</td>
 <td class="num">$deniedSessionsURL</td>
 <td class="num">$deniedSessionsAuthorization</td>
 <td class="num">$sessionsTimeoutSSO</td>
@@ -92,6 +94,7 @@ $deniedSessionsAuthentication
 <td class="num">$wsStats.get($key).getSessionStats("active")</td>
 <td class="num">$wsStats.get($key).getSessionStats("authFailed")</td>
 <td class="num">$wsStats.get($key).getSessionStats("authSuccess")</td>
+<td class="num">$wsStats.get($key).getSessionStats("authSSO")</td>
 <td class="num">$wsStats.get($key).getSessionStats("deniedURL")</td>
 <td class="num">$wsStats.get($key).getSessionStats("deniedAuthorization")</td>
 <td class="num">$wsStats.get($key).getSessionStats("timeoutSSO")</td>
