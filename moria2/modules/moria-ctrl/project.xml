@@ -7,7 +7,7 @@
   <name>Moria Controller</name>
   <id>moria-ctrl</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
-  <package>no.feide.moria.controller</package>
+  <package>no.feide.moria</package>
 
   <shortDescription>The core component of Moria</shortDescription>
 
@@ -17,6 +17,24 @@
 
   <dependencies>
 
+    <dependency>
+      <groupId>moria</groupId>
+      <artifactId>moria-am</artifactId>
+      <version>1.0-b1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+<!--
+    <dependency>
+      <groupId>moria</groupId>
+      <artifactId>moria-dm</artifactId>
+      <version>1.0-b1-SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+      </properties>
+    </dependency>
+-->
     <dependency>
       <groupId>moria</groupId>
       <artifactId>moria-sm</artifactId>
@@ -38,7 +56,16 @@
   </dependencies>
 
   <build>
-    <resources>
-    </resources>
+    <unitTest>
+      <resources>
+	<resource>
+	  <directory>src/test/conf</directory>
+          <includes>
+            <include>**/*.xml</include>
+            <include>**/*.properties</include>
+          </includes>
+	</resource>
+      </resources>
+    </unitTest>
   </build>
 </project>
