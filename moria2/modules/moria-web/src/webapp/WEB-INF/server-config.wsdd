@@ -42,18 +42,18 @@
 
     <typeMapping xmlns:ns="https://login.feide.no/moria/v1_0/Authentication"
 		 qname="ns:ArrayOfAttribute"
-		 type="java:no.feide.login.moria.v1_0.Authentication.Attribute[]"
+		 type="java:no.feide.moria.webservices.v1_0.Attribute[]"
 		 serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
 		 deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
 		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
-    
+
     <typeMapping xmlns:ns="https://login.feide.no/moria/v1_0/Authentication"
 		 qname="ns:Attribute"
-		 type="java:no.feide.login.moria.v1_0.Authentication.Attribute"
+		 type="java:no.feide.moria.webservices.v1_0.Attribute"
 		 serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
 		 deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
 		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
-    
+
     <typeMapping xmlns:ns="https://login.feide.no/moria/v1_0/Authentication"
 		 qname="ns:ArrayOfstring"
 		 type="java:java.lang.String[]"
@@ -81,14 +81,14 @@
 
     <typeMapping xmlns:ns="https://login.feide.no/moria/v1_1/Authentication"
 		 qname="ns:ArrayOfAttribute"
-		 type="java:no.feide.login.moria.v1_1.Authentication.Attribute[]"
+		 type="java:no.feide.moria.webservices.v1_1.Attribute[]"
 		 serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
 		 deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
 		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
     
     <typeMapping xmlns:ns="https://login.feide.no/moria/v1_1/Authentication"
 		 qname="ns:Attribute"
-		 type="java:no.feide.login.moria.v1_1.Authentication.Attribute"
+		 type="java:no.feide.moria.webservices.v1_1.Attribute"
 		 serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
 		 deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
 		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
