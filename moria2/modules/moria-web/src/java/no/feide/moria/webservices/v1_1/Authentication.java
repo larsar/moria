@@ -317,11 +317,11 @@ public final class Authentication implements AuthenticationIF {
                 } else if (value instanceof String[]) {
                     attribute.setValues((String[]) value);
                     attributeList.add(attribute);
-                } else {
+                } else if (value != null) {
                     messageLogger.logInfo("Attribute value not String or String[]. Entry not added to Attribute[]. ",
                             activeTicketId);
                 }
-            } else {
+            } else if (value != null) {
                 messageLogger.logInfo("Attribute key not String. Entry not added to Attribute[]", activeTicketId);
             }
         }
