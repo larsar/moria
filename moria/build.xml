@@ -150,6 +150,15 @@
           description="Mellon API: Prepare build directory">
     <mkdir dir="build.mellon"/>
     <mkdir dir="build.mellon.filter"/>
+    <mkdir dir="build.mellon.demo/WEB-INF/classes"/>
+    <copy todir="build.mellon.demo/WEB-INF/lib">
+      <fileset dir="moria/lib/">
+	<include name="**/*.jar"/>
+      </fileset>
+      <fileset dir="lib/">
+	<include name="**/*.jar"/>
+      </fileset>
+    </copy>  
     <mkdir dir="dist"/>
   </target>
 
@@ -169,7 +178,7 @@
     <javac srcdir="src"
            destdir="build.mellon"
            includes="no/feide/mellon/*"
-           excludes="no/feide/mellon/test/*">
+           excludes="no/feide/mellon/servlet/*,no/feide/mellon/test/*">
 	   <classpath>
              <fileset dir="lib/" includes="*.jar"/>
 	   </classpath>
@@ -177,7 +186,7 @@
   </target>
 
   <target name="mellon:filter:compile"
-          description="Mellon API: Compile source"
+          description="Mellon filter: Compile source"
           depends="mellon:jar">
     <javac srcdir="src"
            destdir="build.mellon.filter"
@@ -191,11 +200,41 @@
 
 
   <target name="mellon:filter:jar"
-          description="Mellon API: Create JAR file"
+          description="Mellon filter: Create JAR file"
 	  depends="mellon:filter:compile">
     <delete file="dist/feide-mellon-filter.jar"/>
     <jar destfile="dist/feide-mellon-filter.jar" basedir="build.mellon.filter"/>
   </target>
+
+  <target name="mellon:demo:compile"
+          description="Mellon demo: Compile source"
+          depends="mellon:jar,mellon:filter:jar">
+    <javac srcdir="src"
+           destdir="build.mellon.demo/WEB-INF/classes"
+           includes="no/feide/mellon/servlet/*">
+	   <classpath>
+             <fileset dir="lib/" includes="*.jar"/>
+	     <fileset file="dist/feide-mellon-api.jar"/>
+	   </classpath>
+    </javac>
+  </target>
+
+  <target name="mellon:demo:war"
+          description="Mellon demo: Create WAR file"
+	  depends="mellon:demo:compile">
+	  <delete file="buil.mellon.demo/WEB-INF/web.xml"/>
+          <delete file="dist/feide-mellon-demo.war"/>
+	  <copy file="mellon/config/web.xml" toFile="build.mellon.demo/WEB-INF/web.xml"/>
+
+    <copy todir="build.mellon.demo/WEB-INF/lib">
+      <fileset dir="dist">
+	<include name="**/feide-mellon*.jar"/>
+      </fileset>
+    </copy>  
+
+    <jar destfile="dist/feide-mellon-demo.war" basedir="build.mellon.demo"/>
+  </target>
+
 
   <target name="mellon:jar"
           description="Mellon API: Create JAR file"
@@ -215,6 +254,7 @@
           description="Mellon API: Clean up">
     <delete dir="build.mellon"/>
     <delete dir="build.mellon.filter"/>
+    <delete dir="build.mellon.demo"/>
     <delete file="dist/feide-mellon-filter.jar"/>
     <delete file="dist/feide-mellon-api.jar"/>
   </target>
