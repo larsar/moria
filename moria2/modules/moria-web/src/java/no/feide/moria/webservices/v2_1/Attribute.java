@@ -32,7 +32,7 @@ import org.apache.axis.encoding.ser.BeanDeserializer;
 import org.apache.axis.encoding.ser.BeanSerializer;
 
 /**
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public final class Attribute implements Serializable {

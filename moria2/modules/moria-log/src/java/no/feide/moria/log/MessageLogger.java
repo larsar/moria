@@ -35,7 +35,7 @@ import org.apache.log4j.Level;
  *
  * Supports four loglevels: Debug, Info, Warn, Critical.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class MessageLogger implements Serializable {

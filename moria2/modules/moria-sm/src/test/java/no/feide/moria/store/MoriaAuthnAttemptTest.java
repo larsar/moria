@@ -29,7 +29,7 @@ import java.util.HashMap;
 /**
  * Test class for MoriaAuthnAttempt
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public class MoriaAuthnAttemptTest extends TestCase {

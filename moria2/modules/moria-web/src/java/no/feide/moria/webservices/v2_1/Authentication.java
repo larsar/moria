@@ -42,7 +42,7 @@ import org.apache.axis.session.Session;
 import org.apache.axis.transport.http.AxisHttpSession;
 
 /**
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public final class Authentication implements AuthenticationIF {

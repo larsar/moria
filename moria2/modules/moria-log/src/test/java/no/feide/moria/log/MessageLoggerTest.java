@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public class MessageLoggerTest extends TestCase {

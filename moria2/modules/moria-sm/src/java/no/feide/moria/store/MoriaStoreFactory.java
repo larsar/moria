@@ -25,7 +25,7 @@ package no.feide.moria.store;
  * of the MoriaStore interface.  Somewhat redundant as we only have one
  * implementation at the moment.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class MoriaStoreFactory {

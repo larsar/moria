@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  * [Timestamp] "STATUS" "service principal" "userid" "incoming ticket" "outgoing ticket"
  * </pre>
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class AccessLogger implements Serializable {

@@ -29,7 +29,7 @@ import java.util.List;
  * This class represents the different types of tickets used in Moria.
  * It's an implementation of the "typesafe enum pattern".
  *
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public final class MoriaTicketType implements Serializable {

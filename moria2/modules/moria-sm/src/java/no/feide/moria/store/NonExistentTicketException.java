@@ -23,7 +23,7 @@ package no.feide.moria.store;
 /**
  * Raised whenever a requested ticket is not found in the store.
  *
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public class NonExistentTicketException extends Exception {

@@ -23,7 +23,7 @@ package no.feide.moria.store;
 /**
  * Signals that something failed when trying to configure the store.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public class MoriaStoreConfigurationException extends MoriaStoreException {

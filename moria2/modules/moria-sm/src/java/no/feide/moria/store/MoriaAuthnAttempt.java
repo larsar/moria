@@ -26,7 +26,7 @@ import java.util.HashMap;
  * This class is used for holding state through an authentication. From
  * initialization by the service through to final retrieval of user data.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class MoriaAuthnAttempt implements MoriaStoreData {

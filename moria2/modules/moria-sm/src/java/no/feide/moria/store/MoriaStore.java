@@ -29,7 +29,7 @@ import java.util.Properties;
  * their associated data. The interface also has support for removal
  * of expired tickets.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public interface MoriaStore {

@@ -31,7 +31,7 @@ import junit.framework.TestSuite;
 /**
  * Test class for classes implementing the MoriaStore interface.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public class MoriaCacheStoreTest extends TestCase {

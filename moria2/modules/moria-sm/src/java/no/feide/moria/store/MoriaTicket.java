@@ -30,7 +30,7 @@ import java.util.Date;
  * These attributes are used for validation and authorization of incoming
  * requests.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 final class MoriaTicket implements Serializable {

@@ -44,7 +44,7 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
 /**
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class SimpleAxisServlet extends AxisServlet {

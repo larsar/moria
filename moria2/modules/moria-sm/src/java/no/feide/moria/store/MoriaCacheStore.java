@@ -39,7 +39,7 @@ import org.jboss.cache.lock.TimeoutException;
 
 /**
  * Distributed store implementation using JBoss Cache.
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class MoriaCacheStore

@@ -43,7 +43,7 @@ import EDU.oswego.cs.dl.util.concurrent.WriterPreferenceReadWriteLock;
 /**
  * This eviction algorithm expires cache elements after a fixed period, aka Time To Live.
  * 
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {

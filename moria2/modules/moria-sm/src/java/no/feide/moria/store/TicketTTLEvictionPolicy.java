@@ -45,7 +45,7 @@ import org.w3c.dom.Text;
 /**
  * This eviction policy evicts tickets after a fixed period, aka Time To Live.
  * 
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 

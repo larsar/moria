@@ -26,7 +26,7 @@ import java.util.HashMap;
  * This class is a container for userdata that persists across logins (for
  * SSO Light and Proxy authentication).
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class CachedUserData implements MoriaStoreData {

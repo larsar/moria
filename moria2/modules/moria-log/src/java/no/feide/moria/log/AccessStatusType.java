@@ -26,7 +26,7 @@ import java.io.Serializable;
  * This class represents access status type constants for the AccessLogger. It's an implementation of the "typesafe enum
  * pattern".
  *
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public final class AccessStatusType implements Serializable {

@@ -30,7 +30,7 @@ import junit.framework.TestSuite;
 /**
  * Test class for MoriaTicket
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public class MoriaTicketTest extends TestCase {

@@ -23,7 +23,7 @@ package no.feide.moria.store;
 /**
  * Used to signal an exception regarding eviction policy configuration.
  *
- * @author Bjørn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
 public class EvictionConfigurationException extends RuntimeException {

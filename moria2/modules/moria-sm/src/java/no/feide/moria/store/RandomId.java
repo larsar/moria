@@ -32,7 +32,7 @@ import java.util.Date;
  * encoded String (pseudo Base64, see method documentation for details)
  * constructed from the node id, the current time and a random string. This
  * should guarantee unique ids across the cluster and node restarts.
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public final class RandomId {

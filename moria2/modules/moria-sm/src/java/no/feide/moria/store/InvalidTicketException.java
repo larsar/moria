@@ -23,7 +23,7 @@ package no.feide.moria.store;
 /**
  * This exception should be thrown whenever a ticket is considered erroneous.
  *
- * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
+ * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
 public class InvalidTicketException extends Exception {
