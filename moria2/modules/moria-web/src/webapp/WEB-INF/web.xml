@@ -88,11 +88,6 @@
   </servlet>
   
   <servlet>
-    <servlet-name>Information-About.JSP</servlet-name>
-    <jsp-file>/WEB-INF/jsp/information-about.jsp</jsp-file>
-  </servlet>
-
-  <servlet>
     <servlet-name>Information-Welcome.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/information-welcome.jsp</jsp-file>
   </servlet>
@@ -104,17 +99,12 @@
 
   <servlet-mapping>
     <servlet-name>Information</servlet-name>
-    <url-pattern>/Information</url-pattern>
+    <url-pattern>/InformationService</url-pattern>
   </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>Information-About.JSP</servlet-name>
-    <url-pattern>/Information-About</url-pattern>
-  </servlet-mapping>
-  
+   
   <servlet-mapping>
     <servlet-name>Information-Welcome.JSP</servlet-name>
-    <url-pattern>/Information-Welcome</url-pattern>
+    <url-pattern>/Information</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
