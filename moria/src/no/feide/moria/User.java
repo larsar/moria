@@ -34,7 +34,7 @@ public class User {
     
     /**
      * Used to store the user element's relative DN, as found by
-     * <code>findRDN(String)</code>.
+     * <code>ldapSearch(String)</code>.
      */
     private static String rdn;
     
@@ -87,38 +87,38 @@ public class User {
             return null;
         
         // Get and verify properties.
-        String keyStore = System.getProperty("no.feide.moria.Backend.LDAP.keyStore");
-        String keyStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.keyStorePassword", null);
-        String trustStore = System.getProperty("no.feide.moria.Backend.LDAP.trustStore");
-        String trustStorePassword = System.getProperty("no.feide.moria.Backend.LDAP.trustStorePassword", null);
-        String ldapHost = System.getProperty("no.feide.moria.Backend.LDAP.Host");
-        if (ldapHost == null)
-            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.Host not set");
-        String ldapPort = System.getProperty("no.feide.moria.Backend.LDAP.Port");
-        if (ldapPort == null)
-            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.Port not set");
-        String ldapBase = System.getProperty("no.feide.moria.Backend.LDAP.Base");
-        if (ldapBase == null)
-            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.Base not set");
-        String ldapUid = System.getProperty("no.feide.moria.Backend.LDAP.UIDAttribute");
-        if (ldapUid == null)
-            throw new BackendException("Required preference no.feide.moria.Backend.LDAP.UIDAttribute not set");
-               
-        // Only enable SSL if all necessary info is available.
+
+        String keyStore = System.getProperty("no.feide.moria.backend.ldap.keystore");
+        if (keyStore != null)
+            log.config("Key store is "+keyStore);
+        String keyStorePassword = System.getProperty("no.feide.moria.backend.ldap.keystorePassword", null);
+        String trustStore = System.getProperty("no.feide.moria.backend.ldap.trustStore");
+        if (trustStore != null)
+            log.config("Trust store is "+trustStore);
+        String trustStorePassword = System.getProperty("no.feide.moria.backend.ldap.trustStorePassword", null);
+        String usernameAttribute = System.getProperty("no.feide.moria.backend.ldap.usernameAttribute", null);
+        if (usernameAttribute == null)
+            throw new BackendException("Required property no.feide.moria.backend.ldap.usernameAttribute not set");
+        log.config("User name attribute is "+usernameAttribute);
+	String ldapURL = System.getProperty("no.feide.moria.backend.ldap.url", null);
+	if (ldapURL == null)
+	    throw new BackendException("Required property no.feide.moria.backend.ldap.url not set");
+        log.config("LDAP URL is "+ldapURL);
+        
+        // Only enable SSL if we have an ldaps:// URL.
         Hashtable env = new Hashtable();
-        if ( /*(keyStore != null) &&
-             (keyStorePassword != null) &&*/
-             (trustStore != null) &&
-             (trustStorePassword != null) ) {
+
+        if ( (ldapURL.startsWith("ldaps")) ||
+	     (ldapURL.startsWith("ldaps")) ) {
+
             log.config("SSL enabled");
             env.put(Context.SECURITY_PROTOCOL, "ssl");
             Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-            /*
-            System.setProperty("javax.net.ssl.keyStore", keyStore);
-            System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword); 
-            */
+
             System.setProperty("javax.net.ssl.trustStore", trustStore);
             System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
+            System.setProperty("javax.net.ssl.keyStore", keyStore);
+	    System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword); 
         }
         else
             log.config("SSL disabled");
@@ -127,34 +127,30 @@ public class User {
 
             // Prepare LDAP context and look up user element.
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-            env.put(Context.PROVIDER_URL, "ldap://"+ldapHost+':'+Integer.valueOf(ldapPort)+'/'+ldapBase);
+            env.put(Context.PROVIDER_URL, ldapURL);
             env.put(Context.REFERRAL, "throw");  // To catch referrals.
-	    log.info("DEBUG 1");  // DEBUG
             ldap = new InitialLdapContext(env, null);
-	    log.info("DEBUG 2");  // DEBUG
+	    log.config("Connected to "+env.get(Context.PROVIDER_URL));
             ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-	    log.info("DEBUG 3");  // DEBUG
-            rdn = findRDN(ldapUid+'='+username);
-	    log.info("DEBUG 4");  // DEBUG
+            rdn = ldapSearch(usernameAttribute+'='+username);
             if (rdn == null) {
                 // No user element found.
-                log.fine("No subtree match for "+ldapUid+'='+username+" at "+ldap.getNameInNamespace()+ " on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+                log.fine("No subtree match for "+usernameAttribute+'='+username+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                 return null;
             }
+            log.fine("Found element at "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
 
             // Authenticate.
             ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
             ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn+','+ldap.getNameInNamespace());
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
-	    log.info("DEBUG 5");  // DEBUG
             try {
                 ldap.reconnect(null);
-		log.info("DEBUG 6");  // DEBUG
-                log.fine("Authenticated "+rdn+','+ldap.getNameInNamespace()+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+                log.fine("Authenticated as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                 return new User(ldap, rdn);  // Success.
             } catch (AuthenticationException e) {
-                log.fine("Failed to authenticate "+rdn+','+ldap.getNameInNamespace()+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+                log.fine("Failed to authenticate as "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                 return null;  // Failure.
             }
             
@@ -169,13 +165,14 @@ public class User {
      * Do a subtree search for an element given a pattern. Only the first
      * element found is considered. Any referrals are followed recursively.
      * @param pattern The search pattern.
-     * @return The element's relative (to the context's search base) DN, or
-     *         <code>null</code> if none was found.
+     * @return The element's relative DN, or <code>null</code> if none was
+     *         found.
      * @throws BackendException If a NamingException occurs.
      */
-    private static String findRDN(String pattern)
+    private static String ldapSearch(String pattern)
     throws BackendException {
-        log.finer("findRDN("+pattern+')');
+
+        log.finer("ldapSearch(String)");
         
         try {
             
@@ -186,7 +183,7 @@ public class User {
                 
                 // Nothing matched the pattern.
                 if (!results.hasMore()) {
-                    log.fine("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+                    log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                     return null;
                 }
                 
@@ -197,15 +194,16 @@ public class User {
                 log.fine("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to referral "+refEnv.get(Context.PROVIDER_URL));
                 ldap.close();
                 ldap = new InitialLdapContext(refEnv, null);
-                return findRDN(pattern);
+                return ldapSearch(pattern);
                 
             }
             
             // We just found an element.
             SearchResult entry = (SearchResult)results.next();
-            //            assert entry != null : entry;  // Sanity check.
-            log.fine("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to element "+entry.getName()+','+ldap.getNameInNamespace());
-            return entry.getName();
+            //assert entry != null : entry;  // Sanity check.
+            String rdn = entry.getName();
+            log.fine("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to element "+rdn);
+            return rdn;
             
         } catch (NamingException e) {
             e.printStackTrace();
@@ -225,17 +223,19 @@ public class User {
     public HashMap lookup(String[] attributes)
     throws BackendException {
         log.finer("lookup(String[])");
+        
         try {
-            // Translate from BasicAttribute to UserAttribute.
+            // Translate from BasicAttribute to HashMap, using the original
+            // attribute names from the request.
             HashMap newAttrs = new HashMap();
-            NamingEnumeration oldAttrs = ldap.getAttributes(rdn, attributes).getAll();
-            BasicAttribute oldAttr = null;
-            while (oldAttrs.hasMore()) {
-                oldAttr = (BasicAttribute)oldAttrs.next();
+            Attributes oldAttrs = ldap.getAttributes(rdn, attributes);
+            Attribute oldAttr = null;
+            for (int i=0; i<attributes.length; i++) {
+                oldAttr = oldAttrs.get(attributes[i]);
                 Vector newValues = new Vector();
-                for (int i=0; i<oldAttr.size(); i++)
-                    newValues.add(new String((String)oldAttr.get(i)));
-                newAttrs.put(oldAttr.getID(), newValues);
+                for (int j=0; j<oldAttr.size(); j++)
+                    newValues.add(new String((String)oldAttr.get(j)));
+                newAttrs.put(attributes[i], newValues);
             }
             return newAttrs;
         }

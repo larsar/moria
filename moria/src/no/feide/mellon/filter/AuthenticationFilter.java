@@ -1,9 +1,18 @@
 package no.feide.mellon.filter;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.net.*;
+import java.io.IOException;
+
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletRequest;
+
 import no.feide.mellon.Moria;
 import no.feide.mellon.MoriaException;
 import java.util.HashMap;
@@ -74,7 +83,7 @@ public class AuthenticationFilter implements Filter {
 
             /* userData is null when the user is NOT authenticated */ 
             if (httpSession.getAttribute("userData") == null) {
-              
+                
                 HttpServletRequest httpRequest = (HttpServletRequest) request;
                 String redirectURL; 
 

@@ -76,7 +76,7 @@ implements AuthenticationIF, ServiceLifecycle {
 
         try {
             
-            // Read properties.
+            /* Read properties. */
             if (System.getProperty("no.feide.moria.config.file") == null) {
                 log.config("no.feide.moria.config.file not set; default is \"/moria.properties\"");
                 System.getProperties().load(getClass().getResourceAsStream("/moria.properties"));
@@ -86,7 +86,7 @@ implements AuthenticationIF, ServiceLifecycle {
                 System.getProperties().load(getClass().getResourceAsStream(System.getProperty("no.feide.moria.config.file")));
             }
             
-            // Set local pointer to session store.
+            /* Set local pointer to session store. */
             sessionStore = SessionStore.getInstance();
             
         } catch (FileNotFoundException e) {
@@ -100,7 +100,7 @@ implements AuthenticationIF, ServiceLifecycle {
             throw new ServiceException("SessionException caught", e);
         }
 
-        // Initialize authorization data timer, with sanity check.
+        /* Initialize authorization data timer, with sanity check. */
         String s = System.getProperty("no.feide.moria.AuthorizationTimerDelay");
         if (s == null) {
             log.severe("Missed require system attribute: no.feide.moria.AuthorizationTimerDelay");
@@ -113,8 +113,9 @@ implements AuthenticationIF, ServiceLifecycle {
         /* Sleep a short while. If not the authorization data will not
            be updated in time to authorize the first authentication request. */
         try { 
-            int initialSleep = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerInitThreadSleep")).intValue()*1000; // Seconds to milliseconds
-            Thread.sleep(initialSleep); 
+            int initialSleep = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerInitThreadSleep")).intValue(); 
+            log.config("Sleep "+initialSleep+" seconds while reading auth. config.");
+            Thread.sleep(initialSleep*1000); 
         } 
         catch (InterruptedException e) { 
             /* We didn't get any sleep. Don't care. If this is the
@@ -127,9 +128,10 @@ implements AuthenticationIF, ServiceLifecycle {
 
 
     /**
-     * Request a new Moria session, asking for a set of user attributes at
-     * the same time. The web service asking for the session will be
-     * checked against the W3LS web service authorization data.
+     * A simple wrapper for 
+     * <code>requestSession(String[], String, String, true)</code>. That is,
+     * the web service configuration is used to determine if SSO should be
+     * used or not.
      * @param attributes The requested user attributes, to be returned from
      *                   <code>verifySession()</code> once authentication is
      *                   complete. <code>null</code> value allowed.
@@ -147,6 +149,35 @@ implements AuthenticationIF, ServiceLifecycle {
     public String requestSession(String[] attributes, String prefix, String postfix)
     throws RemoteException {
         log.finer("requestSession(String[], String, String)");
+
+	return requestSession(attributes, prefix, postfix, false);
+    }
+
+
+    /**
+     * Request a new Moria session, with the option to turn off SSO even though
+     * the web service authorization config would allow it.
+     * @param attributes The requested user attributes, to be returned from
+     *                   <code>verifySession()</code> once authentication is
+     *                   complete. <code>null</code> value allowed.
+     * @param prefix The prefix, used to build the <code>verifySession</code>
+     *               return value. May be <code>null</code>.
+     * @param postfix The postfix, used to build the
+     *                <code>verifySession</code> return value. May be
+     *                <code>null</code>.
+     * @param denySSO If <code>true</code> SSO is disabled even though the
+     *                web service config may allow SSO. If <code>false</code>,
+     *                the config is used to determine if the web service can
+     *                use SSO.
+     * @return An URL to the authentication service.
+     * @throws RemoteException If a SessionException or a
+     *                         BackendException is caught. Also thrown if the
+     *                         prefix/postfix doesn't combine into a valid
+     *                         URL, or if the 
+     */
+    public String requestSession(String[] attributes, String prefix, String postfix, boolean denySSO)
+    throws RemoteException {
+        log.finer("requestSession(String[], String, String, boolean)");
         
         /* Check if prefix and postfix, together with a possible
          * session ID, is a valid URL. */
@@ -159,7 +190,7 @@ implements AuthenticationIF, ServiceLifecycle {
         }
 
 
-        // Look up service authorization data.
+        /* Look up service authorization data. */
         Principal p = ctx.getUserPrincipal();
         String serviceName = null;
         if (p != null)
@@ -186,28 +217,6 @@ implements AuthenticationIF, ServiceLifecycle {
     }
 
 
-    /**
-     * Request a new Moria session, without asking for a set of user
-     * attributes. Actually a simple wrapper for
-     * <code>requestSession(String[], String)</code> with an empty
-     * (<code>null</code>) attribute request array.
-     * @param prefix The prefix, used to build the <code>verifySession</code>
-     *               return value.
-     * @param postfix The postfix, used to build the
-     *                <code>verifySession</code> return value.
-     * @return An URL to the authentication service.
-     * @throws RemoteException If a SessionException or a
-     *                         BackendException is caught.
-     */
-    public String requestSession(String prefix, String postfix)
-    throws RemoteException {
-        log.finer("requestSession(String, String)");
-	return requestSession(null, prefix, postfix);
-    }
-    
-    
-
-
     /* Return the previously requested user attributes.
      * @param The session ID.
      * @return The previously requested user attributes.
@@ -224,13 +233,22 @@ implements AuthenticationIF, ServiceLifecycle {
 
 	try {
 
-	    // Look up session and check the client identity.
+	    /* Look up session and check the client identity. */
             Session session = sessionStore.getSession(id);
+
+            String serviceName = null;
+            if (ctx.getUserPrincipal() != null)
+                serviceName = ctx.getUserPrincipal().getName();
+            
+            if (session.isLocked()) {
+                log.warning("Service ("+serviceName+") tried to access locked session: "+session.getID());
+                throw new RemoteException("No such session.");
+            }
+
 	    assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
 
-	    // Return attributes.
+	    /* Return attributes. */
             HashMap result = session.getAttributes();
-            sessionStore.deleteSession(session);
             return result;
 
         } catch (SessionException e) {
@@ -266,11 +284,11 @@ implements AuthenticationIF, ServiceLifecycle {
 
          try {
              
-             // Look up session and check the client identity.
+             /* Look up session and check the client identity. */
              Session session = sessionStore.getSession(id);
  	     assertPrincipals(ctx.getUserPrincipal(), session.getClientPrincipal());
 
-             // Authenticate through session.
+             /* Authenticate through session. */
              if (session.authenticateUser(new Credentials(username, password)))
                  return session.getRedirectURL();
              else

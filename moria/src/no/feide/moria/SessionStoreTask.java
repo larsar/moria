@@ -11,8 +11,10 @@ public class SessionStoreTask
 extends TimerTask {
 
     /** Session time out value. */
-    private int timeoutMin;
+    private int timeoutSec;
 
+    /** SSO Session time out value. */
+    private int ssoTimeoutMin;
 
     /** Used for logging. */
     private static Logger log = Logger.getLogger(SessionStoreTask.class.toString());
@@ -29,8 +31,11 @@ extends TimerTask {
     public SessionStoreTask()
     throws SessionException {
         sessionStore = SessionStore.getInstance();
-        timeoutMin = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue(); // Minutes to milliseconds
-        log.config("Session time out set to "+timeoutMin+" minutes.");
+        
+        timeoutSec = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue(); // Minutes to milliseconds
+        ssoTimeoutMin = new Integer(System.getProperty("no.feide.moria.SessionSSOTimeout")).intValue(); // Minutes to milliseconds
+        log.config("Session time out set to "+timeoutSec+" seconds.");
+        log.config("Session SSO time out set to "+ssoTimeoutMin+" minutes.");
     }
      
     
@@ -39,7 +44,7 @@ extends TimerTask {
      **/
     public void run() {
         log.fine("run()");
-        sessionStore.checkTimeout(timeoutMin*60*1000);
+        sessionStore.checkTimeout(timeoutSec*1000, ssoTimeoutMin*60*1000);
     }    
     
 }

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.naming.directory.BasicAttributes;
 import javax.servlet.ServletContext;
 import no.feide.moria.authorization.WebService;
+import no.feide.moria.authorization.AuthorizationData;
 
 public class Session {
     
@@ -23,6 +24,10 @@ public class Session {
     
     /** The attributes requested for this session. */
     private String[] request;
+
+    /** The attributes requested for this session that are not allowed
+     * with SSO. */
+    private String[] noneSsoAttributes;
 
     /** Number of failed logins (wrong username/password). */
     private int failedLogins = 0;
@@ -42,6 +47,32 @@ public class Session {
     /** The name of the security level for the requested attributes. */
     private String attributesSecLevel;
     
+    /** 
+     * Is session locked? It can be unlocked by performing a
+     * successful authentication. When user attributes are retrieved
+     * once, the session is locked again. It is not possible to fetch
+     * user attriibutes from the session when the session is
+     * locked. */ 
+    private boolean locked = true;
+
+    /**
+     * Indicates that the session is ready to accept authentication
+     * attempts or not. Only after a user has requested a login page
+     * we should accept authentication attempts.
+     */
+    private boolean authenticationInitiated = false;
+
+    /**
+     * True if session can be used in SSO.
+     */
+    private boolean allowSso = false;
+
+    /**
+     * Cached attributes. Only those that allow SSO.
+     */ 
+    private HashMap cachedAttributes;
+
+
     /**
      * Protected constructor, only to be used by
      * <code>SessionStore<code>. The session URL is set to the
@@ -58,19 +89,33 @@ public class Session {
      *                value. May be <code>null</code>.
      * @param client The client service identifier.
      */
-    protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client, WebService ws) {
+    protected Session(String sessionID, String[] attributes, String urlPrefix, String urlPostfix, Principal client, WebService webService) {
         log.finer("Session(String, String[], String)");
         
-        webService = ws;
-        this.attributesSecLevel = ws.secLevelNameForAttributes(attributes);
+        this.webService = webService;
+        this.attributesSecLevel = webService.secLevelNameForAttributes(attributes);
         this.sessionID = sessionID;
         this.request = attributes;
 	this.urlPrefix = urlPrefix;
         this.urlPostfix = urlPostfix;
 	this.client = client;
         user = null;
+
+        /* SSO */
+        Vector ssoAttributes = AuthorizationData.getInstance().getSsoAttributes();
+        Vector noneSsoAttributes = new Vector();
+
+        for (int i = 0; i < attributes.length; i++) {
+            if (!ssoAttributes.contains(attributes[i])) {
+                noneSsoAttributes.add(attributes[i]);
+            }
+        }
+        
+        this.noneSsoAttributes = (String[]) noneSsoAttributes.toArray(new String[noneSsoAttributes.size()]);
+        this.allowSso = (webService.allowSsoForAttributes(attributes));
+        log.config("Allow SSO: "+this.allowSso+" ID: "+this.sessionID);
     }
-    
+
 
     /**
      * Authenticates a user through the backend. The session gets a new ID
@@ -100,6 +145,7 @@ public class Session {
             // Update session ID and URL.
             SessionStore.getInstance().renameSession(this);
             log.fine("Good authN.");
+            locked = false;
             return true;
         }
         
@@ -174,6 +220,11 @@ public class Session {
     throws SessionException {
         log.finer("getAttributes()");
         
+        if (locked) {
+            log.severe("Cannot get attributes when session is locked.");
+            throw new SessionException("Session is locked.");
+        }
+
         // Check for authentication.
         if (user == null) {
             log.warning("User attribute request without previous authentication");
@@ -187,13 +238,56 @@ public class Session {
         
         // Look up through backend.
         try {
-            return user.lookup(request);
+            
+
+            // TODO: Double LDAP lookups. Might be a performance issue.
+            // Move cache to User?
+            if (cachedAttributes == null) {
+                Vector ssoAttributes = AuthorizationData.getInstance().getSsoAttributes();
+                cachedAttributes = user.lookup((String[]) ssoAttributes.toArray(new String[ssoAttributes.size()]));
+            }
+
+            HashMap noCachedAttributes = new HashMap();
+            if (noneSsoAttributes != null)
+                noCachedAttributes = user.lookup(noneSsoAttributes);
+
+
+            locked = true;
+
+            return genAttrResult(cachedAttributes, noCachedAttributes, request);
+
+            //return user.lookup(request);
         } catch (BackendException e) {
             log.severe("BackendException caught and re-thrown as SessionException");
             throw new SessionException(e);
         }
     }
     
+
+    /**
+     * Merge cached and nocached attributes together to one result HashMap.
+     */
+    private HashMap genAttrResult(HashMap cache, HashMap noCache, String[] request) {
+        HashMap result = new HashMap();
+
+        for (int i = 0; i < request.length; i++) {
+
+            if (cache.containsKey(request[i])) 
+                result.put(request[i], cache.get(request[i]));
+            
+            
+            else if (noCache.containsKey(request[i])) 
+                result.put(request[i], noCache.get(request[i]));
+            
+
+            else
+                log.warning("Failed to fetch attribute "+request[i]+".");
+        }
+
+        return result;
+    }
+
+
     
     /**
      * Updates the session's current ID. Note that this does not update the
@@ -267,4 +361,70 @@ public class Session {
         return attributesSecLevel;
     }
 
+    
+    /** 
+     * Return true if the session can be used with SSO.
+     */
+    public boolean allowSso() {
+        return allowSso;
+    }
+
+    /**
+     * Return true if session is locked and cannot be used to retreive
+     * attributes.
+     */
+    public boolean isLocked() {
+        return locked;
+    }
+
+    /**
+     * Unlock session. 
+     * @param user The user attribute that is assosiated with a
+     * session.
+     */
+    public void unlock(User user) {
+        this.user = user;
+        locked = false;
+    }
+
+    /**
+     * Return the user object that is authenticated.
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * Flag that the login page is retrieved and that the session now
+     * accepts authentication attempts.
+     */
+    public void initiateAuthentication() {
+        authenticationInitiated = true;
+    }
+
+    /**
+     * Return true if the session is open for authentication attempts.
+     */
+    public boolean authenticationInitiated() {
+        return authenticationInitiated;
+    }
+
+    /**
+     * Return the attributes that are cached in the session. Used to
+     * transfer the attributes from one session to another.
+     */
+    public HashMap getCachedAttributes() {
+        return cachedAttributes;
+    }
+
+    /**
+     * Set the cached attributes. This method is used when
+     * transferring a set of attributes from another session.
+     * @param attrs The cached attributes, transferred from another
+     * session.
+     */
+    public void setCachedAttributes(HashMap attrs) {
+        cachedAttributes = attrs;
+    }
+    
 }

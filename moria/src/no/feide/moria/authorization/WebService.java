@@ -150,17 +150,13 @@ public class WebService {
                     Attribute addAttr = (Attribute) changes.get(attrName);
                     Attribute origAttr = (Attribute) allAttributes.get(attrName);
                     Attribute existingAttr = (Attribute) attributes.get(attrName);
-                    int secLevel;
-
-                    if (existingAttr != null)
-                        secLevel = existingAttr.getSecLevel();
-                    else
-                        secLevel = origAttr.getSecLevel();
-
+                    /* If attribute's secLevel is higher than the
+                     * previously defined, then set it to the new
+                     * value. */
+                    int secLevel = origAttr.getSecLevel();
                     if (addAttr.getSecLevel() > secLevel)
                         secLevel = addAttr.getSecLevel();
 
-                    //                    attributes.put(attrName, new Boolean((addAttr.allowSso() && origAttr.allowSso())));
                     attributes.put(attrName, new Attribute(attrName, (addAttr.allowSso() && origAttr.allowSso()), secLevel));
                 }
                 

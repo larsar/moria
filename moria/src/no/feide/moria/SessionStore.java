@@ -216,20 +216,30 @@ public class SessionStore {
     }
 
     
-    protected void checkTimeout(int timeout) {
+    protected void checkTimeout(int timeout, int timeoutSso) {
 
         Vector invalidatedSessions = new Vector();
         Date start = new Date();
 
-       // Find all timedout sessions.
+        // Find all timedout sessions.
         synchronized (sessions) {
             for (Iterator iterator = sessions.keySet().iterator(); iterator.hasNext();) {
                 String key = (String) iterator.next();
                 Session session = (Session) sessions.get(key);
-            
-                if (!session.isValid(new Date().getTime()-timeout)) {
-                    log.fine("Invalidating session (timeout): "+session.getID());
-                    invalidatedSessions.add(session);
+
+                /* Look for timed out SSO sessions. */
+                if (session.isAuthenticated() && session.isLocked()) {
+                    if (!session.isValid(new Date().getTime()-timeoutSso)) {
+                        log.info("Invalidating SSO session (timeout): "+session.getID());
+                        invalidatedSessions.add(session);
+                    }
+                }
+                
+                else {
+                    if (!session.isValid(new Date().getTime()-timeout)) {
+                        log.info("Invalidating session (timeout): "+session.getID());
+                        invalidatedSessions.add(session);
+                    }
                 }
             }
 
@@ -238,7 +248,8 @@ public class SessionStore {
                 deleteSession((Session)enum.nextElement());
             }
         }
-        log.info(invalidatedSessions.size()+" of "+sessions.size()+" sessions invalidated in "+(new Date().getTime()-start.getTime())+ " ms.");
+        if (invalidatedSessions.size() > 0) 
+            log.info(invalidatedSessions.size()+" of "+(invalidatedSessions.size()+sessions.size())+" sessions invalidated in "+(new Date().getTime()-start.getTime())+ " ms.");
 
     }
 

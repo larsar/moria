@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Date;
+import java.util.Vector;
 
 import java.io.File;
 
@@ -30,16 +31,16 @@ public class AuthorizationData {
     /** All configured web services */
     private Map webServices = Collections.synchronizedMap(new HashMap());
 
-    /** All configured attributes */
-    private Map attributes  = Collections.synchronizedMap(new HashMap());
-   
     /** Timestamp for configuration file */
     private long fileTimestamp = 0;
 
     /** Singleton instance pointer */
     private static AuthorizationData authData = null;
 
-    
+    /** Array of names of attributes that can be used with sso. */
+    private Vector ssoAttributes;
+
+
     /** Counstructor. Use getInstance() to get an instance of this
      * singleton object. 
      */
@@ -153,7 +154,7 @@ public class AuthorizationData {
 
         /* Generate a hashmap of all registered attributes. */
         if (attributeElems.getLength() > 0) 
-            attributes = getAttributes((Element) attributeElems.item(0), null);
+            attributes = getAttributes((Element) attributeElems.item(0), null, true);
 
         /* Generate a hashmap of all registered profiles. */
         if (profileElems.getLength() > 0)
@@ -170,8 +171,16 @@ public class AuthorizationData {
             ws.generateAttributeList(attributes);
         }
         
-        synchronized (attributes) {
-            this.attributes = Collections.synchronizedMap(attributes);
+        /* Build array of attributes that are allowed to use in SSO. */
+        Vector ssoAttributes = new Vector();
+        for (Iterator it = attributes.keySet().iterator(); it.hasNext(); ) {
+            Attribute attr = (Attribute) attributes.get((String) it.next());
+            if (attr.allowSso())
+                ssoAttributes.add(attr.getName());
+        }
+
+        synchronized (ssoAttributes) {
+            this.ssoAttributes = ssoAttributes;
         }
 
         return newWebServices;
@@ -193,7 +202,7 @@ public class AuthorizationData {
      * @param attrsElem The element that the attributes are located in
      * @param existing The existing attributes used for sanity check.
      */
-    private HashMap getAttributes(Element attrsElem, HashMap existing) {
+    private HashMap getAttributes(Element attrsElem, HashMap existing, boolean checkSecLevel) {
         log.finer("getAttributes(Element, HashMap)");
 
         HashMap attributes = new HashMap();
@@ -204,8 +213,16 @@ public class AuthorizationData {
             Element attribute = (Element) attrElems.item(i);
 
             String name = attribute.getAttribute("name");
-            String sso = attribute.getAttribute("SSO");
-            String level = attribute.getAttribute("secLevel");
+            String sso = attribute.getAttribute("sso");
+            String secLevel;
+
+            /* Seclevel is not required when specifying
+             * deniedAttributes. In this case, just set secLevel to
+             * any legal value. */
+            if (checkSecLevel)
+                secLevel = attribute.getAttribute("secLevel");
+            else
+                secLevel = "HIGH";
 
             /* Warn if we shuld do sanity check and attribute doesn't
                already exist. */
@@ -215,17 +232,7 @@ public class AuthorizationData {
             }
 
             else
-                attributes.put(name, new Attribute(name, sso, level));
-                
-//             else if (sso != null) {
-//                 if (sso.equals("true"))
-//                     attributes.put(name, new Attribute(name, true, level));
-//                 else
-//                     /* Default value for SSO is false. */
-//                     attributes.put(name, new Attribute(name, false, level));
-//             }
-//             else
-//                 attributes.put(name, new Attribute(name));
+                attributes.put(name, new Attribute(name, sso, secLevel));
         }
 
         return attributes;
@@ -257,7 +264,7 @@ public class AuthorizationData {
             if (newProfiles) {
                 Profile profile = new Profile(profileElem.getAttribute("name"));
                 profiles.put(profile.getName(), profile);
-                profile.setAttributes(getAttributes(profileElem, existing));
+                profile.setAttributes(getAttributes(profileElem, existing, true));
             }
 
             /* Use pointers to existing profile objects. */
@@ -315,10 +322,10 @@ public class AuthorizationData {
             NodeList profileElems = wsElem.getElementsByTagName("WSProfiles");
             
             if (aaElems.getLength() > 0) 
-                ws.setAllowedAttributes(getAttributes((Element) aaElems.item(0), attributes));
+                ws.setAllowedAttributes(getAttributes((Element) aaElems.item(0), attributes, true));
 
             if (daElems.getLength() > 0) 
-                ws.setDeniedAttributes(getAttributes((Element) daElems.item(0), attributes));
+                ws.setDeniedAttributes(getAttributes((Element) daElems.item(0), attributes, false));
 
             if (profileElems.getLength() > 0) 
                 ws.setProfiles(getProfiles((Element) profileElems.item(0), profiles, false));
@@ -328,8 +335,10 @@ public class AuthorizationData {
     }
 
 
-
-
+    /** Return names of attributes that can be used in sso. */
+    public Vector getSsoAttributes() {
+        return ssoAttributes;
+    }
 
 
     
@@ -360,7 +369,7 @@ public class AuthorizationData {
          * web service. */
         if (args.length >= 2) {
             if (allWS.containsKey(args[1])) 
-                printWSData((WebService) allWS.get(args[1]));
+                printWSData((WebService) allWS.get(args[1]), wa);
             else 
                 System.err.println("No WebService with id: "+args[1]);
         }
@@ -368,7 +377,7 @@ public class AuthorizationData {
         /* Display data for all web services. */
         else {
             for (Iterator iterator = allWS.keySet().iterator(); iterator.hasNext();) 
-                printWSData((WebService) allWS.get(iterator.next()));
+                printWSData((WebService) allWS.get(iterator.next()), wa);
         }
     }
 
@@ -385,20 +394,22 @@ public class AuthorizationData {
      * Print all web service data to standard out. Name, id, URL and
      * flattened attribute structure is displayed. 
      */
-    private static void printWSData(WebService ws) {
-        System.out.println("**********************");
-        System.out.println(ws.getName());
-        System.out.println("**********************");
-        System.out.println("ID:        "+ws.getId());
-        System.out.println("URL:       "+ws.getUrl());
-        System.out.println("Attributes (allow SSO)");
-        System.out.println("......................");
+    private static void printWSData(WebService ws, AuthorizationData wa) {
+        System.out.println("***************************************************");
+        System.out.println("* "+ws.getName());
+        System.out.println("***************************************************");
+        System.out.println("  ID:\t\t"+ws.getId());
+        System.out.println("  URL:\t\t"+ws.getUrl());
+        System.out.println("  Attribute\t\t\tSSO\tSecLevel");
+        System.out.println("  -------------------------------------------------");
 
         HashMap attributes = ws.getAttributes();
+        Vector  ssoAttributes = wa.getSsoAttributes();
 
         for (Iterator iterator = attributes.keySet().iterator(); iterator.hasNext();) { 
             String key = (String) iterator.next();
-            System.out.println(key+" ("+attributes.get(key)+")");
+            Attribute attribute = (Attribute) attributes.get(key);
+            System.out.println("  "+key+"\t"+(attribute.allowSso() && ssoAttributes.contains(key))+"\t"+Attribute.secLevelName(attribute.getSecLevel()));
         }
 
         System.out.println("");

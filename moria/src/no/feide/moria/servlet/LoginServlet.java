@@ -93,10 +93,9 @@ public class LoginServlet extends VelocityServlet {
         
         try {
             /* Initialize session timeout timer */
-            int sessionDelayMin = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
-             // Minutes to milliseconds
-            log.config("Starting time out service. Repeat every "+sessionDelayMin+" minutes.");
-            sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelayMin*60*1000);
+            int sessionDelaySec = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue();
+            log.config("Starting time out service. Repeat every "+sessionDelaySec+" seconds.");
+            sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), sessionDelaySec*1000);
         
             /* Set local pointer to session store. */
             sessionStore = SessionStore.getInstance();
@@ -161,9 +160,6 @@ public class LoginServlet extends VelocityServlet {
         
         log.finer("handleRequest(HttpServletRequest, HttpServletResponse, Context)");
 
-                HttpSession httpSession = 
-            ((HttpServletRequest)request).getSession(true);
-
 
         /* A GET should only return the login page. POST is used for
          * login attempts.*/ 
@@ -212,8 +208,15 @@ public class LoginServlet extends VelocityServlet {
         ResourceBundle bundle = null;
         ResourceBundle fallback = null;
         
-        if (session != null)
+        if (session != null) {
             sessionID = session.getID();
+
+            if (!session.authenticationInitiated()) {
+                log.warning("User tried to authenticate without requesting login page first. "+session.getID());
+                throw new Exception("Login page has to be requested before attempting login.");
+            }
+
+        }
 
         if (acceptLanguage == null || acceptLanguage.equals("")) 
             acceptLanguage = "no";
@@ -265,7 +268,7 @@ public class LoginServlet extends VelocityServlet {
         /* Should never happen, but just in case. */
         if (bundle == null)
             bundle = ResourceBundle.getBundle(bundleName, new Locale("no"));
-
+       
 
         String wsName = null;
         String wsURL  = null;
@@ -298,7 +301,6 @@ public class LoginServlet extends VelocityServlet {
                 context.put("preset_realm", cookies[i].getValue());
             }
         }
-
 
         /* Set or reset error messages */
         if (errorType != null) {
@@ -366,20 +368,66 @@ public class LoginServlet extends VelocityServlet {
         log.finer("loginPage(HttpServletRequest, HttpServletResponse, Context");
         /* Get session ID */
         String id = request.getParameter("id");
-                
 
         if (request.getParameter("showAttrs") != null)
             showAllAttributes = request.getParameter("showAttrs").equals("yes");
         else 
             showAllAttributes = false;
 
+        Session existingSession = null; 
+        /* Try to use SSO. */
+        HttpSession httpSession = 
+            ((HttpServletRequest)request).getSession(true);
+            
+        /* Find existing session */
+        String existingSessionID = (String) httpSession.getAttribute("moriaID");
+
+        try {
+            existingSession = sessionStore.getSession(existingSessionID);
+        }
+
+        catch (NoSuchSessionException e) {
+            /* If no old session exist, then SSO is impossible.
+             * Continue with normal authentication. */
+            existingSession = null;
+        }
+
         try {
             Session session = sessionStore.getSession(id);
+
+            sessionStore.renameSession(session); 
+            httpSession.setAttribute("moriaID", session.getID());
+
+            
+            if (existingSession != null) {
+ 
+                /* Session has to be authenticated and locked to be
+                   used in SSO. If not locked another web service is
+                   using the session. */
+                if (existingSession.isAuthenticated() && existingSession.isLocked()) {
+                    HashMap cachedAttributes = existingSession.getCachedAttributes();
+
+                    if (cachedAttributes != null && cachedAttributes.size() > 0) {
+                        session.setCachedAttributes(cachedAttributes);
+                        sessionStore.deleteSession(existingSession);
+
+                        if (session.allowSso()) {
+                            log.fine("SSO Redirect.");
+                            session.unlock(existingSession.getUser());
+                            redirectToWebService(response, session);
+                            return null;
+                        }
+                    }
+                }
+            }
+
+            session.initiateAuthentication();
+
             return genLoginTemplate(request, response, context, session, null);
         }
         
         catch (NoSuchSessionException e) {
-                return genLoginTemplate(request, response, context, null, NOSESSION);
+            return genLoginTemplate(request, response, context, null, NOSESSION);
         }
 
         catch (SessionException e) {
@@ -462,12 +510,14 @@ public class LoginServlet extends VelocityServlet {
         }
 
 
+        /* Success; redirect to the original session URL and
+         * include the updated session ID in URL and HttpSession. */
+        
+        HttpSession httpSession = 
+            ((HttpServletRequest)request).getSession(true);
+        
 
-        /* Success; redirect the user back to the web service. */
-
-        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
-        response.setHeader("Location", session.getRedirectURL());
-        log.info("Redirect to Mellon: "+session.getRedirectURL());
+        httpSession.setAttribute("moriaID", session.getID());
 
         /* Remember realm (cookie). */
         Cookie cookie = new Cookie("realm", realm);
@@ -477,6 +527,20 @@ public class LoginServlet extends VelocityServlet {
         cookie.setVersion(1);
         response.addCookie(cookie);
 
+        redirectToWebService(response, session);
+    
         return null; // Do not use template for redirect.
     }
+    
+    /**
+     * Set response to 302 (redirect) and location header so that the
+     * user is redirected back to the web service.
+     */ 
+    private void redirectToWebService(HttpServletResponse response, Session session) {
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
+        response.setHeader("Location", session.getRedirectURL());
+        log.info("Redirect to Mellon: "+session.getRedirectURL());
+    }
+
+
 }
