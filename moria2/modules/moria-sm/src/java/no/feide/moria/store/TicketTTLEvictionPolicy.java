@@ -384,10 +384,10 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
     static class RegionValue {
 
         /** Region name. */
-        String regionName;
+        private String regionName;
 
         /** Time to live. */
-        long timeToLive;
+        private long timeToLive;
 
         /**
          * Returns a string representation.
@@ -395,6 +395,22 @@ public class TicketTTLEvictionPolicy implements EvictionPolicy, TreeCacheListene
          */
         public String toString() {
             return "[" + regionName + ", " + timeToLive + "]";
+        }
+
+        /**
+         * Gets region name.
+         * @return The region name.
+         */
+        final String getRegionName() {
+            return regionName;
+        }
+
+        /**
+         * Gets time to live.
+         * @return Time to live.
+         */
+        final long getTimeToLive() {
+            return timeToLive;
         }
     }
 }

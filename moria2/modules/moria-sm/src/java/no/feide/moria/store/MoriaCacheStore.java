@@ -190,8 +190,8 @@ implements MoriaStore {
                 MoriaTicketType ticketType = (MoriaTicketType) ticketTypeIterator.next();
 
                 for (int i = 0; i < regionValues.length; i++) {
-                    if (ticketType.toString().equals(regionValues[i].regionName)) {
-                        ttl = new Long(regionValues[i].timeToLive * realTTLPercentage / 100L);
+                    if (ticketType.toString().equals(regionValues[i].getRegionName())) {
+                        ttl = new Long(regionValues[i].getTimeToLive() * realTTLPercentage / 100L);
                         break;
                     }
                 }

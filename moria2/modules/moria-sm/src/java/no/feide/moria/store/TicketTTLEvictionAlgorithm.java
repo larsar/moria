@@ -113,7 +113,7 @@ public class TicketTTLEvictionAlgorithm implements EvictionAlgorithm {
         RegionValue regionValue = policy.getRegionValue(region.getFqn());
 
         /* Now pluss TTL for region gives the time when the ticket should be evicted. */
-        Long nodeEvictionTime = new Long(new Date().getTime() + regionValue.timeToLive);
+        Long nodeEvictionTime = new Long(new Date().getTime() + regionValue.getTimeToLive());
         NodeEntry node = new NodeEntry(nodeEvictionTime, fqn);
 
         nodeList.add(node);
