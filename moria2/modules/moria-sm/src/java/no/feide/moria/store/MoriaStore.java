@@ -21,6 +21,7 @@
 package no.feide.moria.store;
 
 import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * @author Bjørn Ola Smievoll &lt;b.o@smievoll.no&gt;
@@ -43,9 +44,12 @@ public interface MoriaStore {
      * @param servicePrincipal
      *          the id of the service doing the request
      * @return a login ticket identifying the authentication attempt
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public String createAuthnAttempt(final String[] requestAttributes, final String responseURLPrefix,
-            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal);
+    String createAuthnAttempt(final String[] requestAttributes, final String responseURLPrefix,
+            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
+            throws MoriaStoreException;
 
     /**
      * Gets the authentication attempt assosiated with the ticket given as argument. Should return
@@ -58,8 +62,11 @@ public interface MoriaStore {
      * @return the MoriaAuthnAttempt assosiated with the ticket
      * @throws InvalidTicketException
      *          if the incoming ticket is not a login ticket
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException;
+    MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException,
+            MoriaStoreException;
 
     /**
      * Creates a new CachedUserData object in the underlying store and assosiates it with a SSO
@@ -68,8 +75,10 @@ public interface MoriaStore {
      * @param attributes
      *          the attribute map to be cached
      * @return the SSO ticket that identifies the cached user data
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public String cacheUserData(final HashMap attributes);
+    String cacheUserData(final HashMap attributes) throws MoriaStoreException;
 
     /**
      * Return the userdata assosiated with the incoming ticket, which must be either a
@@ -81,8 +90,10 @@ public interface MoriaStore {
      * @throws InvalidTicketException
      *          thrown if the incoming ticket is not of the correct type or
      *          has an invalid principal
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public CachedUserData getUserData(final String ticketId) throws InvalidTicketException;
+    CachedUserData getUserData(final String ticketId) throws InvalidTicketException, MoriaStoreException;
 
     /**
      * Creates a service ticket that the service will use when requesting user attributes after a
@@ -95,9 +106,11 @@ public interface MoriaStore {
      * @return a service ticket assosiated with the authentication attempt object
      * @throws InvalidTicketException
      *          thrown if the argument ticket is not a login-ticket
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public String createServiceTicket(final String loginTicketId, final String targetServicePrincipal)
-            throws InvalidTicketException;
+    String createServiceTicket(final String loginTicketId, final String targetServicePrincipal)
+            throws InvalidTicketException, MoriaStoreException;
 
     /**
      * Create a new ticket granting ticket, using a sso ticket.
@@ -110,9 +123,11 @@ public interface MoriaStore {
      *          authentication
      * @throws InvalidTicketException
      *          thrown if the argument ticket is not a SSO-ticket or has an invalid principal
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal)
-            throws InvalidTicketException;
+    String createTicketGrantingTicket(final String ssoTicketId, final String targetServicePrincipal)
+            throws InvalidTicketException, MoriaStoreException;
 
     /**
      * Create a new proxy ticket from a TGT and assosiate the new ticket with the same user data as
@@ -127,9 +142,11 @@ public interface MoriaStore {
      * @return proxy ticket that may be used by the requesting service
      * @throws InvalidTicketException
      *          thrown if the incoming ticket is not a TGT or has an invalid principal
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public String createProxyTicket(final String tgTicketId, final String servicePrincipal, final String targetServicePrincipal)
-            throws InvalidTicketException;
+    String createProxyTicket(final String tgTicketId, final String servicePrincipal, final String targetServicePrincipal)
+            throws InvalidTicketException, MoriaStoreException;
 
     /**
      * Provide transient attributes to be added to and stored with authentication attempt.
@@ -141,6 +158,17 @@ public interface MoriaStore {
      *          the attributes to store with the AuthAttempt
      * @throws InvalidTicketException
      *          thrown if ticket is found invalid
+     * @throws MoriaStoreException
+     *          thrown if the operation fails
      */
-    public void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes) throws InvalidTicketException;
+    void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes)
+            throws InvalidTicketException, MoriaStoreException;
+
+    /**
+     * Set the configuration of the store.
+     *
+     * @param properties
+     *          object containing the necessary attributes for store configuration
+     */
+    void setConfig(Properties properties);
 }

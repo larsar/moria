@@ -20,15 +20,19 @@
 
 package no.feide.moria.store;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Properties;
+
 import no.feide.moria.log.MessageLogger;
+
 import org.jboss.cache.Fqn;
 import org.jboss.cache.Node;
 import org.jboss.cache.PropertyConfigurator;
 import org.jboss.cache.TreeCache;
 import org.jboss.cache.lock.LockingException;
 import org.jboss.cache.lock.TimeoutException;
-
-import java.util.HashMap;
 
 /**
  * Distributed store implementation using JBoss Cache.
@@ -41,11 +45,14 @@ public final class MoriaCacheStore implements MoriaStore {
     /** The cache instance. */
     private TreeCache store;
 
+    /** The configured state of the store. */
+    private boolean isConfigured = false;
+
     /** The logger used by this class. */
     private MessageLogger messageLogger = new MessageLogger(MoriaCacheStore.class);
 
     /** The time to live for different tickets. */
-    private final Long loginTicketTTL, serviceTicketTTL, ssoTicketTTL, tgTicketTTL, proxyTicketTTL;
+    private Long loginTicketTTL, serviceTicketTTL, ssoTicketTTL, tgTicketTTL, proxyTicketTTL;
 
     /** The common hashmap key for the ticket type. */
     private static final String TICKET_TYPE_ATTRIBUTE = "TicketType";
@@ -64,25 +71,18 @@ public final class MoriaCacheStore implements MoriaStore {
 
     /**
      * Constructs a new instance.
+     * @throws MoriaStoreException
+     *          thrown if creation of JBoss TreeCache fails.
      */
-    public MoriaCacheStore() {
+    public MoriaCacheStore() throws MoriaStoreException {
+
         try {
             store = new TreeCache();
-            PropertyConfigurator configurator = new PropertyConfigurator();
-            // TODO: Implement configuration handling properly
-            configurator.configure(store, "jboss-cache.xml");
-            store.start();
+        } catch (RuntimeException re) {
+            throw re;
         } catch (Exception e) {
-            throw new RuntimeException(e);
-            // TODO: Handle exception properly
+            throw new MoriaStoreException("Unable to create TreeCache instance", e);
         }
-
-        // TODO: Get values from config
-        loginTicketTTL = new Long(300); /* 5 min */
-        serviceTicketTTL = new Long(300); /* 5 min */
-        ssoTicketTTL = new Long(28800); /* 8 hours */
-        tgTicketTTL = new Long(7200); /* 2 hours */
-        proxyTicketTTL = new Long(300); /* 5 min */
     }
 
     /**
@@ -90,7 +90,8 @@ public final class MoriaCacheStore implements MoriaStore {
      *      java.lang.String, boolean, java.lang.String)
      */
     public String createAuthnAttempt(final String[] requestedAttributes, final String responseURLPrefix,
-            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal) {
+            final String responseURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
+            throws MoriaStoreException {
 
         MoriaTicket ticket = null;
         MoriaAuthnAttempt authnAttempt;
@@ -132,8 +133,11 @@ public final class MoriaCacheStore implements MoriaStore {
      *          the user data to store
      * @throws IllegalArgumentException
      *          if ticket is null, if and only if not one of the data objects are set
+     * @throws MoriaStoreException
+     *          thrown if operations on the TreeCache fails
      */
-    private void insertIntoStore(final MoriaTicket ticket, final MoriaAuthnAttempt authnAttempt, final CachedUserData cachedUserData) {
+    private void insertIntoStore(final MoriaTicket ticket, final MoriaAuthnAttempt authnAttempt, final CachedUserData cachedUserData)
+            throws MoriaStoreException {
 
         /* Validate parameters */
         if (ticket == null) {
@@ -162,9 +166,10 @@ public final class MoriaCacheStore implements MoriaStore {
 
         try {
             store.put(fqn, data);
+        } catch (RuntimeException re) {
+            throw re;
         } catch (Exception e) {
-            // TODO: Handle this exception properly
-            throw new RuntimeException(e);
+            throw new MoriaStoreException("Insertion into store failed", e);
         }
     }
 
@@ -175,8 +180,10 @@ public final class MoriaCacheStore implements MoriaStore {
      *          the ticket to be removed
      * @throws IllegalArgumentException
      *          if the ticketId is null
+     * @throws MoriaStoreException
+     *          if an exception is thrown when operating on the store
      */
-    private void removeFromStore(final MoriaTicket ticket) {
+    private void removeFromStore(final MoriaTicket ticket) throws MoriaStoreException {
 
         /* Validate parameters. */
         if (ticket == null) {
@@ -187,16 +194,18 @@ public final class MoriaCacheStore implements MoriaStore {
 
         try {
             store.remove(fqn);
+        } catch (RuntimeException re) {
+            throw re;
         } catch (Exception e) {
-            // TODO: Handle this exception properly
-            throw new RuntimeException(e);
+            throw new MoriaStoreException("Removal from store failed", e);
         }
     }
 
     /**
      * @see no.feide.moria.store.MoriaStore#getAuthnAttempt(java.lang.String, boolean)
      */
-    public MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException {
+    public MoriaAuthnAttempt getAuthnAttempt(final String loginTicketId, final boolean keep) throws InvalidTicketException,
+            MoriaStoreException {
 
         if (loginTicketId == null || loginTicketId.equals("")) {
             throw new IllegalArgumentException("loginTicketId must be a non-empty string");
@@ -215,32 +224,33 @@ public final class MoriaCacheStore implements MoriaStore {
 
         Fqn fqn = new Fqn(new Object[] {ticket.getTicketType(), ticket.getTicketId()});
 
-        try {
-            if (store.exists(fqn)) {
-                Object dataObject = store.get(fqn).get(DATA_ATTRIBUTE);
-                /* authnAttempt will remain null if the returned object is of incorrect type. */
-                if (dataObject instanceof MoriaAuthnAttempt) {
-                    authnAttempt = (MoriaAuthnAttempt) dataObject;
-                }
-                if (!keep) {
-                    removeFromStore(ticket);
-                }
-            }
-        } catch (LockingException e) {
-            messageLogger.logCritical("LockingException thrown by store. Rethrowing as RuntimeException.", e);
-            throw new RuntimeException(e);
-        } catch (TimeoutException e) {
-            messageLogger.logCritical("TimeoutException thrown by store. Rethrowing as RuntimeException.", e);
-            throw new RuntimeException(e);
-        }
+        if (store.exists(fqn)) {
+            Object dataObject;
 
+            try {
+                dataObject = store.get(fqn).get(DATA_ATTRIBUTE);
+            } catch (LockingException e) {
+                throw new MoriaStoreException("Locking of store failed", e);
+            } catch (TimeoutException e) {
+                throw new MoriaStoreException("Access to store timed out", e);
+            }
+
+            /* authnAttempt will remain null if the returned object is of incorrect type. */
+            if (dataObject instanceof MoriaAuthnAttempt) {
+                authnAttempt = (MoriaAuthnAttempt) dataObject;
+            }
+
+            if (!keep) {
+                removeFromStore(ticket);
+            }
+        }
         return authnAttempt;
     }
 
     /**
      * @see no.feide.moria.store.MoriaStore#cacheUserData(java.util.HashMap)
      */
-    public String cacheUserData(final HashMap attributes) {
+    public String cacheUserData(final HashMap attributes) throws MoriaStoreException {
 
         if (attributes == null) {
             throw new IllegalArgumentException("attributes cannot be null");
@@ -257,7 +267,7 @@ public final class MoriaCacheStore implements MoriaStore {
     /**
      * @see no.feide.moria.store.MoriaStore#getUserData(java.lang.String)
      */
-    public CachedUserData getUserData(final String ticketId) throws InvalidTicketException {
+    public CachedUserData getUserData(final String ticketId) throws InvalidTicketException, MoriaStoreException {
 
         /* Validate argument */
         if (ticketId == null || ticketId.equals("")) {
@@ -274,29 +284,28 @@ public final class MoriaCacheStore implements MoriaStore {
 
             Fqn fqn = new Fqn(new Object[] {potentialTicketTypes[i], ticketId});
 
-            try {
-                if (store.exists(fqn)) {
-                    Node node = store.get(fqn);
-
-                    /* Check node/ticket validity (TTL). */
-                    MoriaTicket ticket = new MoriaTicket(ticketId, potentialTicketTypes[i], (String) node.get(PRINCIPAL_ATTRIBUTE),
-                            (Long) node.get(TTL_ATTRIBUTE));
-                    validateTicket(ticket, potentialTicketTypes[i], null);
-
-                    Object dataObject = node.get(DATA_ATTRIBUTE);
-                    /* cachedUserData will remain null if the returned object is of incorrect type. */
-                    if (dataObject instanceof CachedUserData) {
-                        cachedUserData = (CachedUserData) dataObject;
-                    }
-                    /* Break the for-loop if a ticket was found. */
-                    break;
+            if (store.exists(fqn)) {
+                Node node;
+                try {
+                    node = store.get(fqn);
+                } catch (LockingException e) {
+                    throw new MoriaStoreException("Locking of store failed", e);
+                } catch (TimeoutException e) {
+                    throw new MoriaStoreException("Access to store failed", e);
                 }
-            } catch (LockingException e) {
-                messageLogger.logCritical("LockingException thrown by store. Rethrowing as RuntimeException.", e);
-                throw new RuntimeException(e);
-            } catch (TimeoutException e) {
-                messageLogger.logCritical("TimeoutException thrown by store. Rethrowing as RuntimeException.", e);
-                throw new RuntimeException(e);
+
+                /* Check node/ticket validity (TTL). */
+                MoriaTicket ticket = new MoriaTicket(ticketId, potentialTicketTypes[i], (String) node.get(PRINCIPAL_ATTRIBUTE),
+                        (Long) node.get(TTL_ATTRIBUTE));
+                validateTicket(ticket, potentialTicketTypes[i], null);
+
+                Object dataObject = node.get(DATA_ATTRIBUTE);
+                /* cachedUserData will remain null if the returned object is of incorrect type. */
+                if (dataObject instanceof CachedUserData) {
+                    cachedUserData = (CachedUserData) dataObject;
+                }
+                /* Break the for-loop if a ticket was found. */
+                break;
             }
         }
         return cachedUserData;
@@ -306,7 +315,7 @@ public final class MoriaCacheStore implements MoriaStore {
      * @see no.feide.moria.store.MoriaStore#createServiceTicket(java.lang.String, java.lang.String)
      */
     public String createServiceTicket(final String loginTicketId, final String targetServicePrincipal)
-            throws InvalidTicketException {
+            throws InvalidTicketException, MoriaStoreException {
 
         /* Validate arguments */
         if (loginTicketId == null || loginTicketId.equals("")) {
@@ -334,7 +343,7 @@ public final class MoriaCacheStore implements MoriaStore {
      *      java.lang.String)
      */
     public String createTicketGrantingTicket(final String ticketId, final String targetServicePrincipal)
-            throws InvalidTicketException {
+            throws InvalidTicketException, MoriaStoreException {
 
         /* Validate arguments */
         if (ticketId == null || ticketId.equals("")) {
@@ -366,7 +375,7 @@ public final class MoriaCacheStore implements MoriaStore {
      * @see no.feide.moria.store.MoriaStore#createProxyTicket(java.lang.String, java.lang.String, java.lang.String)
      */
     public String createProxyTicket(final String tgTicketId, final String servicePrincipal, final String targetServicePrincipal)
-            throws InvalidTicketException {
+            throws InvalidTicketException, MoriaStoreException {
 
         /* Validate arguments */
         if (tgTicketId == null || tgTicketId.equals("")) {
@@ -403,7 +412,8 @@ public final class MoriaCacheStore implements MoriaStore {
     /**
      * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String, java.util.HashMap)
      */
-    public void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes) throws InvalidTicketException {
+    public void setTransientAttributes(final String loginTicketId, final HashMap transientAttributes)
+            throws InvalidTicketException, MoriaStoreException {
         /* Validate arguments */
         if (loginTicketId == null || loginTicketId.equals("")) {
             throw new IllegalArgumentException("loginTicketId must be a non-empty string.");
@@ -416,18 +426,14 @@ public final class MoriaCacheStore implements MoriaStore {
         MoriaTicket loginTicket = getTicketFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
 
         if (loginTicket == null) {
-            String message = "Ticket does not exist.";
-            messageLogger.logWarn(message, loginTicketId);
-            throw new InvalidTicketException(message);
+            throw new InvalidTicketException("Ticket does not exist in store.");
         }
 
         validateTicket(loginTicket, MoriaTicketType.LOGIN_TICKET, null);
         MoriaAuthnAttempt authnAttempt = getAuthnAttempt(loginTicketId, true);
 
         if (authnAttempt == null) {
-            String message = "AuthenticationAttempt does not exist.";
-            messageLogger.logWarn(message, loginTicketId);
-            throw new IllegalStateException(message);
+            throw new IllegalStateException("AuthenticationAttempt does not exist in store.");
         }
 
         authnAttempt.setTransientAttributes(transientAttributes);
@@ -525,8 +531,10 @@ public final class MoriaCacheStore implements MoriaStore {
      * @param ticketId
      *          the id of the ticket
      * @return a ticket instance
+     * @throws MoriaStoreException
+     *          thrown if operations on the TreeCache fails
      */
-    MoriaTicket getTicketFromStore(final MoriaTicketType ticketType, final String ticketId) {
+    MoriaTicket getTicketFromStore(final MoriaTicketType ticketType, final String ticketId) throws MoriaStoreException {
 
         /* Validate parameters. */
         if (ticketType == null) {
@@ -540,24 +548,101 @@ public final class MoriaCacheStore implements MoriaStore {
         /* The name of the node to be retrived. */
         Fqn fqn = new Fqn(new Object[] {ticketType, ticketId});
 
-        /* The object to hold the node that will be retrived from the store. */
-        Node node;
+        /* Return null if the node does not exist. */
+        if (store.exists(fqn)) {
+            /* The object to hold the node that will be retrived from the store. */
+            Node node;
+            try {
+                node = store.get(fqn);
+            } catch (LockingException e) {
+                throw new MoriaStoreException("Locking of store failed", e);
+            } catch (TimeoutException e) {
+                throw new MoriaStoreException("Access to store timed out", e);
+            }
+
+            if (node == null) {
+                return null;
+            } else {
+                return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node
+                        .get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE));
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Configures the store.
+     *
+     * This method expects the property "no.feide.moria.store.cacheconf" to be
+     * set and point to a JBossCache spesific configuration file.
+     *
+     * The method will return without actually executing and thus maintaining the current
+     * state if called more than once per object instance.
+     *
+     * @param properties
+     *          the properties used to configure the store
+     */
+    public void setConfig(final Properties properties) {
+
+        /* Return if this cache instance has already been configured once. */
+        if (isConfigured) {
+            messageLogger.logWarn("setConfig() called on already configured instance.");
+            return;
+        }
+
+        /* Throw exception if argument is null. */
+        if (properties == null) {
+            throw new IllegalArgumentException("properties cannot be null.");
+        }
+
+        /* Read the the file name from the properties. */
+        String cacheConfigPropertyName = "no.feide.moria.store.cachestoreconf";
+        String cacheConfigProperty = properties.getProperty(cacheConfigPropertyName);
+
+        if (cacheConfigProperty == null) {
+            throw new MoriaStoreConfigurationException(cacheConfigPropertyName + " must be set.");
+        }
+
+        /* Open the file. */
+        FileInputStream cacheConfigFile;
 
         try {
-            node = store.get(fqn);
-        } catch (LockingException e) {
-            messageLogger.logCritical("LockingException thrown by store. Rethrowing as RuntimeException.", e);
-            throw new RuntimeException(e);
-        } catch (TimeoutException e) {
-            messageLogger.logCritical("TimeoutException thrown by store. Rethrowing as RuntimeException.", e);
-            throw new RuntimeException(e);
+            cacheConfigFile = new FileInputStream(cacheConfigProperty);
+        } catch (FileNotFoundException fnnf) {
+            String message = "The configuration file for the store was not found.";
+            messageLogger.logCritical(message, fnnf);
+            throw new MoriaStoreConfigurationException(message, fnnf);
         }
 
-        if (node == null) {
-            return null;
-        } else {
-            return new MoriaTicket(ticketId, (MoriaTicketType) node.get(TICKET_TYPE_ATTRIBUTE), (String) node
-                    .get(PRINCIPAL_ATTRIBUTE), (Long) node.get(TTL_ATTRIBUTE));
+        /* Configure the cache. */
+        PropertyConfigurator configurator = new PropertyConfigurator();
+
+        try {
+            configurator.configure(store, cacheConfigFile);
+        } catch (Exception e) {
+            String message = "Unable to configure the cache.";
+            messageLogger.logCritical(message, e);
+            throw new MoriaStoreConfigurationException(message, e);
         }
+
+        // TODO: Get values from config
+        loginTicketTTL = new Long(300); /* 5 min */
+        serviceTicketTTL = new Long(300); /* 5 min */
+        ssoTicketTTL = new Long(28800); /* 8 hours */
+        tgTicketTTL = new Long(7200); /* 2 hours */
+        proxyTicketTTL = new Long(300); /* 5 min */
+
+        /* Start the configured cache. */
+        try {
+            store.start();
+        } catch (RuntimeException re) {
+            throw re;
+        } catch (Exception e) {
+            throw new MoriaStoreConfigurationException("Unable to start the cache", e);
+        }
+
+        /* Set the configuration state of this instance to true. */
+        isConfigured = true;
     }
 }
