@@ -436,6 +436,7 @@ public final class MoriaController {
             throw new InoperableStateException(STORE_DOWN);
         }
 
+        // TODO: Must be done for directNonInteractiveAuthentication. Should be extracted to a method.
         /* Parse requestedAttributes and extract special attributes */
         final String[] requestedAttributes = authnAttempt.getRequestedAttributes();
         final HashSet parsedRequestAttributes = new HashSet();
