@@ -56,7 +56,7 @@ public class DemoServlet extends HttpServlet {
         if (request.getParameter("logout") != null) {
             httpSession.removeAttribute("userData");
             ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);  
-            ((HttpServletResponse)response).setHeader("Location", "http://demo.feide.no:8080/");
+            ((HttpServletResponse)response).setHeader("Location", request.getRequestURL().toString());
         }
 
         
