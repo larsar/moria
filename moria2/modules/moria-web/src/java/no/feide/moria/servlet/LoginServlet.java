@@ -27,6 +27,7 @@ import no.feide.moria.controller.MoriaController;
 import no.feide.moria.controller.UnknownTicketException;
 import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.DirectoryUnavailableException;
+import no.feide.moria.log.MessageLogger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -49,6 +50,7 @@ import java.util.Map;
  */
 public class LoginServlet extends HttpServlet {
 
+    MessageLogger messageLogger = new MessageLogger(LoginServlet.class);
 
     /**
      * Intitiates the controller.
@@ -57,7 +59,9 @@ public class LoginServlet extends HttpServlet {
         try {
             MoriaController.initController(getServletContext());
         } catch (Exception e) {
-            throw new UnavailableException("Controller initialization failed: " + e.getMessage());
+            String message = "Controller initialization failed";
+            messageLogger.logCritical(message, e);
+            throw new UnavailableException(message + ": " + e.getMessage());
         }
     }
 
@@ -79,7 +83,7 @@ public class LoginServlet extends HttpServlet {
         Properties config = getConfig();
 
         /* Login ticket */
-        String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_TICKET_PARAM));
+        String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
 
         /* SSO ticket */
         String ssoTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_COOKIE_SSO));
@@ -97,7 +101,7 @@ public class LoginServlet extends HttpServlet {
         if (org == null || org.equals("") || org.equals("null")) {
             showLoginPage(request, response, RequestUtil.ERROR_NO_ORG);
             return;
-        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_DEFAULT_LANGUAGE))
+        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE))
                 .containsValue(org)) {
             showLoginPage(request, response, RequestUtil.ERROR_INVALID_ORG);
             return;
@@ -164,12 +168,12 @@ public class LoginServlet extends HttpServlet {
         HashMap serviceProperties = null;
 
         /* Ticket */
-        String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_TICKET_PARAM));
+        String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
 
         /* Base URL */
         request.setAttribute(RequestUtil.ATTR_BASE_URL,
-                             config.getProperty(RequestUtil.PROP_URL_PREFIX) + "?" +
-                             config.getProperty(RequestUtil.PROP_TICKET_PARAM) +
+                             config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" +
+                             config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) +
                              "=" +
                              loginTicketId);
 
@@ -208,7 +212,7 @@ public class LoginServlet extends HttpServlet {
                                                       langFromCookie,
                                                       serviceLang,
                                                       request.getHeader("Accept-Language"),
-                                                      (String) config.get(RequestUtil.PROP_DEFAULT_LANGUAGE));
+                                                      (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
         request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
 
         /* Configured values */
