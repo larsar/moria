@@ -62,6 +62,9 @@ public class User {
      */
     private int referrals;
     
+    /** Default initial hash table for LDAP context environment. */
+    private Hashtable defaultEnv;
+    
     
     /**
      * Constructor. Initializes the list of initial index server URLs.
@@ -70,6 +73,12 @@ public class User {
     private User()
     throws ConfigurationException {
         log.finer("User()");
+        
+        // Create initial context environment.
+        defaultEnv = new Hashtable();
+        defaultEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+        defaultEnv.put(Context.REFERRAL, "throw");  // To catch referrals.
+        defaultEnv.put("java.naming.ldap.derefAliases", "never");  // Due to OpenSSL problems.
         
         // Populate list of initial URLs.
         String url;
@@ -184,9 +193,7 @@ public class User {
         try {
             
             // Try all initial (index) servers, if necessary.
-            Hashtable env = new Hashtable();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-            env.put(Context.REFERRAL, "throw");  // To catch referrals.
+            Hashtable env = new Hashtable(defaultEnv);
             int failures = 0;
             synchronized (initialURLIndex) {
                 do {
@@ -299,9 +306,7 @@ public class User {
                 // We just caught a referral. Follow it recursively, enabling
                 // SSL.
                 log.info("Enabling SSL");
-                Hashtable refEnv = new Hashtable();
-                refEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-                refEnv.put(Context.REFERRAL, "throw");  // To catch referrals.
+                Hashtable refEnv = new Hashtable(defaultEnv);
                 refEnv.put(Context.SECURITY_PROTOCOL, "ssl");
                 try {
                     log.info("Getting referral contest");
