@@ -228,6 +228,11 @@ public final class RequestUtil {
      * Bundle for the information page about the information servlet.
      */
     public static final String BUNDLE_INFOABOUT = "infoabout";
+    
+    /**
+     * Bundle for the status servlet.
+     */
+    public static final String BUNDLE_STATUSSERVLET = "status";
 
     /**
      * Bundle for the faq page.

@@ -26,7 +26,9 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -67,7 +69,8 @@ extends HttpServlet {
      * @see RequestUtil#PROP_BACKENDSTATUS_STATUS_XML
      */
     private static final String[] REQUIRED_PARAMETERS = {
-            RequestUtil.PROP_BACKENDSTATUS_STATUS_XML };
+            RequestUtil.PROP_BACKENDSTATUS_STATUS_XML,
+            RequestUtil.PROP_COOKIE_LANG };
     
     /**
      * A hash map containing the attributes for a test-user.
@@ -81,7 +84,14 @@ extends HttpServlet {
      */
     private FileMonitor statusFileMonitor = null;
     
+    /**
+     * The organization the test user comes from.
+     */
     private static final String STATUS_ATTRIBUTE = "eduPersonAffiliation";    
+    
+    /**
+     * The name of the service.
+     */
     private static final String STATUS_PRINCIPAL = "status";
     
     /**
@@ -140,9 +150,53 @@ extends HttpServlet {
         PrintWriter out = response.getWriter();
         String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01" + "Transitional//EN\">\n";
         
-        out.println(docType + "<html><head><title>Moria Status Service</title></head><body>");
+        /* Resource bundle. */
+        String language = null;
+        String langFromCookie = null;
+        if (config != null && request.getCookies() != null) {
+           langFromCookie = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
+        }
+        // Update cookie if language has changed
+        if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
+            language = request.getParameter(RequestUtil.PARAM_LANG);
+            response.addCookie(RequestUtil.createCookie(
+                    (String) config.get(RequestUtil.PROP_COOKIE_LANG),
+                    language,
+                    new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
+        }
+
+        /* Get bundle, using either cookie or language parameter */
+        final ResourceBundle bundle = RequestUtil.getBundle(
+                RequestUtil.BUNDLE_STATUSSERVLET,
+                language, langFromCookie, null,
+                request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
         
-        //Check status
+        
+        // Header
+        out.println(docType + "<html><head><title>" + bundle.getString("header_title") + "</title></head><body>");
+        
+        // Language selection
+     	out.println("<table summary=\"\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\">");
+        out.println("<tr>");
+            out.println("<td colspan=\"2\" style=\"text-align:right\">");
+            out.println("<font size=\"-1\">");
+            TreeMap languages = (TreeMap)RequestUtil.parseConfig(config, RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON);
+            Iterator it = languages.keySet().iterator();
+            while(it.hasNext()) {
+                String longName = (String) it.next();
+                String shortName  = (String) languages.get(longName);
+                if (RequestUtil.ATTR_SELECTED_LANG.equals(shortName)) {
+                    out.println("[" + longName + "]");
+                } else
+                    out.println("<A href=" + config.get(RequestUtil.PROP_FAQ_STATUS) + "?" + RequestUtil.PARAM_LANG + "=" + shortName + ">" + longName + "</A>");
+                }
+            
+        out.println("</font>");
+    	out.println("</td>");
+        out.println("</tr>");  
+        out.println("</table>");
+                
+        // Check status
         Map statusMap = MoriaController.getStatus();
         String statusMsg = "";
 
@@ -167,7 +221,7 @@ extends HttpServlet {
                 }
 
                 if (states[i].equals("moria") && isReady.booleanValue()) {
-                    statusMsg = "All ready" + System.getProperty("line.separator");
+                    statusMsg = bundle.getString("ready_msg") + System.getProperty("line.separator");
                     break;
                 } else {
                     statusMsg += moduleNames.get(states[i]) + " ready: " + isReady.toString().toUpperCase()
@@ -175,11 +229,11 @@ extends HttpServlet {
                 }
             }
         }
-        //Print the status message
-        out.println("<p><b>Status:</b><br/>" + statusMsg + "</p>");
+        // Print the status message
+        out.println("<p><b>" + bundle.getString("testuser_status") + ": </b><br/>" + statusMsg + "</p>");
         
         // Prepare to check test users.
-        out.println("<table border=1><tr><th>Organization</th><th>Status</th></tr>");
+        out.println("<table border=1><tr><th>" + bundle.getString("table_organization") + "</th><th>" + bundle.getString("table_status") + "</th></tr>");
   
         // Start checking a new user.
         for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
@@ -192,22 +246,37 @@ extends HttpServlet {
         	
                 // This test user worked.
                 out.println("<td>OK</td>");
-            
+                
             } catch (AuthenticationException e) {
                 log.logWarn("Authentication failed for: " + userData.getName() + ", contact: " + userData.getContact());
-                out.println("<td> Failed authentication; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");
+                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() 
+                + ":%20" + bundle.getString("subject_authentication") + userData.getName() + ">" + bundle.getString("error_help");
+                out.println("<td>" + bundle.getString("error_authentication") + message + "</a></td></tr>");
             } catch (DirectoryUnavailableException e) {
                 log.logWarn("The directory is unavailable for: " + userData.getName() + ", contact: " + userData.getContact());
-                out.println("<td> Directory unavailable. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
+                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() 
+                + ":%20" + bundle.getString("subject_directory") + userData.getName() + ">" + bundle.getString("error_help");
+                out.println("<td>" + bundle.getString("error_directory") + message + "</a></td></tr>");            
             } catch (AuthorizationException e) {
                 log.logWarn("Authorization failed for: " + userData.getName() + ", contact: " + userData.getContact());
-                out.println("<td> Failed authorization; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
+                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() 
+                + ":%20" + bundle.getString("subject_authorization") + userData.getName() + ">" + bundle.getString("error_help");
+                out.println("<td>" + bundle.getString("error_authorization") + message + "</a></td></tr>");            
             } catch (IllegalInputException e) {
                 log.logWarn("Illegal input for: " + userData.getName() + ", contact: " + userData.getContact());
-                out.println("<td> Illegal input; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
+                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() 
+                + ":%20" + bundle.getString("subject_illegal") + userData.getName() + ">" + bundle.getString("error_help");
+                out.println("<td>" + bundle.getString("error_illegal") + message + "</a></td></tr>");            
             } catch (InoperableStateException e) {
                 log.logWarn("Inoperable state for: " + userData.getName() + ", contact: " + userData.getContact());
-                out.println("<td> Inoperable state; check configuration. <a href=mailto:" + userData.getContact() + ">Help</a></td></tr>");            
+                //Only print moria-support adress if moria is inoperable
+                if (userData.getOrganization().equals("Uninett")){
+                    String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() 
+                    + ":%20" + bundle.getString("subject_inoperable") + userData.getName() + ">" + bundle.getString("error_help");
+                    out.println("<td>" + bundle.getString("error_inoperable") + message + "</a></td></tr>");
+                } else {
+                    out.println("<td>" + bundle.getString("error_inoperable"));                
+                }
             } finally {
             
                 // Finish the table row.
