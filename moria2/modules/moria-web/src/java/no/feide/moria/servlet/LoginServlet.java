@@ -59,9 +59,13 @@ public class LoginServlet extends HttpServlet {
 
         // TODO: Lots of dummy stuff
         ResourceBundle bundle = RequestUtil.getBundle("login", null, null, null, null, "en");
-        request.setAttribute("organizationNames", RequestUtil.organizationNames(getConfig(), bundle.getLocale().getLanguage()));
+        request.setAttribute("organizationNames", RequestUtil.parseConfig(getConfig(), "org", bundle.getLocale().getLanguage()));
+        request.setAttribute("languages", RequestUtil.parseConfig(getConfig(), "lang", "common"));
         request.setAttribute("bundle", bundle);
+
+        /* Only for testing */
         request.setAttribute("selectedRealm", "uninett.no");
+        request.setAttribute("selectedLang", "nb");
 
         RequestDispatcher rd = getServletContext().getRequestDispatcher(jspLocation + "/login.jsp");
         rd.include(request, response);
