@@ -188,8 +188,7 @@ public class SessionStore {
             } else {
             
                 // Then check if the session exists, but has just timed out.
-                // TODO.
-                Session session = (Session)sessions.get(sessionID);
+                 Session session = (Session)sessions.get(sessionID);
                 if (!session.isValidAt(new Date().getTime(), Configuration.getSessionLifetime(lifetimeType))) {
                     log.fine("Session exists, but has timed out: "+sessionID);
                     throw new NoSuchSessionException("Session has timed out.");
