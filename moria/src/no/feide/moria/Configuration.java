@@ -65,7 +65,9 @@ public class Configuration {
         "no.feide.moria.AuthenticatedSessionTimeout",
         "no.feide.moria.defaultLanguage",
         "no.feide.moria.backend.ldap.url1",
-        "no.feide.moria.backend.ldap.usernameAttribute"
+        "no.feide.moria.backend.ldap.usernameAttribute",
+        "no.feide.moria.availableLanguages",
+        "no.feide.moria.organizationNames"
     };
 
 
@@ -97,6 +99,7 @@ public class Configuration {
         /* Read properties from file. */
         props = new Properties();
         try {
+            
             if (System.getProperty("no.feide.moria.config.file") == null) {
                 log.config("no.feide.moria.config.file not set; default is \"/moria.properties\"");
                 props.load((new Configuration()).getClass().getResourceAsStream("/moria.properties"));
@@ -105,17 +108,6 @@ public class Configuration {
                 log.config("no.feide.moria.config.file set to \""+System.getProperty("no.feide.moria.config.file")+'\"');
                 props.load((new Configuration()).getClass().getResourceAsStream("no.feide.moria.config.file"));
             }
-
-
-            /* Languages */
-            String[] langStrings = getProperty("no.feide.moria.availableLanguages").split(",");
-            languages = new HashMap();
-
-            for (int i = 0; i < langStrings.length; i++) {
-                String[] lang = langStrings[i].split(":");
-                languages.put(lang[0], lang[1]);
-            }
-
 
         } catch (FileNotFoundException e) {
             log.severe("FileNotFoundException during system properties import");
@@ -131,6 +123,14 @@ public class Configuration {
             checkPropertyNotNull(notNullProperties[i]);
         }
 
+        /* Languages */
+        String[] langStrings = getProperty("no.feide.moria.availableLanguages").split(",");
+        languages = new HashMap();
+
+        for (int i = 0; i < langStrings.length; i++) {
+            String[] lang = langStrings[i].split(":");
+            languages.put(lang[0], lang[1]);
+        }
 
         /* Read organization list */
         try {
@@ -138,21 +138,16 @@ public class Configuration {
             String filename = Configuration.getProperty("no.feide.moria.organizationNames");
             orgList.load(new FileInputStream(new File(filename)));
             updateOrgLists(orgList);
-        }
-        
-
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             log.severe("FileNotFoundException while reading organization list.");
             throw new ConfigurationException("FileNotFoundException caught", e);
         } catch (IOException e) {
             log.severe("IOException during reading of organization list.");
             throw new ConfigurationException("IOException caught", e);
         }
-        
 
         /* Set default locale */
         Locale.setDefault(new Locale(getProperty("no.feide.moria.defaultLanguage")));
-
 
         // Done.
         initialized = true;
