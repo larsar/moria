@@ -5,8 +5,8 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-    <display-name>moria</display-name>
-    <description>Moria</description>
+    <display-name>Moria</display-name>
+    <description>Moria login page servlet</description>
 
     <servlet>
         <servlet-name>
