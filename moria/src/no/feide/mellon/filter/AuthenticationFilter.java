@@ -38,7 +38,6 @@ public class AuthenticationFilter implements Filter {
      * (FEIDE) and stored in the HttpSession. Servlets or other filter
      * (for instance an authentication filter, may use these data for
      * user authorization. */
-    // TODO: Error page from config
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
 
@@ -115,24 +114,20 @@ public class AuthenticationFilter implements Filter {
                 attributes = moria.getAttributes(moriaID);
             }
 
-            catch (MoriaException e) {
-                throw new ServletException(e);
-            }
-
             /* The user has NOT been authenticated. This should never
              * be the case since only authenticated users are
              * redirected from the login service. */
-            if (attributes == null) {
-                // Redirect to  error page.
+            catch (MoriaException e) {
+                ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_FORBIDDEN);  
+                return;
             }
+
 
             /* We got user data. Store it in the HttpSession for later
                authentication. The user is authenticated, let him pass. */
-            else {
-                httpSession.setAttribute("userData", attributes);
-            
-                chain.doFilter(request, response);
-            }
+            httpSession.setAttribute("userData", attributes);
+            chain.doFilter(request, response);
+
         }
         
     }
