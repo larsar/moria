@@ -382,15 +382,14 @@ no.feide.moria.configuration.web=../relative/path/web.properties
                     <i>AttributeFile</i> with one or more <i>Attribute</i> child
                     elements. Each <i>Attribute</i> element must contain the
                     child elements <i>Key</i> (which has a text child element
-                    giving the physical attribute name), <i>Description</i>
-                    (which has a text child element giving the attribute's
-                    description), <i>ResourceBundle</i> (which has a text child
-                    element providing the localized description text for the
-                    attribute), <i>Relevance</i> (which has a text child element
-                    that is either <code>Mandatory</code> or
-                    <code>Optional</code>), and <i>Link</i> (which has a text
-                    child element that gives the URL of this attribute to its
-                    web page description).
+                    giving the physical attribute name), <i>ResourceBundle</i>
+                    (which has a text child element providing the localized
+                    description text for the attribute), <i>Relevance</i> (which
+                    has a text child element that is either
+                    <code>Mandatory</code> or <code>Optional</code>), and
+                    <i>Link</i> (which has a text child element that gives the
+                    URL of this attribute to a web page describing the
+                    attribute).
                     </p> 
                     <p>
                     Example attribute description file:
@@ -402,7 +401,6 @@ no.feide.moria.configuration.web=../relative/path/web.properties
 
     &lt;attribute&gt; 
         &lt;key&gt;mail&lt;/key&gt;
-        &lt;description&gt;epost&lt;/description&gt;
         &lt;resourcebundle&gt;rb_mail&lt;/resourcebundle&gt;
         &lt;relevance&gt;Mandatory&lt;/relevance&gt;
         &lt;link&gt;http://www.feide.no/dokumenter/feide-schema-current.html#mail&lt;/link&gt;
