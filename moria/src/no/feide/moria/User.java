@@ -17,6 +17,7 @@
 
 package no.feide.moria;
 
+import java.net.ConnectException;
 import java.security.Security;
 import java.util.*;
 import java.util.logging.Logger;
@@ -48,23 +49,43 @@ public class User {
     /** Used to show whether the system-wide JNDI init has been done. */
     private static boolean initialized = false;
     
-    /** The local keystore. */
-    //private static String keyStore;
+    /** The set of initial backend URLs. */
+    private Vector initialURLs = new Vector();
     
-    /** The local keystore password. */
-    //private static String keyStorePassword;
+    // The index of the currently used initial URL.
+    private int initialURLIndex = 0;
     
-    /** The local truststore. */
-    //private static String trustStore;
+    // Used to avoid endless loop through initial URLs.
+    private int initialURLFailures;
+       
+    /** The currently used URL to the LDAP backend. */
+    private String ldapURL; 
     
-    /** The local truststore password. */
-    //private static String trustStorePassword;
+    /**
+     * The number of referrals we've followed. Used to switch to a secondary
+     * index server if needed.
+     */
+    private int referrals;
     
-    /** The name of the attribute used for username matching. */
-    private static String usernameAttribute;
     
-    /** The URL to the (initial, if referrals) LDAP backend. */
-    private static String ldapURL; 
+    /**
+     * Constructor. Initializes the list of initial index server URLs.
+     * @throws ConfigurationException If unable to read from configuration.
+     **/
+    private User()
+    throws ConfigurationException {
+        log.finer("User()");
+        
+        // Populate list of initial URLs.
+        String url;
+        for (int i=1; ; i++) {
+            url = Configuration.getProperty("no.feide.moria.backend.ldap.url"+i);
+            if (url == null)
+                break; // No more URLs.
+            initialURLs.add(url);
+            log.config("Added initial URL: "+url);
+        }
+    }
     
     /**
      * Factory method.
@@ -80,25 +101,17 @@ public class User {
         try {
             if (!initialized)
                 init();
+            return new User();
         } catch (ConfigurationException e) {
             log.severe("ConfigurationException caught and re-thrown as BackendException");
             throw new BackendException("ConfigurationException caught", e);
         }
-        return new User();
     }
     
     
     /**
      * Used to do one-time global JNDI initialization, the very first time
      * <code>authenticate(Credentials)</code> is called.
-     * @throws BackendException If any of the following properties cannot be 
-     *                          found:
-     *                          <ul>
-     *                           <li>no.feide.moria.Backend.LDAP.Host
-     *                           <li>no.feide.moria.Backend.LDAP.Port
-     *                           <li>no.feide.moria.Backend.LDAP.Base
-     *                           <li>no.feide.moria.Backend.LDAP.UIDAttribute
-     *                          </ul>
      * @throws ConfigurationException If one of the required properties
      *                                cannot be resolved.
      */
@@ -123,14 +136,6 @@ public class User {
         String trustStorePassword = Configuration.getProperty("no.feide.moria.backend.ldap.trustStorePassword");
         if (trustStorePassword != null)
                 System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
-        usernameAttribute = Configuration.getProperty("no.feide.moria.backend.ldap.usernameAttribute");
-        if (usernameAttribute == null)
-            throw new BackendException("Required property no.feide.moria.backend.ldap.usernameAttribute not set");
-        log.config("User name attribute is "+usernameAttribute);
-	ldapURL = Configuration.getProperty("no.feide.moria.backend.ldap.url");
-	if (ldapURL == null)
-	    throw new BackendException("Required property no.feide.moria.backend.ldap.url not set");
-        log.config("LDAP URL is "+ldapURL);
         
         // Wrap up.
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
@@ -168,10 +173,15 @@ public class User {
             return false;
         }
 
-        // Do one-time JNDI initialization.
+        /**
+         * Do one-time JNDI initialization and some other configuration -
+         * so we don't need to catch ConfigurationException later.
+         */
+        String pattern = null;
         try {
             if (!initialized)
-                init();
+                init();   
+            pattern = Configuration.getProperty("no.feide.moria.backend.ldap.usernameAttribute")+'='+username;
         } catch (ConfigurationException e) {
             log.severe("ConfigurationException caught and re-thrown as BackendException");
             throw new BackendException("ConfigurationException caught", e);
@@ -182,16 +192,19 @@ public class User {
             // Prepare LDAP context and look up user element.
             Hashtable env = new Hashtable();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+            ldapURL = (String)initialURLs.get(initialURLIndex);
             env.put(Context.PROVIDER_URL, ldapURL);
             env.put(Context.REFERRAL, "throw");  // To catch referrals.
             ldap = new InitialLdapContext(env, null);
 	    log.config("Connected to "+env.get(Context.PROVIDER_URL));
             ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
             ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
-            rdn = ldapSearch(usernameAttribute+'='+username);
+            referrals = 0;  // Starting a new search chain.
+            initialURLFailures = 0;  // To avoid an endless loop through the initial URL list.
+            rdn = ldapSearch(pattern);
             if (rdn == null) {
                 // No user element found.
-                log.fine("No subtree match for "+usernameAttribute+'='+username+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
+                log.fine("No subtree match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                 return false;
             }
             log.fine("Found element at "+rdn+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
@@ -219,10 +232,20 @@ public class User {
     /**
      * Do a subtree search for an element given a pattern. Only the first
      * element found is considered. Any referrals are followed recursively.
+     * <em>Note:</em> The default timeout for the first search is 5 seconds,
+     *                while the default timeout for any subsequent searches
+     *                is 15 seconds. Override this in the Moria configuration
+     *                by setting
+     *                <code>no.feide.moria.backend.ldap.initialTimeout</code>
+     *                and
+     *                <code>no.feide.moria.backend.ldap.searchTimeout</code>,
+     *                respectively.
      * @param pattern The search pattern.
      * @return The element's relative DN, or <code>null</code> if none was
      *         found.
-     * @throws BackendException If a NamingException occurs.
+     * @throws BackendException If a <code>NamingException occurs</code>, or
+     *                          if a <code>ConfigurationException</code> is
+     *                          caught.
      */
     private String ldapSearch(String pattern)
     throws BackendException {
@@ -230,10 +253,25 @@ public class User {
         
         try {
             
-            NamingEnumeration results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 0, new String[] {}, false, true));
+            /**
+             * Should we use the initial (shorter, for LIMS) or secondary
+             * (longer, for LDAP) timeout?
+             **/
+            int timeout = 0;
             try {
-                
-                // Nothing matched the pattern.
+                if (referrals == 0)
+                    timeout = Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.initialTimeout", "5"));
+                else
+                    timeout = Integer.parseInt(Configuration.getProperty("no.feide.moria.backend.ldap.searchTimeout", "15"));
+            } catch (ConfigurationException e) {
+                log.severe("ConfigurationException caught and re-thrown as BackendException");
+                throw new BackendException(e);
+            }
+            
+            NamingEnumeration results = null;
+            try {
+                // Search and destroy.
+                results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, timeout, new String[] {}, false, true));
                 if (!results.hasMore()) {
                     log.warning("No match for "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL));
                     return null;
@@ -243,16 +281,40 @@ public class User {
                 
                 // We just caught a referral. Follow it recursively, enabling
                 // SSL.
+                referrals++;  // Now we've definately left the index server...
                 log.info("Enabling SSL");
                 Hashtable refEnv = new Hashtable();
                 refEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
                 refEnv.put(Context.REFERRAL, "throw");  // To catch referrals.
                 refEnv.put(Context.SECURITY_PROTOCOL, "ssl");
                 refEnv = e.getReferralContext(refEnv).getEnvironment();
-                log.info("Matched "+pattern+" on "+ldap.getEnvironment().get(Context.PROVIDER_URL)+" to referral "+refEnv.get(Context.PROVIDER_URL));
+                log.info("Matched "+pattern+" to referral "+refEnv.get(Context.PROVIDER_URL));
                 ldap.close();
                 ldap = new InitialLdapContext(refEnv, null);
                 return ldapSearch(pattern);
+                
+            } catch (CommunicationException e) {
+                
+                // Unable to connect to an initial URL?
+                if ( (e.getRootCause() instanceof ConnectException) &&
+                     (referrals == 0) ) {
+                    
+                    // Have we exhausted our list of initial URLs?
+                    initialURLFailures++;
+                    if (initialURLFailures == initialURLs.size()){
+                        log.severe("Unable to connect to any initial (index) server; last URL was "+ldapURL);
+                        throw new BackendException("Unable to connect to any initial (index) server; last URL was "+ldapURL);
+                    }
+                        
+                    // Switch to another URL.
+                    initialURLIndex++;
+                    if (initialURLIndex == initialURLs.size())
+                        initialURLIndex = 0;
+                    String message = "Unable to connect to "+ldapURL+", switching to ";
+                    ldapURL = (String)initialURLs.get(initialURLIndex);
+                    log.config(message+ldapURL);
+                    return ldapSearch(pattern);
+                }
                 
             }
             
