@@ -60,6 +60,11 @@ public class InformationServlet extends HttpServlet {
      * AttribsData class instance
      */
     private HashMap feideattribsStored = null;
+    
+    /**
+     * Monitor for the feideattribs xml file.
+     */
+    private FileMonitor feideattribsMonitor = null;
 
     /** Principal name of the service.
      *  Current value is "info"
@@ -115,7 +120,7 @@ public class InformationServlet extends HttpServlet {
      *      AttribsData
      */
     public final synchronized HashMap getAttribs() {
-         if (feideattribsStored == null) {
+         if (feideattribsMonitor == null || feideattribsMonitor.hasChanged()) {
           Properties config = getConfig();
           if (config != null) {
             AttribsHandler handler = new AttribsHandler();
@@ -124,6 +129,7 @@ public class InformationServlet extends HttpServlet {
                String filename = (String) config.get(RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML);
                SAXParser saxParser = factory.newSAXParser();
                saxParser.parse(new File(filename), handler);
+               feideattribsMonitor = new FileMonitor(filename);
             } catch (Throwable t) {
               log.logCritical("Error parsing feideattribs.xml");
             } finally {

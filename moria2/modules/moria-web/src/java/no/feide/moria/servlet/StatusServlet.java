@@ -44,7 +44,8 @@ import no.feide.moria.controller.MoriaController;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * The StatusServlet shows the status of Moria. 
+ * The StatusServlet shows the status of Moria.
+ * @version $Revision$
  */
 public class StatusServlet
 extends HttpServlet {
@@ -75,6 +76,11 @@ extends HttpServlet {
      */
     private HashMap backendDataUsers = null;
     
+    /**
+     * Monitor for the status xml file.
+     */
+    private FileMonitor statusFileMonitor = null;
+    
     private static final String STATUS_ATTRIBUTE = "eduPersonAffiliation";    
     private static final String STATUS_PRINCIPAL = "status";
     
@@ -86,7 +92,7 @@ extends HttpServlet {
      * @see BackendStatusUser
      */
     public final synchronized HashMap getBackendStatusData() {
-         if (backendDataUsers == null) {
+        if (statusFileMonitor == null || statusFileMonitor.hasChanged()) {
           Properties config = getConfig();
           if (config != null) {
             BackendStatusHandler handler = new BackendStatusHandler();
@@ -95,6 +101,7 @@ extends HttpServlet {
                String filename = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATUS_XML);
                SAXParser saxParser = factory.newSAXParser();
                saxParser.parse(new File(filename), handler);
+               statusFileMonitor = new FileMonitor(filename);
             } catch (Throwable t) {
               log.logCritical("Error parsing status.xml");
             } finally {
