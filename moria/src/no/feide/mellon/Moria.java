@@ -32,13 +32,21 @@ public class Moria {
         log.finer("Moria()");
         
         // Fix some properties.
-        System.setProperty("javax.net.ssl.trustStore", System.getProperty("no.feide.mellon.trustStore"));
-        System.setProperty("javax.net.ssl.trustStorePassword", System.getProperty("no.feide.mellon.trustStorePassword"));
+	String s = System.getProperty("no.feide.mellon.trustStore");
+	log.config("no.feide.mellon.trustStore="+s);
+        System.setProperty("javax.net.ssl.trustStore", s);
+	s = System.getProperty("no.feide.mellon.trustStorePassword");
+	log.config("no.feide.mellon.trustStorePassword="+s);
+        System.setProperty("javax.net.ssl.trustStorePassword", s);
         
         // Create service proxy and set credentials.
         stub = (Stub)(new FeideAuthentication_Impl().getAuthenticationIFPort());
-        stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, System.getProperty("no.feide.mellon.serviceUsername"));
-        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, System.getProperty("no.feide.mellon.servicePassword"));
+	s = System.getProperty("no.feide.mellon.serviceUsername");
+	log.config("no.feide.mellon.serviceUsername="+s);
+        stub._setProperty(javax.xml.rpc.Stub.USERNAME_PROPERTY, s);
+	s = System.getProperty("no.feide.mellon.servicePassword");
+	log.config("no.feide.mellon.servicePassword="+s);
+        stub._setProperty(javax.xml.rpc.Stub.PASSWORD_PROPERTY, s);
 	AuthenticationIF service = (AuthenticationIF)stub;
     }
 

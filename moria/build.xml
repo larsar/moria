@@ -223,12 +223,12 @@
   <target name="mellon:demo:war"
           description="Mellon demo: Create WAR file"
 	  depends="mellon:demo:compile">
-	  <delete file="build.mellon.demo/WEB-INF/web.xml"/>
-	  <delete file="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
-          <delete file="dist/feide-mellon-demo.war"/>
-	  <copy file="mellon/config/web.xml" toFile="build.mellon.demo/WEB-INF/web.xml"/>
-	  <copy file="${mellon_config}" toFile="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
-
+    <delete file="build.mellon.demo/WEB-INF/web.xml"/>
+    <delete file="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
+    <delete file="dist/feide-mellon-demo.war"/>
+    <copy file="mellon/config/web.xml" toFile="build.mellon.demo/WEB-INF/web.xml"/>
+    <echo message="Using config: ${mellon_config}"/>
+    <copy file="${mellon_config}" toFile="build.mellon.demo/WEB-INF/classes/mellon.properties"/>
     <copy todir="build.mellon.demo/WEB-INF/lib">
       <fileset dir="dist">
 	<include name="**/feide-mellon*.jar"/>

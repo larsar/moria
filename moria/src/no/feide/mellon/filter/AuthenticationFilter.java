@@ -23,6 +23,13 @@ public class AuthenticationFilter implements Filter {
     /** Initialize config. */
     public void init(FilterConfig config) throws ServletException {
         this.config = config;
+
+	// Read Mellon-side properties.
+	try {
+            System.getProperties().load(getClass().getResourceAsStream("/mellon.properties"));
+	} catch (IOException e) {
+	    throw new ServletException("IOException caught and re-thrown as ServletException");
+	}
     }
     
     /** Remove config. */
