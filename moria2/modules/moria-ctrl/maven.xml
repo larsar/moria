@@ -47,6 +47,7 @@
         <include name="sm-test-valid.properties"/>
         <include name="directory-conf-test-valid.xml"/>
         <include name="am-test-valid.xml"/>
+        <include name="web-test-valid.properties"/>
       </fileset>
     </copy>
          
