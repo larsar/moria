@@ -290,7 +290,7 @@ public class SessionStore {
                 String key = (String) iterator.next();
                 Session session = (Session) sessions.get(key);
                 double now = new Date().getTime();
-                String wsName = session.getWebService().getId();
+
 
                 if (session.isAuthenticated()) {
                     
@@ -298,14 +298,15 @@ public class SessionStore {
                     if (session.isLocked() && 
                         !session.isValidAt(now, Configuration.getSessionLifetime("sso"))) {
                             log.info("Invalidating SSO session (timeout): "+session.getID());
-                            stats.incStatsCounter(wsName, "timeoutSSO");
-                            stats.decStatsCounter(wsName, "activeSessions");
+                            stats.increaseCounter("sessionsSSOTimeout");
+                            stats.decreaseCounter("sessionsSSOActive");
                             invalidatedSessions.add(session);
                     }
 
                     /* Web service to slow to fetch user attributes */
                     else if (!session.isLocked() && !session.isValidAt(now, Configuration.getSessionLifetime("authenticated"))) {
-                            log.info("Invalidating authenticated session (Mellon timeout): "+session.getID());
+                        String wsName = wsName = session.getWebService().getId();
+                        log.info("Invalidating authenticated session (Mellon timeout): "+session.getID());
                             stats.incStatsCounter(wsName, "timeoutMellon");
                             stats.decStatsCounter(wsName, "activeSessions");
                             invalidatedSessions.add(session);
@@ -315,6 +316,7 @@ public class SessionStore {
                 /* Time out due to missing login info from user */
                 else {
                     if (!session.isValidAt(now, Configuration.getSessionLifetime("login"))) {
+                        String wsName = wsName = session.getWebService().getId();
                         log.info("Invalidating session (user timeout): "+session.getID());
                         stats.incStatsCounter(wsName, "timeoutUser");
                         stats.decStatsCounter(wsName, "activeSessions");
