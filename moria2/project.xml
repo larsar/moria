@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project>
+
+  <pomVersion>3</pomVersion>
+  <name>Moria Next Generation</name>
+  <id>moria-ng</id>
+  <groupId>moria-ng</groupId>
+  <currentVersion>0.1-SNAPSHOT</currentVersion>
+  <organization>
+    <name>Uninett A/S</name>
+    <url>http://www.feide.no/</url>
+  </organization>
+  <inceptionYear>2001</inceptionYear>
+  <package>no.feide.moria</package>
+
+  <shortDescription>Next generation Moria implementation using
+  distributed ticket store</shortDescription>
+
+  <!-- Gump integration -->
+  <gumpRepositoryId/>
+
+  <description/>
+  <url/>
+  <issueTrackingUrl/>
+
+  <siteAddress></siteAddress>
+
+  <siteDirectory/>
+  <distributionDirectory/>
+
+  <repository>
+    <connection>
+      scm:cvs:ext:@cvs.uninett.no:/cvs:feide-w3ls/sandbox/moria-ng
+    </connection>
+    <url/>
+  </repository>
+
+  <versions/>
+
+  <mailingLists/>
+
+  <developers>
+
+    <developer>
+      <name>Bjørn Ola Smievoll</name>
+      <id>bos</id>
+      <email>b.o@smievoll.no</email>
+      <organization>Smievoll Enterprises</organization>
+      <role>Java Developer</role>
+    </developer>
+
+    <developer>
+      <name>Cato Olsen</name>
+      <id>cato</id>
+      <email>cato.olsen@uninett.no</email>
+      <organization>Uninett A/S</organization>
+      <role>Java Developer</role>
+    </developer>
+
+    <developer>
+      <name>Lars Preben S. Arnesen</name>
+      <id>larsar</id>
+      <email>lars.preben.arnesen@conduct.no</email>
+      <organization>Conduct A/S</organization>
+      <role>Java Developer</role>
+    </developer>
+
+  </developers>
+
+  <dependencies/>
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <unitTestSourceDirectory>src/test/java</unitTestSourceDirectory>
+    <integrationUnitTestSourceDirectory/>
+
+    <unitTest>
+      <includes>
+        <include>**/*Test.java</include>
+      </includes>
+    </unitTest>
+              
+    <integrationUnitTest/>
+    <aspectSourceDirectory/>
+
+    <resources/>
+  </build>
+
+  <reports>
+    <report>maven-changes-plugin</report>
+    <report>maven-jdepend-plugin</report>
+    <report>maven-checkstyle-plugin</report>
+    <report>maven-pmd-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <report>maven-clover-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-license-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+    <report>maven-jxr-plugin</report>
+  </reports>
+
+</project>
