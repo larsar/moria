@@ -97,7 +97,8 @@ implements AuthenticationIF, ServiceLifecycle {
         /* Sleep a short while. If not the authorization data will not
            be updated in time to authorize the first authentication request. */
         try { 
-            Thread.sleep(3000); 
+            int initialSleep = new Integer(System.getProperty("no.feide.moria.AuthorizationTimerInitThreadSleep")).intValue()*1000; // Seconds to milliseconds
+            Thread.sleep(initialSleep); 
         } 
         catch (InterruptedException e) { 
             /* We didn't get any sleep. Don't care. If this is the
