@@ -29,33 +29,17 @@
     &dep-wsdl4j;
     &dep-commons-discovery;
 
-    <!-- Moria Modules deps
-    &dep-moria-am;
-    &dep-moria-ctrl;
-    &dep-moria-dm;
+    <!-- Moria Modules deps -->
     &dep-moria-log;
-    &dep-moria-sm; -->
     &dep-moria-attribute;
 
     <!-- Misc deps -->
-    <!-- &dep-log4j; -->
+    &dep-log4j;
     &dep-servlet-api;
-    <!-- &dep-jsp-api;
+    &dep-jsp-api;
     &dep-xerces-xercesImpl;
     &dep-xerces-xmlParserAPIs;
-    &dep-jdom; -->
-
-    <!-- JBossCache deps
-    &dep-concurrent;
-    &dep-trove;
-    &dep-javagroups;
-    &dep-jboss-aop;
-    &dep-jboss-cache;
-    &dep-jboss-common;
-    &dep-jboss-j2ee;
-    &dep-jboss-jmx;
-    &dep-jboss-system;
-    &dep-commons-logging; -->
+    &dep-jdom;
 
   </dependencies>
 
