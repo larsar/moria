@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Timer;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 import java.io.FileNotFoundException;
@@ -51,8 +52,9 @@ public class SessionStore {
 
 
         // Initialize periodical session sessionStore checks.
-        // TODO: Replace 2500 with Properties lookup.
-        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), 1*60*1000);
+        int delay = new Integer(System.getProperty("no.feide.moria.SessionTimerDelay")).intValue()*60*1000; // Minutes to milliseconds
+        log.info("Starting time out service with delay= "+delay+"ms");
+        sessionTimer.scheduleAtFixedRate(new SessionStoreTask(), new Date(), delay);
     }
     
     
@@ -161,7 +163,7 @@ public class SessionStore {
      * Removes a Moria session.
      * @param session The session.
      */     
-    public void deleteSession(Session session) {
+    public synchronized void deleteSession(Session session) {
         log.finer("deleteSession(Session)");
         
         sessions.remove(session.getID());
@@ -190,19 +192,17 @@ public class SessionStore {
     }
 
     
-    protected void checkTimeout(int minutes) {
+    protected void checkTimeout(int timeout) {
 
-//         for (Enumeration e = sessions.keySet(); e.hasMoreElements();) {
-//             String key = (String) e.nextElement();
-//             Session session = (Session) sessions.get(key);
+        for (Iterator iterator = sessions.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            Session session = (Session) sessions.get(key);
             
-            
-            
-//             if (!session.isValid(new Date().getTime()-(minutes*60*1000))) {
-//                 log.info("Invalidating session (timeout): "+session.getID());
-//                 deleteSession(session);
-//             }
-//         }
+            if (!session.isValid(new Date().getTime()-timeout)) {
+                log.info("Invalidating session (timeout): "+session.getID());
+                deleteSession(session);
+            }
+        }
             
 
     }

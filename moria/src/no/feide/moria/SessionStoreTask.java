@@ -17,12 +17,11 @@ extends TimerTask {
      * Do something clever.
      **/
     public void run() {
-        log.finer("run()");
+        log.fine("run()");
 
-        SessionStore.getInstance().checkTimeout(1);
-        
-        // TODO: Add session store maintenance operations here.
-        //log.info("Cleaning up SessionStore - not.");
+        int timeout = new Integer(System.getProperty("no.feide.moria.SessionTimeout")).intValue()*60*1000; // Minutes to milliseconds
+
+        SessionStore.getInstance().checkTimeout(timeout);
     }    
     
 }
