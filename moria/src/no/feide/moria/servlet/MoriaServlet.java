@@ -105,8 +105,11 @@ public class MoriaServlet extends VelocityServlet {
         ResourceBundle fallback = null;
         String selectedLanguage = "";
         String acceptLanguage = request.getHeader("Accept-Language");
-
+        
         HashMap result = new HashMap();
+
+        if (acceptLanguage == null) 
+            acceptLanguage = "";
 
         /* Select language. Prefer: URL parameter, Cookie, Browser setting */
         String overrideLang = request.getParameter("lang");
