@@ -48,7 +48,7 @@
 
   <servlet>
     <servlet-name>Status</servlet-name>
-    <servlet-class>no.feide.moria.servlet.BackendStatusServlet</servlet-class>
+    <servlet-class>no.feide.moria.servlet.StatusServlet</servlet-class>
     <load-on-startup>6</load-on-startup>
   </servlet>  
   
