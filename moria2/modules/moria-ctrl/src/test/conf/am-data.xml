@@ -20,6 +20,10 @@
       <Operation name="LocalAuth"/>
       <Operation name="InteractiveAuth"/>
     </Operations>
+    <Subsystems>
+      <Subsystem name="LocalAuth"/>
+      <Subsystem name="InteractiveAuth"/>
+    </Subsystems>
   </Client>
 
 </ClientAuthorizationConfig>
