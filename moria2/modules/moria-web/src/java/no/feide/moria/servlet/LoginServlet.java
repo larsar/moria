@@ -220,7 +220,7 @@ extends HttpServlet {
         final Map tickets;
         final String redirectURL;
         try {
-            tickets = MoriaController.attemptLogin(loginTicketId, ssoTicketId, username + "@" + org, password);
+            tickets = MoriaController.attemptLogin(loginTicketId, ssoTicketId, username + "@" + org, password, denySSO);
             redirectURL = MoriaController.getRedirectURL((String) tickets.get(MoriaController.SERVICE_TICKET));
         } catch (AuthenticationException e) {
             showLoginPage(request, response, RequestUtil.ERROR_AUTHENTICATION_FAILED);
