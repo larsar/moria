@@ -339,7 +339,6 @@ public class AuthorizationData {
             String url = wsElem.getElementsByTagName("URL").item(0).getFirstChild().getNodeValue();
 			String defaultLang = ((Element)wsElem.getElementsByTagName("DefaultLang").item(0)).getAttribute("name");
 			String defaultOrg = ((Element)wsElem.getElementsByTagName("DefaultOrg").item(0)).getAttribute("name");
-			System.out.println(wsElem.getElementsByTagName("AllowLocalAuth").getLength());
 			boolean allowsLocalAuth = wsElem.getElementsByTagName("AllowLocalAuth").getLength() > 0;
             ws.setName(name);
             ws.setUrl(url);
