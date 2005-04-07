@@ -164,6 +164,30 @@ $Id$
                     instead.</em>
                     </p>
                     </li>
+                    <li>
+                    <code>no.feide.moria.web.resource.date</code>
+                    <p>
+                    A date for when the web pages were last updates/Moria2 was
+                    last deployed. <em>This property is optional; if not set, a
+                    null value will be used instead.</em>
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.resource.link</code>
+                    <p>
+                    A link to the home page of the Moria2 owner's organization.
+                    <em>This property is optional; if not set, a null value will
+                    be used instead.</em>
+                    </p>
+                    </li>
+                    <li>
+                    <code>#no.feide.moria.web.resource.mail</code>
+                    <p>
+                    A mail contact address shown on the web pages of Moria.
+                    <em>This property is optional; if not set, a null value will
+                    be used instead.</em>
+                    </p>
+                    </li>
                 </ul>
             </subsection>
             <subsection name="Information Servlet Properties">
@@ -307,6 +331,14 @@ no.feide.moria.web.faq.status=http://localhost:8080/moria/Status
 # Organization name of the Moria2 owner (used in the FAQ).
 no.feide.moria.web.faq.owner=My Moria Organization
 
+# Web pages last-updated date.
+no.feide.moria.web.resource.date=2005-03-29
+
+# Link to the Moria2 owner's web pages.
+no.feide.moria.web.resource.link=http://www.some.org
+
+# Mail address shown on the web pages.
+#no.feide.moria.web.resource.mail=info@some.org
 
 #
 # Configuration properties relevant for the information service (InformationServlet):
@@ -325,6 +357,51 @@ no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
 # Configuration proprety for the status.xml file.
 no.feide.moria.web.backendstatus.status_xml=/some/path/status.xml
 		        </source>
+		    </subsection>
+		    <subsection name="Static Content">
+		    <p>
+		    In addition to the configuration settings mentioned above, the
+		    following static resources are used by Moria2. All URLs assume that
+		    Moria2 has been deployed to <tt>http://localhost:8080/moria</tt>;
+		    check your servlet container's documentation for details on how to
+		    accomplish this - <a href="http://www.caucho.com/">Resin</a>, for
+		    example, will let you put these files in
+		    <tt>RESIN_HOME/doc/resource</tt>.
+		    </p>
+		    <ul>
+		    	<li>
+		    	<code>stil.css</code>
+		    	<p>
+		    	A stylesheet file, used in formatting the browser output.
+		    	<a href="resource/stil.css">Example</a>.<br/>
+                URL: <tt>http://localhost:8080/moria/resource/stil.css</tt>
+                </p>
+		    	</li>
+		    	<li>
+		    	<code>emblem-topp.png</code>
+		    	<p>
+		    	A logo image, displayed on top right of the web pages.
+		    	<a href="resource/emblem-topp.png">Example</a>.<br/>
+		    	URL: <tt>http://localhost:8080/moria/resource/emblem-topp.png</tt>
+		    	</p>
+		    	</li>
+		    	<li>
+		    	<code>logo-lilla.gif</code>
+		    	<p>
+				Another logo image, displayed on the top left of the web pages.
+				<a href="resource/logo-lilla.gif">Example</a>.<br/>
+		    	URL: <tt>http://localhost:8080/moria/resource/logo-lilla.gif</tt>
+				</p>
+		    	</li>
+		    	<li>
+		    	<code>favicon.ico</code>
+		    	<p>
+				The browser-displayed page icon.
+				<a href="resource/favicon.ico">Example</a>.<br/>
+		    	URL: <tt>http://localhost:8080/moria/resource/favicon.ico</tt>
+				</p>
+		    	</li>
+		    </ul>
 		    </subsection>
         </section>
     </body>
