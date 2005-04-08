@@ -175,7 +175,7 @@ extends HttpServlet {
         // Header
         out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
         out.println(docType + "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=" + bundle.getLocale() + ">"); 
-        out.println("<head><link rel=\"icon\" href=\"../resource/favicon.ico\" type=\"image/png\">"); 
+        out.println("<head><link rel=\"icon\" href=\"/favicon.ico\" type=\"image/png\">"); 
         out.println("<style type=\"text/css\">\n@import url(\"../resource/stil.css\");\n</style>");
         out.println("<link rel=\"author\" href=\"mailto:" + config.get(RequestUtil.RESOURCE_MAIL)+ "\">");
         out.println("<title>" + bundle.getString("header_title") + "</title></head><body>");
@@ -184,7 +184,7 @@ extends HttpServlet {
         out.println("<table summary=\"Layout-tabell\" class=\"invers\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">");
         out.println("<tbody><tr valign=\"middle\">");
         out.println("<td class=\"logo\" width=\"76\"><a href=" + config.get(RequestUtil.RESOURCE_LINK) + ">");
-        out.println("<img src=\"../resource/logo-lilla.gif\" alt=" + config.get(RequestUtil.PROP_FAQ_OWNER) + " border=\"0\" height=\"41\" width=\"76\"></a></td>");
+        out.println("<img src=\"../resource/logo.gif\" alt=" + config.get(RequestUtil.PROP_FAQ_OWNER) + " border=\"0\" height=\"41\" width=\"76\"></a></td>");
         out.println("<td width=\"0%\"><a class=\"noline\" href=" + config.get(RequestUtil.RESOURCE_LINK) + ">");
         out.println(bundle.getString("header_feide") + "</a></td>");
         out.println("<td width=\"35%\">&nbsp;</td>");

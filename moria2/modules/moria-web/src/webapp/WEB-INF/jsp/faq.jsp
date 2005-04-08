@@ -36,7 +36,7 @@ request.getHeader("Accept-Language"), "nb");
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= bundle.getLocale() %>" >
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="icon" href="../resource/favicon.ico" type="image/png">
+<link rel="icon" href="/favicon.ico" type="image/png">
 <style type="text/css">
 @import url("../resource/stil.css");
 </style>
@@ -48,7 +48,7 @@ request.getHeader("Accept-Language"), "nb");
 
 <table summary="Layout-tabell" class="invers" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tbody><tr valign="middle">
-<td class="logo" width="76"><a href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><img src="../resource/logo-lilla.gif" alt="<%=pconfig.get(RequestUtil.PROP_FAQ_OWNER)%>" border="0" height="41" width="76"></a></td>
+<td class="logo" width="76"><a href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><img src="../resource/logo.gif" alt="<%=pconfig.get(RequestUtil.PROP_FAQ_OWNER)%>" border="0" height="41" width="76"></a></td>
 <td width="0%"><a class="noline" href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><%=bundle.getString("header_feide")%></a></td>
 <td class="dekor1" width="100%">&nbsp;</td>
 </tr></tbody></table>
