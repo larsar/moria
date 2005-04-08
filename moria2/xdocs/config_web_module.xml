@@ -378,27 +378,19 @@ no.feide.moria.web.backendstatus.status_xml=/some/path/status.xml
                 </p>
 		    	</li>
 		    	<li>
-		    	<code>emblem-topp.png</code>
+		    	<code>emblem-topp.gif</code>
 		    	<p>
 		    	A logo image, displayed on top right of the web pages.
-		    	<a href="resource/emblem-topp.png">Example</a>.<br/>
-		    	URL: <tt>http://localhost:8080/moria/resource/emblem-topp.png</tt>
+		    	<a href="resource/emblem-topp.gif">Example</a>.<br/>
+		    	URL: <tt>http://localhost:8080/moria/resource/emblem-topp.gif</tt>
 		    	</p>
 		    	</li>
 		    	<li>
-		    	<code>logo-lilla.gif</code>
+		    	<code>logo.gif</code>
 		    	<p>
 				Another logo image, displayed on the top left of the web pages.
-				<a href="resource/logo-lilla.gif">Example</a>.<br/>
-		    	URL: <tt>http://localhost:8080/moria/resource/logo-lilla.gif</tt>
-				</p>
-		    	</li>
-		    	<li>
-		    	<code>favicon.ico</code>
-		    	<p>
-				The browser-displayed page icon.
-				<a href="resource/favicon.ico">Example</a>.<br/>
-		    	URL: <tt>http://localhost:8080/moria/resource/favicon.ico</tt>
+				<a href="resource/logo.gif">Example</a>.<br/>
+		    	URL: <tt>http://localhost:8080/moria/resource/logo.gif</tt>
 				</p>
 		    	</li>
 		    </ul>
