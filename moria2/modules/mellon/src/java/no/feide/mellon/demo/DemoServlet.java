@@ -162,7 +162,7 @@ extends HttpServlet {
     /**
      * Required parameters.
      */
-    private static final String[] REQUIRED_PARAMETERS = {CONFIG_SERVICE_ENDPOINT, CONFIG_SLAVE_USERNAME, CONFIG_SLAVE_PASSWORD, CONFIG_LOGOUT_URL};
+    private static final String[] REQUIRED_PARAMETERS = {CONFIG_SERVICE_ENDPOINT, CONFIG_MASTER_USERNAME, CONFIG_MASTER_PASSWORD, CONFIG_MASTER_ATTRIBUTE_REQUEST, CONFIG_SLAVE_USERNAME, CONFIG_SLAVE_PASSWORD, CONFIG_SLAVE_ATTRIBUTE_REQUEST, CONFIG_LOGOUT_URL};
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -183,8 +183,8 @@ extends HttpServlet {
 
         // Set the truststore.
         final Properties config = getConfig();
-        System.setProperty("javax.net.trustStore", config.getProperty(CONFIG_TRUSTSTORE));
-        System.setProperty("javax.net.trustStorePassword", config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
+        System.setProperty("javax.net.ssl.trustStore", config.getProperty(CONFIG_TRUSTSTORE));
+        System.setProperty("javax.net.ssl.trustStorePassword", config.getProperty(CONFIG_TRUSTSTORE_PASSWORD));
 
     }
 
@@ -225,7 +225,7 @@ extends HttpServlet {
             // Prepare API.
             AuthenticationSoapBindingStub service = new AuthenticationSoapBindingStub(new URL(config.getProperty(CONFIG_SERVICE_ENDPOINT)), null);
             service.setUsername(config.getProperty(CONFIG_MASTER_USERNAME));
-            service.setUsername(config.getProperty(CONFIG_MASTER_PASSWORD));
+            service.setPassword(config.getProperty(CONFIG_MASTER_PASSWORD));
 
             // Do we have a ticket?
             final String ticket = request.getParameter(PARAM_TICKET);
@@ -233,7 +233,6 @@ extends HttpServlet {
 
                 // No ticket; redirect for authentication.
                 String redirectURL = service.initiateAuthentication(convert(config.getProperty(CONFIG_MASTER_ATTRIBUTE_REQUEST)), request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
-                System.err.println(redirectURL);
                 response.sendRedirect(redirectURL);
 
             } else {
@@ -344,7 +343,7 @@ extends HttpServlet {
 
         // Read properties from file.
         final String configFile = System.getProperty(CONFIG_FILENAME);
-        if (configFile == null) { throw new IllegalStateException("Required property no.feide.mellon.demo not set"); }
+        if (configFile == null) { throw new IllegalStateException("Required base property '" + CONFIG_FILENAME + "' not set"); }
         Properties config = new Properties();
         try {
             config.load(new FileInputStream(new File(configFile)));
@@ -355,7 +354,7 @@ extends HttpServlet {
         // Are we missing some required properties?
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
             String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
-            if ((parvalue == null) || (parvalue.equals(""))) { throw new IllegalStateException("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set"); }
+            if ((parvalue == null) || (parvalue.equals(""))) { throw new IllegalStateException("Required parameter '" + REQUIRED_PARAMETERS[i] + "' not set in '" + configFile + "'"); }
         }
         return config;
 
