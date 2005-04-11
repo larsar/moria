@@ -338,7 +338,7 @@ no.feide.moria.web.resource.date=2005-03-29
 no.feide.moria.web.resource.link=http://www.some.org
 
 # Mail address shown on the web pages.
-#no.feide.moria.web.resource.mail=info@some.org
+no.feide.moria.web.resource.mail=info@some.org
 
 #
 # Configuration properties relevant for the information service (InformationServlet):
