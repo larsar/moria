@@ -18,7 +18,6 @@
  * $Id$
  */
 package no.feide.moria.servlet;
-import java.util.Vector;
 import java.util.HashMap;
 
 /**
