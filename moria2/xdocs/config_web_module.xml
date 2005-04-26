@@ -243,32 +243,65 @@ $Id$
             <subsection name="Status Servlet Property">
             <p>
                 The following property are used by the status servlet:
-                </p>
+            </p>
                 <ul>
                     <li>
                     <code>no.feide.moria.web.backendstatus.status_xml</code>
-                    <p>Gives the path and name of the file containing the information
-                    about the test-users. The XML file contains a rootelement <i>Testuserlist</i>
-                    with one or more <i>User</i> child elements. Each <i>User</i> element must
-                    contain the child elements <i>Name</i> (which has a text child element
-                    giving the name of a test-user) and <i>Password</i> (which has a text child
-                    element giving the password of a test-user).
+                    <p>Gives the path and name of the file containing the
+                    information about the test-users. The XML file contains a
+                    root element <i>Testuserlist</i> with one or more
+                    <i>User</i> child elements. Each <i>User</i> element must
+                    contain the child elements <i>Name</i> (which has a text
+                    child element giving the name of a test user) and
+                    <i>Password</i> (which has a text child element giving the
+                    password of a test user).
                     </p>
-                    <p>Example of a status.xml file</p>
+                    <p>Example of a status configuration file:</p>
                     <source>
 &lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
 
 &lt;Testuserlist&gt;
 
-   &lt;User&gt;
-      &lt;Name&gt;test@test.no&lt;/Name&gt;
-      &lt;Password&gt;test&lt;/Password&gt;
-   &lt;/User&gt;
+  &lt;User&gt;
+    &lt;Name&gt;test@test.no&lt;/Name&gt;
+    &lt;Password&gt;test&lt;/Password&gt;
+  &lt;/User&gt;
 
-&lt;/Testuserlist&gt;
-			</source>
-			</li>
-		</ul>
+&lt;/Testuserlist&gt;</source>
+			        </li>
+                    <li>
+                    <code>no.feide.moria.web.backendstatus.statistics_xml</code>
+                    <p>Gives the path and name of the file containing the
+                    statistics data. This static file is not generated
+                    on-the-fly by Moria. The XML file must contain a root
+                    element <i>Statistics</i> with one or more <i>Service</i>
+                    child elements. Each <i>Service</i> element must contain the
+                    child elements <i>Name</i> (which has a text child element
+                    giving the human-readable name of a service for which
+                    statistics data exists) and <i>Months</i>. The <i>Months</i>
+                    element must contain one or more <i>Month</i> elements,
+                    each with the attributes <i>name</i> (giving the name of
+                    the month) and <i>count</i> (giving the number of distinct
+                    user accesses per month for this service). Note that the
+                    sorting shown on the Status output will follow from the
+                    ordering of the statistics file.
+                    </p>
+                    <p>Example of a statistics data file:</p>
+                    <source>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
+
+&lt;Statistics&gt;
+  &lt;Service&gt;
+    &lt;Name&gt;Some Service&lt;/Name&gt;
+    &lt;Months&gt;
+      &lt;Month name="January" count="1234"/&gt;
+      &lt;Month name="February" count="2345"/&gt;
+      &lt;Month name="March" count="3456"/&gt;
+    &lt;/Months&gt;
+  &lt;/Service&gt;
+&lt;/Statistics&gt;</source>
+                    </li>
+                </ul>
         <p>     
         Example Web Module configuration file:
         </p>
@@ -356,6 +389,9 @@ no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
 
 # Configuration proprety for the status.xml file.
 no.feide.moria.web.backendstatus.status_xml=/some/path/status.xml
+
+# Configuration property for the statistics data file name.
+no.feide.moria.web.backendstatus.statistics_xml=/some/path/statistics.xml
 		        </source>
 		    </subsection>
 		    <subsection name="Static Content">
