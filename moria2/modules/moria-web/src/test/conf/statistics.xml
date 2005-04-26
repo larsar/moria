@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<Statistics>
+
+    <Service>
+        <Name>BIBSYS</Name>
+	<Months>
+	  <Month name="January" count="45"/>
+	  <Month name="February" count="188"/>
+	  <Month name="March" count="287"/>
+	  <Month name="April" count="297"/>	  
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>BrainBank Learning</Name>
+	<Months>
+	  <Month name="January" count="100"/>
+	  <Month name="February" count="40"/>
+	  <Month name="March" count="25"/>
+	  <Month name="April" count="16"/>
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>Frida</Name>
+	<Months>
+	  <Month name="January" count="397"/>
+	  <Month name="February" count="1117"/>
+	  <Month name="March" count="153"/>
+	  <Month name="April" count="40"/>
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>Lasso drift</Name>
+	<Months>
+	  <Month name="January" count="24"/>
+	  <Month name="February" count="118"/>
+	  <Month name="March" count="339"/>
+	  <Month name="April" count="59"/>	  
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>StudentWeb</Name>
+	<Months>
+	  <Month name="January" count="22625"/>
+	  <Month name="February" count="5655"/>
+	  <Month name="March" count="5087"/>
+	  <Month name="April" count="2137"/>
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>UIO Informasjonsdesign</Name>
+	<Months>
+	  <Month name="January" count="0"/>
+	  <Month name="February" count="0"/>
+	  <Month name="March" count="180"/>
+	  <Month name="April" count="47"/>
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>UiO-Portalen</Name>
+	<Months>
+	  <Month name="January" count="31264"/>
+	  <Month name="February" count="24177"/>
+	  <Month name="March" count="22525"/>
+	  <Month name="April" count="9095"/>
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>UNINETT Web Authentication</Name>
+	<Months>
+	  <Month name="January" count="389"/>
+	  <Month name="February" count="1173"/>
+	  <Month name="March" count="716"/>
+	  <Month name="April" count="327"/>
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>Vortex*</Name>
+	<Months>
+	  <Month name="January" count="1996049"/>
+	  <Month name="February" count="1749789"/>
+	  <Month name="March" count="1469789"/>
+	  <Month name="April" count="593709"/>	  
+	</Months>
+    </Service>
+
+</Statistics>

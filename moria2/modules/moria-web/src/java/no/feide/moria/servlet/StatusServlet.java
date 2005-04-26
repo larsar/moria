@@ -70,6 +70,7 @@ extends HttpServlet {
      */
     private static final String[] REQUIRED_PARAMETERS = {
             RequestUtil.PROP_BACKENDSTATUS_STATUS_XML,
+            RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML,
             RequestUtil.PROP_COOKIE_LANG };
     
     /**
@@ -247,7 +248,7 @@ extends HttpServlet {
         out.println("<p><b>" + bundle.getString("testuser_status") + ": </b><br/>" + statusMsg + "</p>");
         
         // Prepare to check test users.
-        out.println("<table border=1><tr><th>" + bundle.getString("table_organization") + "</th><th>" + bundle.getString("table_status") + "</th></tr>");
+        out.println("<p><table border=1><tr><th>" + bundle.getString("table_organization") + "</th><th>" + bundle.getString("table_status") + "</th></tr>");
   
         // Start checking a new user.
         for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
@@ -300,7 +301,15 @@ extends HttpServlet {
         }
         
         // Done with all test users.
-        out.println("</table>");
+        out.println("</table></p>");
+        
+        //Print statistics
+        
+        out.println("<br><h3>" + bundle.getString("stat_info") + "</h3>");
+        
+        this.printStatistics(out, bundle);
+        
+        out.println("<br><i>" + bundle.getString("vortex_number") + "</i>");
         
         //Layout
         out.println("</tr>");
@@ -318,8 +327,49 @@ extends HttpServlet {
         
         // Finish up.
         out.println("</body></html>");
+        
     }
 
+    private void printStatistics(PrintWriter out, ResourceBundle bundle) {
+        Properties config = getConfig();
+        if (config != null) {
+          StatisticsHandler handler = new StatisticsHandler();
+          SAXParserFactory factory = SAXParserFactory.newInstance();
+          try {
+             String filename = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML);
+             SAXParser saxParser = factory.newSAXParser();
+             saxParser.parse(new File(filename), handler);
+             
+             final int nummonths = handler.getNumMonths();
+             if (nummonths > 0) {
+                 out.println("<p><table border=1><tr><th>" + bundle.getString("stat_services") + "</th>");
+                 for (int i = 0; i < nummonths; i++) {
+                     out.print("<th>");
+                     out.print(bundle.getString(handler.getMonthName(i)));
+                     out.print("</th>");
+                 }
+                 for (int j = 0; j < handler.getNumStatisticsData(); j++) {
+                     StatisticsData data = handler.getStatisticsData(j);
+                     out.print("<tr>");
+                     out.print("<td>" + data.getName() + "</td>");
+                     for (int i = 0; i < nummonths; i++) {
+                         out.print("<td align=right>");
+                         out.print(Integer.toString(data.getCount(handler.getMonthName(i))));
+                         out.print("</td>");
+                     }
+                     out.print("</tr>");
+                 }
+
+                 
+                 out.println("</table>");
+             }
+          }
+          catch (Throwable t) {
+              out.println("Error while parsing xml");
+              out.println(t.getMessage());
+          }
+        }
+    }
 
     /**
      * Get this servlet's configuration from the web module, given by
@@ -357,7 +407,8 @@ extends HttpServlet {
             }
         }
         return config;
-
     }
+    
 
 }
+

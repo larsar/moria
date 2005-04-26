@@ -220,6 +220,12 @@ public final class RequestUtil {
     public static final String PROP_BACKENDSTATUS_STATUS_XML = PATH_PREFIX + "backendstatus.status_xml";
 
     /**
+     * Configuration property for the StatusServlet statistics.xml file
+     * path.
+     */
+    public static final String PROP_BACKENDSTATUS_STATISTICS_XML = PATH_PREFIX + "backendstatus.statistics_xml";
+
+    /**
      * Bundle for the information servlet.
      */
     public static final String BUNDLE_INFORMATIONSERVLET = "feideattribs";
