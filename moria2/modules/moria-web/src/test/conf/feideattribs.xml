@@ -52,13 +52,6 @@
 </attribute>
 
 <attribute> 
-  <key>eduOrgLegalName</key>
-  <resourcebundle>rb_eduOrgLegalName</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgLegalName</link>
-</attribute>
-
-<attribute> 
   <key>eduPersonAffiliation</key>
   <resourcebundle>rb_eduPersonAffiliation</resourcebundle>
   <relevance>Mandatory</relevance>
@@ -73,13 +66,6 @@
 </attribute>
 
 <attribute> 
-  <key>norEduOrgUniqueIdentifier</key>
-  <resourcebundle>rb_norEduOrgUniqueIdentifier</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUniqueIdentifier</link>
-</attribute>
-
-<attribute> 
   <key>eduPersonOrgDN</key>
   <resourcebundle>rb_eduPersonOrgDN</resourcebundle>
   <relevance>Mandatory</relevance>
@@ -91,13 +77,6 @@
   <resourcebundle>rb_eduPersonOrgUnitDN</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonOrgUnitDN</link>
-</attribute>
-
-<attribute> 
-  <key>federationFeideSchemaVersion</key>
-  <resourcebundle>rb_federationFeideSchemaVersion</resourcebundle>  
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#federationFeideSchemaVersion</link>
 </attribute>
 
 <attribute> 

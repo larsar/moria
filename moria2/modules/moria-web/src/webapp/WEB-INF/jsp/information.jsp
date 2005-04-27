@@ -78,7 +78,6 @@ try {
       final String piclink = (String)request.getAttribute(RequestUtil.PIC_LINK);
       int n = tabledata.size();
 
-      for (int mcnt = 1; mcnt >= 0; mcnt--) {
         for (int i = 0; i < n; i += 4) {
           String link = (String) tabledata.get(i);
           String description = (String) tabledata.get(i+1);
@@ -87,10 +86,10 @@ try {
 
           if (userstring == null || userstring.equals("")) {	
 		    if (relevance.equals("fd_mandatory")) {
-                userstring = "<FONT COLOR=\"#ff0000\">" + bundle.getString("m_missing") + " " + userorg + "</FONT>";
+                userstring = "<FONT COLOR=\"#ff0000\">" + bundle.getString("m_missing") + "</FONT>";
             }
             else {
-                userstring = bundle.getString("o_missing")+ " "  + userorg;
+                userstring = bundle.getString("o_missing");
             }
           }
           if (userstring.equals("p_yes")) {
@@ -115,17 +114,17 @@ try {
             optionalvec.add(bundle.getString(relevance));
           }
        }
-     }%>
+%>
 
      <!-- mandatory table -->
      <td class="kropp">
      <p>
-     <b><center><%= bundle.getString("user_info") %> 
+     <b><center><%= bundle.getString("user_info") + userorg%> 
      <br/><%=bundle.getString("user_info2") %></b>
      </p>
      
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
-     <th> <%= bundle.getString("tc_value") %> </th>
+     <th> <%= bundle.getString("tc_value") + userorg%> </th>
      <th> <%= bundle.getString("tc_relevance") %> </th></tr>
      <%
      n = mandatoryvec.size();
@@ -146,7 +145,7 @@ try {
      
      <!-- optional table -->
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
-     <th> <%= bundle.getString("tc_value") %> </th>
+     <th> <%= bundle.getString("tc_value") + userorg%> </th>
      <th> <%= bundle.getString("tc_relevance") %> </th></tr>
      <%
      n = optionalvec.size();

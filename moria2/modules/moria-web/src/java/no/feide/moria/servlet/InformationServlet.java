@@ -345,7 +345,7 @@ public class InformationServlet extends HttpServlet {
         if (userData != null) {
             // need userorg as an attribute in the JSP to be able to print
             // instructions on where to update the optional or mandatory info
-            String [] userorgarray = (String[]) userData.get(RequestUtil.EDU_ORG_LEGAL_NAME);
+            String [] userorgarray = (String[]) userData.get(RequestUtil.ORGANIZATION_NAME);
             String userorg = bundle.getString("unknown_userorg");
             if (userorgarray != null && userorgarray.length > 0) {
                 userorg = userorgarray[0];

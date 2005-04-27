@@ -251,9 +251,9 @@ public final class RequestUtil {
     public static final String BUNDLE_ERROR = "error";
 
     /**
-     * Legal name for an organization, used by Information Servlet.
+     * Name of the users organization
      */
-    public static final String EDU_ORG_LEGAL_NAME = "eduOrgLegalName";
+    public static final String ORGANIZATION_NAME = "o";
 
     /**
      * Link to faq, shown on the login page.
