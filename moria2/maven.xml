@@ -22,6 +22,16 @@
        goals="project:install"
        banner="Building"
        ignoreFailures="false"/>
+
+    <!--
+      Dirty hack to gather subproject WAR files...
+    -->
+    <copy file="modules/mellon/target/mellon.war"
+          todir="target"
+          failonerror="false"/>
+    <copy file="modules/moria-web/target/moria.war"
+          todir="target"
+          failonerror="false"/>
   </goal>
 
   <goal
