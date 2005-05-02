@@ -10,7 +10,7 @@
 
   <description>Moria2 Federated Authentication Service (HTTP/SOAP Interface)</description>
 
-  <display-name>Moria</display-name>
+  <display-name>Moria2</display-name>
 
   <listener>
     <listener-class>no.feide.moria.servlet.MoriaLifeCycleListener</listener-class>
