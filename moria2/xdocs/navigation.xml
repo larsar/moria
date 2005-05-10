@@ -36,6 +36,7 @@ $Id$
 			<item name="Service Integration" href="howto_service_overview.html">
 				<item name="SSO" href="howto_service_sso.html"/>
 			    <item name="Error Handling" href="howto_service_errors.html"/>
+			    <item name="Migrating to Moria2" href="howto_service_migration.html"/>
 			</item>
 	    	<item name="Design" href="design.html"/>
 	    	<item name="Configuration" href="config_introduction.html">
