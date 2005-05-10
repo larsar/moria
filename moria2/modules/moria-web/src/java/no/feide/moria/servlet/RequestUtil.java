@@ -224,6 +224,13 @@ public final class RequestUtil {
      * path.
      */
     public static final String PROP_BACKENDSTATUS_STATISTICS_XML = PATH_PREFIX + "backendstatus.statistics_xml";
+    
+    /**
+     * Configuration property for the StatusServlet statistics2.xml file
+     * path.
+     */
+    public static final String PROP_BACKENDSTATUS_STATISTICS2_XML = PATH_PREFIX + "backendstatus.statistics2_xml";
+
 
     /**
      * Bundle for the information servlet.

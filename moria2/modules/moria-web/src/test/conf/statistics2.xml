@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+<Statistics>
+
+    <Service>
+        <Name>Demo</Name>
+	<Months>
+	  <Month name="April" count="32"/>
+	  <Month name="May" count="6"/>	  
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>Innsyn</Name>
+	<Months>
+	  <Month name="April" count="36"/>	  
+	  <Month name="May" count="3"/>
+	</Months>
+    </Service>
+
+    <Service>
+        <Name>Vortex</Name>
+	<Months>
+	  <Month name="April" count="18"/>	  
+	</Months>
+    </Service>
+
+</Statistics>

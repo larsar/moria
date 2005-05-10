@@ -307,9 +307,17 @@ extends HttpServlet {
         
         out.println("<br><h3>" + bundle.getString("stat_info") + "</h3>");
         
-        this.printStatistics(out, bundle);
+        //Statistics from moria1
+        String filename = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML);
+        this.printStatistics(out, bundle, filename);
         
         out.println("<br><i>" + bundle.getString("vortex_number") + "</i>");
+        
+        out.println("<br><h3>" + bundle.getString("stat_info2") + "</h3>");
+        
+        //Statistics from moria2
+        String filename2 = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML);
+        this.printStatistics(out, bundle, filename2);
         
         //Layout
         out.println("</tr>");
@@ -330,13 +338,12 @@ extends HttpServlet {
         
     }
 
-    private void printStatistics(PrintWriter out, ResourceBundle bundle) {
+    private void printStatistics(PrintWriter out, ResourceBundle bundle, String filename) {
         Properties config = getConfig();
         if (config != null) {
           StatisticsHandler handler = new StatisticsHandler();
           SAXParserFactory factory = SAXParserFactory.newInstance();
           try {
-             String filename = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML);
              SAXParser saxParser = factory.newSAXParser();
              saxParser.parse(new File(filename), handler);
              
@@ -370,7 +377,7 @@ extends HttpServlet {
           }
         }
     }
-
+    
     /**
      * Get this servlet's configuration from the web module, given by
      * <code>RequestUtil.PROP_CONFIG</code>.
