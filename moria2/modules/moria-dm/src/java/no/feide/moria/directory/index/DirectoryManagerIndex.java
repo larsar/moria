@@ -44,4 +44,22 @@ public interface DirectoryManagerIndex {
      */
     String getRealm(String id);
 
+
+    /**
+     * Return the username associated with a certain search base.
+     * @param base
+     * @return The username. May be an empty string if <code>base</code> is
+     *         unknown.
+     */
+    String getUsername(String base);
+
+
+    /**
+     * Return the password associated with a certain search base.
+     * @param base
+     * @return The password. May be an empty string if <code>base</code> is
+     *         unknown.
+     */
+    String getPassword(String base);
+
 }

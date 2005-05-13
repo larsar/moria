@@ -256,7 +256,9 @@ implements DirectoryManagerBackend {
 
         // Go through all references.
         for (int i = 0; i < myReferences.length; i++) {
-            String[] references = myReferences[i].getReferences();
+            final String[] references = myReferences[i].getReferences();
+            final String[] usernames = myReferences[i].getUsernames();
+            final String[] passwords = myReferences[i].getPasswords();
             for (int j = 0; j < references.length; j++) {
 
                 // For the benefit of the finally block below.
@@ -276,9 +278,21 @@ implements DirectoryManagerBackend {
 
                     } else {
 
-                        // Anonymous search using the implicit reference.
-                        ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, "");
-                        ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, "");
+                        // Anonymous search or not?
+                        if ((usernames[j].length() == 0) && (passwords[j].length() > 0))
+                            log.logWarn("Search username is empty but search password is not - possible index problem");
+                        else if ((passwords[j].length() == 0) && (usernames[j].length() > 0))
+                            log.logWarn("Search password is empty but search username is not - possible index problem");
+                        else if ((passwords[j].length() == 0) && (usernames[j].length() == 0))
+                            log.logInfo("Anonymous search for user element DN");
+                        else
+                            log.logInfo("Non-anonymous search for user element DN");
+                        log.logInfo("SEARCH USERNAME FOR REFERENCE " + references[j] + ": " + usernames[j]);
+                        log.logInfo("SEARCH PASSWORD FOR REFERENCE " + references[j] + ": " + passwords[j]);
+
+                        // Search using the implicit reference.
+                        ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, usernames[j]);
+                        ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, passwords[j]);
                         String pattern = usernameAttribute + '=' + userCredentials.getUsername();
                         rdn = ldapSearch(ldap, pattern);
                         if (rdn == null) {

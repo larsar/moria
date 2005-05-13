@@ -56,6 +56,10 @@ implements Serializable, DirectoryManagerIndex {
      */
     private HashMap realms = new HashMap();
 
+    private HashMap usernames = new HashMap();
+
+    private HashMap passwords = new HashMap();
+
 
     /**
      * Checks whether two index instances are equal. <br>
@@ -63,7 +67,8 @@ implements Serializable, DirectoryManagerIndex {
      * Note that for convenience (and/or laziness) this method relies on the
      * <code>String</code> representation as given by <code>toString()</code>.
      * @param obj
-     *          The other <code>SerializableIndex</code> object to compare to.
+     *            The other <code>SerializableIndex</code> object to compare
+     *            to.
      * @return <code>true</code> if two <code>SerializableIndex</code>
      *         objects are equal, otherwise <code>false</code>. Two instances
      *         are equal if and only if their lists of associations, exceptions
@@ -96,10 +101,15 @@ implements Serializable, DirectoryManagerIndex {
                 return false;
         }
 
-        // Check exceptions and realms; much simple data structure.
+        // Check exceptions, realms, usernames and passwords; much simple data
+        // structure.
         if (!exceptions.equals(other.exceptions))
             return false;
         if (!realms.equals(other.realms))
+            return false;
+        if (!usernames.equals(other.usernames))
+            return false;
+        if (!passwords.equals(other.passwords))
             return false;
 
         // We're okay.
@@ -108,15 +118,15 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
-     * Generates a hashCode.
-     * Dummy implementation.
-     *
+     * Generates a hashCode. Dummy implementation.
      * @return The hashcode.
-     * @throws UnsupportedOperationException Always.
+     * @throws UnsupportedOperationException
+     *             Always.
      */
-     public final int hashCode() {
-         throw new UnsupportedOperationException();
-     }
+    public final int hashCode() {
+
+        throw new UnsupportedOperationException();
+    }
 
 
     /**
@@ -124,10 +134,10 @@ implements Serializable, DirectoryManagerIndex {
      * (typically username). <br>
      * <br>
      * Note that looking up in the association list requires the logical ID to
-     * be on the form <code>identifier-at-realm</code>, similar to an
-     * email address. This is <em>not</em> a requirement for looking up
-     * references in the exception list, and therefore the 'at' character is not
-     * required in the logical ID.
+     * be on the form <code>identifier-at-realm</code>, similar to an email
+     * address. This is <em>not</em> a requirement for looking up references
+     * in the exception list, and therefore the 'at' character is not required
+     * in the logical ID.
      * @param id
      *            The logical identifier to look up.
      * @return One or more references matching the given identifier, or
@@ -145,12 +155,22 @@ implements Serializable, DirectoryManagerIndex {
         // Do we have an explicit match? That is, an exception from the
         // association rule?
         if (exceptions.containsKey(id))
-            newReferences.add(new IndexedReference(new String[] {(String) exceptions.get(id)}, true));
+            newReferences.add(new IndexedReference(new String[] {(String) exceptions.get(id)}, new String[] {""}, new String[] {""}, true));
 
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
-        if ((i > 0) && (associations.containsKey(id.substring(i + 1))))
-            newReferences.add(new IndexedReference((String[]) associations.get(id.substring(i + 1)), false));
+        if ((i > 0) && (associations.containsKey(id.substring(i + 1)))) {
+         
+            // Gather associations, usernames and passwords.
+            String[] gatheredAssociations = (String[]) associations.get(id.substring(i + 1));
+            ArrayList gatheredUsernames = new ArrayList(gatheredAssociations.length);
+            ArrayList gatheredPasswords = new ArrayList(gatheredAssociations.length);
+            for (int j=0; j<gatheredAssociations.length; j++) {
+                gatheredUsernames.add(usernames.get(gatheredAssociations[j]));
+                gatheredPasswords.add(passwords.get(gatheredAssociations[j]));
+            }
+            newReferences.add(new IndexedReference((String[]) gatheredAssociations, (String[]) gatheredUsernames.toArray(new String[] {}), (String[]) gatheredPasswords.toArray(new String[] {}), false));
+        }
 
         // Did we find any references?
         if (newReferences.size() == 0)
@@ -165,8 +185,8 @@ implements Serializable, DirectoryManagerIndex {
      * Looks up which realm a given identifier belongs to.
      * @param id
      *            The logical identifier to get realm for.
-     * @return The resolved realm for this identifier, or <code>null</code>
-     *         if no such realm could be found.
+     * @return The resolved realm for this identifier, or <code>null</code> if
+     *         no such realm could be found.
      * @see DirectoryManagerIndex#getRealm(String)
      */
     public final String getRealm(final String id) {
@@ -188,9 +208,9 @@ implements Serializable, DirectoryManagerIndex {
 
 
     /**
-     * Adds a new realm-to-base association to the index. Any modification of the
-     * index will result in any existing association with the same realm to be
-     * appended with the new realm. <br>
+     * Adds a new realm-to-base association to the index. Any modification of
+     * the index will result in any existing association with the same realm to
+     * be appended with the new realm. <br>
      * <br>
      * Note that this method does <em>not</em> check for duplicate
      * associations (associations between one realm and two identical bases).
@@ -202,17 +222,28 @@ implements Serializable, DirectoryManagerIndex {
      *            base similar to
      *            <code>ldap://some.ldap.server:636/dc=search,dc=base</code>.
      *            Cannot be <code>null</code>.
+     * @param username
+     *            The username to be used when performing searches on this
+     *            association's base. May not be <code>null</code>.
+     * @param password
+     *            The password to be used when performing searches on this
+     *            association's base. May not be <code>null</code>.
      * @throws IllegalArgumentException
-     *             If either <code>realm</code> or <code>base</code> is
+     *             If either <code>realm</code>,<code>base</code>,
+     *             <code>username</code>, or <code>password</code> is
      *             <code>null</code>.
      */
-    public final void addAssociation(final String realm, final String base) {
+    public final void addAssociation(final String realm, final String base, final String username, final String password) {
 
         // Sanity checks.
         if (realm == null)
             throw new IllegalArgumentException("Realm cannot be NULL");
         if (base == null)
             throw new IllegalArgumentException("Base cannot be NULL");
+        if (username == null)
+            throw new IllegalArgumentException("Username cannot be NULL");
+        if (password == null)
+            throw new IllegalArgumentException("Password cannot be NULL");
 
         // New association or updating an existing?
         if (associations.containsKey(realm)) {
@@ -229,6 +260,10 @@ implements Serializable, DirectoryManagerIndex {
 
         }
 
+        // Add credentials.
+        usernames.put(base, username);
+        passwords.put(base, password);
+
     }
 
 
@@ -237,8 +272,8 @@ implements Serializable, DirectoryManagerIndex {
      * associations) to this index. Any modifications to an already existing
      * exception will result in the old references being replaced.
      * @param id
-     *            The identifier for this exception, typically a user ID.
-     *            Cannot be <code>null</code>.
+     *            The identifier for this exception, typically a user ID. Cannot
+     *            be <code>null</code>.
      * @param reference
      *            The reference. In practical use this will be an LDAP element
      *            reference similar to
@@ -246,10 +281,9 @@ implements Serializable, DirectoryManagerIndex {
      *            Cannot be <code>null</code>.
      * @param realm
      *            The actual realm of the reference, which may not be given by
-     *            the identifier (on the form <i>user@realm </i>, for
-     *            example). Since moving between realms while keeping an
-     *            unchanged identifier is possible, this must be taken into
-     *            account.
+     *            the identifier (on the form <i>user@realm </i>, for example).
+     *            Since moving between realms while keeping an unchanged
+     *            identifier is possible, this must be taken into account.
      * @throws IllegalArgumentException
      *             If either <code>id</code> or <code>reference</code> is
      *             <code>null</code>.
@@ -280,17 +314,71 @@ implements Serializable, DirectoryManagerIndex {
         Iterator associationKeys = associations.keySet().iterator();
         while (associationKeys.hasNext()) {
             String[] bases = (String[]) associations.get(associationKeys.next());
-            for (int i = 0; i < bases.length; i++) {
-                s = s + bases[i];
-                if (i < bases.length - 1)
-                    s = s + "\n\t               ";
-                else
-                    s = s + '}';
-            }
+            for (int i = 0; i < bases.length; i++)
+                s = s + bases[i] + " '" + usernames.get(bases[i]) + "'/'" + passwords.get(bases[i]) + "'\n\t               ";
         }
+        s = s.substring(0, s.length() - 17) + "}";
 
         // Exceptions.
         return s = s + "\n\tExceptions: " + exceptions.toString().replaceAll(", ", "\n\t             ");
+
+    }
+
+
+    /**
+     * Return the username associated with a given base.
+     * @param base
+     *            The search base. May not be <code>null</code> or an empty
+     *            string.
+     * @return The username associated with <code>base</code>. May be an
+     *         empty string, but will never be <code>null</code> even though
+     *         the <code>base</code> does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>base</code> is <code>null</code> or an empty
+     *             string.
+     */
+    public final String getUsername(final String base)
+    throws IllegalArgumentException {
+
+        // Sanity check.
+        if ((base == null) || (base.length() == 0))
+            throw new IllegalArgumentException("Base must be a non-empty string");
+
+        // Return the username, or an empty string if the base was not
+        // recognized.
+        if (usernames.containsKey(base))
+            return (String) usernames.get(base);
+        else
+            return "";
+
+    }
+
+
+    /**
+     * Return the password associated with a given base.
+     * @param base
+     *            The search base. May not be <code>null</code> or an empty
+     *            string.
+     * @return The password associated with <code>base</code>. May be an
+     *         empty string, but will never be <code>null</code> even though
+     *         the <code>base</code> does not exist.
+     * @throws IllegalArgumentException
+     *             If <code>base</code> is <code>null</code> or an empty
+     *             string.
+     */
+    public final String getPassword(final String base)
+    throws IllegalArgumentException {
+
+        // Sanity check.
+        if ((base == null) || (base.length() == 0))
+            throw new IllegalArgumentException("Base must be a non-empty string");
+
+        // Return the username, or an empty string if the base was not
+        // recognized.
+        if (passwords.containsKey(base))
+            return (String) passwords.get(base);
+        else
+            return "";
 
     }
 

@@ -16,11 +16,12 @@ user ID.
 
     <!--
 	     Associate the realm some.realm with two different search bases, using SSL (port 636).
+	     The last base requires a username/password to perform initial bind for user DN searching.
     -->
  	<Associations>
 		<Realm name="some.realm">
 			<Base name="ldap://some.ldap.server:636/ou=users,dc=some,dc=where"/>
-			<Base name="ldap://some.ldap.server:636/ou=people,dc=some,dc=where"/>			
+			<Base name="ldap://some.ldap.server:636/ou=people,dc=some,dc=where" username="access" password="please"/>			
   		</Realm>
 	</Associations>  		
 	

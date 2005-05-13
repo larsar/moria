@@ -20,14 +20,25 @@
 package no.feide.moria.directory.index;
 
 /**
- * Represents an indexed reference to an external element. Used to
- * distinguish
+ * Represents an indexed reference to an external element. Used to distinguish
  * between explicitly and implicitly indexed references.
  */
 public class IndexedReference {
 
     /** External references. */
     private final String[] myReferences;
+
+    /**
+     * Usernames, where each element matches the same index in
+     * <code>myReferences</code>.
+     */
+    private final String[] myUsernames;
+
+    /**
+     * Passwords, where each element matches the same index in
+     * <code>myReferences</code>.
+     */
+    private final String[] myPasswords;
 
     /** true if this is a fully qualified reference to an external element. */
     private final boolean explicit;
@@ -37,27 +48,44 @@ public class IndexedReference {
      * Constructor. Creates a new indexed reference.
      * @param references
      *            One or more external references. Cannot be <code>null</code>.
+     * @param usernames
+     *            Usernames for each external reference. Cannot be
+     *            <code>null</code>, and must have the same number of
+     *            elements as <code>references</code>.
+     * @param passwords
+     *            Passwords for each external reference. Cannot be
+     *            <code>null</code>, and must have the same number of
+     *            elements as <code>references</code>.
      * @param explicitReference
      *            <code>true</code> if this is a fully qualified reference to
      *            an external element, otherwise <code>false</code>.
      * @throws NullPointerException
-     *             If <code>references</code> is <code>null</code>.
      * @throws IllegalArgumentException
-     *             If <code>references</code> is an an empty array.
+     *             If <code>references</code> is <code>null</code> or an
+     *             empty array, or if <code>usernames</code> or
+     *             <code>passwords</code> are <code>null</code> or contain a
+     *             different number of elements than <code>references</code>.
      */
-    public IndexedReference(final String[] references, final boolean explicitReference) {
+    public IndexedReference(final String[] references, final String[] usernames, final String[] passwords, final boolean explicitReference)
+    throws IllegalArgumentException {
 
         super();
 
-        // Sanity check.
-        if (references == null)
-            throw new NullPointerException("References cannot be NULL");
-        if (references.length == 0)
-            throw new IllegalArgumentException("References cannot be an empty array");
+        // Sanity checks.
+        if ((references == null) || (references.length == 0))
+            throw new NullPointerException("References cannot be NULL or an empty array");
+        if (usernames == null)
+            throw new IllegalArgumentException("Usernames cannot be NULL");
+        if (passwords == null)
+            throw new IllegalArgumentException("Passwords cannot be NULL");
+        if ((usernames.length != references.length) || (passwords.length != references.length))
+            throw new IllegalArgumentException("References, usernames and passwords must have the same number of elements");
 
         // Assignments.
         myReferences = (String[]) references.clone();
         explicit = explicitReference;
+        myUsernames = (String[]) usernames.clone();
+        myPasswords = (String[]) passwords.clone();
 
     }
 
@@ -69,6 +97,28 @@ public class IndexedReference {
     public final String[] getReferences() {
 
         return (String[]) myReferences.clone();
+
+    }
+    
+    
+    /**
+     * Gets the usernames.
+     * @return One or more usernames.
+     */
+    public final String[] getUsernames() {
+
+        return (String[]) myUsernames.clone();
+
+    }
+    
+    
+    /**
+     * Gets the external passwords.
+     * @return One or more passwords.
+     */
+    public final String[] getPasswords() {
+
+        return (String[]) myPasswords.clone();
 
     }
 
