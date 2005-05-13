@@ -53,13 +53,13 @@ $Id$
 			<p>
 			Thus, the first production version of the Moria software will from
 			now on be known as Moria1 v0.9, while the earliest second-generation
-			version is known as Moria2 v2.0. The SOAP interface version will
+			version is known as Moria2 v2.1. The SOAP interface version will
 			only be used when relevant, as will the generation number.
 			</p>
 			<p>
 			Thus, Moria is the authentication system itself, Moria2 is the
-			second-generation implementation of this system, and Moria2 v2.0 is
-			the second-generation implementation using the 2.0 version of the
+			second-generation implementation of this system, and Moria2 v2.1 is
+			the second-generation implementation using the 2.1 version of the
 			SOAP interface.
 			</p>
 		</subsection>
