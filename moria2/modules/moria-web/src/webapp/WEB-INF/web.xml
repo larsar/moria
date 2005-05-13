@@ -52,6 +52,12 @@
     <load-on-startup>6</load-on-startup>
   </servlet>  
   
+  <servlet>
+    <servlet-name>Statistics</servlet-name>
+    <servlet-class>no.feide.moria.servlet.StatisticsServlet</servlet-class>
+    <load-on-startup>7</load-on-startup>
+  </servlet>  
+  
    <servlet>
     <servlet-name>Information.JSP</servlet-name>
     <jsp-file>/WEB-INF/jsp/information.jsp</jsp-file>
@@ -130,6 +136,11 @@
   <servlet-mapping>
     <servlet-name>Picture</servlet-name>
     <url-pattern>/Picture</url-pattern>
+  </servlet-mapping>
+    
+  <servlet-mapping>
+    <servlet-name>Statistics</servlet-name>
+    <url-pattern>/Statistics</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

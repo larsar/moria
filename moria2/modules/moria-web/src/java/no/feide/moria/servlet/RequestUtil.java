@@ -206,6 +206,11 @@ public final class RequestUtil {
      * Bundle for the Welcome page for the Information Service.
      */
     public static final String BUNDLE_INFOWELCOME = "infowelcome";
+    
+    /**
+     * Bundle for the Statistics page.
+     */
+    public static final String BUNDLE_STATISTICSSERVLET = "statistics";
 
     /**
      * Configuration property for the InformationServlet feideattribs xml file
