@@ -153,6 +153,89 @@ $Id$
 &lt;/DirectoryManagerConfiguration&gt;
                 </source>
             </subsection>
+            <subsection name="Index">
+            	<p>
+            	The index configuration file, used to generate the actual index
+            	file, consists of a root <i>Index</i> element. The <i>Index</i>
+            	element may contain one or more <i>Associations</i> and/or
+            	<i>Exceptions</i> children.
+            	</p>
+            	<p>
+            	The <i>Associations</i> element contains one or more
+            	<i>Realm</i> children, each with an attribute <i>name</i>
+            	giving the logical realm name for the user's falling into this
+            	realm. This assumes usernames on the form
+            	<i>identity</i>@<i>realm</i>, where the realm's <i>name</i>
+            	attribute is the latter part. Each <i>Realm</i> element may
+            	contain one or more <i>Base</i> children. Each <i>Base</i> has
+            	the attributes <i>name</i>, giving a potential LDAP search base
+            	for this realm, as well as the two optional attributes
+            	<i>username</i> and <i>password</i>. These latter two, if
+            	specified, are to be used when searching for the user elements's
+            	actual DN in case the LDAP server does not allow anonymous
+            	searching.
+            	</p>
+            	<p>
+            	The <i>Exceptions</i> elements contain no children, but the
+            	attributes <i>id</i>, giving the full username (which may not
+            	be on the form <i>identity</i>@<i>realm</i>) of a user;
+            	<i>reference</i>, giving the full reference to the user element;
+            	and <i>realm</i>, giving the actual realm the user belongs to -
+            	this allows for users to retain the usernames even when moving
+            	between organizations (each with its own realm).
+            	</p>
+            	<p>
+            	Together, <i>Associations</i> map a group of users to one or
+            	more search bases based on their realm membership, while
+            	<i>Exceptions</i> give a one-to-one mapping between usernames
+            	and search bases.
+            	</p>
+            	<p>
+            	An example index configuration file is shown below:
+            	</p>
+				<source>
+&lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+
+&lt;-- 
+
+A sample index file, with two associations for the same realm and one exception.
+This file is used to create and write a SerializableIndex object to file, using
+tools such as no.feide.moria.directory.index.tools.SerializableIndexCreator.
+
+More than one base ("implicit reference") may be associated with the same realm,
+but only one reference ("explicit reference") may be associated with any given
+user ID.
+
+-->
+
+&lt;Index>
+
+    &lt;!--
+	     Associate the realm some.realm with two different search bases, using SSL (port 636).
+	     The last base requires a username/password to perform initial bind for user DN searching.
+    -->
+ 	&lt;Associations>
+		&lt;Realm name="some.realm">
+			&lt;Base name="ldap://some.ldap.server:636/ou=users,dc=some,dc=where"/>
+			&lt;Base name="ldap://some.ldap.server:636/ou=people,dc=some,dc=where" username="access" password="please"/>			
+  		&lt;/Realm>
+	&lt;/Associations>  		
+	
+    &lt;!--
+	     Associate the user ID with one user element reference, using SSL (port 636).
+	     This will override the above association. The "realm" attribute is used to
+	     tie the user to a given organization, for authorization purposes.
+    -->	
+	&lt;Exception id="user@some.realm" reference="ldap://another.ldap.server:636/uid=user,ou=people,dc=another,dc=place" realm="some.realm"/>	
+	
+&lt;/Index&gt;
+				</source>
+				<p>
+				The tool used to generate the index object based on such a file
+				is given in the class
+				<a href="moria-dm/apidocs/no/feide/moria/directory/index/tools/SerializableIndexCreator.html">SerializableIndexCreator</a>.
+            	</p>
+            </subsection>
         </section>
     </body>
 </document>
