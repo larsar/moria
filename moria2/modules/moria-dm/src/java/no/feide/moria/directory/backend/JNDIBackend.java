@@ -109,7 +109,7 @@ implements DirectoryManagerBackend {
             final String usernameAttributeName, final String guessedAttributeName)
     throws IllegalArgumentException, NullPointerException {
         
-        log.logInfo("JNDIBackend: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("JNDIBackend: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         // Assignments, with sanity checks.
         if (usernameAttributeName == null)
@@ -157,7 +157,7 @@ implements DirectoryManagerBackend {
      */
     public final void open(final IndexedReference[] references) {
         
-        log.logInfo("open: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("open: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         // Sanity check.
         if ((references == null) || (references.length == 0))
@@ -182,7 +182,7 @@ implements DirectoryManagerBackend {
      */
     public final boolean userExists(final String username) throws BackendException {
         
-        log.logInfo("userExists: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("userExists: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
@@ -248,7 +248,7 @@ implements DirectoryManagerBackend {
     public final HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException {
         
-        log.logInfo("authenticate: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("authenticate: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         // Sanity check.
         if (userCredentials == null)
@@ -383,7 +383,7 @@ implements DirectoryManagerBackend {
     private HashMap getAttributes(final InitialLdapContext ldap, final String rdn, final String[] attributes)
     throws BackendException {
         
-        log.logInfo("getAttributes: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("getAttributes: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         // Sanity checks.
         if (ldap == null)
@@ -467,7 +467,7 @@ implements DirectoryManagerBackend {
      */
     public void close() {
         
-        log.logInfo("close: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("close: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         // Does nothing.
 
@@ -493,7 +493,7 @@ implements DirectoryManagerBackend {
     private String ldapSearch(final InitialLdapContext ldap, final String pattern)
     throws BackendException {
         
-        log.logInfo("ldapSearch: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("ldapSearch: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         // Check pattern for illegal content.
         String[] illegals = {"*", "\2a"};
@@ -566,7 +566,7 @@ implements DirectoryManagerBackend {
      */
     private InitialLdapContext connect(final String url) throws BackendException {
         
-        log.logInfo("connect: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+        log.logDebug("connect: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
 
         //  Prepare connection.
         Hashtable env = new Hashtable(defaultEnv);

@@ -155,7 +155,7 @@ implements DirectoryManagerBackendFactory {
                 // DEBUG
                 Provider[] providers = Security.getProviders();
                 for (int i=0; i<providers.length; i++) {
-                    log.logInfo("PRE: " + providers[i].getName());
+                    log.logDebug("PRE: " + providers[i].getName());
                 }
                 
                 // Explicitly set com.sun.net.ssl.internal.ssl.Provider...
@@ -166,22 +166,22 @@ implements DirectoryManagerBackendFactory {
                 // DEBUG
                 providers = Security.getProviders();
                 for (int i=0; i<providers.length; i++) {
-                    log.logInfo("POST: " + providers[i].getName());
+                    log.logDebug("POST: " + providers[i].getName());
                 }
                 
                 
                 // Get and set truststore filename.
-                log.logInfo("Truststore was " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG               
+                log.logDebug("Truststore was " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG               
                 System.setProperty("javax.net.ssl.trustStore", value);
-                log.logInfo("Truststore is now " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
-                log.logInfo("Truststore should be " + value);  // DEBUG
+                log.logDebug("Truststore is now " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+                log.logDebug("Truststore should be " + value);  // DEBUG
 
                 // Get and set truststore password.
                 value = trustStoreElement.getAttributeValue("password");
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"password\" not found in Truststore element");
                 System.setProperty("javax.net.ssl.trustStorePassword", value);
-                log.logInfo("System: " + System.getProperties().toString());  // DEBUG
+                log.logDebug("System: " + System.getProperties().toString());  // DEBUG
 
                 // Now we're ready to use SSL.
                 Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
