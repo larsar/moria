@@ -235,7 +235,11 @@ public final class RequestUtil {
      * path.
      */
     public static final String PROP_BACKENDSTATUS_STATISTICS2_XML = PATH_PREFIX + "backendstatus.statistics2_xml";
-
+    
+    /**
+     * Configuration property for the StatisticsServlet's ignored services
+     */
+    public static final String PROP_BACKENDSTATUS_IGNORE = PATH_PREFIX + "backendstatus.ignore";
 
     /**
      * Bundle for the information servlet.

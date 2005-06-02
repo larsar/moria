@@ -187,6 +187,13 @@ extends HttpServlet {
         Properties config = getConfig();
         if (config != null) {
           StatisticsHandler handler = new StatisticsHandler();
+          
+          // Read ignore-list from config file
+          String ignorestring = (String)config.get(RequestUtil.PROP_BACKENDSTATUS_IGNORE);
+          String[] ignore = ignorestring.split(",");
+          for (int i=0; i<ignore.length; i++) {
+              handler.addIgnoreService(ignore[i]);
+          }
           SAXParserFactory factory = SAXParserFactory.newInstance();
           try {
              SAXParser saxParser = factory.newSAXParser();

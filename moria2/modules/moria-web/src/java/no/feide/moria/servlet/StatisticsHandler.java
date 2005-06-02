@@ -36,6 +36,7 @@ public class StatisticsHandler extends DefaultHandler {
     private Vector allmonths;
     private StatisticsData currentStat;
     private String currentchars;
+    private Vector ignorevector;
     
     /**
      * Constructor
@@ -46,6 +47,19 @@ public class StatisticsHandler extends DefaultHandler {
         this.stats = new Vector();
         this.allmonths = new Vector();
         this.currentchars = null;
+        this.ignorevector = new Vector();
+    }
+    
+    public void addIgnoreService(final String servicename) {
+        this.ignorevector.add(servicename);
+    }
+    
+    private boolean shouldIgnore(final String servicename) {
+        for (int i = 0; i < this.ignorevector.size(); i++) {
+            String s = (String) this.ignorevector.get(i);
+            if (s.equals(servicename)) return true;
+        }
+        return false;
     }
     
     /**
@@ -56,6 +70,8 @@ public class StatisticsHandler extends DefaultHandler {
      */
     public void startDocument() throws SAXException {
     }
+    
+    
     
     /**
      * Implements callback that is called at end of document. Empty for now.
@@ -87,7 +103,7 @@ public class StatisticsHandler extends DefaultHandler {
             currentchars = "";
         }
         else if (eName.equals("Month")) {
-            if (currentStat != null) {
+            if ((currentStat != null) && !this.shouldIgnore(currentStat.getName())) {
                 final int n = attrs.getLength();
                 final String monthname = attrs.getValue(new String("name"));
                 final String countstring = attrs.getValue(new String("count"));
@@ -123,7 +139,9 @@ public class StatisticsHandler extends DefaultHandler {
         if (eName.equals("")) eName = qName;
         
         if (eName.equals("Service")) {
-            this.stats.add(currentStat);
+            if (!this.shouldIgnore(currentStat.getName())) {
+                this.stats.add(currentStat);
+            }
             this.currentStat = null;
         }
         else if (eName.equals("Name")) {
