@@ -285,6 +285,11 @@ public final class RequestUtil {
     public static final String PROP_FAQ_STATUS = PATH_PREFIX + "faq.status";
     
     /**
+     * URL to the Statistics servlet, used for language selection.
+     */
+    public static final String PROP_STATISTICS_URL = PATH_PREFIX + "statistics.url";
+    
+    /**
      * Organization name of the Moria owner, as shown on the FAQ page.<br>
      * <br>
      * Current value is <code>PATH_PREFIX + "faq.owner"</code>.

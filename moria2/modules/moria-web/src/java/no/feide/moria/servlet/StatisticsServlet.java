@@ -58,6 +58,7 @@ extends HttpServlet {
      * <ul>
      * <li><code>RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML</code>
      * <li><code>RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML</code>
+     * <li><code>RequestUtil.PROP_BACKENDSTATUS_IGNORE</code>
      * <li><code>RequestUtil.PROP_COOKIE_LANG_XML</code>
      * </ul>
      * @see RequestUtil#PROP_BACKENDSTATUS_STATISTICS_XML
@@ -65,6 +66,7 @@ extends HttpServlet {
     private static final String[] REQUIRED_PARAMETERS = {
             RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML,
             RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML,
+            RequestUtil.PROP_BACKENDSTATUS_IGNORE,
             RequestUtil.PROP_COOKIE_LANG };
 
     /**
@@ -138,7 +140,7 @@ extends HttpServlet {
                     out.println("[" + longName + "]");
                 } else
                     out.println("<td align=\"centre\"><small><a class=\"invers\" href ="
-                            + config.get(RequestUtil.PROP_FAQ_STATUS) + "?" + RequestUtil.PARAM_LANG + "=" + shortName + ">" + longName
+                            + config.get(RequestUtil.PROP_STATISTICS_URL) + "?" + RequestUtil.PARAM_LANG + "=" + shortName + ">" + longName
                             + "</a></small></td>");
                 }
          
