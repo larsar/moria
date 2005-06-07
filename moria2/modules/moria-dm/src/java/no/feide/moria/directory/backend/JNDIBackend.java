@@ -279,20 +279,23 @@ implements DirectoryManagerBackend {
                     } else {
 
                         // Anonymous search or not?
+                        ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
                         if ((usernames[j].length() == 0) && (passwords[j].length() > 0))
                             log.logWarn("Search username is empty but search password is not - possible index problem");
                         else if ((passwords[j].length() == 0) && (usernames[j].length() > 0))
                             log.logWarn("Search password is empty but search username is not - possible index problem");
-                        else if ((passwords[j].length() == 0) && (usernames[j].length() == 0))
+                        else if ((passwords[j].length() == 0) && (usernames[j].length() == 0)) {
                             log.logInfo("Anonymous search for user element DN");
+                            ldap.removeFromEnvironment(Context.SECURITY_AUTHENTICATION);
+                        }
                         else
                             log.logInfo("Non-anonymous search for user element DN");
                         log.logInfo("SEARCH USERNAME FOR REFERENCE " + references[j] + ": " + usernames[j]);
                         log.logInfo("SEARCH PASSWORD FOR REFERENCE " + references[j] + ": " + passwords[j]);
-
-                        // Search using the implicit reference.
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, usernames[j]);
                         ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, passwords[j]);
+
+                        // Search using the implicit reference.
                         String pattern = usernameAttribute + '=' + userCredentials.getUsername();
                         rdn = ldapSearch(ldap, pattern);
                         if (rdn == null) {
@@ -311,7 +314,7 @@ implements DirectoryManagerBackend {
                     ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
                     try {
                         ldap.reconnect(null);
-                        log.logInfo("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
+                        log.logInfo("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);                       
                         return getAttributes(ldap, rdn, attributeRequest); // Success.
                     } catch (AuthenticationException e) {
 
@@ -413,7 +416,10 @@ implements DirectoryManagerBackend {
             oldAttrs = ldap.getAttributes(rdn, parsedAttributes);
 
         } catch (NamingException e) {
-            throw new BackendException("Unable to read attributes '" + attributes + "' from '" + url + "'", e);
+            String a = new String();
+            for (int i=0; i<attributes.length; i++)
+                a = a + attributes[i] + ", ";
+            throw new BackendException("Unable to read attribute(s) '" + a.substring(0, a.length() - 2) + "' from '" + rdn + "' on '" + url + "'", e);
         }
 
         // Translate retrieved attributes from Attributes to HashMap.
