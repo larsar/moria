@@ -818,7 +818,7 @@ public final class AuthorizationManagerTest extends TestCase {
      * Test the getSecLevel method.
      *
      * @throws UnknownServicePrincipalException
-     *
+     * @throws UnknownAttributeException
      * @see AuthorizationManager#getSecLevel(java.lang.String, java.lang.String[])
      */
     public void testGetSecLevel() throws UnknownServicePrincipalException, UnknownAttributeException {
@@ -924,7 +924,7 @@ public final class AuthorizationManagerTest extends TestCase {
      *
      * @throws UnknownServicePrincipalException
      *
-     * @see AuthorizationManager#allowUserorg(java.lang.String)
+     * @see AuthorizationManager#allowUserorg(java.lang.String, java.lang.String)
      */
     public void testAllowUserorg() throws UnknownServicePrincipalException {
         final AuthorizationManager authMan = new AuthorizationManager();
