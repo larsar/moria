@@ -109,7 +109,7 @@ extends TimerTask {
      *         updated since (based on the file's timestamp on disk, as per the
      *         <code>File.lastModified()</code> method).
      * @see java.io.File#lastModified()
-     * @see DirectoryManager#setConfig(Properties)
+     * @see DirectoryManager#setConfig(java.util.Properties)
      */
     protected final DirectoryManagerIndex readIndex() {
 
