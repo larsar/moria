@@ -38,8 +38,8 @@
     Override maven.user in ~/build.properties if your local username differs from your CVS username.
   -->
   <repository>
-    <connection>scm:cvs:ext:${maven.user}@cvs.uninett.no:/cvs:feide-w3ls/sandbox/moria-ng</connection>
-    <url>http://cvs.sourceforge.net/viewcvs.py/moria/moria/</url>
+    <connection>scm:cvs:ext:${maven.user}@cvs.sourceforge.net:/cvsroot/moria:/moria2</connection>
+    <url>http://cvs.sourceforge.net/viewcvs.py/moria/moria2/</url>
   </repository>
 
   <mailingLists>
