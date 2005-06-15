@@ -8,3 +8,4 @@ target
 *.iws
 *.iml
 build.properties
+.tomcatplugin
