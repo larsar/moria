@@ -753,7 +753,7 @@ public final class MoriaController {
      * question. If no exception is thrown, this is allowed.
      * @param servicePrincipal
      *            The principal for the service performing the request.
-     * @param userorg
+     * @param userOrganization
      *            The organization the user comes from. Must be a non-empty
      *            string.
      * @throws AuthorizationException

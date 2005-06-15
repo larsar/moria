@@ -52,6 +52,9 @@ public final class MoriaControllerTest extends TestCase {
     }
 
 
+    /**
+     * Set up the test.
+     */
     public void setUp() {
         /* Property needed by the RandomId class */
         if (System.getProperty("no.feide.moria.store.nodeid") == null)
@@ -213,7 +216,7 @@ public final class MoriaControllerTest extends TestCase {
 
     /**
      * Test the attemptLogin method.
-     * @see MoriaController#attemptLogin(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * @see MoriaController#attemptLogin(java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
      * @throws MoriaControllerException if any of the tests fail unexpectedly
      */
     public void testAttemptLogin() throws MoriaControllerException {
