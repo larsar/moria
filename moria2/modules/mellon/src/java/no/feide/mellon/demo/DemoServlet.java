@@ -69,9 +69,9 @@ import java.util.StringTokenizer;
  * <li>The Moria service instance used is given by
  * <code>SERVICE_ENDPOINT</code>.
  * </ul>
- * @see no.feide.mellon.Moria#initiateAuthentication(String[], String, String,
- *      boolean)
- * @see no.feide.mellon.Moria#getUserAttributes(String)
+ * @see no.feide.moria.webservices.v2_1.AuthenticationSoapBindingStub#initiateAuthentication(String[],
+ *      String, String, boolean)
+ * @see no.feide.moria.webservices.v2_1.AuthenticationSoapBindingStub#getUserAttributes(String)
  */
 public class DemoServlet
 extends HttpServlet {
@@ -337,6 +337,7 @@ extends HttpServlet {
      *             If the required property <code>CONFIG_FILENAME</code> is
      *             not set, or if the file given by this property could not be
      *             read.
+     * @return Configuration properties from file.
      * @see #REQUIRED_PARAMETERS
      */
     private Properties getConfig() throws IllegalStateException {
