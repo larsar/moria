@@ -9,11 +9,11 @@
 
 <project>
   <extend>${basedir}/../../project.xml</extend>
-  <name>Mellon2</name>
-  <id>mellon</id>
+  <name>Mellon2 Demo</name>
+  <id>mellon-demo</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
-  <package>no.feide.*</package>
-  <shortDescription>Mellon2 client-side API</shortDescription>
+  <package>no.feide.moria.*</package>
+  <shortDescription>Mellon2 Client-Side Demo Service(s)</shortDescription>
 
   <description/>
 
@@ -31,6 +31,9 @@
     <!-- Misc deps -->
     &dep-servlet-api;
     &dep-commons-logging;
+
+    <!-- Moria2 deps -->
+    &dep-mellon;
 
   </dependencies>
 
