@@ -172,12 +172,12 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
-            qName = new javax.xml.namespace.QName("http://v2_1.webservices.moria.feide.no", "Attribute");
+            qName = new javax.xml.namespace.QName("http://v2_1.webservices.moria.feide.no", "ArrayOfAttribute");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.webservices.v2_1.Attribute.class;
+            cls = no.feide.moria.webservices.v2_1.Attribute[].class;
             cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
+            cachedSerFactories.add(arraysf);
+            cachedDeserFactories.add(arraydf);
 
             qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException");
             cachedSerQNames.add(qName);
@@ -186,19 +186,19 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "SOAPException");
+            qName = new javax.xml.namespace.QName("http://v2_1.webservices.moria.feide.no", "Attribute");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.SOAPException.class;
+            cls = no.feide.moria.webservices.v2_1.Attribute.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://v2_1.webservices.moria.feide.no", "ArrayOfAttribute");
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ServerException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.webservices.v2_1.Attribute[].class;
+            cls = no.feide.moria.servlet.soap.ServerException.class;
             cachedSerClasses.add(cls);
-            cachedSerFactories.add(arraysf);
-            cachedDeserFactories.add(arraydf);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://v2_1.webservices.moria.feide.no", "ArrayOf_soapenc_string");
             cachedSerQNames.add(qName);
@@ -207,23 +207,9 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             cachedSerFactories.add(arraysf);
             cachedDeserFactories.add(arraydf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException");
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "SOAPException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.IllegalInputException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.AuthorizationFailedException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ClientException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.ClientException.class;
+            cls = no.feide.moria.servlet.soap.SOAPException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -235,9 +221,23 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ServerException");
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ClientException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.ServerException.class;
+            cls = no.feide.moria.servlet.soap.ClientException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.servlet.soap.IllegalInputException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.servlet.soap.AuthorizationFailedException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);

@@ -9,15 +9,15 @@
 
 <project>
   <extend>${basedir}/../../project.xml</extend>
-  <name>Mellon</name>
+  <name>Mellon2</name>
   <id>mellon</id>
   <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
-  <package>no.feide.mellon.*</package>
-  <shortDescription>Mellon API and Demo Service</shortDescription>
+  <package>no.feide.*</package>
+  <shortDescription>Mellon2 client-side API</shortDescription>
 
   <description/>
 
-  <siteDirectory>/home/groups/m/mo/moria/htdocs/mellon</siteDirectory>
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/mellon2</siteDirectory>
 
   <dependencies>
 
