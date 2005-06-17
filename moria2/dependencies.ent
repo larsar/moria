@@ -393,10 +393,10 @@
   </dependency>
   ">
 
-<!ENTITY dep-moria-attribute "
+<!ENTITY dep-mellon "
   <dependency>
     <groupId>moria</groupId>
-    <artifactId>moria-attribute</artifactId>
+    <artifactId>mellon</artifactId>
     <version>1.0-b1-SNAPSHOT</version>
     <type>jar</type>
     <properties>
