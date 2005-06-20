@@ -11,10 +11,10 @@
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Log API</name>
   <id>moria-log</id>
-  <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
+  <currentVersion>1.1</currentVersion>
   <package>no.feide.moria.log</package>
 
-  <shortDescription>The log component of Moria</shortDescription>
+  <shortDescription>The log component of Moria2</shortDescription>
 
   <description/>
 
