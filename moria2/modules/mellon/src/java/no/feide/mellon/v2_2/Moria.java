@@ -23,10 +23,11 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 import no.feide.mellon.MoriaException;
+import no.feide.moria.servlet.soap.AuthenticationFailedException;
+import no.feide.moria.servlet.soap.AuthenticationUnavailableException;
 import no.feide.moria.servlet.soap.AuthorizationFailedException;
 import no.feide.moria.servlet.soap.IllegalInputException;
 import no.feide.moria.servlet.soap.InternalException;
-import no.feide.moria.servlet.soap.SOAPException;
 import no.feide.moria.servlet.soap.UnknownTicketException;
 import no.feide.moria.webservices.v2_2.Attribute;
 import no.feide.moria.webservices.v2_2.AuthenticationSoapBindingStub;
@@ -34,11 +35,10 @@ import no.feide.moria.webservices.v2_2.AuthenticationSoapBindingStub;
 import org.apache.axis.AxisFault;
 
 /**
- * 
+ * A client-side Moria2 v2.2 API, hiding the internals of generated stub usage.
  */
 public class Moria {
 
-    
     /**
      * Internal representation of the Moria2 service.
      */
@@ -92,13 +92,24 @@ public class Moria {
 
 
     /**
+     * Gets user attributes. Called by the service when the user returns after a
+     * successful login.
      * @param serviceTicket
-     * @return foobar
+     *            The ticket included in the return request issued by the
+     *            client.
+     * @return Array of attributes as requested in initiateAuthentication.
      * @throws RemoteException
-     * @throws InternalException
-     * @throws IllegalInputException
-     * @throws UnknownTicketException
+     *             If an exception occurs in the underlying SOAP layer.
      * @throws AuthorizationFailedException
+     *             If the service is now allowed to perform this operation.
+     * @throws IllegalInputException
+     *             If the method is called with an illegal parameter.
+     * @throws InternalException
+     *             If an internal problem prevents Moria2 from performing this
+     *             operation.
+     * @throws UnknownTicketException
+     *             If the service ticket given by <code>serviceTicket</code>
+     *             does not match an existing or valid session.
      */
     public Attribute[] getUserAttributes(final String serviceTicket)
     throws RemoteException, InternalException, IllegalInputException,
@@ -110,16 +121,38 @@ public class Moria {
 
 
     /**
+     * Initiates authentication. This is the initial call done by a service to
+     * start a login attempt.
      * @param attributes
+     *            The attributes the service wants returned on login.
      * @param returnURLPrefix
+     *            The prefix of the URL the user is to be returned to after
+     *            successful authentication.
      * @param returnURLPostfix
+     *            The optional postfix of the return URL.
      * @param forceInteractiveAuthentication
-     * @return foobar
+     *            If <code>true</code>, user is forced through authentication
+     *            even if SSO is possible.
+     * @return An URL to which the client is to be redirected to for
+     *         authentication.
      * @throws RemoteException
-     * @throws SOAPException
+     *             If an exception occurs in the underlying SOAP layer.
+     * @throws AuthorizationFailedException
+     *             If the service is now allowed to perform this operation, or
+     *             if the service is not allowed to read one or more of the
+     *             requested attributes.
+     * @throws IllegalInputException
+     *             If the method is called with illegal parameters, such as a
+     *             <code>returnURLPrefix</code>/
+     *             <code>returnURLPostfix</code> combination that does not
+     *             yield a valid URL.
+     * @throws InternalException
+     *             If an internal problem prevents Moria2 from performing this
+     *             operation.
      */
     public String initiateAuthentication(final String[] attributes, final String returnURLPrefix, final String returnURLPostfix, final boolean forceInteractiveAuthentication)
-    throws RemoteException, SOAPException {
+    throws RemoteException, InternalException, IllegalInputException,
+    AuthorizationFailedException {
 
         return moria2.initiateAuthentication(attributes, returnURLPrefix, returnURLPostfix, forceInteractiveAuthentication);
 
@@ -127,15 +160,40 @@ public class Moria {
 
 
     /**
+     * Performs direct non-interactive authentication. A redirect- and HTML-less
+     * login method. Only to be used in special cases where the client for some
+     * reason does not support the standard login procedure. Inherently insecure
+     * as the service will have knowledge of the plaintext password.
      * @param attributes
+     *            The attributes the service wants returned following
+     *            authentication.
      * @param username
+     *            The user name of the user to be authenticated.
      * @param password
-     * @return foobar
+     *            The password of the user to be authenticated.
+     * @return Array of attributes as requested.
      * @throws RemoteException
-     * @throws SOAPException
+     *             If an exception occurs in the underlying SOAP layer.
+     * @throws AuthorizationFailedException
+     *             If the service is now allowed to perform this operation, or
+     *             if the service is not allowed to read one or more of the
+     *             requested attributes.
+     * @throws AuthenticationFailedException
+     *             If the user credentials (given by <code>username</code>/
+     *             <code>password</code>) are not valid.
+     * @throws AuthenticationUnavailableException
+     *             If the third-party authentication server responsible for
+     *             authenticating this user is not available.
+     * @throws IllegalInputException
+     *             If the method is called with illegal parameters.
+     * @throws InternalException
+     *             If an internal problem prevents Moria2 from performing this
+     *             operation.
      */
     public Attribute[] directNonInteractiveAuthentication(final String[] attributes, final String username, final String password)
-    throws RemoteException, SOAPException {
+    throws RemoteException, InternalException, IllegalInputException,
+    AuthenticationFailedException, AuthorizationFailedException,
+    AuthenticationUnavailableException {
 
         return moria2.directNonInteractiveAuthentication(attributes, username, password);
 
@@ -143,14 +201,32 @@ public class Moria {
 
 
     /**
+     * Performs proxy authentication. Called by a subsystem to authenticate a
+     * user.
      * @param attributes
+     *            The attributes the service wants returned following proxy
+     *            authentication.
      * @param proxyTicket
-     * @return foobar
+     *            The proxy ticket given to the calling system by its initiator.
+     * @return Array of attributes as requested.
      * @throws RemoteException
-     * @throws SOAPException
+     *             If an exception occurs in the underlying SOAP layer.
+     * @throws AuthorizationFailedException
+     *             If the service is now allowed to perform this operation, or
+     *             if the service is not allowed to read one or more of the
+     *             requested attributes.
+     * @throws IllegalInputException
+     *             If the method is called with illegal parameters.
+     * @throws InternalException
+     *             If an internal problem prevents Moria2 from performing this
+     *             operation.
+     * @throws UnknownTicketException
+     *             If the proxy ticket given by <code>proxyTicket</code> does
+     *             not match an existing and valid session.
      */
     public Attribute[] proxyAuthentication(final String[] attributes, final String proxyTicket)
-    throws RemoteException, SOAPException {
+    throws RemoteException, InternalException, IllegalInputException,
+    UnknownTicketException, AuthorizationFailedException {
 
         return moria2.proxyAuthentication(attributes, proxyTicket);
 
@@ -158,14 +234,33 @@ public class Moria {
 
 
     /**
+     * Gets a proxy ticket. A service may as part of the initial attribute
+     * request ask for a ticket granting ticket that later may be used in this
+     * call. The returned proxy ticket is to be handed over to the specified
+     * underlying system and may be used by that system only to authenticate the
+     * request.
      * @param ticketGrantingTicket
+     *            A TGT that has been issued previously.
      * @param proxyServicePrincipal
-     * @return foobar
+     *            The service which the proxy ticket should be issued for.
+     * @return A proxy ticket.
      * @throws RemoteException
-     * @throws SOAPException
+     *             If an exception occurs in the underlying SOAP layer.
+     * @throws AuthorizationFailedException
+     *             If the service is now allowed to perform this operation.
+     * @throws IllegalInputException
+     *             If the method is called with illegal parameters.
+     * @throws InternalException
+     *             If an internal problem prevents Moria2 from performing this
+     *             operation.
+     * @throws UnknownTicketException
+     *             If the ticket granting ticket given by
+     *             <code>ticketGrantingTicket</code> does not match an
+     *             existing and valid session.
      */
     public String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal)
-    throws RemoteException, SOAPException {
+    throws RemoteException, InternalException, IllegalInputException,
+    UnknownTicketException, AuthorizationFailedException {
 
         return moria2.getProxyTicket(ticketGrantingTicket, proxyServicePrincipal);
 
@@ -173,13 +268,27 @@ public class Moria {
 
 
     /**
+     * Verifies the existence of a given user in the underlying directories.
      * @param username
-     * @return foobar
+     *            The username to be validated.
+     * @return <code>true</code> if the user is found, otherwise
+     *         <code>false</code>.
      * @throws RemoteException
-     * @throws SOAPException
+     *             If an exception occurs in the underlying SOAP layer.
+     * @throws AuthorizationFailedException
+     *             If the service is now allowed to perform this operation.
+     * @throws AuthenticationUnavailableException
+     *             If the authentication server where this user belongs is not
+     *             available.
+     * @throws IllegalInputException
+     *             If the method is called with an illegal parameter.
+     * @throws InternalException
+     *             If an internal problem prevents Moria2 from performing this
+     *             operation.
      */
     public boolean verifyUserExistence(final String username)
-    throws RemoteException, SOAPException {
+    throws RemoteException, InternalException, IllegalInputException,
+    AuthorizationFailedException, AuthenticationUnavailableException {
 
         return moria2.verifyUserExistence(username);
 
