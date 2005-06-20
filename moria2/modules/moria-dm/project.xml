@@ -11,7 +11,7 @@
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Directory manager</name>
   <id>moria-dm</id>
-  <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
+  <currentVersion>1.1</currentVersion>
   <package>no.feide.moria.directory</package>
 
   <shortDescription>This is the Moria Directory manager</shortDescription>
