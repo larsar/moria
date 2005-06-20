@@ -11,7 +11,7 @@
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Controller</name>
   <id>moria-ctrl</id>
-  <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
+  <currentVersion>1.1</currentVersion>
   <package>no.feide.moria</package>
 
   <shortDescription>The core component of Moria</shortDescription>
