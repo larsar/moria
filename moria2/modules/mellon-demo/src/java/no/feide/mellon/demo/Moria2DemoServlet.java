@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import no.feide.moria.webservices.v2_1.Attribute;
-import no.feide.moria.webservices.v2_1.AuthenticationSoapBindingStub;
+import no.feide.moria.webservices.v2_2.Attribute;
+import no.feide.moria.webservices.v2_2.AuthenticationSoapBindingStub;
 
 import java.io.File;
 import java.io.FileInputStream;
