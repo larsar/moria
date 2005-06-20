@@ -21,7 +21,6 @@
 package no.feide.moria.webservices.v2_1;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
 
 import no.feide.moria.servlet.soap.SOAPException;
 
@@ -47,10 +46,8 @@ public interface Authentication extends Remote {
      *          Whether or not cookie based authentication (SSO Light)
      *          should be allowed.
      * @return The Moria url the client is to be redirected to.
-     * @throws RemoteException
+     * @throws SOAPException
      *          If anything fails during the call.
-     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#initiateAuthentication(java.lang.String[],
-     *      java.lang.String, java.lang.String, boolean)
      */
     String initiateAuthentication(String[] attributes, String returnURLPrefix, String returnURLPostfix,
                                   boolean forceInteractiveAuthentication)
@@ -71,10 +68,8 @@ public interface Authentication extends Remote {
      * @param password
      *          The password of the user to be authenticated.
      * @return Array of attributes as requested.
-     * @throws RemoteException
+     * @throws SOAPException
      *          If anything fails during the call.
-     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#directNonInteractiveAuthentication(java.lang.String[],
-     *      java.lang.String, java.lang.String)
      */
     Attribute[] directNonInteractiveAuthentication(String[] attributes, String username, String password)
     throws SOAPException;
@@ -89,7 +84,7 @@ public interface Authentication extends Remote {
      * @param proxyTicket
      *          The proxy ticket given to the calling system by its initiator.
      * @return Array of attributes as requested.
-     * @throws RemoteException
+     * @throws SOAPException
      *          If anything fails during the call.
      */
     Attribute[] proxyAuthentication(String[] attributes, String proxyTicket)
@@ -110,7 +105,7 @@ public interface Authentication extends Remote {
      * @param proxyServicePrincipal
      *          The service which the proxy ticket should be issued for.
      * @return A proxy ticket.
-     * @throws RemoteException
+     * @throws SOAPException
      *          If anything fails during the call.
      */
     String getProxyTicket(String ticketGrantingTicket, String proxyServicePrincipal)
@@ -125,9 +120,8 @@ public interface Authentication extends Remote {
      * @param serviceTicket
      *          The ticket included in the return request issued by the client.
      * @return Array of attributes as requested in initiateAuthentication.
-     * @throws RemoteException
+     * @throws SOAPException
      *          If anything fails during the call.
-     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#getUserAttributes(java.lang.String)
      */
     Attribute[] getUserAttributes(String serviceTicket)
     throws SOAPException;
@@ -138,9 +132,8 @@ public interface Authentication extends Remote {
      * @param username
      *          The username to be validated.
      * @return true if the user is found.
-     * @throws RemoteException
+     * @throws SOAPException
      *          If anything fails during the call.
-     * @see no.feide.moria.webservices.v2_0.AuthenticationIF#verifyUserExistence(java.lang.String)
      */
     boolean verifyUserExistence(String username)
     throws SOAPException;

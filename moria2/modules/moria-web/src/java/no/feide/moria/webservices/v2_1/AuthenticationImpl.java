@@ -20,7 +20,6 @@
 
 package no.feide.moria.webservices.v2_1;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,7 +49,8 @@ import org.apache.axis.transport.http.AxisHttpSession;
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
-public final class AuthenticationImpl implements Authentication {
+public final class AuthenticationImpl
+implements Authentication {
 
     /** Class wide logger. */
     private MessageLogger messageLogger;
@@ -73,36 +73,21 @@ public final class AuthenticationImpl implements Authentication {
     /** Log message for UnknownTicketExceptions. */
     private static final String UNKNOWN_TICKET_EX_MSG = "Ticket is unknown. Throwing RemoteException to service: ";
 
+
     /**
-     * Default constructor.
-     * Initializes the logger.
+     * Default constructor. Initializes the message logger.
      */
     public AuthenticationImpl() {
+
         messageLogger = new MessageLogger(AuthenticationImpl.class);
     }
 
+
     /**
-     * Initiates authentication.
-     *
-     * The initial call done by a service to start a login attempt.
-     *
-     * @param attributes
-     *          The attributes the service wants returned on login
-     * @param returnURLPrefix
-     *          The prefix of the url the user is to be returned to
-     * @param returnURLPostfix
-     *          The optional postfix of the return url
-     * @param forceInteractiveAuthentication
-     *          Whether or not cookie based authentication (SSO Light)
-     *          should be allowed.
-     * @return The Moria url the client is to be redirected to.
-     * @throws RemoteException
-     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.Authentication#initiateAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String, boolean)
      */
-    public String initiateAuthentication(final String[] attributes, final String returnURLPrefix, final String returnURLPostfix,
-                                         final boolean forceInteractiveAuthentication)
+    public String initiateAuthentication(final String[] attributes, final String returnURLPrefix, final String returnURLPostfix, final boolean forceInteractiveAuthentication)
     throws SOAPException {
 
         /* Axis message context containg request data. */
@@ -114,56 +99,37 @@ public final class AuthenticationImpl implements Authentication {
 
         if (genericSession instanceof AxisHttpSession) {
             AxisHttpSession axisHttpSession = (AxisHttpSession) genericSession;
-            Properties properties = (Properties) axisHttpSession.getRep().getServletContext().getAttribute(
-                    "no.feide.moria.web.config");
-            urlPrefix = (properties.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?"
-                    + properties.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=");
+            Properties properties = (Properties) axisHttpSession.getRep().getServletContext().getAttribute("no.feide.moria.web.config");
+            urlPrefix = (properties.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + properties.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=");
         }
 
         try {
-            
-            return urlPrefix + 
-                   MoriaController.initiateAuthentication(attributes, returnURLPrefix, returnURLPostfix,
-                                                          forceInteractiveAuthentication, servicePrincipal);
-            
+
+            return urlPrefix + MoriaController.initiateAuthentication(attributes, returnURLPrefix, returnURLPostfix, forceInteractiveAuthentication, servicePrincipal);
+
         } catch (AuthorizationException e) {
-            
+
             // Client service did something it was not authorized to do.
             messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, e);
             throw new AuthorizationFailedException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.IllegalInputException e) {
-            
+
             // Illegal input from client service.
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, e);
             throw new IllegalInputException(e.getMessage());
-            
+
         } catch (InoperableStateException e) {
-            
+
             // Moria is in an inoperable state.
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, e);
             throw new InternalException(e.getMessage());
-            
+
         }
     }
 
+
     /**
-     * Performs direct non-interactive authentication.
-     *
-     * A redirect- and html-less login method.  Only to be used in
-     * special cases where the client for some reason does not
-     * support the standard login procedure.  Inherently insecure as
-     * the service will have knowledge of the plaintext password.
-     *
-     * @param attributes
-     *          The attributes the service wants returned on login.
-     * @param username
-     *          The user name of the user to be authenticated.
-     * @param password
-     *          The password of the user to be authenticated.
-     * @return Array of attributes as requested.
-     * @throws RemoteException
-     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.Authentication#directNonInteractiveAuthentication(java.lang.String[],
      *      java.lang.String, java.lang.String)
      */
@@ -175,54 +141,43 @@ public final class AuthenticationImpl implements Authentication {
         String servicePrincipal = messageContext.getUsername();
 
         try {
-            Map returnAttributes = MoriaController.directNonInteractiveAuthentication(attributes, username, password,
-                    servicePrincipal);
+            Map returnAttributes = MoriaController.directNonInteractiveAuthentication(attributes, username, password, servicePrincipal);
             return mapToAttributeArray(returnAttributes, null);
         } catch (AuthorizationException e) {
-            
+
             // Client service did something it was not authorized to do.
             messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, e);
             throw new AuthorizationFailedException(e.getMessage());
-            
+
         } catch (AuthenticationException e) {
-            
+
             // User failed authentication.
             messageLogger.logWarn(AUTHN_EX_MSG + servicePrincipal, e);
             throw new AuthenticationFailedException(e.getMessage());
-            
+
         } catch (DirectoryUnavailableException e) {
-            
+
             // Authentication server was unavailable.
             messageLogger.logWarn(DIR_UNAV_EX_MSG + servicePrincipal, e);
             throw new AuthenticationUnavailableException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.IllegalInputException e) {
-            
+
             // Illegal input from client service.
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, e);
             throw new IllegalInputException(e.getMessage());
-            
+
         } catch (InoperableStateException e) {
-            
+
             // Moria is in an inoperable state.
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, e);
             throw new InternalException(e.getMessage());
-            
+
         }
     }
 
+
     /**
-     * Performs proxy authentication.
-     *
-     * Called by a subsystem to authenticate a user.
-     *
-     * @param attributes
-     *          The attributes the service wants returned on login.
-     * @param proxyTicket
-     *          The proxy ticket given to the calling system by its initiator.
-     * @return Array of attributes as requested.
-     * @throws RemoteException
-     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.Authentication#proxyAuthentication(java.lang.String[],
      *      java.lang.String)
      */
@@ -234,30 +189,30 @@ public final class AuthenticationImpl implements Authentication {
         String servicePrincipal = messageContext.getUsername();
 
         try {
-            
+
             Map returnAttributes = MoriaController.proxyAuthentication(attributes, proxyTicket, servicePrincipal);
             return mapToAttributeArray(returnAttributes, proxyTicket);
-            
+
         } catch (AuthorizationException e) {
-            
+
             // Client service did something it was not authorized to do.
             messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, e);
             throw new AuthorizationFailedException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.IllegalInputException e) {
-            
+
             // Illegal input from client service.
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, e);
             throw new IllegalInputException(e.getMessage());
-            
+
         } catch (InoperableStateException e) {
-            
+
             // Moria is in an inoperable state.
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, e);
             throw new InternalException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.UnknownTicketException e) {
-            
+
             // An unknown ticket was used by the client service.
             messageLogger.logWarn(UNKNOWN_TICKET_EX_MSG + servicePrincipal, e);
             throw new UnknownTicketException(e.getMessage());
@@ -265,57 +220,42 @@ public final class AuthenticationImpl implements Authentication {
         }
     }
 
+
     /**
-     * Gets a proxy ticket.
-     *
-     * A service may as part of the initial attribute request ask for
-     * a ticket granting ticket that later may be used in this call.
-     *
-     * The returned proxy ticket is to be handed over to the specified
-     * underlying system and may be used by that system only
-     * to authenticate the request.
-     *
-     * @param ticketGrantingTicket
-     *          A TGT that has been issued previously.
-     * @param proxyServicePrincipal
-     *          The service which the proxy ticket should be issued for.
-     * @return A proxy ticket.
-     * @throws RemoteException
-     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.Authentication#getProxyTicket(java.lang.String,
      *      java.lang.String)
      */
     public String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal)
-    throws SOAPException{
+    throws SOAPException {
 
         /* Axis message context containg request data. */
         MessageContext messageContext = MessageContext.getCurrentContext();
         String servicePrincipal = messageContext.getUsername();
 
         try {
-            
+
             return MoriaController.getProxyTicket(ticketGrantingTicket, proxyServicePrincipal, servicePrincipal);
-            
+
         } catch (AuthorizationException e) {
-            
+
             // Client service did something it was not supposed to do.
             messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, e);
             throw new AuthorizationFailedException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.IllegalInputException e) {
-            
+
             // Illegal input from client service.
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, e);
             throw new IllegalInputException(e.getMessage());
-            
+
         } catch (InoperableStateException e) {
-            
+
             // Moria is in an inoperable state.
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, e);
             throw new InternalException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.UnknownTicketException e) {
-            
+
             // Client service used an unknown ticket.
             messageLogger.logWarn(UNKNOWN_TICKET_EX_MSG + servicePrincipal, e);
             throw new UnknownTicketException(e.getMessage());
@@ -323,21 +263,13 @@ public final class AuthenticationImpl implements Authentication {
         }
     }
 
+
     /**
-     * Gets user attributes.
-     *
-     * Called by the service when the user returns after a successful
-     * login.
-     *
-     * @param serviceTicket
-     *          The ticket included in the return request issued by the client.
-     * @return Array of attributes as requested in initiateAuthentication.
-     * @throws RemoteException
-     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.Authentication#getUserAttributes(java.lang.String)
      */
     public Attribute[] getUserAttributes(final String serviceTicket)
-    throws AuthorizationFailedException, IllegalInputException, InternalException, UnknownTicketException {
+    throws AuthorizationFailedException, IllegalInputException,
+    InternalException, UnknownTicketException {
 
         /* Axis message context containg request data. */
         MessageContext messageContext = MessageContext.getCurrentContext();
@@ -347,89 +279,83 @@ public final class AuthenticationImpl implements Authentication {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
             return mapToAttributeArray(returnAttributes, serviceTicket);
         } catch (no.feide.moria.controller.IllegalInputException e) {
-            
+
             // Illegal input used by service.
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, e);
             throw new IllegalInputException(e.getMessage());
-            
+
         } catch (InoperableStateException e) {
-            
+
             // Moria is in an inoperable state!
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, e);
             throw new InternalException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.UnknownTicketException e) {
-            
+
             // An unknown ticket was used.
             messageLogger.logWarn(UNKNOWN_TICKET_EX_MSG + servicePrincipal, e);
             throw new UnknownTicketException(e.getMessage());
-            
+
         } catch (AuthorizationException e) {
-            
+
             // Service was not authorized for this operation.
             messageLogger.logWarn("Service not allowed for organization. Throwing RemoteException to service: ", e);
             throw new AuthorizationFailedException(e.getMessage());
         }
-        
+
     }
 
+
     /**
-     * Verifies the existence of a given user in the underlying directories.
-     *
-     * @param username
-     *          The username to be validated.
-     * @return true if the user is found.
-     * @throws RemoteException
-     *          If anything fails during the call.
      * @see no.feide.moria.webservices.v2_1.Authentication#verifyUserExistence(java.lang.String)
      */
     public boolean verifyUserExistence(final String username)
-    throws SOAPException{
+    throws SOAPException {
 
         /* Axis message context containg request data. */
         MessageContext messageContext = MessageContext.getCurrentContext();
         String servicePrincipal = messageContext.getUsername();
 
         try {
-            
+
             return MoriaController.verifyUserExistence(username, servicePrincipal);
-            
+
         } catch (AuthorizationException e) {
-            
+
             // Client service did something it was not supposed to do.
             messageLogger.logWarn(AUTHZ_EX_MESSAGE + servicePrincipal, e);
             throw new AuthorizationFailedException(e.getMessage());
-            
+
         } catch (DirectoryUnavailableException e) {
-            
+
             // Authentication server is unavailable.
             messageLogger.logWarn(DIR_UNAV_EX_MSG + servicePrincipal, e);
             throw new AuthenticationUnavailableException(e.getMessage());
-            
+
         } catch (no.feide.moria.controller.IllegalInputException e) {
-            
+
             // Illegal input from client service.
             messageLogger.logWarn(MORIACTRL_EX_MESSAGE + servicePrincipal, e);
             throw new IllegalInputException(e.getMessage());
-            
+
         } catch (InoperableStateException e) {
-            
+
             // Moria is in an inoperable state.
             messageLogger.logCritical(INOP_STATE_EX_MSG + servicePrincipal, e);
             throw new InternalException(e.getMessage());
-            
+
         }
     }
 
+
     /**
-     * Converts a Map to an array of Attributes.
-     * Utility method.
-     *
+     * Utility method to convert a <code>Map</code> to an array of
+     * <code>Attribute</code>s.
      * @param map
-     *          The Map to be converted.
+     *            The <code>Map</code> to be converted.
      * @param activeTicketId
-     *          Optional variable for logging purposes.
-     * @return Array of attribute objects.
+     *            Optional variable for logging purposes.
+     * @return Array of <code>Attribute</code> objects.
      */
     private Attribute[] mapToAttributeArray(final Map map, final String activeTicketId) {
 
@@ -452,8 +378,9 @@ public final class AuthenticationImpl implements Authentication {
                 attribute.setName((String) key);
 
                 /*
-                 * Check type of value. If not String or String[] we don't add it to the attribute
-                 * list resulting in the whole entry beeing ignored.
+                 * Check type of value. If not String or String[] we don't add
+                 * it to the attribute list resulting in the whole entry beeing
+                 * ignored.
                  */
                 if (value instanceof String) {
                     /* Create one-element String[] of value before setting. */
@@ -463,8 +390,7 @@ public final class AuthenticationImpl implements Authentication {
                     attribute.setValues((String[]) value);
                     attributeList.add(attribute);
                 } else if (value != null) {
-                    messageLogger.logInfo("Attribute value not String or String[]. Entry not added to Attribute[]. ",
-                            activeTicketId);
+                    messageLogger.logInfo("Attribute value not String or String[]. Entry not added to Attribute[]. ", activeTicketId);
                 }
             } else if (value != null) {
                 messageLogger.logInfo("Attribute key not String. Entry not added to Attribute[]", activeTicketId);
