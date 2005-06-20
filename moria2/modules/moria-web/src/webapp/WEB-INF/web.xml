@@ -145,12 +145,12 @@
 
   <servlet-mapping>
     <servlet-name>AxisServlet</servlet-name>
-    <url-pattern>/v2_0/Authentication</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>AxisServlet</servlet-name>
     <url-pattern>/v2_1/Authentication</url-pattern>
+  </servlet-mapping>
+  
+    <servlet-mapping>
+    <servlet-name>AxisServlet</servlet-name>
+    <url-pattern>/v2_2/Authentication</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

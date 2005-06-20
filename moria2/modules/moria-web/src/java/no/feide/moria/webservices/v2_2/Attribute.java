@@ -18,7 +18,7 @@
  * $Id$
  */
 
-package no.feide.moria.webservices.v2_0;
+package no.feide.moria.webservices.v2_2;
 
 import java.io.Serializable;
 
