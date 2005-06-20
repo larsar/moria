@@ -226,9 +226,9 @@
   <dependency>
     <groupId>axis</groupId>
     <artifactId>axis</artifactId>
-    <version>1.2RC3</version>
+    <version>1.2.1</version>
     <type>jar</type>
-    <url>http://ws.apache.org/axis/</url>
+    <url>http://ws.apache.org/axis/x</url>
     <properties>
       <war.bundle>true</war.bundle>
     </properties>
@@ -239,7 +239,7 @@
   <dependency>
     <groupId>axis</groupId>
     <artifactId>axis-ant</artifactId>
-    <version>1.2RC3</version>
+    <version>1.2.1</version>
     <type>jar</type>
     <url>http://ws.apache.org/axis/</url>
     <properties>
@@ -252,7 +252,7 @@
   <dependency>
     <groupId>axis</groupId>
     <artifactId>jaxrpc</artifactId>
-    <version>1.2RC3</version>
+    <version>1.2.1</version>
     <type>jar</type>
     <url>http://java.sun.com/xml/jaxrpc/</url>
     <properties>
@@ -265,7 +265,7 @@
   <dependency>
     <groupId>axis</groupId>
     <artifactId>saaj</artifactId>
-    <version>1.2RC3</version>
+    <version>1.2.1</version>
     <type>jar</type>
     <url>http://java.sun.com/xml/saaj/</url>
     <properties>
@@ -332,7 +332,7 @@
   <dependency>
     <groupId>moria</groupId>
     <artifactId>moria-am</artifactId>
-    <version>1.0-b1-SNAPSHOT</version>
+    <version>1.1</version>
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
@@ -345,7 +345,7 @@
   <dependency>
     <groupId>moria</groupId>
     <artifactId>moria-ctrl</artifactId>
-    <version>1.0-b1-SNAPSHOT</version>
+    <version>1.1</version>
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
@@ -358,7 +358,7 @@
   <dependency>
     <groupId>moria</groupId>
     <artifactId>moria-dm</artifactId>
-    <version>1.0-b1-SNAPSHOT</version>
+    <version>1.1</version>
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
@@ -371,7 +371,7 @@
   <dependency>
     <groupId>moria</groupId>
     <artifactId>moria-log</artifactId>
-    <version>1.0-b1-SNAPSHOT</version>
+    <version>1.1</version>
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
@@ -384,7 +384,7 @@
   <dependency>
     <groupId>moria</groupId>
     <artifactId>moria-sm</artifactId>
-    <version>1.0-b1-SNAPSHOT</version>
+    <version>1.1</version>
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
@@ -397,7 +397,7 @@
   <dependency>
     <groupId>moria</groupId>
     <artifactId>mellon</artifactId>
-    <version>1.0-b1-SNAPSHOT</version>
+    <version>1.0</version>
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
