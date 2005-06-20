@@ -21,8 +21,10 @@ package no.feide.mellon;
 import java.io.Serializable;
 
 /**
- * Used to signal an exception from the Moria1 interface. Created to closely
- * match the original Mellon1 class <code>no.feide.mellon.MoriaException</code>.
+ * Used to signal an exception from the client-side interface. Created to
+ * closely match the original Mellon1 class
+ * <code>no.feide.mellon.MoriaException</code>, but is also used in the
+ * Moria2 client-side interface.
  */
 public class MoriaException
 extends Exception

@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+<wsdl:definitions targetNamespace="http://v2_2.webservices.moria.feide.no" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://v2_2.webservices.moria.feide.no" xmlns:intf="http://v2_2.webservices.moria.feide.no" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://soap.servlet.moria.feide.no" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><!--WSDL created by Apache Axis version: 1.2.1
+Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http://v2_2.webservices.moria.feide.no" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://soap.servlet.moria.feide.no"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ArrayOf_soapenc_string"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="soapenc:string[]"/></restriction></complexContent></complexType><complexType name="Attribute"><sequence><element name="name" nillable="true" type="soapenc:string"/><element name="values" nillable="true" type="impl:ArrayOf_soapenc_string"/></sequence></complexType><complexType name="ArrayOfAttribute"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="impl:Attribute[]"/></restriction></complexContent></complexType></schema><schema targetNamespace="http://soap.servlet.moria.feide.no" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://v2_2.webservices.moria.feide.no"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType abstract="true" name="SOAPException"><sequence><element name="faultcode" nillable="true" type="soapenc:string"/><element name="faultstring" nillable="true" type="soapenc:string"/></sequence></complexType><complexType abstract="true" name="ClientException"><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="AuthorizationFailedException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="IllegalInputException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType abstract="true" name="ServerException"><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="InternalException"><complexContent><extension base="tns1:ServerException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTicketException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="AuthenticationFailedException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="AuthenticationUnavailableException"><complexContent><extension base="tns1:ServerException"><sequence/></extension></complexContent></complexType></schema></wsdl:types>
+  <wsdl:message name="initiateAuthenticationRequest">
+    <wsdl:part name="attributes" type="impl:ArrayOf_soapenc_string"/>
+    <wsdl:part name="returnURLPrefix" type="soapenc:string"/>
+    <wsdl:part name="returnURLPostfix" type="soapenc:string"/>
+    <wsdl:part name="forceInteractiveAuthentication" type="xsd:boolean"/>
+  </wsdl:message>
+  <wsdl:message name="IllegalInputException">
+    <wsdl:part name="fault" type="tns1:IllegalInputException"/>
+  </wsdl:message>
+  <wsdl:message name="proxyAuthenticationResponse">
+    <wsdl:part name="proxyAuthenticationReturn" type="impl:ArrayOfAttribute"/>
+  </wsdl:message>
+  <wsdl:message name="initiateAuthenticationResponse">
+    <wsdl:part name="initiateAuthenticationReturn" type="soapenc:string"/>
+  </wsdl:message>
+  <wsdl:message name="verifyUserExistenceRequest">
+    <wsdl:part name="username" type="soapenc:string"/>
+  </wsdl:message>
+  <wsdl:message name="getUserAttributesResponse">
+    <wsdl:part name="getUserAttributesReturn" type="impl:ArrayOfAttribute"/>
+  </wsdl:message>
+  <wsdl:message name="AuthenticationFailedException">
+    <wsdl:part name="fault" type="tns1:AuthenticationFailedException"/>
+  </wsdl:message>
+  <wsdl:message name="directNonInteractiveAuthenticationRequest">
+    <wsdl:part name="attributes" type="impl:ArrayOf_soapenc_string"/>
+    <wsdl:part name="username" type="soapenc:string"/>
+    <wsdl:part name="password" type="soapenc:string"/>
+  </wsdl:message>
+  <wsdl:message name="proxyAuthenticationRequest">
+    <wsdl:part name="attributes" type="impl:ArrayOf_soapenc_string"/>
+    <wsdl:part name="proxyTicket" type="soapenc:string"/>
+  </wsdl:message>
+  <wsdl:message name="getUserAttributesRequest">
+    <wsdl:part name="serviceTicket" type="soapenc:string"/>
+  </wsdl:message>
+  <wsdl:message name="getProxyTicketRequest">
+    <wsdl:part name="ticketGrantingTicket" type="soapenc:string"/>
+    <wsdl:part name="proxyServicePrincipal" type="soapenc:string"/>
+  </wsdl:message>
+  <wsdl:message name="UnknownTicketException">
+    <wsdl:part name="fault" type="tns1:UnknownTicketException"/>
+  </wsdl:message>
+  <wsdl:message name="AuthorizationFailedException">
+    <wsdl:part name="fault" type="tns1:AuthorizationFailedException"/>
+  </wsdl:message>
+  <wsdl:message name="getProxyTicketResponse">
+    <wsdl:part name="getProxyTicketReturn" type="soapenc:string"/>
+  </wsdl:message>
+  <wsdl:message name="verifyUserExistenceResponse">
+    <wsdl:part name="verifyUserExistenceReturn" type="xsd:boolean"/>
+  </wsdl:message>
+  <wsdl:message name="directNonInteractiveAuthenticationResponse">
+    <wsdl:part name="directNonInteractiveAuthenticationReturn" type="impl:ArrayOfAttribute"/>
+  </wsdl:message>
+  <wsdl:message name="InternalException">
+    <wsdl:part name="fault" type="tns1:InternalException"/>
+  </wsdl:message>
+  <wsdl:message name="AuthenticationUnavailableException">
+    <wsdl:part name="fault" type="tns1:AuthenticationUnavailableException"/>
+  </wsdl:message>
+  <wsdl:portType name="Authentication">
+    <wsdl:operation name="getUserAttributes" parameterOrder="serviceTicket">
+      <wsdl:input message="impl:getUserAttributesRequest" name="getUserAttributesRequest"/>
+      <wsdl:output message="impl:getUserAttributesResponse" name="getUserAttributesResponse"/>
+      <wsdl:fault message="impl:InternalException" name="InternalException"/>
+      <wsdl:fault message="impl:IllegalInputException" name="IllegalInputException"/>
+      <wsdl:fault message="impl:UnknownTicketException" name="UnknownTicketException"/>
+      <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
+    </wsdl:operation>
+    <wsdl:operation name="initiateAuthentication" parameterOrder="attributes returnURLPrefix returnURLPostfix forceInteractiveAuthentication">
+      <wsdl:input message="impl:initiateAuthenticationRequest" name="initiateAuthenticationRequest"/>
+      <wsdl:output message="impl:initiateAuthenticationResponse" name="initiateAuthenticationResponse"/>
+      <wsdl:fault message="impl:InternalException" name="InternalException"/>
+      <wsdl:fault message="impl:IllegalInputException" name="IllegalInputException"/>
+      <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
+    </wsdl:operation>
+    <wsdl:operation name="directNonInteractiveAuthentication" parameterOrder="attributes username password">
+      <wsdl:input message="impl:directNonInteractiveAuthenticationRequest" name="directNonInteractiveAuthenticationRequest"/>
+      <wsdl:output message="impl:directNonInteractiveAuthenticationResponse" name="directNonInteractiveAuthenticationResponse"/>
+      <wsdl:fault message="impl:InternalException" name="InternalException"/>
+      <wsdl:fault message="impl:IllegalInputException" name="IllegalInputException"/>
+      <wsdl:fault message="impl:AuthenticationFailedException" name="AuthenticationFailedException"/>
+      <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
+      <wsdl:fault message="impl:AuthenticationUnavailableException" name="AuthenticationUnavailableException"/>
+    </wsdl:operation>
+    <wsdl:operation name="proxyAuthentication" parameterOrder="attributes proxyTicket">
+      <wsdl:input message="impl:proxyAuthenticationRequest" name="proxyAuthenticationRequest"/>
+      <wsdl:output message="impl:proxyAuthenticationResponse" name="proxyAuthenticationResponse"/>
+      <wsdl:fault message="impl:InternalException" name="InternalException"/>
+      <wsdl:fault message="impl:IllegalInputException" name="IllegalInputException"/>
+      <wsdl:fault message="impl:UnknownTicketException" name="UnknownTicketException"/>
+      <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
+    </wsdl:operation>
+    <wsdl:operation name="getProxyTicket" parameterOrder="ticketGrantingTicket proxyServicePrincipal">
+      <wsdl:input message="impl:getProxyTicketRequest" name="getProxyTicketRequest"/>
+      <wsdl:output message="impl:getProxyTicketResponse" name="getProxyTicketResponse"/>
+      <wsdl:fault message="impl:InternalException" name="InternalException"/>
+      <wsdl:fault message="impl:IllegalInputException" name="IllegalInputException"/>
+      <wsdl:fault message="impl:UnknownTicketException" name="UnknownTicketException"/>
+      <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
+    </wsdl:operation>
+    <wsdl:operation name="verifyUserExistence" parameterOrder="username">
+      <wsdl:input message="impl:verifyUserExistenceRequest" name="verifyUserExistenceRequest"/>
+      <wsdl:output message="impl:verifyUserExistenceResponse" name="verifyUserExistenceResponse"/>
+      <wsdl:fault message="impl:InternalException" name="InternalException"/>
+      <wsdl:fault message="impl:IllegalInputException" name="IllegalInputException"/>
+      <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
+      <wsdl:fault message="impl:AuthenticationUnavailableException" name="AuthenticationUnavailableException"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AuthenticationSoapBinding" type="impl:Authentication">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getUserAttributes">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getUserAttributesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getUserAttributesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="InternalException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="InternalException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="IllegalInputException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="IllegalInputException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="UnknownTicketException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="UnknownTicketException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthorizationFailedException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthorizationFailedException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="initiateAuthentication">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="initiateAuthenticationRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="initiateAuthenticationResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="InternalException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="InternalException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="IllegalInputException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="IllegalInputException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthorizationFailedException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthorizationFailedException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="directNonInteractiveAuthentication">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="directNonInteractiveAuthenticationRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="directNonInteractiveAuthenticationResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="InternalException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="InternalException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="IllegalInputException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="IllegalInputException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationFailedException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthenticationFailedException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthorizationFailedException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthorizationFailedException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationUnavailableException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthenticationUnavailableException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="proxyAuthentication">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="proxyAuthenticationRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="proxyAuthenticationResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="InternalException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="InternalException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="IllegalInputException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="IllegalInputException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="UnknownTicketException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="UnknownTicketException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthorizationFailedException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthorizationFailedException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getProxyTicket">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getProxyTicketRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getProxyTicketResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="InternalException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="InternalException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="IllegalInputException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="IllegalInputException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="UnknownTicketException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="UnknownTicketException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthorizationFailedException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthorizationFailedException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="verifyUserExistence">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="verifyUserExistenceRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="verifyUserExistenceResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="InternalException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="InternalException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="IllegalInputException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="IllegalInputException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthorizationFailedException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthorizationFailedException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationUnavailableException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="AuthenticationUnavailableException" namespace="http://v2_2.webservices.moria.feide.no" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Authentication">
+    <wsdl:port binding="impl:AuthenticationSoapBinding" name="Authentication">
+      <wsdlsoap:address location="http://localhost:8080/moria/v2_2/Authentication"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
