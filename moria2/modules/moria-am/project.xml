@@ -11,7 +11,7 @@
   <extend>${basedir}/../../project.xml</extend>
   <name>Moria Authorization manager</name>
   <id>moria-am</id>
-  <currentVersion>1.0-b1-SNAPSHOT</currentVersion>
+  <currentVersion>1.1</currentVersion>
   <package>no.feide.moria.authorization</package>
 
   <shortDescription>Moria authorization manager</shortDescription>
