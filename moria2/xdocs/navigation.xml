@@ -31,14 +31,18 @@ $Id$
 	    	<item name="FEIDE" href="http://www.feide.no/"/>
 	    </links>
 
+
 	    <menu name="Overview">
+	    
 	        <item name="Introduction" href="index.html"/>
 			<item name="Service Integration" href="howto_service_overview.html">
 				<item name="SSO" href="howto_service_sso.html"/>
 			    <item name="Error Handling" href="howto_service_errors.html"/>
 			    <item name="Migrating to Moria2" href="howto_service_migration.html"/>
 			</item>
+			
 	    	<item name="Design" href="design.html"/>
+	    	
 	    	<item name="Configuration" href="config_introduction.html">
 		    	<item name="Base Configuration" href="config_base_configuration.html"/>
 		    	<item name="Configuration Manager" href="config_configuration_manager.html"/>
@@ -53,15 +57,19 @@ $Id$
 	    	<item name="Building" href="building.html"/>
 
 	    	<item name="Modules" href="design.html#Moria_Internals" collapse="false">
-				<item name="Controller" href="/moria-ctrl/index.html"/>
-				<item name="Authorization manager" href="/moria-am/index.html"/>
-				<item name="Directory manager" href="/moria-dm/index.html"/>
+				<item name="Moria Controller" href="/moria-ctrl/index.html"/>
+				<item name="Authorization Manager" href="/moria-am/index.html"/>
+				<item name="Directory Manager" href="/moria-dm/index.html"/>
 				<item name="Log API" href="/moria-log/index.html"/>
-				<item name="Store manager" href="/moria-sm/index.html"/>
-				<item name="Web application" href="/moria-web/index.html"/>
-				<item name="Mellon Demo" href="/mellon/index.html"/>
+				<item name="Store Manager" href="/moria-sm/index.html"/>
+				<item name="Web Module" href="/moria-web/index.html"/>
+				<item name="Mellon Client-Side API" href="/mellon/index.html">
+				    <item name="Mellon Demo" href="/mellon-demo/index.html"/>
+				</item>
 		    </item>
+		    
 	    </menu>
+	    
 	    
 	    <menu name="SourceForge">
 		    <item href="http://sourceforge.net"
