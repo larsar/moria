@@ -54,7 +54,6 @@
     &dep-jboss-j2ee;
     &dep-jboss-jmx;
     &dep-jboss-minimal;
-    &dep-jboss-remoting;
     &dep-jboss-system;
     &dep-commons-logging;
 
