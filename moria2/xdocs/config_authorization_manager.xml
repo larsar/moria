@@ -120,7 +120,8 @@ $Id$
                 client service is allowed to read this attribute when using
                 SSO), and <i>secLevel</i> (used to classify an attribute request
                 according to security level and optionally display a
-                warning/description to the user on the login page). Note that
+                warning/description to the user on the login page). Security
+                levels range from 0 to 2, with 0 being the lowest. Note that
                 for a client service to be allowed a ticket granting ticket the
                 configuration must be allowed to read the <i>tgt</i> attribute
                 and use it for SSO.
