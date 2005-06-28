@@ -238,6 +238,13 @@ $Id$
                     servlet.
                     </p>
                     </li>
+                    <li>
+                    <code>no.feide.moria.web.piclink</code>
+                    <p>
+                    Should give the URL for the picture servlet, used for
+                    displaying <i>jpegPhoto</i> attribute values.
+                    </p>
+                    </li>
                 </ul>
             </subsection>
             <subsection name="Status Servlet Property">
@@ -269,11 +276,18 @@ $Id$
 
 &lt;/Testuserlist&gt;</source>
 			        </li>
+			    </ul>
+			</subsection>
+			<subsection name="Statistics Servlet Properties">
+			<p>
+				The following properties are used by the statistics servlet:
+			</p>
+				<ul>
                     <li>
                     <code>no.feide.moria.web.backendstatus.statistics_xml</code>
                     <p>Gives the path and name of the file containing the
-                    statistics data. This static file is not generated
-                    on-the-fly by Moria. The XML file must contain a root
+                    statistics data for Moria1. Note that this static file is not
+                    generated on-the-fly by Moria. The XML file must contain a root
                     element <i>Statistics</i> with one or more <i>Service</i>
                     child elements. Each <i>Service</i> element must contain the
                     child elements <i>Name</i> (which has a text child element
@@ -286,7 +300,7 @@ $Id$
                     sorting shown on the Status output will follow from the
                     ordering of the statistics file.
                     </p>
-                    <p>Example of a statistics data file:</p>
+                    <p>Example of a Moria1 statistics data file:</p>
                     <source>
 &lt;?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?&gt;
 
@@ -300,6 +314,26 @@ $Id$
     &lt;/Months&gt;
   &lt;/Service&gt;
 &lt;/Statistics&gt;</source>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.backendstatus.statistics2_xml</code>
+                    <p>Gives the path and name of the file containing the
+                    statistics data for Moria2. Used in a transitional period
+                    until Moria1 is phased out. The Moria2 statistics data file
+                    is identical in format to the Moria1 statistics data file.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.backendstatus.ignore</code>
+                    <p>Must contain a comma-separated list of services that
+                    will not be shown on the statistics web page.
+                    </p>
+                    </li>
+                    <li>
+                    <code>no.feide.moria.web.statistics.url</code>
+                    <p>Configuration property giving the URL to the statistics
+                    servlet itself.
+                    </p>
                     </li>
                 </ul>
         <p>     
@@ -373,6 +407,7 @@ no.feide.moria.web.resource.link=http://www.some.org
 # Mail address shown on the web pages.
 no.feide.moria.web.resource.mail=info@some.org
 
+
 #
 # Configuration properties relevant for the information service (InformationServlet):
 #
@@ -383,6 +418,10 @@ no.feide.moria.web.information.url_prefix=http://localhost:8080/moria/Informatio
 # Configuration property for the attribute description file name.
 no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
 
+# Link to the Picture servlet, used to show jpegPhoto attribute in InformationServlet.
+no.feide.moria.web.piclink=http://localhost:8080/moria/Picture
+
+
 #
 # Configuration property relevant for the status service (StatusServlet):
 #
@@ -390,8 +429,22 @@ no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
 # Configuration proprety for the status.xml file.
 no.feide.moria.web.backendstatus.status_xml=/some/path/status.xml
 
-# Configuration property for the statistics data file name.
-no.feide.moria.web.backendstatus.statistics_xml=/some/path/statistics.xml
+
+#
+# Configuration properties relevant for the statistics service (StatisticsServlet):
+#
+
+# Configuration property for the statistics XML file for Moria1.
+no.feide.moria.web.backendstatus.statistics_xml=some/path/statistics.xml
+
+# Configuration property for the statistics XML file for Moria2.
+no.feide.moria.web.backendstatus.statistics2_xml=some/path/statistics2.xml
+
+# A list of services that should not be shown in the statistics page.
+no.feide.moria.web.backendstatus.ignore=status,demo
+
+# Configuration property for the URL to the statistics service.
+no.feide.moria.web.statistics.url=http://localhost:8080/moria/Statistics
 		        </source>
 		    </subsection>
 		    <subsection name="Static Content">
