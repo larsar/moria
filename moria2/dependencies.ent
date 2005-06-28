@@ -215,7 +215,7 @@
     <artifactId>axis</artifactId>
     <version>1.2.1</version>
     <type>jar</type>
-    <url>http://ws.apache.org/axis/x</url>
+    <url>http://ws.apache.org/axis/</url>
     <properties>
       <war.bundle>true</war.bundle>
     </properties>
@@ -267,7 +267,7 @@
     <artifactId>wsdl4j</artifactId>
     <version>1.5</version>
     <type>jar</type>
-    <url>http://www-124.ibm.com/developerworks/projects/wsdl4j/</url>
+    <url>http://sourceforge.net/projects/wsdl4j</url>
     <properties>
       <war.bundle>true</war.bundle>
     </properties>
