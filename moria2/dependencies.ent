@@ -340,7 +340,6 @@
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
-      <eclipse.dependency>true</eclipse.dependency>
     </properties>
   </dependency>
   ">
@@ -353,7 +352,6 @@
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
-      <eclipse.dependency>true</eclipse.dependency>
     </properties>
   </dependency>
 ">
@@ -366,7 +364,6 @@
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
-      <eclipse.dependency>true</eclipse.dependency>
     </properties>
   </dependency>
   ">
@@ -379,7 +376,6 @@
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
-      <eclipse.dependency>true</eclipse.dependency>
     </properties>
   </dependency>
   ">
@@ -392,7 +388,6 @@
     <type>jar</type>
     <properties>
       <war.bundle>true</war.bundle>
-      <eclipse.dependency>true</eclipse.dependency>
     </properties>
   </dependency>
   ">
