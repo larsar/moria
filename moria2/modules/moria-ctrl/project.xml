@@ -34,6 +34,9 @@
     &dep-xerces-xercesImpl;
     &dep-xerces-xmlParserAPIs;
     &dep-jdom;
+    
+    <!-- XMLRPC deps -->
+    &dep-apache-xmlrpc;
 
     <!-- JBossCache deps -->
     &dep-concurrent;
