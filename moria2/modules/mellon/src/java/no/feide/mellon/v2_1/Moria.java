@@ -16,7 +16,7 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-package no.feide.mellon.v2_2;
+package no.feide.mellon.v2_1;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,13 +29,13 @@ import no.feide.moria.servlet.soap.AuthorizationFailedException;
 import no.feide.moria.servlet.soap.IllegalInputException;
 import no.feide.moria.servlet.soap.InternalException;
 import no.feide.moria.servlet.soap.UnknownTicketException;
-import no.feide.moria.webservices.v2_2.Attribute;
-import no.feide.moria.webservices.v2_2.AuthenticationSoapBindingStub;
+import no.feide.moria.webservices.v2_1.Attribute;
+import no.feide.moria.webservices.v2_1.AuthenticationSoapBindingStub;
 
 import org.apache.axis.AxisFault;
 
 /**
- * A client-side Moria2 v2.2 API, hiding the internals of generated stub usage.
+ * A client-side Moria2 v2.1 API, hiding the internals of generated stub usage.
  */
 public class Moria {
 
