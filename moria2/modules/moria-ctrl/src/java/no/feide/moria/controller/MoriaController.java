@@ -1480,16 +1480,16 @@ public final class MoriaController {
 
         // Attempt removal of ticket.
         try {
-            
             store.removeSSOTicket(ssoTicketId);
-            accessLogger.logUser(AccessStatusType.SSO_TICKET_INVALIDATED, null, null, ssoTicketId, null);
-            
         } catch (NonExistentTicketException e) {
             messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET + ", ignoring attempt to invalidate an empty/unknown SSO ticket", ssoTicketId);
         } catch (MoriaStoreException e) {
             messageLogger.logCritical(CAUGHT_STORE, e);
             throw new InoperableStateException(STORE_DOWN);
         }
+        
+        // Feed the access log.
+        accessLogger.logUser(AccessStatusType.SSO_TICKET_INVALIDATED, null, null, ssoTicketId, null);
 
     }
 
