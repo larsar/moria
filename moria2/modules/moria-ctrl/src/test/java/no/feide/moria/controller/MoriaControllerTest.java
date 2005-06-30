@@ -940,18 +940,6 @@ public final class MoriaControllerTest extends TestCase {
         controllerInitialization();
         final boolean denySSO = false;
 
-        /* Invalid arguments */
-        try {
-            MoriaController.invalidateSSOTicket(null);
-            fail("IllegalInputException should be raised, ssoTicketId is null.");
-        } catch (IllegalInputException success) {
-        }
-        try {
-            MoriaController.invalidateSSOTicket("");
-            fail("IllegalInputException should be raised, ssoTicketId is an empty string.");
-        } catch (IllegalInputException success) {
-        }
-
         /* Non-existing SSO ticket, should be ignored */
         MoriaController.invalidateSSOTicket("doesNotExist");
 
