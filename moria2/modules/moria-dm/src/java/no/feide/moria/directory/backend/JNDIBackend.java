@@ -285,13 +285,11 @@ implements DirectoryManagerBackend {
                         else if ((passwords[j].length() == 0) && (usernames[j].length() > 0))
                             log.logWarn("Search password is empty but search username is not - possible index problem");
                         else if ((passwords[j].length() == 0) && (usernames[j].length() == 0)) {
-                            log.logInfo("Anonymous search for user element DN");
+                            log.logDebug("Anonymous search for user element DN");
                             ldap.removeFromEnvironment(Context.SECURITY_AUTHENTICATION);
                         }
                         else
-                            log.logInfo("Non-anonymous search for user element DN");
-                        log.logInfo("SEARCH USERNAME FOR REFERENCE " + references[j] + ": " + usernames[j]);
-                        log.logInfo("SEARCH PASSWORD FOR REFERENCE " + references[j] + ": " + passwords[j]);
+                            log.logDebug("Non-anonymous search for user element DN");
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, usernames[j]);
                         ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, passwords[j]);
 
@@ -303,7 +301,7 @@ implements DirectoryManagerBackend {
                             // No user element found. Try to guess the RDN.
                             rdn = userCredentials.getUsername();
                             rdn = guessedAttribute + '=' + rdn.substring(0, rdn.indexOf('@'));
-                            log.logInfo("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn, mySessionTicket);
+                            log.logDebug("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn, mySessionTicket);
 
                         }
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
@@ -314,20 +312,20 @@ implements DirectoryManagerBackend {
                     ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
                     try {
                         ldap.reconnect(null);
-                        log.logInfo("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);                       
+                        log.logDebug("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);                       
                         return getAttributes(ldap, rdn, attributeRequest); // Success.
                     } catch (AuthenticationException e) {
 
                         // Authentication failed, but we may have other
                         // references.
-                        log.logInfo("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
+                        log.logDebug("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
                         continue;
 
                     } catch (AuthenticationNotSupportedException e) {
 
                         // Password authentication not supported for the DN.
                         // We may still have other references.
-                        log.logInfo("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
+                        log.logDebug("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
                         continue;
 
                     }
@@ -344,7 +342,7 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logWarn("Unable to close the backend connection to " + references[j], mySessionTicket, e);
+                            log.logInfo("Unable to close the backend connection to " + references[j] + " - ignoring", mySessionTicket, e);
                         }
                     }
                 }
@@ -429,7 +427,7 @@ implements DirectoryManagerBackend {
             // Did we get an attribute back at all?
             Attribute oldAttr = oldAttrs.get(parsedAttributes[i]);
             if (oldAttr == null) {
-                log.logInfo("Requested attribute '" + parsedAttributes[i] + "' not found on '" + url + "'", mySessionTicket);
+                log.logDebug("Requested attribute '" + parsedAttributes[i] + "' not found on '" + url + "'", mySessionTicket);
             } else {
 
                 // Map the attribute values to String[].
@@ -533,13 +531,13 @@ implements DirectoryManagerBackend {
         } catch (NameNotFoundException e) {
 
             // Element not found. Possibly non-existing reference.
-            log.logInfo("Could not find " + pattern + " on " + url, mySessionTicket); // Necessary?
+            log.logDebug("Could not find " + pattern + " on " + url, mySessionTicket); // Necessary?
             return null;
 
         } catch (LimitExceededException e) {
 
             // We hit some configured limit on the server's part.
-            log.logInfo("Search on " + url + " for " + pattern + " exceeded some configured limit", mySessionTicket);
+            log.logDebug("Search on " + url + " for " + pattern + " exceeded some configured limit", mySessionTicket);
             return null;
 
         } catch (NamingException e) {
