@@ -25,8 +25,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import no.feide.moria.webservices.v2_2.Attribute;
-import no.feide.moria.webservices.v2_2.AuthenticationSoapBindingStub;
+import no.feide.moria.webservices.v2_1.Attribute;
+import no.feide.moria.webservices.v2_1.AuthenticationSoapBindingStub;
+import no.feide.mellon.MoriaException;
+import no.feide.mellon.v2_1.Moria;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -223,9 +225,7 @@ extends HttpServlet {
             }
 
             // Prepare API.
-            AuthenticationSoapBindingStub service = new AuthenticationSoapBindingStub(new URL(config.getProperty(CONFIG_SERVICE_ENDPOINT)), null);
-            service.setUsername(config.getProperty(CONFIG_MASTER_USERNAME));
-            service.setPassword(config.getProperty(CONFIG_MASTER_PASSWORD));
+            Moria service = new Moria(config.getProperty(CONFIG_SERVICE_ENDPOINT), config.getProperty(CONFIG_MASTER_USERNAME), config.getProperty(CONFIG_MASTER_PASSWORD));
 
             // Do we have a ticket?
             final String ticket = request.getParameter(PARAM_TICKET);
@@ -319,8 +319,11 @@ extends HttpServlet {
 
             }
 
+        } catch (MoriaException e) {
+            System.err.println("MoriaException caught: " + e);
+            throw new ServletException(e);
         } catch (RemoteException e) {
-            System.err.println("RemoteException caugth: " + e);
+            System.err.println("RemoteException caught: " + e);
             throw new ServletException(e);
         } catch (MalformedURLException e) {
             System.err.println("MalformedURLException caught: " + e);
