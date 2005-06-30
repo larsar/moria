@@ -1469,31 +1469,28 @@ public final class MoriaController {
      * used any more.
      * @param ssoTicketId
      *            The ticket to be invalidated.
-     * @throws IllegalInputException
-     *             If <code>ssoTicketId</code> is null or empty.
      * @throws InoperableStateException
      *             If Moria is not ready to use.
      */
     public static void invalidateSSOTicket(final String ssoTicketId)
-    throws IllegalInputException, InoperableStateException {
+    throws InoperableStateException {
 
         /* Check controller state */
         if (!ready) { throw new InoperableStateException(NOT_READY); }
 
-        /* Validate argument */
-        if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalInputException("'ssoTicketId' must be a non-empty string."); }
-
+        // Attempt removal of ticket.
         try {
+            
             store.removeSSOTicket(ssoTicketId);
+            accessLogger.logUser(AccessStatusType.SSO_TICKET_INVALIDATED, null, null, ssoTicketId, null);
+            
         } catch (NonExistentTicketException e) {
-            /* We don't care, it's just removal of a ticket */
-            messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET + ", OK since we tried to remove");
+            messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET + ", ignoring attempt to invalidate an empty/unknown SSO ticket", ssoTicketId);
         } catch (MoriaStoreException e) {
             messageLogger.logCritical(CAUGHT_STORE, e);
             throw new InoperableStateException(STORE_DOWN);
         }
 
-        accessLogger.logUser(AccessStatusType.SSO_TICKET_INVALIDATED, null, null, ssoTicketId, null);
     }
 
 
