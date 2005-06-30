@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- $Id$ -->
 
@@ -70,7 +70,7 @@
 
     <developer>
       <name>Cato Olsen</name>
-      <id>cato</id>
+      <id>catoolsen</id>
       <email>cato.olsen@uninett.no</email>
       <organization>UNINETT AS</organization>
       <role>Java Developer</role>
