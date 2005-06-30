@@ -128,7 +128,7 @@ try {
      <!-- mandatory table -->
      <td class="kropp">
      <p>
-     <b><center><%= bundle.getString("user_info") + userorg%> 
+     <b><center><%= bundle.getString("user_info") + userorg + "." %> 
      <br/><%=bundle.getString("user_info2") %></b>
      </p>
      
