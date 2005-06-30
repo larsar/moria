@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<!DOCTYPE project [
+	  <!ENTITY % locator-entities SYSTEM "file:locator.ent">
+	  %locator-entities;
+	  ]>
+
+<project>
+  <extend>${basedir}/../../project.xml</extend>
+  <name>Moria2 Tools</name>
+  <id>moria-tools</id>
+  <currentVersion>1.0</currentVersion>
+  <package>no.feide.*</package>
+  <shortDescription>Moria2 external toolkit</shortDescription>
+
+  <description/>
+
+  <siteDirectory>/home/groups/m/mo/moria/htdocs/moria</siteDirectory>
+
+  <dependencies>
+
+    <!-- 
+         Misc. depencencies.
+      -->
+    &dep-jdom;
+
+    <!--
+         Moria2 dependencies.
+      -->
+    &dep-moria-dm;
+
+  </dependencies>
+
+</project>
