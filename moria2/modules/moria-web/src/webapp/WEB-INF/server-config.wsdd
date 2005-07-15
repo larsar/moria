@@ -149,45 +149,35 @@
   <!-- 
        Moria v2.2 API.
   -->
-
   <service name="/v2_2/Authentication"
-	   provider="java:RPC"
-	   style="rpc"
-	   use="encoded">
+           provider="java:RPC"
+           style="wrapped"
+           use="literal">
 
     <namespace>http://v2_2.webservices.moria.feide.no</namespace>
 
     <parameter name="wsdlTargetNamespace"
-	       value="http://v2_2.webservices.moria.feide.no"/>
+               value="http://v2_2.webservices.moria.feide.no"/>
 
     <parameter name="wsdlServiceElement"
-	       value="Authentication"/>
+               value="Authentication"/>
 
     <parameter name="wsdlServicePort"
-	       value="Authentication"/>
+               value="Authentication"/>
 
     <parameter name="wsdlPortType"
-	       value="Authentication"/>
+               value="Authentication"/>
 
     <parameter name="className"
-	       value="no.feide.moria.webservices.v2_2.AuthenticationImpl"/>
+               value="no.feide.moria.webservices.v2_2.AuthenticationImpl"/>
 
     <parameter name="allowedMethods"
-	       value="*"/>
+               value="*"/>
 
-    <typeMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
-		 qname="ns:Attribute"
-		 type="java:no.feide.moria.webservices.v2_2.Attribute"
-		 serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-		 deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+    <beanMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
+                 qname="ns:Attribute"
+                 type="java:no.feide.moria.webservices.v2_2.Attribute"/>
 
-    <typeMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
-		 qname="ns:ArrayOfAttribute"
-		 type="java:no.feide.moria.webservices.v2_2.Attribute[]"
-		 serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
-		 deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
-		 encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
   </service>
   
 

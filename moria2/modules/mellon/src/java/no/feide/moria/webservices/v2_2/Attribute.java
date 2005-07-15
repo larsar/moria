@@ -9,14 +9,14 @@ package no.feide.moria.webservices.v2_2;
 
 public class Attribute  implements java.io.Serializable {
     private java.lang.String name;
-    private java.lang.String[] values;
+    private no.feide.moria.webservices.v2_2.ArrayOf_xsd_string values;
 
     public Attribute() {
     }
 
     public Attribute(
            java.lang.String name,
-           java.lang.String[] values) {
+           no.feide.moria.webservices.v2_2.ArrayOf_xsd_string values) {
            this.name = name;
            this.values = values;
     }
@@ -47,7 +47,7 @@ public class Attribute  implements java.io.Serializable {
      * 
      * @return values
      */
-    public java.lang.String[] getValues() {
+    public no.feide.moria.webservices.v2_2.ArrayOf_xsd_string getValues() {
         return values;
     }
 
@@ -57,7 +57,7 @@ public class Attribute  implements java.io.Serializable {
      * 
      * @param values
      */
-    public void setValues(java.lang.String[] values) {
+    public void setValues(no.feide.moria.webservices.v2_2.ArrayOf_xsd_string values) {
         this.values = values;
     }
 
@@ -78,7 +78,7 @@ public class Attribute  implements java.io.Serializable {
               this.name.equals(other.getName()))) &&
             ((this.values==null && other.getValues()==null) || 
              (this.values!=null &&
-              java.util.Arrays.equals(this.values, other.getValues())));
+              this.values.equals(other.getValues())));
         __equalsCalc = null;
         return _equals;
     }
@@ -94,15 +94,7 @@ public class Attribute  implements java.io.Serializable {
             _hashCode += getName().hashCode();
         }
         if (getValues() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getValues());
-                 i++) {
-                java.lang.Object obj = java.lang.reflect.Array.get(getValues(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
-                    _hashCode += obj.hashCode();
-                }
-            }
+            _hashCode += getValues().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -116,13 +108,13 @@ public class Attribute  implements java.io.Serializable {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "Attribute"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("name");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "name"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
+        elemField.setXmlName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "name"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("values");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "values"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
+        elemField.setXmlName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "values"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_xsd_string"));
         typeDesc.addFieldDesc(elemField);
     }
 

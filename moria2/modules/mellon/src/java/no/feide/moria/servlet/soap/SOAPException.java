@@ -108,13 +108,13 @@ public abstract class SOAPException  extends org.apache.axis.AxisFault  implemen
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "SOAPException"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("faultcode");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "faultcode"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
+        elemField.setXmlName(new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "faultcode"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("faultstring");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "faultstring"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
+        elemField.setXmlName(new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "faultstring"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         typeDesc.addFieldDesc(elemField);
     }
 

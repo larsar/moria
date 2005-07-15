@@ -1,69 +1,62 @@
 <?xml version="1.0"?>
 <wsdl:definitions targetNamespace="http://v2_2.webservices.moria.feide.no" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://v2_2.webservices.moria.feide.no" xmlns:intf="http://v2_2.webservices.moria.feide.no" xmlns:tns1="http://soap.servlet.moria.feide.no" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><!--WSDL created by Apache Axis version: 1.2.1
-Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http://v2_2.webservices.moria.feide.no" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://soap.servlet.moria.feide.no"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ArrayOf_xsd_string"><sequence><element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/></sequence></complexType><complexType name="Attribute"><sequence><element name="name" nillable="true" type="xsd:string"/><element name="values" nillable="true" type="impl:ArrayOf_xsd_string"/></sequence></complexType><complexType name="ArrayOfAttribute"><sequence><element maxOccurs="unbounded" minOccurs="0" name="item" type="impl:Attribute"/></sequence></complexType></schema><schema targetNamespace="http://soap.servlet.moria.feide.no" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://v2_2.webservices.moria.feide.no"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType abstract="true" name="SOAPException"><sequence><element name="faultcode" nillable="true" type="xsd:string"/><element name="faultstring" nillable="true" type="xsd:string"/></sequence></complexType><complexType abstract="true" name="ClientException"><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="AuthorizationFailedException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="IllegalInputException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType abstract="true" name="ServerException"><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="InternalException"><complexContent><extension base="tns1:ServerException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTicketException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="AuthenticationFailedException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="AuthenticationUnavailableException"><complexContent><extension base="tns1:ServerException"><sequence/></extension></complexContent></complexType></schema></wsdl:types>
+Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema elementFormDefault="qualified" targetNamespace="http://v2_2.webservices.moria.feide.no" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://soap.servlet.moria.feide.no"/><element name="getUserAttributes"><complexType><sequence><element name="serviceTicket" type="xsd:string"/></sequence></complexType></element><element name="getUserAttributesResponse"><complexType><sequence><element maxOccurs="unbounded" name="getUserAttributesReturn" type="impl:Attribute"/></sequence></complexType></element><complexType name="ArrayOf_xsd_string"><sequence><element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/></sequence></complexType><complexType name="Attribute"><sequence><element name="name" nillable="true" type="xsd:string"/><element name="values" nillable="true" type="impl:ArrayOf_xsd_string"/></sequence></complexType><element name="fault" type="tns1:AuthorizationFailedException"/><element name="fault1" type="tns1:IllegalInputException"/><element name="fault2" type="tns1:InternalException"/><element name="fault3" type="tns1:UnknownTicketException"/><element name="initiateAuthentication"><complexType><sequence><element maxOccurs="unbounded" name="attributes" type="xsd:string"/><element name="returnURLPrefix" type="xsd:string"/><element name="returnURLPostfix" type="xsd:string"/><element name="forceInteractiveAuthentication" type="xsd:boolean"/></sequence></complexType></element><element name="initiateAuthenticationResponse"><complexType><sequence><element name="initiateAuthenticationReturn" type="xsd:string"/></sequence></complexType></element><element name="directNonInteractiveAuthentication"><complexType><sequence><element maxOccurs="unbounded" name="attributes" type="xsd:string"/><element name="username" type="xsd:string"/><element name="password" type="xsd:string"/></sequence></complexType></element><element name="directNonInteractiveAuthenticationResponse"><complexType><sequence><element maxOccurs="unbounded" name="directNonInteractiveAuthenticationReturn" type="impl:Attribute"/></sequence></complexType></element><element name="fault4" type="tns1:AuthenticationFailedException"/><element name="fault5" type="tns1:AuthenticationUnavailableException"/><element name="proxyAuthentication"><complexType><sequence><element maxOccurs="unbounded" name="attributes" type="xsd:string"/><element name="proxyTicket" type="xsd:string"/></sequence></complexType></element><element name="proxyAuthenticationResponse"><complexType><sequence><element maxOccurs="unbounded" name="proxyAuthenticationReturn" type="impl:Attribute"/></sequence></complexType></element><element name="getProxyTicket"><complexType><sequence><element name="ticketGrantingTicket" type="xsd:string"/><element name="proxyServicePrincipal" type="xsd:string"/></sequence></complexType></element><element name="getProxyTicketResponse"><complexType><sequence><element name="getProxyTicketReturn" type="xsd:string"/></sequence></complexType></element><element name="verifyUserExistence"><complexType><sequence><element name="username" type="xsd:string"/></sequence></complexType></element><element name="verifyUserExistenceResponse"><complexType><sequence><element name="verifyUserExistenceReturn" type="xsd:boolean"/></sequence></complexType></element></schema><schema elementFormDefault="qualified" targetNamespace="http://soap.servlet.moria.feide.no" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://v2_2.webservices.moria.feide.no"/><complexType abstract="true" name="SOAPException"><sequence><element name="faultcode" nillable="true" type="xsd:string"/><element name="faultstring" nillable="true" type="xsd:string"/></sequence></complexType><complexType abstract="true" name="ClientException"><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="AuthorizationFailedException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="IllegalInputException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType abstract="true" name="ServerException"><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="InternalException"><complexContent><extension base="tns1:ServerException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTicketException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="AuthenticationFailedException"><complexContent><extension base="tns1:ClientException"><sequence/></extension></complexContent></complexType><complexType name="AuthenticationUnavailableException"><complexContent><extension base="tns1:ServerException"><sequence/></extension></complexContent></complexType></schema></wsdl:types>
   <wsdl:message name="initiateAuthenticationRequest">
-    <wsdl:part name="attributes" type="impl:ArrayOf_xsd_string"/>
-    <wsdl:part name="returnURLPrefix" type="xsd:string"/>
-    <wsdl:part name="returnURLPostfix" type="xsd:string"/>
-    <wsdl:part name="forceInteractiveAuthentication" type="xsd:boolean"/>
+    <wsdl:part element="impl:initiateAuthentication" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="IllegalInputException">
-    <wsdl:part name="fault" type="tns1:IllegalInputException"/>
+    <wsdl:part element="impl:fault1" name="fault"/>
   </wsdl:message>
   <wsdl:message name="proxyAuthenticationResponse">
-    <wsdl:part name="proxyAuthenticationReturn" type="impl:ArrayOfAttribute"/>
+    <wsdl:part element="impl:proxyAuthenticationResponse" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="initiateAuthenticationResponse">
-    <wsdl:part name="initiateAuthenticationReturn" type="xsd:string"/>
+    <wsdl:part element="impl:initiateAuthenticationResponse" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="verifyUserExistenceRequest">
-    <wsdl:part name="username" type="xsd:string"/>
+    <wsdl:part element="impl:verifyUserExistence" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="getUserAttributesResponse">
-    <wsdl:part name="getUserAttributesReturn" type="impl:ArrayOfAttribute"/>
+    <wsdl:part element="impl:getUserAttributesResponse" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="AuthenticationFailedException">
-    <wsdl:part name="fault" type="tns1:AuthenticationFailedException"/>
+    <wsdl:part element="impl:fault4" name="fault"/>
   </wsdl:message>
   <wsdl:message name="directNonInteractiveAuthenticationRequest">
-    <wsdl:part name="attributes" type="impl:ArrayOf_xsd_string"/>
-    <wsdl:part name="username" type="xsd:string"/>
-    <wsdl:part name="password" type="xsd:string"/>
+    <wsdl:part element="impl:directNonInteractiveAuthentication" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="proxyAuthenticationRequest">
-    <wsdl:part name="attributes" type="impl:ArrayOf_xsd_string"/>
-    <wsdl:part name="proxyTicket" type="xsd:string"/>
+    <wsdl:part element="impl:proxyAuthentication" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="getUserAttributesRequest">
-    <wsdl:part name="serviceTicket" type="xsd:string"/>
+    <wsdl:part element="impl:getUserAttributes" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="getProxyTicketRequest">
-    <wsdl:part name="ticketGrantingTicket" type="xsd:string"/>
-    <wsdl:part name="proxyServicePrincipal" type="xsd:string"/>
+    <wsdl:part element="impl:getProxyTicket" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="UnknownTicketException">
-    <wsdl:part name="fault" type="tns1:UnknownTicketException"/>
+    <wsdl:part element="impl:fault3" name="fault"/>
   </wsdl:message>
   <wsdl:message name="AuthorizationFailedException">
-    <wsdl:part name="fault" type="tns1:AuthorizationFailedException"/>
+    <wsdl:part element="impl:fault" name="fault"/>
   </wsdl:message>
   <wsdl:message name="getProxyTicketResponse">
-    <wsdl:part name="getProxyTicketReturn" type="xsd:string"/>
+    <wsdl:part element="impl:getProxyTicketResponse" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="verifyUserExistenceResponse">
-    <wsdl:part name="verifyUserExistenceReturn" type="xsd:boolean"/>
+    <wsdl:part element="impl:verifyUserExistenceResponse" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="directNonInteractiveAuthenticationResponse">
-    <wsdl:part name="directNonInteractiveAuthenticationReturn" type="impl:ArrayOfAttribute"/>
+    <wsdl:part element="impl:directNonInteractiveAuthenticationResponse" name="parameters"/>
   </wsdl:message>
   <wsdl:message name="InternalException">
-    <wsdl:part name="fault" type="tns1:InternalException"/>
+    <wsdl:part element="impl:fault2" name="fault"/>
   </wsdl:message>
   <wsdl:message name="AuthenticationUnavailableException">
-    <wsdl:part name="fault" type="tns1:AuthenticationUnavailableException"/>
+    <wsdl:part element="impl:fault5" name="fault"/>
   </wsdl:message>
   <wsdl:portType name="Authentication">
-    <wsdl:operation name="getUserAttributes" parameterOrder="serviceTicket">
+    <wsdl:operation name="getUserAttributes">
       <wsdl:input message="impl:getUserAttributesRequest" name="getUserAttributesRequest"/>
       <wsdl:output message="impl:getUserAttributesResponse" name="getUserAttributesResponse"/>
       <wsdl:fault message="impl:InternalException" name="InternalException"/>
@@ -71,14 +64,14 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
       <wsdl:fault message="impl:UnknownTicketException" name="UnknownTicketException"/>
       <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
     </wsdl:operation>
-    <wsdl:operation name="initiateAuthentication" parameterOrder="attributes returnURLPrefix returnURLPostfix forceInteractiveAuthentication">
+    <wsdl:operation name="initiateAuthentication">
       <wsdl:input message="impl:initiateAuthenticationRequest" name="initiateAuthenticationRequest"/>
       <wsdl:output message="impl:initiateAuthenticationResponse" name="initiateAuthenticationResponse"/>
       <wsdl:fault message="impl:InternalException" name="InternalException"/>
       <wsdl:fault message="impl:IllegalInputException" name="IllegalInputException"/>
       <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
     </wsdl:operation>
-    <wsdl:operation name="directNonInteractiveAuthentication" parameterOrder="attributes username password">
+    <wsdl:operation name="directNonInteractiveAuthentication">
       <wsdl:input message="impl:directNonInteractiveAuthenticationRequest" name="directNonInteractiveAuthenticationRequest"/>
       <wsdl:output message="impl:directNonInteractiveAuthenticationResponse" name="directNonInteractiveAuthenticationResponse"/>
       <wsdl:fault message="impl:InternalException" name="InternalException"/>
@@ -87,7 +80,7 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
       <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
       <wsdl:fault message="impl:AuthenticationUnavailableException" name="AuthenticationUnavailableException"/>
     </wsdl:operation>
-    <wsdl:operation name="proxyAuthentication" parameterOrder="attributes proxyTicket">
+    <wsdl:operation name="proxyAuthentication">
       <wsdl:input message="impl:proxyAuthenticationRequest" name="proxyAuthenticationRequest"/>
       <wsdl:output message="impl:proxyAuthenticationResponse" name="proxyAuthenticationResponse"/>
       <wsdl:fault message="impl:InternalException" name="InternalException"/>
@@ -95,7 +88,7 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
       <wsdl:fault message="impl:UnknownTicketException" name="UnknownTicketException"/>
       <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
     </wsdl:operation>
-    <wsdl:operation name="getProxyTicket" parameterOrder="ticketGrantingTicket proxyServicePrincipal">
+    <wsdl:operation name="getProxyTicket">
       <wsdl:input message="impl:getProxyTicketRequest" name="getProxyTicketRequest"/>
       <wsdl:output message="impl:getProxyTicketResponse" name="getProxyTicketResponse"/>
       <wsdl:fault message="impl:InternalException" name="InternalException"/>
@@ -103,7 +96,7 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
       <wsdl:fault message="impl:UnknownTicketException" name="UnknownTicketException"/>
       <wsdl:fault message="impl:AuthorizationFailedException" name="AuthorizationFailedException"/>
     </wsdl:operation>
-    <wsdl:operation name="verifyUserExistence" parameterOrder="username">
+    <wsdl:operation name="verifyUserExistence">
       <wsdl:input message="impl:verifyUserExistenceRequest" name="verifyUserExistenceRequest"/>
       <wsdl:output message="impl:verifyUserExistenceResponse" name="verifyUserExistenceResponse"/>
       <wsdl:fault message="impl:InternalException" name="InternalException"/>
@@ -113,14 +106,14 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="AuthenticationSoapBinding" type="impl:Authentication">
-    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="getUserAttributes">
       <wsdlsoap:operation soapAction=""/>
       <wsdl:input name="getUserAttributesRequest">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="getUserAttributesResponse">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="InternalException">
         <wsdlsoap:fault name="InternalException" use="literal"/>
@@ -138,10 +131,10 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
     <wsdl:operation name="initiateAuthentication">
       <wsdlsoap:operation soapAction=""/>
       <wsdl:input name="initiateAuthenticationRequest">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="initiateAuthenticationResponse">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="InternalException">
         <wsdlsoap:fault name="InternalException" use="literal"/>
@@ -156,10 +149,10 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
     <wsdl:operation name="directNonInteractiveAuthentication">
       <wsdlsoap:operation soapAction=""/>
       <wsdl:input name="directNonInteractiveAuthenticationRequest">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="directNonInteractiveAuthenticationResponse">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="InternalException">
         <wsdlsoap:fault name="InternalException" use="literal"/>
@@ -180,10 +173,10 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
     <wsdl:operation name="proxyAuthentication">
       <wsdlsoap:operation soapAction=""/>
       <wsdl:input name="proxyAuthenticationRequest">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="proxyAuthenticationResponse">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="InternalException">
         <wsdlsoap:fault name="InternalException" use="literal"/>
@@ -201,10 +194,10 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
     <wsdl:operation name="getProxyTicket">
       <wsdlsoap:operation soapAction=""/>
       <wsdl:input name="getProxyTicketRequest">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="getProxyTicketResponse">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="InternalException">
         <wsdlsoap:fault name="InternalException" use="literal"/>
@@ -222,10 +215,10 @@ Built on Jun 14, 2005 (09:15:57 EDT)--><wsdl:types><schema targetNamespace="http
     <wsdl:operation name="verifyUserExistence">
       <wsdlsoap:operation soapAction=""/>
       <wsdl:input name="verifyUserExistenceRequest">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="verifyUserExistenceResponse">
-        <wsdlsoap:body namespace="http://v2_2.webservices.moria.feide.no" use="literal"/>
+        <wsdlsoap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="InternalException">
         <wsdlsoap:fault name="InternalException" use="literal"/>

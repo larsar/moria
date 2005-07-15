@@ -24,26 +24,26 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         org.apache.axis.description.OperationDesc oper;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getUserAttributes");
-        oper.addParameter(new javax.xml.namespace.QName("", "serviceTicket"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.setReturnType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOfAttribute"));
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "serviceTicket"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.setReturnType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "Attribute"));
         oper.setReturnClass(no.feide.moria.webservices.v2_2.Attribute[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "getUserAttributesReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.RPC);
-        oper.setUse(org.apache.axis.constants.Use.ENCODED);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "getUserAttributesReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
                       "no.feide.moria.servlet.soap.InternalException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
                       "no.feide.moria.servlet.soap.IllegalInputException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault3"),
                       "no.feide.moria.servlet.soap.UnknownTicketException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException"), 
                       true
@@ -58,23 +58,23 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("initiateAuthentication");
-        oper.addParameter(new javax.xml.namespace.QName("", "attributes"), new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_soapenc_string"), java.lang.String[].class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.addParameter(new javax.xml.namespace.QName("", "returnURLPrefix"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.addParameter(new javax.xml.namespace.QName("", "returnURLPostfix"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.addParameter(new javax.xml.namespace.QName("", "forceInteractiveAuthentication"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"), boolean.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "attributes"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String[].class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "returnURLPrefix"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "returnURLPostfix"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "forceInteractiveAuthentication"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"), boolean.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         oper.setReturnClass(java.lang.String.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "initiateAuthenticationReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.RPC);
-        oper.setUse(org.apache.axis.constants.Use.ENCODED);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "initiateAuthenticationReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
                       "no.feide.moria.servlet.soap.InternalException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
                       "no.feide.moria.servlet.soap.IllegalInputException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
                       true
@@ -89,28 +89,28 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("directNonInteractiveAuthentication");
-        oper.addParameter(new javax.xml.namespace.QName("", "attributes"), new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_soapenc_string"), java.lang.String[].class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.addParameter(new javax.xml.namespace.QName("", "username"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.addParameter(new javax.xml.namespace.QName("", "password"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.setReturnType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOfAttribute"));
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "attributes"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String[].class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "username"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "password"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.setReturnType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "Attribute"));
         oper.setReturnClass(no.feide.moria.webservices.v2_2.Attribute[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "directNonInteractiveAuthenticationReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.RPC);
-        oper.setUse(org.apache.axis.constants.Use.ENCODED);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "directNonInteractiveAuthenticationReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
                       "no.feide.moria.servlet.soap.InternalException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
                       "no.feide.moria.servlet.soap.IllegalInputException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault4"),
                       "no.feide.moria.servlet.soap.AuthenticationFailedException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationFailedException"), 
                       true
@@ -122,7 +122,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault5"),
                       "no.feide.moria.servlet.soap.AuthenticationUnavailableException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationUnavailableException"), 
                       true
@@ -131,27 +131,27 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("proxyAuthentication");
-        oper.addParameter(new javax.xml.namespace.QName("", "attributes"), new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_soapenc_string"), java.lang.String[].class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.addParameter(new javax.xml.namespace.QName("", "proxyTicket"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.setReturnType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOfAttribute"));
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "attributes"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String[].class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "proxyTicket"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.setReturnType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "Attribute"));
         oper.setReturnClass(no.feide.moria.webservices.v2_2.Attribute[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "proxyAuthenticationReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.RPC);
-        oper.setUse(org.apache.axis.constants.Use.ENCODED);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "proxyAuthenticationReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
                       "no.feide.moria.servlet.soap.InternalException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
                       "no.feide.moria.servlet.soap.IllegalInputException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault3"),
                       "no.feide.moria.servlet.soap.UnknownTicketException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException"), 
                       true
@@ -166,27 +166,27 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getProxyTicket");
-        oper.addParameter(new javax.xml.namespace.QName("", "ticketGrantingTicket"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.addParameter(new javax.xml.namespace.QName("", "proxyServicePrincipal"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
-        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ticketGrantingTicket"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "proxyServicePrincipal"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         oper.setReturnClass(java.lang.String.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "getProxyTicketReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.RPC);
-        oper.setUse(org.apache.axis.constants.Use.ENCODED);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "getProxyTicketReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
                       "no.feide.moria.servlet.soap.InternalException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
                       "no.feide.moria.servlet.soap.IllegalInputException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault3"),
                       "no.feide.moria.servlet.soap.UnknownTicketException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException"), 
                       true
@@ -201,20 +201,20 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("verifyUserExistence");
-        oper.addParameter(new javax.xml.namespace.QName("", "username"), new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
+        oper.addParameter(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "username"), new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, org.apache.axis.description.ParameterDesc.IN, false, false);
         oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
         oper.setReturnClass(boolean.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "verifyUserExistenceReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.RPC);
-        oper.setUse(org.apache.axis.constants.Use.ENCODED);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "verifyUserExistenceReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
                       "no.feide.moria.servlet.soap.InternalException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
                       "no.feide.moria.servlet.soap.IllegalInputException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
                       true
@@ -226,7 +226,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault5"),
                       "no.feide.moria.servlet.soap.AuthenticationUnavailableException",
                       new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationUnavailableException"), 
                       true
@@ -262,33 +262,12 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
-            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOfAttribute");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.webservices.v2_2.Attribute[].class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(arraysf);
-            cachedDeserFactories.add(arraydf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ServerException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.ServerException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
             qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationUnavailableException");
             cachedSerQNames.add(qName);
             cls = no.feide.moria.servlet.soap.AuthenticationUnavailableException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_soapenc_string");
-            cachedSerQNames.add(qName);
-            cls = java.lang.String[].class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(arraysf);
-            cachedDeserFactories.add(arraydf);
 
             qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException");
             cachedSerQNames.add(qName);
@@ -297,23 +276,23 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.InternalException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationFailedException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.AuthenticationFailedException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
             qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "Attribute");
             cachedSerQNames.add(qName);
             cls = no.feide.moria.webservices.v2_2.Attribute.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.servlet.soap.UnknownTicketException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_xsd_string");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.webservices.v2_2.ArrayOf_xsd_string.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -332,16 +311,30 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ClientException");
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationFailedException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.ClientException.class;
+            cls = no.feide.moria.servlet.soap.AuthenticationFailedException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException");
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.UnknownTicketException.class;
+            cls = no.feide.moria.servlet.soap.InternalException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ServerException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.servlet.soap.ServerException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ClientException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.servlet.soap.ClientException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -383,8 +376,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             synchronized (this) {
                 if (firstCall()) {
                     // must set encoding style before registering serializers
-                    _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-                    _call.setEncodingStyle(org.apache.axis.Constants.URI_SOAP11_ENC);
+                    _call.setEncodingStyle(null);
                     for (int i = 0; i < cachedSerFactories.size(); ++i) {
                         java.lang.Class cls = (java.lang.Class) cachedSerClasses.get(i);
                         javax.xml.namespace.QName qName =
@@ -412,6 +404,9 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         _call.setOperation(_operations[0]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
         _call.setOperationName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "getUserAttributes"));
 
@@ -440,6 +435,9 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         _call.setOperation(_operations[1]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
         _call.setOperationName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "initiateAuthentication"));
 
@@ -468,6 +466,9 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         _call.setOperation(_operations[2]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
         _call.setOperationName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "directNonInteractiveAuthentication"));
 
@@ -496,6 +497,9 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         _call.setOperation(_operations[3]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
         _call.setOperationName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "proxyAuthentication"));
 
@@ -524,6 +528,9 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         _call.setOperation(_operations[4]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
         _call.setOperationName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "getProxyTicket"));
 
@@ -552,6 +559,9 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         _call.setOperation(_operations[5]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
         _call.setOperationName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "verifyUserExistence"));
 
