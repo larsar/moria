@@ -400,12 +400,17 @@ implements Authentication {
                  * ignored.
                  */
                 if (value instanceof String) {
-                    /* Create one-element String[] of value before setting. */
-                    attribute.setValues(new String[] {(String) value});
+
+                    // Create one-element String[] of value before setting.
+                    attribute.setValues((String) value);
                     attributeList.add(attribute);
+
                 } else if (value instanceof String[]) {
-                    attribute.setValues((String[]) value);
+
+                    // Encode the attribute values from String[] to String.
+                    attribute.setValues(Attribute.encodeValues((String[]) value));
                     attributeList.add(attribute);
+
                 } else if (value != null) {
                     messageLogger.logInfo("Attribute value not String or String[]. Entry not added to Attribute[]. ", activeTicketId);
                 }

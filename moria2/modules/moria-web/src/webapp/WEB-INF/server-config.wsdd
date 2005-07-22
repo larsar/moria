@@ -178,6 +178,30 @@
                  qname="ns:Attribute"
                  type="java:no.feide.moria.webservices.v2_2.Attribute"/>
 
+    <beanMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
+                 qname="ns:AuthenticationFailedException"
+                 type="java:no.feide.moria.servlet.soap.AuthenticationFailedException"/>
+
+    <beanMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
+                 qname="ns:AuthenticationUnavailableException"
+                 type="java:no.feide.moria.servlet.soap.AuthenticationUnavailableException"/>
+
+    <beanMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
+                 qname="ns:AuthorizationFailedException"
+                 type="java:no.feide.moria.servlet.soap.AuthorizationFailedException"/>
+
+    <beanMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
+                 qname="ns:IllegalInputException"
+                 type="java:no.feide.moria.servlet.soap.IllegalInputException"/>
+
+    <beanMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
+                 qname="ns:InternalException"
+                 type="java:no.feide.moria.servlet.soap.InternalException"/>
+
+    <beanMapping xmlns:ns="http://v2_2.webservices.moria.feide.no"
+                 qname="ns:UnknownTicketException"
+                 type="java:no.feide.moria.servlet.soap.UnknownTicketException"/>
+
   </service>
   
 

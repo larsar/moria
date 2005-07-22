@@ -26,47 +26,84 @@ import java.io.Serializable;
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o.smievoll@conduct.no&gt;
  * @version $Revision$
  */
-public final class Attribute implements Serializable {
+public final class Attribute
+implements Serializable {
 
     /** The name of this Attribute. */
     private String name = null;
 
-    /** The values of this Attribute. */
-    private String[] values = null;
+    /**
+     * The separator character(s) for attribute values, for encoding.<br>
+     * <br>
+     * Current value is <code>":"</code>.
+     */
+    public static final String separator = ":";
+
+    /** The encoded values of this Attribute. */
+    private String values = null;
+
 
     /**
      * Gets the name of this attribute.
-     *
      * @return Returns the name.
      */
     public String getName() {
+
         return name;
     }
 
+
     /**
      * Sets the name of the attribute.
-     *
-     * @param name The name to set.
+     * @param name
+     *            The name to set.
      */
     public void setName(final String name) {
+
         this.name = name;
     }
 
-    /**
-     * Gets a String array containing the values of the attribute.
-     *
-     * @return The value array.
-     */
-    public String[] getValues() {
-        return values;
-    }
 
     /**
-     * Sets the values for the attribute.
-     *
-     * @param values The values to set.
+     * Get the encoded <code>String</code> containing the values of the
+     * attribute, separated by <code>separator</code>.
+     * @return The value array.
+     * @see #separator
      */
-    public void setValues(final String[] values) {
+    public String getValues() {
+
+        return values;
+
+    }
+
+
+    /**
+     * Sets the values for the attribute. Must use the <code>separator</code>
+     * between attribute values.
+     * @param values
+     *            The values to set.
+     * @see #separator
+     */
+    public void setValues(final String values) {
+
         this.values = values;
+    }
+
+
+    /**
+     * Encode a <code>String</code> array into a single string, using the
+     * <code>separator</code> between attribute values.
+     * @param values
+     *            The values to be encoded.
+     * @return The encoded values.
+     */
+    protected static String encodeValues(final String[] values) {
+
+        String encoded = new String();
+        for (int i = 0; i < values.length; i++)
+            encoded = encoded + values[i] + separator;
+        encoded = encoded.substring(0, encoded.length() - separator.length());
+        return new String(encoded);
+
     }
 }
