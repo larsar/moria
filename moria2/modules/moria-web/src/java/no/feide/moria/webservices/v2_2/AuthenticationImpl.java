@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.AuthorizationException;
@@ -387,7 +388,14 @@ implements Authentication {
             Object key = iterator.next();
             Object value = map.get(key);
 
+            // Create a new attribute and randomly set the separator value.
             Attribute attribute = new Attribute();
+            Random randomGenerator = new Random();
+            String separator = "_";
+            for (int i=0; i<4; i++)
+                separator = separator + (char) (97+randomGenerator.nextInt(25));
+            separator = separator + "_";
+            attribute.setSeparator(separator);
 
             /* Check that key is a String, if not will ignore the whole entry. */
             if (key instanceof String) {
@@ -408,7 +416,7 @@ implements Authentication {
                 } else if (value instanceof String[]) {
 
                     // Encode the attribute values from String[] to String.
-                    attribute.setValues(Attribute.encodeValues((String[]) value));
+                    attribute.setValues(encodeValues(separator, (String[]) value));
                     attributeList.add(attribute);
 
                 } else if (value != null) {
@@ -420,4 +428,27 @@ implements Authentication {
         }
         return (Attribute[]) attributeList.toArray(new Attribute[] {});
     }
+
+
+    /**
+     * Encode a <code>String</code> array into a single string, using the
+     * <code>separator</code> between attribute values. All occurrences of
+     * <code>separator</code> in the original attribute values are replaced by
+     * two <code>separator</code>s.
+     * @param separator
+     *            The separator to be used.
+     * @param values
+     *            The values to be encoded using <code>separator</code>.
+     * @return The encoded values.
+     */
+    private static String encodeValues(final String separator, final String[] values) {
+
+        String encoded = new String();
+        for (int i = 0; i < values.length; i++)
+            encoded = encoded + values[i].replaceAll(separator, separator + separator) + separator;
+        encoded = encoded.substring(0, encoded.length() - separator.length());
+        return new String(encoded);
+
+    }
+
 }

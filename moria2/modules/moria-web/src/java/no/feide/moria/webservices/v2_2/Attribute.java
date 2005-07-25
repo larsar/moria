@@ -29,15 +29,19 @@ import java.io.Serializable;
 public final class Attribute
 implements Serializable {
 
+    /**
+     * Serial version UID (generated).
+     */
+    private static final long serialVersionUID = -3264658154719205385L;
+
     /** The name of this Attribute. */
     private String name = null;
 
     /**
-     * The separator character(s) for attribute values, for encoding.<br>
-     * <br>
-     * Current value is <code>":"</code>.
+     * The actual separator character(s) used for encoding. Added as a field to
+     * allow it to be visible across SOAP calls.
      */
-    public static final String separator = ":";
+    private String separator = null;
 
     /** The encoded values of this Attribute. */
     private String values = null;
@@ -65,10 +69,35 @@ implements Serializable {
 
 
     /**
+     * Get the actual separator value used for encoding the attribute values.
+     * @return The separator character(s).
+     */
+    public String getSeparator() {
+
+        return separator;
+
+    }
+    
+    
+    /**
+     * Set the actual separator value used for encoding the attribute values.
+     * @param separator The separator character(s).
+     */
+    public void setSeparator(final String separator) {
+        
+        this.separator = separator;
+        
+    }
+
+
+    /**
      * Get the encoded <code>String</code> containing the values of the
-     * attribute, separated by <code>separator</code>.
+     * attribute, separated by <code>separator</code>. All natural occurences
+     * of <code>separator</code> in the original values will show up as two
+     * <code>separator</code> character sequences. Be sure to check the actual
+     * separator value using <code>getSeparator()</code>.
      * @return The value array.
-     * @see #separator
+     * @see #getSeparator()
      */
     public String getValues() {
 
@@ -78,32 +107,17 @@ implements Serializable {
 
 
     /**
-     * Sets the values for the attribute. Must use the <code>separator</code>
-     * between attribute values.
+     * Sets the values for the attribute. Must use the separator (given by
+     * <code>getSeparator()</code>) between the values, and any natural
+     * occurences of the separator in an attribute value must be replaced with
+     * two subsequent occurences of the separator. 
      * @param values
      *            The values to set.
-     * @see #separator
+     * @see #getSeparator()
      */
     public void setValues(final String values) {
 
         this.values = values;
     }
 
-
-    /**
-     * Encode a <code>String</code> array into a single string, using the
-     * <code>separator</code> between attribute values.
-     * @param values
-     *            The values to be encoded.
-     * @return The encoded values.
-     */
-    protected static String encodeValues(final String[] values) {
-
-        String encoded = new String();
-        for (int i = 0; i < values.length; i++)
-            encoded = encoded + values[i] + separator;
-        encoded = encoded.substring(0, encoded.length() - separator.length());
-        return new String(encoded);
-
-    }
 }
