@@ -23,6 +23,7 @@
   <siteDirectory>/home/groups/m/mo/moria/htdocs/moria-dm</siteDirectory>
 
   <dependencies>
+	&dep-commons-codec;
     &dep-jdom;
     &dep-moria-log;
     &dep-log4j;

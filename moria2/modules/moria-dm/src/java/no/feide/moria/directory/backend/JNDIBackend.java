@@ -45,6 +45,9 @@ import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.index.IndexedReference;
 import no.feide.moria.log.MessageLogger;
 
+import org.apache.commons.codec.binary.Base64;
+
+
 /**
  * Java Naming and Directory Interface (JNDI) backend. Used to authenticate
  * users and retrieve the associated attributes.
@@ -442,7 +445,7 @@ implements DirectoryManagerBackend {
                         } catch (ClassCastException e) {
                             
                             // Map byte[] to String, using ISO-8859-1 encoding.
-                            newValue = new String((byte[]) oldAttr.get(j), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
+                            newValue = new String(Base64.encodeBase64((byte[]) oldAttr.get(j)), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
                             
                         }
                         newValues.add(newValue);
