@@ -9,15 +9,18 @@ package no.feide.moria.webservices.v2_2;
 
 public class Attribute  implements java.io.Serializable {
     private java.lang.String name;
-    private no.feide.moria.webservices.v2_2.ArrayOf_xsd_string values;
+    private java.lang.String separator;
+    private java.lang.String values;
 
     public Attribute() {
     }
 
     public Attribute(
            java.lang.String name,
-           no.feide.moria.webservices.v2_2.ArrayOf_xsd_string values) {
+           java.lang.String separator,
+           java.lang.String values) {
            this.name = name;
+           this.separator = separator;
            this.values = values;
     }
 
@@ -43,11 +46,31 @@ public class Attribute  implements java.io.Serializable {
 
 
     /**
+     * Gets the separator value for this Attribute.
+     * 
+     * @return separator
+     */
+    public java.lang.String getSeparator() {
+        return separator;
+    }
+
+
+    /**
+     * Sets the separator value for this Attribute.
+     * 
+     * @param separator
+     */
+    public void setSeparator(java.lang.String separator) {
+        this.separator = separator;
+    }
+
+
+    /**
      * Gets the values value for this Attribute.
      * 
      * @return values
      */
-    public no.feide.moria.webservices.v2_2.ArrayOf_xsd_string getValues() {
+    public java.lang.String getValues() {
         return values;
     }
 
@@ -57,7 +80,7 @@ public class Attribute  implements java.io.Serializable {
      * 
      * @param values
      */
-    public void setValues(no.feide.moria.webservices.v2_2.ArrayOf_xsd_string values) {
+    public void setValues(java.lang.String values) {
         this.values = values;
     }
 
@@ -76,6 +99,9 @@ public class Attribute  implements java.io.Serializable {
             ((this.name==null && other.getName()==null) || 
              (this.name!=null &&
               this.name.equals(other.getName()))) &&
+            ((this.separator==null && other.getSeparator()==null) || 
+             (this.separator!=null &&
+              this.separator.equals(other.getSeparator()))) &&
             ((this.values==null && other.getValues()==null) || 
              (this.values!=null &&
               this.values.equals(other.getValues())));
@@ -92,6 +118,9 @@ public class Attribute  implements java.io.Serializable {
         int _hashCode = 1;
         if (getName() != null) {
             _hashCode += getName().hashCode();
+        }
+        if (getSeparator() != null) {
+            _hashCode += getSeparator().hashCode();
         }
         if (getValues() != null) {
             _hashCode += getValues().hashCode();
@@ -112,9 +141,14 @@ public class Attribute  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("separator");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "separator"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("values");
         elemField.setXmlName(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "values"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_xsd_string"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         typeDesc.addFieldDesc(elemField);
     }
 

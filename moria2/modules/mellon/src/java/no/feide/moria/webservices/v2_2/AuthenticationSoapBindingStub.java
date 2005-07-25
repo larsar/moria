@@ -32,26 +32,26 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
-                      "no.feide.moria.servlet.soap.InternalException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
+                      "no.feide.moria.webservices.v2_2.InternalException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
-                      "no.feide.moria.servlet.soap.IllegalInputException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
+                      "no.feide.moria.webservices.v2_2.IllegalInputException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault3"),
-                      "no.feide.moria.servlet.soap.UnknownTicketException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException"), 
+                      "no.feide.moria.webservices.v2_2.UnknownTicketException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "UnknownTicketException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
-                      "no.feide.moria.servlet.soap.AuthorizationFailedException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException"), 
+                      "no.feide.moria.webservices.v2_2.AuthorizationFailedException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthorizationFailedException"), 
                       true
                      ));
         _operations[0] = oper;
@@ -69,20 +69,20 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
-                      "no.feide.moria.servlet.soap.InternalException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
+                      "no.feide.moria.webservices.v2_2.InternalException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
-                      "no.feide.moria.servlet.soap.IllegalInputException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
+                      "no.feide.moria.webservices.v2_2.IllegalInputException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
-                      "no.feide.moria.servlet.soap.AuthorizationFailedException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException"), 
+                      "no.feide.moria.webservices.v2_2.AuthorizationFailedException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthorizationFailedException"), 
                       true
                      ));
         _operations[1] = oper;
@@ -99,32 +99,32 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
-                      "no.feide.moria.servlet.soap.InternalException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
+                      "no.feide.moria.webservices.v2_2.InternalException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
-                      "no.feide.moria.servlet.soap.IllegalInputException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
+                      "no.feide.moria.webservices.v2_2.IllegalInputException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault4"),
-                      "no.feide.moria.servlet.soap.AuthenticationFailedException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationFailedException"), 
+                      "no.feide.moria.webservices.v2_2.AuthenticationFailedException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthenticationFailedException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
-                      "no.feide.moria.servlet.soap.AuthorizationFailedException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException"), 
+                      "no.feide.moria.webservices.v2_2.AuthorizationFailedException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthorizationFailedException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault5"),
-                      "no.feide.moria.servlet.soap.AuthenticationUnavailableException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationUnavailableException"), 
+                      "no.feide.moria.webservices.v2_2.AuthenticationUnavailableException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthenticationUnavailableException"), 
                       true
                      ));
         _operations[2] = oper;
@@ -140,26 +140,26 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
-                      "no.feide.moria.servlet.soap.InternalException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
+                      "no.feide.moria.webservices.v2_2.InternalException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
-                      "no.feide.moria.servlet.soap.IllegalInputException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
+                      "no.feide.moria.webservices.v2_2.IllegalInputException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault3"),
-                      "no.feide.moria.servlet.soap.UnknownTicketException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException"), 
+                      "no.feide.moria.webservices.v2_2.UnknownTicketException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "UnknownTicketException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
-                      "no.feide.moria.servlet.soap.AuthorizationFailedException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException"), 
+                      "no.feide.moria.webservices.v2_2.AuthorizationFailedException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthorizationFailedException"), 
                       true
                      ));
         _operations[3] = oper;
@@ -175,26 +175,26 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
-                      "no.feide.moria.servlet.soap.InternalException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
+                      "no.feide.moria.webservices.v2_2.InternalException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
-                      "no.feide.moria.servlet.soap.IllegalInputException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
+                      "no.feide.moria.webservices.v2_2.IllegalInputException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault3"),
-                      "no.feide.moria.servlet.soap.UnknownTicketException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException"), 
+                      "no.feide.moria.webservices.v2_2.UnknownTicketException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "UnknownTicketException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
-                      "no.feide.moria.servlet.soap.AuthorizationFailedException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException"), 
+                      "no.feide.moria.webservices.v2_2.AuthorizationFailedException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthorizationFailedException"), 
                       true
                      ));
         _operations[4] = oper;
@@ -209,26 +209,26 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault2"),
-                      "no.feide.moria.servlet.soap.InternalException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException"), 
+                      "no.feide.moria.webservices.v2_2.InternalException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "InternalException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault1"),
-                      "no.feide.moria.servlet.soap.IllegalInputException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException"), 
+                      "no.feide.moria.webservices.v2_2.IllegalInputException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "IllegalInputException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault"),
-                      "no.feide.moria.servlet.soap.AuthorizationFailedException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException"), 
+                      "no.feide.moria.webservices.v2_2.AuthorizationFailedException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthorizationFailedException"), 
                       true
                      ));
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "fault5"),
-                      "no.feide.moria.servlet.soap.AuthenticationUnavailableException",
-                      new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationUnavailableException"), 
+                      "no.feide.moria.webservices.v2_2.AuthenticationUnavailableException",
+                      new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthenticationUnavailableException"), 
                       true
                      ));
         _operations[5] = oper;
@@ -262,65 +262,16 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationUnavailableException");
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "InternalException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.AuthenticationUnavailableException.class;
+            cls = no.feide.moria.webservices.v2_2.InternalException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "IllegalInputException");
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ClientException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.IllegalInputException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "Attribute");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.webservices.v2_2.Attribute.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "UnknownTicketException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.UnknownTicketException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "ArrayOf_xsd_string");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.webservices.v2_2.ArrayOf_xsd_string.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthorizationFailedException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.AuthorizationFailedException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "SOAPException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.SOAPException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "AuthenticationFailedException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.AuthenticationFailedException.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "InternalException");
-            cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.InternalException.class;
+            cls = no.feide.moria.servlet.soap.ClientException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -332,9 +283,51 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "ClientException");
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthenticationFailedException");
             cachedSerQNames.add(qName);
-            cls = no.feide.moria.servlet.soap.ClientException.class;
+            cls = no.feide.moria.webservices.v2_2.AuthenticationFailedException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthorizationFailedException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.webservices.v2_2.AuthorizationFailedException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "UnknownTicketException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.webservices.v2_2.UnknownTicketException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "IllegalInputException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.webservices.v2_2.IllegalInputException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "AuthenticationUnavailableException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.webservices.v2_2.AuthenticationUnavailableException.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://v2_2.webservices.moria.feide.no", "Attribute");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.webservices.v2_2.Attribute.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://soap.servlet.moria.feide.no", "SOAPException");
+            cachedSerQNames.add(qName);
+            cls = no.feide.moria.servlet.soap.SOAPException.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -396,7 +389,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         }
     }
 
-    public no.feide.moria.webservices.v2_2.Attribute[] getUserAttributes(java.lang.String serviceTicket) throws java.rmi.RemoteException, no.feide.moria.servlet.soap.InternalException, no.feide.moria.servlet.soap.IllegalInputException, no.feide.moria.servlet.soap.UnknownTicketException, no.feide.moria.servlet.soap.AuthorizationFailedException {
+    public no.feide.moria.webservices.v2_2.Attribute[] getUserAttributes(java.lang.String serviceTicket) throws java.rmi.RemoteException, no.feide.moria.webservices.v2_2.InternalException, no.feide.moria.webservices.v2_2.IllegalInputException, no.feide.moria.webservices.v2_2.UnknownTicketException, no.feide.moria.webservices.v2_2.AuthorizationFailedException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -427,7 +420,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         }
     }
 
-    public java.lang.String initiateAuthentication(java.lang.String[] attributes, java.lang.String returnURLPrefix, java.lang.String returnURLPostfix, boolean forceInteractiveAuthentication) throws java.rmi.RemoteException, no.feide.moria.servlet.soap.InternalException, no.feide.moria.servlet.soap.IllegalInputException, no.feide.moria.servlet.soap.AuthorizationFailedException {
+    public java.lang.String initiateAuthentication(java.lang.String[] attributes, java.lang.String returnURLPrefix, java.lang.String returnURLPostfix, boolean forceInteractiveAuthentication) throws java.rmi.RemoteException, no.feide.moria.webservices.v2_2.InternalException, no.feide.moria.webservices.v2_2.IllegalInputException, no.feide.moria.webservices.v2_2.AuthorizationFailedException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -458,7 +451,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         }
     }
 
-    public no.feide.moria.webservices.v2_2.Attribute[] directNonInteractiveAuthentication(java.lang.String[] attributes, java.lang.String username, java.lang.String password) throws java.rmi.RemoteException, no.feide.moria.servlet.soap.InternalException, no.feide.moria.servlet.soap.IllegalInputException, no.feide.moria.servlet.soap.AuthenticationFailedException, no.feide.moria.servlet.soap.AuthorizationFailedException, no.feide.moria.servlet.soap.AuthenticationUnavailableException {
+    public no.feide.moria.webservices.v2_2.Attribute[] directNonInteractiveAuthentication(java.lang.String[] attributes, java.lang.String username, java.lang.String password) throws java.rmi.RemoteException, no.feide.moria.webservices.v2_2.InternalException, no.feide.moria.webservices.v2_2.IllegalInputException, no.feide.moria.webservices.v2_2.AuthenticationFailedException, no.feide.moria.webservices.v2_2.AuthorizationFailedException, no.feide.moria.webservices.v2_2.AuthenticationUnavailableException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -489,7 +482,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         }
     }
 
-    public no.feide.moria.webservices.v2_2.Attribute[] proxyAuthentication(java.lang.String[] attributes, java.lang.String proxyTicket) throws java.rmi.RemoteException, no.feide.moria.servlet.soap.InternalException, no.feide.moria.servlet.soap.IllegalInputException, no.feide.moria.servlet.soap.UnknownTicketException, no.feide.moria.servlet.soap.AuthorizationFailedException {
+    public no.feide.moria.webservices.v2_2.Attribute[] proxyAuthentication(java.lang.String[] attributes, java.lang.String proxyTicket) throws java.rmi.RemoteException, no.feide.moria.webservices.v2_2.InternalException, no.feide.moria.webservices.v2_2.IllegalInputException, no.feide.moria.webservices.v2_2.UnknownTicketException, no.feide.moria.webservices.v2_2.AuthorizationFailedException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -520,7 +513,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         }
     }
 
-    public java.lang.String getProxyTicket(java.lang.String ticketGrantingTicket, java.lang.String proxyServicePrincipal) throws java.rmi.RemoteException, no.feide.moria.servlet.soap.InternalException, no.feide.moria.servlet.soap.IllegalInputException, no.feide.moria.servlet.soap.UnknownTicketException, no.feide.moria.servlet.soap.AuthorizationFailedException {
+    public java.lang.String getProxyTicket(java.lang.String ticketGrantingTicket, java.lang.String proxyServicePrincipal) throws java.rmi.RemoteException, no.feide.moria.webservices.v2_2.InternalException, no.feide.moria.webservices.v2_2.IllegalInputException, no.feide.moria.webservices.v2_2.UnknownTicketException, no.feide.moria.webservices.v2_2.AuthorizationFailedException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -551,7 +544,7 @@ public class AuthenticationSoapBindingStub extends org.apache.axis.client.Stub i
         }
     }
 
-    public boolean verifyUserExistence(java.lang.String username) throws java.rmi.RemoteException, no.feide.moria.servlet.soap.InternalException, no.feide.moria.servlet.soap.IllegalInputException, no.feide.moria.servlet.soap.AuthorizationFailedException, no.feide.moria.servlet.soap.AuthenticationUnavailableException {
+    public boolean verifyUserExistence(java.lang.String username) throws java.rmi.RemoteException, no.feide.moria.webservices.v2_2.InternalException, no.feide.moria.webservices.v2_2.IllegalInputException, no.feide.moria.webservices.v2_2.AuthorizationFailedException, no.feide.moria.webservices.v2_2.AuthenticationUnavailableException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }

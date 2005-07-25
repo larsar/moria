@@ -8,6 +8,10 @@
 package no.feide.moria.webservices.v2_2;
 
 public interface Authentication_Service extends javax.xml.rpc.Service {
+
+/**
+ * Test!
+ */
     public java.lang.String getAuthenticationAddress();
 
     public no.feide.moria.webservices.v2_2.Authentication_PortType getAuthentication() throws javax.xml.rpc.ServiceException;

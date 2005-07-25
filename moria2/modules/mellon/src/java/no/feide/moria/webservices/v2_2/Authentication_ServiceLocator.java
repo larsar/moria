@@ -9,6 +9,10 @@ package no.feide.moria.webservices.v2_2;
 
 public class Authentication_ServiceLocator extends org.apache.axis.client.Service implements no.feide.moria.webservices.v2_2.Authentication_Service {
 
+/**
+ * Test!
+ */
+
     public Authentication_ServiceLocator() {
     }
 
