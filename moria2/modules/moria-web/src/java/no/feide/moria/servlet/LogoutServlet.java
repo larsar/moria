@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import no.feide.moria.controller.IllegalInputException;
+//import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.log.MessageLogger;
@@ -100,9 +100,9 @@ public final class LogoutServlet extends HttpServlet {
         } catch (InoperableStateException ise) {
             messageLogger.logWarn("Controller in inoperable state.", cookieValue, ise);
             controllerFailed = true;
-        } catch (IllegalInputException e) {
+        } /*catch (IllegalInputException e) {
             messageLogger.logWarn("Illegal SSO ticket value", cookieValue, e);
-        }
+        }*/
 
         if (controllerFailed) {
             final RequestDispatcher requestDispatcher = getServletContext().getNamedDispatcher("JSP-Error.JSP");
