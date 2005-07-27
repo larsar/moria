@@ -335,13 +335,16 @@ extends AxisServlet {
         try {
             axisEngine.invoke(messageContext);
         } catch (AxisFault af) {
-
-            if (af.getFaultString().startsWith("No such operation")) {
-                // Convert an AxisFault with faultString "No such operation '*'"
-                // to a IllegalInputException.
+            
+            if ((af.getFaultString().startsWith("No such operation")) ||
+                (af.getFaultString().startsWith("org.xml.sax.SAXException"))) {
+                
+                // Handle exceptions caused by illegal input.
                 IllegalInputException e = new IllegalInputException(af.getFaultString());
                 handleException("Invocation of the Axis engine failed", e, request, response);
+                              
             } else
+                
                 // All other Axis exceptions.
                 handleException("Invocation of the axis engine failed", af, request, response);
 
