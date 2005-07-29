@@ -40,7 +40,8 @@ $Id$
             </p>
             <subsection name="Core Properties">
                 <p>
-                The core properties required for Moria are as follows:
+                The core properties are listed below. Unless otherwise stated,
+				all properties are required.
                 </p>
                 <ul>
                     <li>
@@ -50,6 +51,13 @@ $Id$
                     assumes Moria is deployed locally.
                     </p>
                     </li>
+                    <li>
+                    <code>no.feide.moria.web.logout.url_param</code>
+                    <p>
+                    The name of the URL parameter used to contain the redirect
+					URL when logging out. <i>Optional.</i>
+                    </p>
+                    </li>				
                     <li>
                     <code>no.feide.moria.web.lang_common</code>
                     <p>
@@ -348,7 +356,7 @@ $Id$
 no.feide.moria.web.login.url_prefix=http://localhost:8080/moria/Login
 
 # The name of the parameter used to contain the redirect URL when logging out.
-no.feide.moria.web.logout.url_param=redirUrl
+no.feide.moria.web.logout.url_param=redirect
 
 # Abbreviations and display names for available languages.
 no.feide.moria.web.lang_common=nb:Bokm&amp;aring;l,en:English
