@@ -51,6 +51,13 @@ public final class LogoutServlet extends HttpServlet {
      * The logger used in this class.
      */
     private MessageLogger messageLogger;
+    
+    /**
+     * The default redirect parameter name.<br>
+     * <br>
+     * Current value is <code>"redirect"</code>.
+     */
+    private static final String defaultRedirectParameterName = "redirect";
 
     /**
      * Intitiates the servlet.
@@ -129,7 +136,7 @@ public final class LogoutServlet extends HttpServlet {
         String urlParam = config.getProperty(RequestUtil.PROP_LOGOUT_URL_PARAM);
 
         if (urlParam == null) {
-            urlParam = "redirURL";
+            urlParam = defaultRedirectParameterName;
             messageLogger.logWarn("Parameter: " + RequestUtil.PROP_LOGOUT_URL_PARAM
                                   + " not set in config. Using default value: "
                                   + urlParam);
