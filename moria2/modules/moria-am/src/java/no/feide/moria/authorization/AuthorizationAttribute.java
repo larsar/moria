@@ -61,16 +61,17 @@ final class AuthorizationAttribute {
      * @param secLevel The attribute's security level.
      * @throws IllegalArgumentException
      *             If <code>name</code> is <code>null</code> or
-     *             an empty string, or <code>secLevel</code> is < 0.
+     *             an empty string, or <code>secLevel</code> is not between
+     *             0 and 2, inclusive.
      */
     AuthorizationAttribute(final String name, final boolean allowSSO, final int secLevel) {
 
         if (name == null || name.equals("")) {
-            throw new IllegalArgumentException("Name must be a non-empty string.");
+            throw new IllegalArgumentException("Attribute name must be a non-empty string");
         }
 
-        if (secLevel < 0) {
-            throw new IllegalArgumentException("SecLevel must be >= 0, was: " + secLevel);
+        if ((secLevel < 0) || (secLevel > 2)) {
+            throw new IllegalArgumentException("Attribute security level must be 0, 1 or 2; was: " + secLevel);
         }
 
         this.secLevel = secLevel;
