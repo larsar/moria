@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!-- Updated to 2005-07-08 -->
 
 <Statistics>
 
@@ -8,7 +9,10 @@
 	  <Month name="January" count="45"/>
 	  <Month name="February" count="188"/>
 	  <Month name="March" count="287"/>
-	  <Month name="April" count="297"/>	  
+	  <Month name="April" count="966"/>
+	  <Month name="May" count="1118"/>
+	  <Month name="June" count="858"/>
+	  <Month name="July" count="173"/>	  
 	</Months>
     </Service>
 
@@ -19,6 +23,9 @@
 	  <Month name="February" count="40"/>
 	  <Month name="March" count="25"/>
 	  <Month name="April" count="16"/>
+	  <Month name="May" count="19"/>
+	  <Month name="June" count="19"/>
+	  <Month name="July" count="1"/>
 	</Months>
     </Service>
 
@@ -28,7 +35,10 @@
 	  <Month name="January" count="397"/>
 	  <Month name="February" count="1117"/>
 	  <Month name="March" count="153"/>
-	  <Month name="April" count="40"/>
+	  <Month name="April" count="88"/>
+	  <Month name="May" count="377"/>
+	  <Month name="June" count="1116"/>
+	  <Month name="July" count="194"/>
 	</Months>
     </Service>
 
@@ -38,7 +48,10 @@
 	  <Month name="January" count="24"/>
 	  <Month name="February" count="118"/>
 	  <Month name="March" count="339"/>
-	  <Month name="April" count="59"/>	  
+	  <Month name="April" count="215"/>	  
+	  <Month name="May" count="107"/>	 
+	  <Month name="June" count="89"/>	 
+	  <Month name="July" count="18"/>	 
 	</Months>
     </Service>
 
@@ -48,7 +61,10 @@
 	  <Month name="January" count="22625"/>
 	  <Month name="February" count="5655"/>
 	  <Month name="March" count="5087"/>
-	  <Month name="April" count="2137"/>
+	  <Month name="April" count="5312"/>
+	  <Month name="May" count="16015"/>
+	  <Month name="June" count="26709"/>
+	  <Month name="July" count="2888"/>
 	</Months>
     </Service>
 
@@ -58,7 +74,10 @@
 	  <Month name="January" count="0"/>
 	  <Month name="February" count="0"/>
 	  <Month name="March" count="180"/>
-	  <Month name="April" count="47"/>
+	  <Month name="April" count="119"/>
+	  <Month name="May" count="75"/>
+	  <Month name="June" count="19"/>
+	  <Month name="July" count="5"/>
 	</Months>
     </Service>
 
@@ -68,7 +87,10 @@
 	  <Month name="January" count="31264"/>
 	  <Month name="February" count="24177"/>
 	  <Month name="March" count="22525"/>
-	  <Month name="April" count="9095"/>
+	  <Month name="April" count="23303"/>
+	  <Month name="May" count="21943"/>
+	  <Month name="June" count="12829"/>
+	  <Month name="July" count="1632"/>
 	</Months>
     </Service>
 
@@ -78,7 +100,10 @@
 	  <Month name="January" count="389"/>
 	  <Month name="February" count="1173"/>
 	  <Month name="March" count="716"/>
-	  <Month name="April" count="327"/>
+	  <Month name="April" count="692"/>
+	  <Month name="May" count="750"/>
+	  <Month name="June" count="1167"/>
+	  <Month name="July" count="63"/>
 	</Months>
     </Service>
 
@@ -88,7 +113,10 @@
 	  <Month name="January" count="1996049"/>
 	  <Month name="February" count="1749789"/>
 	  <Month name="March" count="1469789"/>
-	  <Month name="April" count="593709"/>	  
+	  <Month name="April" count="1592892"/>	  
+	  <Month name="May" count="1638851"/>	
+	  <Month name="June" count="963482"/>	
+	  <Month name="July" count="33923"/>	
 	</Months>
     </Service>
 
