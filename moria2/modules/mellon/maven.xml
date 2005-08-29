@@ -39,8 +39,8 @@
        repository.
   -->
   <goal name="project:install"
-     	  prereqs="jar:install"
-        description="Build and install war in local repository"/>
+        prereqs="jar:install"
+        description="Build and install JAR in local repository"/>
 
   
   <!--
@@ -49,6 +49,6 @@
   -->
   <goal name="project:deploy"
         prereqs="jar:deploy"
-        description="Build and deploy war to remote repository"/>
+        description="Build and deploy JAR to remote repository"/>
 
 </project>
