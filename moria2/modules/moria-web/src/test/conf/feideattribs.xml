@@ -2,39 +2,56 @@
 
 <attributefile>
 
-<attribute> 
-  <key>uid</key>
-  <resourcebundle>rb_uid</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#uid</link>
-</attribute>
+
 
 <attribute> 
   <key>cn</key>
   <resourcebundle>rb_cn</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#cn</link>
-</attribute>
-
-<attribute> 
+  <o-relevance>Mandatory</o-relevance>
+</attribute><attribute>
+	<key>federationFeideSchemaVersion</key>
+	<resourcebundle>rb_federationFeideSchemaVersion</resourcebundle>
+	<relevance>no</relevance>
+	<link>http://www.feide.no/dokumenter/feide-schema-current.html#federationFeideSchemaVersion</link>
+	<o-relevance>Mandatory</o-relevance>
+</attribute><attribute>
+		<key>norEduOrgUniqueIdentifier</key>
+		<resourcebundle>rb_norEduOrgUniqueIdentifier</resourcebundle>
+		<relevance>no</relevance>
+		<link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUniqueIdentifier</link>
+		<o-relevance>Mandatory</o-relevance>
+	</attribute><attribute> 
   <key>sn</key>
   <resourcebundle>rb_sn</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#sn</link>
-</attribute>
-
-<attribute> 
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
   <key>eduPersonPrincipalName</key>
   <resourcebundle>rb_eduPersonPrincipalName</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrincipalName</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>uid</key>
+  <resourcebundle>rb_uid</resourcebundle>
+  <relevance>Mandatory</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#uid</link>
+  <o-relevance>no</o-relevance>
 </attribute>
+
+
+
+
 
 <attribute> 
   <key>mail</key>
   <resourcebundle>rb_mail</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#mail</link>
+  <o-relevance>Mandatory</o-relevance>
 </attribute>
 
 <attribute> 
@@ -42,13 +59,7 @@
   <resourcebundle>rb_norEduPersonNIN</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonNIN</link>
-</attribute>
-
-<attribute> 
-  <key>o</key>
-  <resourcebundle>rb_o</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#o</link>
+  <o-relevance>no</o-relevance>
 </attribute>
 
 <attribute> 
@@ -56,118 +67,29 @@
   <resourcebundle>rb_eduPersonAffiliation</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonAffiliation</link>
-</attribute>
-
-<attribute> 
-  <key>ou</key>
-  <resourcebundle>rb_ou</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#ou</link>
-</attribute>
-
-<attribute> 
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
   <key>eduPersonOrgDN</key>
   <resourcebundle>rb_eduPersonOrgDN</resourcebundle>
   <relevance>Mandatory</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonOrgDN</link>
+  <o-relevance>no</o-relevance>
 </attribute>
 
-<attribute> 
-  <key>eduPersonOrgUnitDN</key>
-  <resourcebundle>rb_eduPersonOrgUnitDN</resourcebundle>
-  <relevance>Mandatory</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonOrgUnitDN</link>
-</attribute>
+
+
+
+
+
+
+
 
 <attribute> 
   <key>jpegPhoto</key>
   <resourcebundle>rb_jpegPhoto</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#jpegPhoto</link>
-</attribute>
-
-<attribute> 
-  <key>l</key>
-  <resourcebundle>rb_l</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#l</link>
-</attribute>
-
-<attribute> 
-  <key>userCertificate</key>
-  <resourcebundle>rb_userCertificate</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#userCertificate</link>
-</attribute>
-
-<attribute> 
-  <key>userSMIMECertificate</key>
-  <resourcebundle>rb_userSMIMECertificate</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#userSMIMECertificate</link>
-</attribute>
-
-<attribute> 
-  <key>manager</key>
-  <resourcebundle>rb_manager</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#manager</link>
-</attribute>
-
-<attribute> 
-  <key>displayName</key>
-  <resourcebundle>rb_displayName</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#displayName</link>
-</attribute>
-
-<attribute> 
-  <key>labeledURI</key>
-  <resourcebundle>rb_labeledURI</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#labeledURI</link>
-</attribute>
-
-<attribute> 
-  <key>facsimileTelephoneNumber</key>
-  <resourcebundle>rb_facsimileTelephoneNumber</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#facsimileTelephoneNumber</link>
-</attribute>
-
-<attribute> 
-  <key>norEduOrgAcronym</key>
-  <resourcebundle>rb_norEduOrgAcronym</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgAcronym</link>
-</attribute>
-
-<attribute> 
-  <key>givenName</key>
-  <resourcebundle>rb_givenName</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#givenName</link>
-</attribute>
-
-<attribute> 
-  <key>norEduPersonBirthDate</key>
-  <resourcebundle>rb_norEduPersonBirthDate</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonBirthDate</link>
-</attribute>
-
-<attribute> 
-  <key>street</key>
-  <resourcebundle>rb_street</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#street</link>
-</attribute>
-
-<attribute> 
-  <key>eduOrgHomePageURI</key>
-  <resourcebundle>rb_eduOrgHomePageURI</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgHomePageURI</link>
+  <o-relevance>no</o-relevance>
 </attribute>
 
 <attribute> 
@@ -175,118 +97,263 @@
   <resourcebundle>rb_norEduPersonLIN</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonLIN</link>
-</attribute>
-
-<attribute> 
-  <key>mobile</key>
-  <resourcebundle>rb_mobile</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#mobile</link>
-</attribute>
-
-<attribute> 
-  <key>norEduOrgUnitUniqueIdentifier</key>
-  <resourcebundle>rb_norEduOrgUnitUniqueIdentifier</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUnitUniqueIdentifier</link>
-</attribute>
-
-<attribute> 
-  <key>postalAddress</key>
-  <resourcebundle>rb_postalAddress</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#postalAddress</link>
-</attribute>
-
-<attribute> 
-  <key>homePostalAddress</key>
-  <resourcebundle>rb_homePostalAddress</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#homePostalAddress</link>
-</attribute>
-
-<attribute> 
-  <key>postOfficeBox</key>
-  <resourcebundle>rb_postOfficeBox</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#postOfficeBox</link>
-</attribute>
-
-<attribute> 
-  <key>postalCode</key>
-  <resourcebundle>rb_postalCode</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#postalCode</link>
-</attribute>
-
-<attribute> 
-  <key>eduPersonPrimaryOrgUnitDN</key>
-  <resourcebundle>rb_eduPersonPrimaryOrgUnitDN</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrimaryOrgUnitDN</link>
-</attribute>
-
-<attribute> 
-  <key>eduPersonPrimaryAffiliation</key>
-  <resourcebundle>rb_eduPersonPrimaryAffiliation</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrimaryAffiliation</link>
-</attribute>
-
-<attribute> 
-  <key>eduPersonScopedAffiliation</key>
-  <resourcebundle>rb_eduPersonScopedAffiliation</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonScopedAffiliation</link>
-</attribute>
-
-<attribute> 
-  <key>eduOrgIdentityAuthNPolicyURI</key>
-  <resourcebundle>rb_eduOrgIdentityAuthNPolicyURI</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgIdentityAuthNPolicyURI</link>
-</attribute>
-
-<attribute> 
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
   <key>preferredLanguage</key>
   <resourcebundle>rb_preferredLanguage</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#preferredLanguage</link>
-</attribute>
-
-<attribute> 
-  <key>eduOrgWhitePagesURI</key>
-  <resourcebundle>rb_eduOrgWhitePagesURI</resourcebundle>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>givenName</key>
+  <resourcebundle>rb_givenName</resourcebundle>
   <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgWhitePagesURI</link>
-</attribute>
-
-<attribute> 
-  <key>telephoneNumber</key>
-  <resourcebundle>rb_telephoneNumber</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#telephoneNumber</link>
-</attribute>
-
-<attribute> 
-  <key>homePhone</key>
-  <resourcebundle>rb_homePhone</resourcebundle>
-  <relevance>Optional</relevance>
-  <link>http://www.feide.no/dokumenter/feide-schema-current.html#homePhone</link>
-</attribute>
-
-<attribute> 
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#givenName</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
   <key>title</key>
   <resourcebundle>rb_title</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#title</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>manager</key>
+  <resourcebundle>rb_manager</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#manager</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>displayName</key>
+  <resourcebundle>rb_displayName</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#displayName</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>labeledURI</key>
+  <resourcebundle>rb_labeledURI</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#labeledURI</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>norEduPersonBirthDate</key>
+  <resourcebundle>rb_norEduPersonBirthDate</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduPersonBirthDate</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>mobile</key>
+  <resourcebundle>rb_mobile</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#mobile</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>telephoneNumber</key>
+  <resourcebundle>rb_telephoneNumber</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#telephoneNumber</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>homePhone</key>
+  <resourcebundle>rb_homePhone</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#homePhone</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>facsimileTelephoneNumber</key>
+  <resourcebundle>rb_facsimileTelephoneNumber</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#facsimileTelephoneNumber</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>postalAddress</key>
+  <resourcebundle>rb_postalAddress</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#postalAddress</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>homePostalAddress</key>
+  <resourcebundle>rb_homePostalAddress</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#homePostalAddress</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>postOfficeBox</key>
+  <resourcebundle>rb_postOfficeBox</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#postOfficeBox</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>postalCode</key>
+  <resourcebundle>rb_postalCode</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#postalCode</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>l</key>
+  <resourcebundle>rb_l</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#l</link>
+  <o-relevance>no</o-relevance>
 </attribute>
 
 <attribute> 
+  <key>street</key>
+  <resourcebundle>rb_street</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#street</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>o</key>
+  <resourcebundle>rb_o</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#o</link>
+  <o-relevance>Mandatory</o-relevance>
+</attribute><attribute> 
+  <key>eduPersonPrimaryOrgUnitDN</key>
+  <resourcebundle>rb_eduPersonPrimaryOrgUnitDN</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrimaryOrgUnitDN</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>eduPersonPrimaryAffiliation</key>
+  <resourcebundle>rb_eduPersonPrimaryAffiliation</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonPrimaryAffiliation</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>eduPersonScopedAffiliation</key>
+  <resourcebundle>rb_eduPersonScopedAffiliation</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonScopedAffiliation</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
   <key>eduPersonEntitlement</key>
   <resourcebundle>rb_eduPersonEntitlement</resourcebundle>
   <relevance>Optional</relevance>
   <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonEntitlement</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute> 
+  <key>userCertificate</key>
+  <resourcebundle>rb_userCertificate</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#userCertificate</link>
+  <o-relevance>no</o-relevance>
 </attribute>
+
+<attribute> 
+  <key>userSMIMECertificate</key>
+  <resourcebundle>rb_userSMIMECertificate</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#userSMIMECertificate</link>
+  <o-relevance>no</o-relevance>
+</attribute>
+
+
+
+
+
+
+
+
+
+<attribute> 
+  <key>eduPersonOrgUnitDN</key>
+  <resourcebundle>rb_eduPersonOrgUnitDN</resourcebundle>
+  <relevance>Optional</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduPersonOrgUnitDN</link>
+  <o-relevance>no</o-relevance>
+</attribute><attribute>
+		<key>eduOrgLegalName</key>
+		<resourcebundle>rb_eduOrgLegalName</resourcebundle>
+		<relevance>no</relevance>
+		<link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgLegalName</link>
+		<o-relevance>Mandatory</o-relevance>
+	</attribute><attribute>
+	<key>dc</key>
+	<resourcebundle>rb_dc</resourcebundle>
+	<relevance>no</relevance>
+	<link>http://www.feide.no/dokumenter/feide-schema-current.html#dc</link>
+	<o-relevance>Mandatory</o-relevance>
+</attribute><attribute> 
+  <key>norEduOrgAcronym</key>
+  <resourcebundle>rb_norEduOrgAcronym</resourcebundle>
+  <relevance>no</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgAcronym</link>
+  <o-relevance>Optional</o-relevance>
+</attribute>
+
+
+
+
+
+
+
+<attribute> 
+  <key>eduOrgWhitePagesURI</key>
+  <resourcebundle>rb_eduOrgWhitePagesURI</resourcebundle>
+  <relevance>no</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgWhitePagesURI</link>
+  <o-relevance>Optional</o-relevance>
+</attribute><attribute> 
+  <key>eduOrgHomePageURI</key>
+  <resourcebundle>rb_eduOrgHomePageURI</resourcebundle>
+  <relevance>no</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgHomePageURI</link>
+  <o-relevance>Optional</o-relevance>
+</attribute>
+
+
+
+
+
+<attribute> 
+  <key>eduOrgIdentityAuthNPolicyURI</key>
+  <resourcebundle>rb_eduOrgIdentityAuthNPolicyURI</resourcebundle>
+  <relevance>no</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#eduOrgIdentityAuthNPolicyURI</link>
+  <o-relevance>Optional</o-relevance>
+</attribute><attribute> 
+  <key>norEduOrgUnitUniqueIdentifier</key>
+  <resourcebundle>rb_norEduOrgUnitUniqueIdentifier</resourcebundle>
+  <relevance>no</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#norEduOrgUnitUniqueIdentifier</link>
+  <o-relevance>Optional</o-relevance>
+</attribute><attribute> 
+  <key>ou</key>
+  <resourcebundle>rb_ou</resourcebundle>
+  <relevance>no</relevance>
+  <link>http://www.feide.no/dokumenter/feide-schema-current.html#ou</link>
+  <o-relevance>Optional</o-relevance>
+</attribute>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+
+
+
 
 </attributefile>

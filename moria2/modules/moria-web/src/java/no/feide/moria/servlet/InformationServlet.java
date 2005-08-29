@@ -188,9 +188,11 @@ public class InformationServlet extends HttpServlet {
                 description = bundlename;
             String link = adata.getData("link");
             String relevance = adata.getData("relevance");
+            String o_relevance =adata.getData("o-relevance");
 
             String userstring = "";
-            String relevanceString = null;
+           // String relevanceString = null;
+           // String o_relevanceString = null;
 
             if (userdata != null) {
                 for (int j = 0; j < userdata.length; j++) {
@@ -198,17 +200,7 @@ public class InformationServlet extends HttpServlet {
                     userstring += "<BR>";
                 }
             }
-            /*
-             * Checks if the data is mandatory or optional for printing in the
-             * right language
-             */
-            if (relevance.equals("Mandatory")) {
-                // set to bundle name
-                relevanceString = "fd_mandatory";
-            } else {
-                // set to bundle name
-                relevanceString = "fd_optional";
-            }
+                
             //Check if a user has picture
             if (key2.equals("jpegPhoto")) {
                 if (userdata != null) {
@@ -218,7 +210,9 @@ public class InformationServlet extends HttpServlet {
             out.add(link);
             out.add(description);
             out.add(userstring);
-            out.add(relevanceString);
+            out.add(relevance);
+            out.add(o_relevance);
+            out.add(key2);
         }
         return out;
     }
@@ -345,12 +339,19 @@ public class InformationServlet extends HttpServlet {
         if (userData != null) {
             // need userorg as an attribute in the JSP to be able to print
             // instructions on where to update the optional or mandatory info
-            String [] userorgarray = (String[]) userData.get(RequestUtil.ORGANIZATION_NAME);
+            String [] userorgarray = (String[]) userData.get("o");
             String userorg = bundle.getString("unknown_userorg");
             if (userorgarray != null && userorgarray.length > 0) {
                 userorg = userorgarray[0];
             }
             request.setAttribute("userorg", userorg);
+            // Username for display after login
+            String[] usernamearray = (String[]) userData.get("eduPersonPrincipalName");
+            String username = null;
+            if (usernamearray != null && usernamearray.length > 0) {
+                username = usernamearray[0];
+            }
+            request.setAttribute("username", username);
             // Pictures are stored for later use in the JSP
             String[] picarr = (String[]) userData.get(new String("jpegPhoto"));
             if (picarr != null && picarr.length > 0) {

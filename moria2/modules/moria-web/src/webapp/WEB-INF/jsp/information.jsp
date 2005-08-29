@@ -44,19 +44,7 @@ try {
 <td width="0%"><a class="noline" href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><%=bundle.getString("header_feide")%></a></td>
 <td width="35%">&nbsp;<td>
 
-<!-- Language selection -->
-<%
-        TreeMap languages = (TreeMap) request.getAttribute(RequestUtil.ATTR_LANGUAGES);
-        Iterator it = languages.keySet().iterator();
-        while(it.hasNext()) {
-            String longName = (String) it.next();
-            String shortName  = (String) languages.get(longName);
-            if (request.getAttribute(RequestUtil.ATTR_SELECTED_LANG).equals(shortName)) {%>
-                [<%=longName%>]
-            <%} else {%>
-                <td align="centre"><small><a class="invers" href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>"><%=longName%></a></small></td>
-            <%}%>
-        <%}%>
+
 <td class="dekor1" width="100%">&nbsp;</td>
 </tr></tbody></table> 
 
@@ -76,6 +64,22 @@ try {
 <table cellspacing="0">
 <tbody><tr valign="top">
 <td class="meny">
+   <%=bundle.getString("login")%><br><%=request.getAttribute("username")%>
+   <br>
+   <!-- Language selection -->
+<%
+        TreeMap languages = (TreeMap) request.getAttribute(RequestUtil.ATTR_LANGUAGES);
+        Iterator it = languages.keySet().iterator();
+        while(it.hasNext()) {
+            String longName = (String) it.next();
+            String shortName  = (String) languages.get(longName);
+            if (request.getAttribute(RequestUtil.ATTR_SELECTED_LANG).equals(shortName)) {%>
+                [<%=longName%>]
+            <%} else {%>
+                <a href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>"><%=longName%></a>
+            <%}%>
+        <%}%>
+   <br>
    <!-- Logout-->
    <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&logout=user_logout" %>"><%=bundle.getString("user_logout")%></A>
 
@@ -84,17 +88,21 @@ try {
       /* rearrange table data into some temporary vectors */
       Vector mandatoryvec = new Vector();
       Vector optionalvec = new Vector();
+      Vector o_mandatoryvec = new Vector();
+      Vector o_optionalvec = new Vector();
       final String piclink = (String)request.getAttribute(RequestUtil.PIC_LINK);
       int n = tabledata.size();
 
-        for (int i = 0; i < n; i += 4) {
+        for (int i = 0; i < n; i += 6) {
           String link = (String) tabledata.get(i);
           String description = (String) tabledata.get(i+1);
           String userstring = (String) tabledata.get(i+2);
           String relevance = (String) tabledata.get(i+3);
+          String o_relevance = (String) tabledata.get(i+4);
+          String key = (String) tabledata.get(i+5);
 
           if (userstring == null || userstring.equals("")) {	
-		    if (relevance.equals("fd_mandatory")) {
+		    if (relevance.equals("Mandatory")) {
                 userstring = "<FONT COLOR=\"#ff0000\">" + bundle.getString("m_missing") + "</FONT>";
             }
             else {
@@ -110,17 +118,28 @@ try {
 			}
           }
           
-          if (relevance.equals("fd_mandatory")) {
+          if (relevance.equals("Mandatory")) {
             mandatoryvec.add(link);
             mandatoryvec.add(description);
             mandatoryvec.add(userstring);
-            mandatoryvec.add(bundle.getString(relevance));
-          }
-          else {
+            mandatoryvec.add(key);
+          } else if (relevance.equals("Optional")){
             optionalvec.add(link);
             optionalvec.add(description);
             optionalvec.add(userstring);
-            optionalvec.add(bundle.getString(relevance));
+            optionalvec.add(key);
+           }
+          
+          if (o_relevance.equals("Mandatory")) {
+              o_mandatoryvec.add(link);
+              o_mandatoryvec.add(description);
+              o_mandatoryvec.add(userstring);
+              o_mandatoryvec.add(key);
+          } else if (o_relevance.equals("Optional")) {
+              o_optionalvec.add(link);
+              o_optionalvec.add(description);
+              o_optionalvec.add(userstring);
+              o_optionalvec.add(key);
           }
        }
 %>
@@ -128,49 +147,85 @@ try {
      <!-- mandatory table -->
      <td class="kropp">
      <p>
-     <b><center><%= bundle.getString("user_info") + userorg + "." %> 
+     <b><%= bundle.getString("user_info") + userorg + "." %> 
      <br/><%=bundle.getString("user_info2") %></b>
      </p>
      
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
-     <th> <%= bundle.getString("tc_value") + userorg%> </th>
-     <th> <%= bundle.getString("tc_relevance") %> </th></tr>
+     <th> <%= bundle.getString("tc_value") + userorg%> </th></tr>
      <%
      n = mandatoryvec.size();
      for (int i = 0; i < n; i += 4) { 
        String link = (String) mandatoryvec.get(i);
        String description = (String) mandatoryvec.get(i+1);
        String userstring = (String) mandatoryvec.get(i+2);
-       String relevance = (String) mandatoryvec.get(i+3);
+       String key = (String) mandatoryvec.get(i+3);
        %>
        <tr>
-         <td align=left><A HREF="<%= link %>" TARGET="_blank"> <%= description %></A></td>
-         <td align=center><%= userstring %></td>
-         <td align=center><%= relevance %></td>
+         <td><%= description%><br><A HREF="<%= link %>" TARGET="_blank" class="attr"> <%= key %></A></td>
+         <td><%= userstring %></td>
        </tr>
      <%}%>
      </table>
-     <br><br><b><center><%=bundle.getString("user_table")%></center>
+     <br><br><b><%=bundle.getString("user_table")%>
      
      <!-- optional table -->
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
-     <th> <%= bundle.getString("tc_value") + userorg%> </th>
-     <th> <%= bundle.getString("tc_relevance") %> </th></tr>
+     <th> <%= bundle.getString("tc_value") + userorg%> </th></tr>
      <%
      n = optionalvec.size();
      for (int i = 0; i < n; i += 4) {
        String link = (String) optionalvec.get(i);
        String description = (String) optionalvec.get(i+1);
        String userstring = (String) optionalvec.get(i+2);
-       String relevance = (String) optionalvec.get(i+3);
+       String key = (String) optionalvec.get(i+3);
        %> 
        <tr>
-         <td align=left><A HREF="<%= link %>" TARGET="_blank"> <%= description %></A></td>
-         <td align=center><%= userstring %></td>
-         <td align=center><%= relevance %></td>
+         <td><%= description %><br><A HREF="<%= link %>" TARGET="_blank" class="attr"> <%= key %></A></td>
+         <td><%= userstring %></td>
        </tr>       
      <%}%>
      </table>
+     
+     <!-- Mandatory table for organizations -->
+     <br><b><%= bundle.getString("org_info") + userorg + "." %></b>
+        
+     <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
+     <th> <%= bundle.getString("tc_value") + userorg%> </th></tr>
+     <%
+     n = o_mandatoryvec.size();
+     for (int i = 0; i < n; i += 4) { 
+       String link = (String) o_mandatoryvec.get(i);
+       String description = (String) o_mandatoryvec.get(i+1);
+       String userstring = (String) o_mandatoryvec.get(i+2);
+       String key = (String) o_mandatoryvec.get(i+3);
+       %>
+       <tr>
+         <td><%= description %><br><A HREF="<%= link %>" TARGET="_blank" class="attr"> <%= key %></A></td>
+         <td><%= userstring %></td>
+       </tr>
+     <%}%>
+     </table>
+     <br><b><%=bundle.getString("org_info2")%>
+     
+     <!-- Optional table for organizations -->
+     <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
+     <th> <%= bundle.getString("tc_value") + userorg%> </th></tr>
+     <%
+     n = o_optionalvec.size();
+     for (int i = 0; i < n; i += 4) {
+       String link = (String) o_optionalvec.get(i);
+       String description = (String) o_optionalvec.get(i+1);
+       String userstring = (String) o_optionalvec.get(i+2);
+       String key = (String) o_optionalvec.get(i+3);
+       %> 
+       <tr>
+         <td><%= description %><br><A HREF="<%= link %>" TARGET="_blank"> <%= key %></A></td>
+         <td><%= userstring %></td>
+       </tr>       
+     <%}%>
+     </table>
+     
      </td>
 </tr>
 </tbody></table>

@@ -267,11 +267,6 @@ public final class RequestUtil {
     public static final String BUNDLE_ERROR = "error";
 
     /**
-     * Name of the users organization
-     */
-    public static final String ORGANIZATION_NAME = "o";
-
-    /**
      * Link to faq, shown on the login page.
      */
     public static final String FAQ_LINK = PATH_PREFIX + "faqlink";
