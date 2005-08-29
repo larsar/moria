@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project xmlns:j="jelly:core"
+         xmlns:m="jelly:maven"
+         xmlns:u="jelly:util"
+         default="project:install">
+   
+   
+  <!-- 
+       A number of filename fixes for Windows users.
+  -->
+  <preGoal name="build:start">
+  <tempfile property="windowsFixFile"
+            destDir="${maven.build.dir}/.."/>
+    <echo message="project.wsdl.baseuri.fixed=${project.wsdl.baseuri}${line.separator}maven.build.dir.fixed=${maven.build.dir}"
+          file="${windowsFixFile}"
+          level="verbose"/>
+    <replace file="${windowsFixFile}"
+             replaceFilterFile="${maven.build.dir}/../windows.properties"/>
+    <property file="${windowsFixFile}"/>
+    <delete file="${windowsFixFile}"
+            deleteonexit="true"/>
+  </preGoal>
+
+
+  <!--
+       Build the module and install the resulting JAR file in the local
+       repository.
+  -->
+  <goal name="project:install"
+        prereqs="jar:install"
+        description="Build and install JAR in local repository"/>
+
+  
+  <!--
+       Build the module and install the resulting JAR file in the remote
+       repository.
+  -->
+  <goal name="project:deploy"
+        prereqs="jar:deploy"
+        description="Build and deploy JAR to remote repository"/>
+
+
+</project>
