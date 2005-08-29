@@ -26,10 +26,10 @@
     <!--
       Dirty hack to gather subproject WAR files...
     -->
-    <copy file="modules/mellon-demo/target/mellon.war"
+    <copy file="modules/mellon-demo/target/mellon2.war"
           todir="target"
           failonerror="false"/>
-    <copy file="modules/moria-web/target/moria.war"
+    <copy file="modules/moria-web/target/moria2.war"
           todir="target"
           failonerror="false"/>
   </goal>
