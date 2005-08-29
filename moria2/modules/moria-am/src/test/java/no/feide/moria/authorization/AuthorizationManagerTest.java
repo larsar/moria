@@ -55,9 +55,9 @@ public final class AuthorizationManagerTest extends TestCase {
      */
     public void setUp() {
         final HashMap attributes = new HashMap();
-        attributes.put("attr1", new AuthorizationAttribute("attr1", true, 1));
-        attributes.put("attr2", new AuthorizationAttribute("attr2", false, 2));
-        attributes.put("attr3", new AuthorizationAttribute("attr3", true, 3));
+        attributes.put("attr1", new AuthorizationAttribute("attr1", true, 0));
+        attributes.put("attr2", new AuthorizationAttribute("attr2", false, 1));
+        attributes.put("attr3", new AuthorizationAttribute("attr3", true, 2));
 
         final HashSet operations = new HashSet();
         operations.add("localAuth");
