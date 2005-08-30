@@ -44,6 +44,7 @@
     &dep-xerces-xercesImpl;
     &dep-xerces-xmlParserAPIs;
     &dep-jdom;
+    &dep-commons-codec;
 
     <!-- JBossCache deps -->
     &dep-concurrent;
