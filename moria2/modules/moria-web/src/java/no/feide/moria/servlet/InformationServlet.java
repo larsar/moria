@@ -269,7 +269,7 @@ public class InformationServlet extends HttpServlet {
         String ticketId = request.getParameter("moriaID");
 
         if (request.getParameter("logout") != null) {
-            log.logInfo("Logout received");
+            log.logDebug("Logout received");
             final RequestDispatcher rd = getServletContext().getNamedDispatcher("Logout");
             rd.forward(request, response);
             return;
@@ -408,7 +408,7 @@ public class InformationServlet extends HttpServlet {
     throws ServletException, IOException {
 
         String jspLocation = getServletContext().getInitParameter("jsp.location");
-        log.logInfo("jsp.location is '" + jspLocation + "'");
+        log.logDebug("jsp.location is '" + jspLocation + "'");
         String moriaID = null;
         boolean error = false;
 
@@ -419,13 +419,13 @@ public class InformationServlet extends HttpServlet {
 
         try {
             MoriaController.initController(getServletContext());
-            log.logInfo("Requested attributes: " + attributes);
-            log.logInfo("URL prefix: " + urlPrefix);
-            log.logInfo("URL postfix: " + urlPostfix);
-            log.logInfo("Principal: " + principal);
+            log.logDebug("Requested attributes: " + attributes);
+            log.logDebug("URL prefix: " + urlPrefix);
+            log.logDebug("URL postfix: " + urlPostfix);
+            log.logDebug("Principal: " + principal);
             moriaID = MoriaController.initiateAuthentication(attributes.split(","),
                                                              urlPrefix, urlPostfix, false, principal);
-            log.logInfo("Moria ID is now " + moriaID);
+            log.logDebug("Moria ID is now " + moriaID);
 
         } catch (IllegalInputException e) {
             log.logCritical("IllegalInputException");
@@ -440,10 +440,10 @@ public class InformationServlet extends HttpServlet {
 
         if (!error) {
             Properties config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
-            log.logCritical("Configuration: " + config.toString());
+            log.logDebug("Configuration: " + config.toString());
             String redirectURL = config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX)
                  + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + moriaID;
-            log.logCritical("Redirect URL: " + redirectURL);
+            log.logDebug("Redirect URL: " + redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             response.setHeader("Location", redirectURL);
         } else {
