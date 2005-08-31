@@ -38,6 +38,7 @@ import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.DirectoryManager;
 import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
+//import no.feide.moria.ldap.SimpleLdapServer;
 import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
 import no.feide.moria.log.MessageLogger;
@@ -252,6 +253,10 @@ public final class MoriaController {
                 messageLogger.logCritical("Moria cannot start, configuration failed.", e);
                 throw new InoperableStateException("Moria cannot start, configuration failed. " + e.getMessage());
             }
+            
+            // Starting SimpleLdapServer on (hard-coded) port 389.
+            //SimpleLdapServer.start(389);            
+            
         }
     }
 
@@ -263,6 +268,10 @@ public final class MoriaController {
 
         synchronized (isInitialized) {
             if (ready) {
+                
+                // Shutting down SimpleLdapServer.
+                //SimpleLdapServer.stop();
+                
                 authzManager = null;
                 amReady = false;
                 configManager.stop();
@@ -729,10 +738,16 @@ public final class MoriaController {
 
             // Check attributes.
             if (!authzManager.allowAccessTo(servicePrincipal, attributes)) {
+                
+                // Resolve offending attributes.
+                HashSet deniedAttributes = new HashSet(Arrays.asList(attributes));
+                final HashSet allowedAttributes = authzManager.getAttributes(servicePrincipal);
+                Iterator i = allowedAttributes.iterator();
+                while (i.hasNext())
+                    deniedAttributes.remove(i.next());
+                
                 accessLogger.logService(statusType, servicePrincipal, null, null);
-                messageLogger.logInfo("Service '" + servicePrincipal + "' tried to access '"
-                        + new HashSet(Arrays.asList(attributes)) + "', but have only access to '"
-                        + authzManager.getAttributes(servicePrincipal));
+                messageLogger.logInfo("Service \"" + servicePrincipal + "\" does not have access to attribute(s) " + deniedAttributes + "");
                 throw new AuthorizationException("Access to the requested attribute(s) is denied");
             }
 
@@ -1469,28 +1484,31 @@ public final class MoriaController {
      * used any more.
      * @param ssoTicketId
      *            The ticket to be invalidated.
+     * @throws IllegalInputException
+     *             If <code>ssoTicketId</code> is null or empty.
      * @throws InoperableStateException
      *             If Moria is not ready to use.
      */
     public static void invalidateSSOTicket(final String ssoTicketId)
-    throws InoperableStateException {
+    throws IllegalInputException, InoperableStateException {
 
         /* Check controller state */
         if (!ready) { throw new InoperableStateException(NOT_READY); }
 
-        // Attempt removal of ticket.
+        /* Validate argument */
+        if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalInputException("'ssoTicketId' must be a non-empty string."); }
+
         try {
             store.removeSSOTicket(ssoTicketId);
         } catch (NonExistentTicketException e) {
-            messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET + ", ignoring attempt to invalidate an empty/unknown SSO ticket", ssoTicketId);
+            /* We don't care, it's just removal of a ticket */
+            messageLogger.logDebug(CAUGHT_NONEXISTENT_TICKET + ", OK since we tried to remove");
         } catch (MoriaStoreException e) {
             messageLogger.logCritical(CAUGHT_STORE, e);
             throw new InoperableStateException(STORE_DOWN);
         }
-        
-        // Feed the access log.
-        accessLogger.logUser(AccessStatusType.SSO_TICKET_INVALIDATED, null, null, ssoTicketId, null);
 
+        accessLogger.logUser(AccessStatusType.SSO_TICKET_INVALIDATED, null, null, ssoTicketId, null);
     }
 
 
