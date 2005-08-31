@@ -424,7 +424,7 @@ public class InformationServlet extends HttpServlet {
             log.logDebug("URL postfix: " + urlPostfix);
             log.logDebug("Principal: " + principal);
             moriaID = MoriaController.initiateAuthentication(attributes.split(","),
-                                                             urlPrefix, urlPostfix, false, principal);
+                                                             urlPrefix, urlPostfix, true, principal);
             log.logDebug("Moria ID is now " + moriaID);
 
         } catch (IllegalInputException e) {
