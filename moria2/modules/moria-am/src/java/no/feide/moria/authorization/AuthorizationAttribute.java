@@ -71,7 +71,7 @@ final class AuthorizationAttribute {
         }
 
         if ((secLevel < 0) || (secLevel > 2)) {
-            throw new IllegalArgumentException("Attribute security level must be 0, 1 or 2; was: " + secLevel);
+            throw new IllegalArgumentException("Security level for attribute \"" + name + "\" must be 0, 1 or 2; was: " + secLevel);
         }
 
         this.secLevel = secLevel;
