@@ -638,8 +638,7 @@ public final class RequestUtil {
      *         time.
      * @throws IllegalArgumentException
      *             If <code>cookieName</code> or <code>cookieValue</code> is
-     *             <code>null</code> or an empty string, or if
-     *             <code>validHours</code> is less than 0.
+     *             <code>null</code> or an empty string.
      */
     public static Cookie createCookie(final String cookieName, final String cookieValue, final int validHours) {
 
@@ -648,8 +647,6 @@ public final class RequestUtil {
             throw new IllegalArgumentException("Cookie name must be a non-empty string");
         if (cookieValue == null || cookieValue.equals(""))
             throw new IllegalArgumentException("Cookie value must be a non-empty string");
-        if (validHours < 0)
-            throw new IllegalArgumentException("Valid hours for cookie must be a positive number");
 
         // Create and return cookie.
         final Cookie cookie = new Cookie(cookieName, cookieValue);
