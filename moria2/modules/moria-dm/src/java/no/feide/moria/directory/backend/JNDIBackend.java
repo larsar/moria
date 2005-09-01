@@ -37,6 +37,7 @@ import javax.naming.NamingException;
 import javax.naming.TimeLimitExceededException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
@@ -46,7 +47,6 @@ import no.feide.moria.directory.index.IndexedReference;
 import no.feide.moria.log.MessageLogger;
 
 import org.apache.commons.codec.binary.Base64;
-
 
 /**
  * Java Naming and Directory Interface (JNDI) backend. Used to authenticate
@@ -78,9 +78,9 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Protected constructor. Creates an initial default context environment
-     * and adds support for referrals, a fix for OpenSSL aliases, and enables
-     * SSL as default.
+     * Protected constructor. Creates an initial default context environment and
+     * adds support for referrals, a fix for OpenSSL aliases, and enables SSL as
+     * default.
      * @param sessionTicket
      *            The session ticket for this instance, used when logging. May
      *            be <code>null</code> (which is treated as an empty string)
@@ -108,11 +108,10 @@ implements DirectoryManagerBackend {
      *             If <code>guessedAttributeName</code> or
      *             <code>usernameAttribute</code> is <code>null</code>.
      */
-    protected JNDIBackend(final String sessionTicket, final int timeout, final boolean ssl,
-            final String usernameAttributeName, final String guessedAttributeName)
+    protected JNDIBackend(final String sessionTicket, final int timeout, final boolean ssl, final String usernameAttributeName, final String guessedAttributeName)
     throws IllegalArgumentException, NullPointerException {
-        
-        log.logDebug("JNDIBackend: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+
+        log.logDebug("JNDIBackend: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Assignments, with sanity checks.
         if (usernameAttributeName == null)
@@ -149,8 +148,8 @@ implements DirectoryManagerBackend {
 
 
     /**
-     * Opens this backend. Does not actually initialize the network connection to
-     * the external LDAP.
+     * Opens this backend. Does not actually initialize the network connection
+     * to the external LDAP.
      * @param references
      *            The external reference to the LDAP server. Cannot be
      *            <code>null</code>, and must contain at least one reference.
@@ -159,8 +158,8 @@ implements DirectoryManagerBackend {
      *             empty array.
      */
     public final void open(final IndexedReference[] references) {
-        
-        log.logDebug("open: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+
+        log.logDebug("open: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Sanity check.
         if ((references == null) || (references.length == 0))
@@ -177,15 +176,17 @@ implements DirectoryManagerBackend {
 
     /**
      * Checks whether a user element exists, based on its username value.
-     * @param username User name.
+     * @param username
+     *            User name.
      * @return <code>true</code> if the user can be looked up through JNDI,
      *         otherwise <code>false</code>.
      * @throws BackendException
      *             If there is a problem accessing the backend.
      */
-    public final boolean userExists(final String username) throws BackendException {
-        
-        log.logDebug("userExists: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+    public final boolean userExists(final String username)
+    throws BackendException {
+
+        log.logDebug("userExists: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
@@ -236,11 +237,11 @@ implements DirectoryManagerBackend {
      *            Requested attributes.
      * @return The requested attributes (<code>String</code> names and
      *         <code>String[]</code> values), if they did exist in the
-     *         external backend. Otherwise returns
-     *         those attributes that could actually be read, this may be an
-     *         empty <code>HashMap</code>. Returns an empty
-     *         <code>HashMap</code> if <code>attributeRequest</code> is
-     *         <code>null</code> or an empty array.
+     *         external backend. Otherwise returns those attributes that could
+     *         actually be read, this may be an empty <code>HashMap</code>.
+     *         Returns an empty <code>HashMap</code> if
+     *         <code>attributeRequest</code> is <code>null</code> or an
+     *         empty array.
      * @throws AuthenticationFailedException
      *             If the authentication fails.
      * @throws BackendException
@@ -250,8 +251,8 @@ implements DirectoryManagerBackend {
      */
     public final HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException {
-        
-        log.logDebug("authenticate: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+
+        log.logDebug("authenticate: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Sanity check.
         if (userCredentials == null)
@@ -290,8 +291,7 @@ implements DirectoryManagerBackend {
                         else if ((passwords[j].length() == 0) && (usernames[j].length() == 0)) {
                             log.logDebug("Anonymous search for user element DN");
                             ldap.removeFromEnvironment(Context.SECURITY_AUTHENTICATION);
-                        }
-                        else
+                        } else
                             log.logDebug("Non-anonymous search for user element DN");
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, usernames[j]);
                         ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, passwords[j]);
@@ -315,7 +315,7 @@ implements DirectoryManagerBackend {
                     ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, userCredentials.getPassword());
                     try {
                         ldap.reconnect(null);
-                        log.logDebug("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);                       
+                        log.logDebug("Successfully authenticated " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
                         return getAttributes(ldap, rdn, attributeRequest); // Success.
                     } catch (AuthenticationException e) {
 
@@ -370,12 +370,12 @@ implements DirectoryManagerBackend {
      *            The requested attribute's names.
      * @return The requested attributes (<code>String</code> names and
      *         <code>String[]</code> values), if they did exist in the
-     *         external backend. Otherwise returns
-     *         those attributes that could actually be read, this may be an
-     *         empty <code>HashMap</code>. Returns an empty
-     *         <code>HashMap</code> if <code>attributes</code> is
-     *         <code>null</code> or an empty array. Note that attribute values
-     *         are mapped to <code>String</code> using ISO-8859-1.
+     *         external backend. Otherwise returns those attributes that could
+     *         actually be read, this may be an empty <code>HashMap</code>.
+     *         Returns an empty <code>HashMap</code> if
+     *         <code>attributes</code> is <code>null</code> or an empty
+     *         array. Note that attribute values are mapped to
+     *         <code>String</code> using ISO-8859-1.
      * @throws BackendException
      *             If unable to read the attributes from the backend.
      * @throws NullPointerException
@@ -386,8 +386,8 @@ implements DirectoryManagerBackend {
      */
     private HashMap getAttributes(final InitialLdapContext ldap, final String rdn, final String[] attributes)
     throws BackendException {
-        
-        log.logDebug("getAttributes: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+
+        log.logDebug("getAttributes: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Sanity checks.
         if (ldap == null)
@@ -396,29 +396,41 @@ implements DirectoryManagerBackend {
             throw new NullPointerException("RDN cannot be NULL");
         if ((attributes == null) || (attributes.length == 0))
             return new HashMap();
-        
+
         // Eliminate all occurrences of so-called "virtual" attributes.
         Vector request = new Vector(Arrays.asList(attributes));
-        for (int i=0; i<DirectoryManagerBackend.VIRTUAL_ATTRIBUTES.length; i++)
-            while (request.remove(DirectoryManagerBackend.VIRTUAL_ATTRIBUTES[i])) { };
+        for (int i = 0; i < DirectoryManagerBackend.VIRTUAL_ATTRIBUTES.length; i++)
+            while (request.remove(DirectoryManagerBackend.VIRTUAL_ATTRIBUTES[i])) {
+            }
+        ;
         String[] parsedAttributes = (String[]) request.toArray(new String[] {});
 
-        // The context provider URL, for later logging.
+        // The context provider URL and DN, for later logging.
         String url = "unknown backend";
+        String dn = "unknown dn";
 
         // Get the attributes from an already initialized LDAP connection.
         Attributes oldAttrs = null;
         try {
-
-            // Remember the URL, for later logging.
-            url = (String) ldap.getEnvironment().get(Context.PROVIDER_URL);
+                       
+            // Remember the URL and bind DN, for later logging.
+            final Hashtable environment = ldap.getEnvironment();
+            url = (String) environment.get(Context.PROVIDER_URL);
+            dn = (String) environment.get(Context.SECURITY_PRINCIPAL); 
 
             // Get the attributes.
             oldAttrs = ldap.getAttributes(rdn, parsedAttributes);
 
+        } catch (NameNotFoundException e) {
+
+            // Successful authentication but missing user element; no attributes
+            // returned and the event is logged.
+            log.logWarn("No user element found (DN was '" + dn + "')");
+            oldAttrs = new BasicAttributes();
+            
         } catch (NamingException e) {
             String a = new String();
-            for (int i=0; i<attributes.length; i++)
+            for (int i = 0; i < attributes.length; i++)
                 a = a + attributes[i] + ", ";
             throw new BackendException("Unable to read attribute(s) '" + a.substring(0, a.length() - 2) + "' from '" + rdn + "' on '" + url + "'", e);
         }
@@ -437,19 +449,19 @@ implements DirectoryManagerBackend {
                 ArrayList newValues = new ArrayList(oldAttr.size());
                 for (int j = 0; j < oldAttr.size(); j++) {
                     try {
-                        
+
                         // We either have a String or a byte[].
                         String newValue = null;
                         try {
                             newValue = new String(((String) oldAttr.get(j)).getBytes(), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
                         } catch (ClassCastException e) {
-                            
+
                             // Map byte[] to String, using ISO-8859-1 encoding.
                             newValue = new String(Base64.encodeBase64((byte[]) oldAttr.get(j)), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
-                            
+
                         }
                         newValues.add(newValue);
-                        
+
                     } catch (NamingException e) {
                         throw new BackendException("Unable to read attribute value of '" + oldAttr.getID() + "' from '" + url + "'", e);
                     } catch (UnsupportedEncodingException e) {
@@ -473,8 +485,8 @@ implements DirectoryManagerBackend {
      * @see DirectoryManagerBackend#close()
      */
     public void close() {
-        
-        log.logDebug("close: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+
+        log.logDebug("close: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Does nothing.
 
@@ -499,8 +511,8 @@ implements DirectoryManagerBackend {
      */
     private String ldapSearch(final InitialLdapContext ldap, final String pattern)
     throws BackendException {
-        
-        log.logDebug("ldapSearch: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+
+        log.logDebug("ldapSearch: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Check pattern for illegal content.
         String[] illegals = {"*", "\2a"};
@@ -528,8 +540,7 @@ implements DirectoryManagerBackend {
         } catch (TimeLimitExceededException e) {
 
             // The search timed out.
-            throw new BackendException("Search on " + url + " for " + pattern
-                    + " timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
+            throw new BackendException("Search on " + url + " for " + pattern + " timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
 
         } catch (NameNotFoundException e) {
 
@@ -571,11 +582,12 @@ implements DirectoryManagerBackend {
      *             If unable to connect to the provider given by
      *             <code>url</code>.
      */
-    private InitialLdapContext connect(final String url) throws BackendException {
-        
-        log.logDebug("connect: Truststore is " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
+    private InitialLdapContext connect(final String url)
+    throws BackendException {
 
-        //  Prepare connection.
+        log.logDebug("connect: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
+
+        // Prepare connection.
         Hashtable env = new Hashtable(defaultEnv);
         env.put(Context.PROVIDER_URL, url);
         try {
