@@ -117,7 +117,10 @@ $Id$
                     <code>no.feide.moria.web.cookie.sso.ttl</code>
                     <p>
                     The time to live, in hours, for the cookie used to carry SSO
-                    ticket ID.
+                    ticket ID. A zero value will result in no cookie being
+				    stored, while a negative value will result in non-persistent
+					cookies. Note that non-persistent cookies have an infinite
+					lifespan, as long as the user does not close the browser.
                     </p>
                     </li>
                     <li>
