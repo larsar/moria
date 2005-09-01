@@ -66,20 +66,6 @@ try {
 <td class="meny">
    <%=bundle.getString("login")%><br><%=request.getAttribute("username")%>
    <br>
-   <!-- Language selection -->
-<%
-        TreeMap languages = (TreeMap) request.getAttribute(RequestUtil.ATTR_LANGUAGES);
-        Iterator it = languages.keySet().iterator();
-        while(it.hasNext()) {
-            String longName = (String) it.next();
-            String shortName  = (String) languages.get(longName);
-            if (request.getAttribute(RequestUtil.ATTR_SELECTED_LANG).equals(shortName)) {%>
-                [<%=longName%>]
-            <%} else {%>
-                <a href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>"><%=longName%></a>
-            <%}%>
-        <%}%>
-   <br>
    <!-- Logout-->
    <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&logout=user_logout" %>"><%=bundle.getString("user_logout")%></A>
 
