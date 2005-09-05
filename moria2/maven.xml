@@ -100,6 +100,9 @@
     <copy todir="target/docs/mellon-demo" failonerror="false">
       <fileset dir="modules/mellon-demo/target/docs"/>
     </copy>
+    <copy todir="target/docs/mellon-jaas" failonerror="false">
+      <fileset dir="modules/mellon-jaas/target/docs"/>
+    </copy>
     <copy todir="target/docs/moria-tools" failonerror="false">
       <fileset dir="modules/moria-tools/target/docs"/>
     </copy>
