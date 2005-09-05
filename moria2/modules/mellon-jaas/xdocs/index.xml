@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document>
+	<properties>
+		<title>JAAS-module for Moria</title>
+		<author email="lovlid+uninett@fysmat.ntnu.no">Rikke Amilde Lovlid</author>
+	</properties>
+	<body>
+		<section name="JAAS Module">
+			<subsection name="JAAS - Important Concepts">
+			<ul>
+				<li>
+				<code>Subject</code>
+				<p>
+				The agent that is going to be authenticated.
+				</p>
+				</li>
+				<li>
+				<code>Principal</code>
+				<p>
+				Represents an identity of the agent. They can be thought of as attributes.
+				One agents may have many principals. Permissions are given to principals.
+				</p>
+				</li>
+				<li>
+				<code>Credential</code>
+				<p>
+				Security-related attributes, which may be represented by any class, and 
+				are either private or public.
+				</p>
+				</li>
+			</ul>
+			
+			<ul>
+				<li>
+				<code>LoginContext</code>
+				<p>
+				Provides the basic methods used to authenticate subjects and a way to 
+				develop an application independent of the underlying authentication 
+				technology.
+				</p>
+				</li>
+				<li>
+				<code>LoginModule</code>
+				<p>
+				Implements an authentication technology.
+				</p>
+				</li>
+				<li>
+				<code>CallbackHandler</code>
+				<p>
+				A LoginModule uses the CallbackHandler both to gather input from users 
+				(like username and password) and to supply information to users.
+				</p>
+				</li>
+				<li>
+				<code>Configuration file</code>
+				<p>
+				Contains which LoginModules and whether they are "required, "requisite", 
+				"sufficient" or optional. Options are also specified.
+				</p> 
+				</li>
+			</ul>
+			
+			<ul>
+				<li>
+				<code>Policy</code>
+				<p>
+				Reads the permissions from the policy file.
+				</p>
+				</li>
+				<li>
+				<code>Permission</code>
+				<p>
+				A permission has a type, a name and possibly actions and are given to code or 				principals in the policy file.
+				</p>
+				</li>
+				<li>
+				<code>SecurityManager</code>
+				<p>
+				Provides the permission checks. Note that you own <code>Permission</code>s
+				are not checked automatically, but you have to add this in your application:
+				<code>
+<pre>	SecurityManager sm = System.getSecurityManager()
+	if(sm!=0){
+   		sm.checkPermission(new MyPermission(name));
+	}</pre>
+				</code>
+				</p>
+				</li>
+				<li>
+				<code>Policy file</code>
+				<p>
+				Here you store the permissions. It does not have to be a file, you may want
+				to store the permissions in a database.
+				</p>
+				</li>
+			</ul>
+			</subsection>
+
+			<subsection name = "Classes and Packages">
+			<ul>
+				<li>
+				<code>no.feide.mellon.jaas.loginmodules</code>
+				<p>
+				The only <code>LoginModule</code> is the <code>MoriaLoginModule</code>, which
+				uses <code>no.feide.mellon.v2_1.Moria</code> for authentication.
+				</p>
+				</li>
+				
+				<li>
+				<code>no.feide.mellon.jaas.principals</code>
+				<p>
+				The main <code>Principal</code> implementation is the <code>MoriaPrincipal</code>.
+				To enable use of wildcards two other principal-types is implemented as well,
+				<code>EntitlementPrincipal</code> and <code>ScopedAffiliationPrincipal</code>.
+				</p>
+				</li>
+				
+				<li>
+				<code>no.feide.mellon.jaas.callbackhandlers</code>
+				<p>
+				It contains two callbackHandlers, <code>CommandlineCallbackHandler</code> that 
+				prompts the user for username and password and <code>PassiveCallbackHandler</code>.
+				</p>
+				</li>
+				
+				<li>
+				<code>no.feide.mellon.jaas.loginutility</code>
+				<p>
+				The <code>Login</code> class and the <code>MoriaAction</code> class will hide
+				the use of JAAS completely from the application.
+				</p>
+				</li>
+				
+				<li>
+				<code>no.feide.mellon.jaas.application</code>
+				<p>
+				It contains one class <code>Demo</code>, a small sample application.
+				</p>
+				</li>
+			</ul>
+			</subsection>
+
+			<subsection name="How to run it">
+			<p>
+			This is how you run the code:
+			<code>
+<pre>	java	-Djava.security.auth.login.config==jaas.config \
+		-Djava.security.auth.manager \
+		-Djava.security.policy==jaas.policy \
+		Login \
+		Demo \
+		[args]</pre>
+			</code>
+			</p>
+			<p>
+			This means you run the <code>Login</code> class and that the application 
+			that is going to use JAAS, <code>Demo</code>, is the first argument. 
+			The next arguments are arguments for the <code>main</code> method in 
+			<code>Demo</code>. 
+			</p>
+			<p>
+			Double "=", "==", means that this is the only configuration- and policy-file that 
+			is to be considered. Note that you will have to write or modify <code>jaas.config</code>
+			and <code>jaas.policy</code>. Examples are provided below.	
+			</p>
+			<p>
+			<source>
+<B>jaas.config</B>
+
+	no.feide.mellon.jaas.application.Demo{
+		no.feide.mellon.jaas.loginmodules.MoriaLoginModule required 
+		debug=true 
+		endpoint="http://localhost:8080/moria/v2_1/Authentication" 
+		service_username="demo_service" 
+		service_password="demo_service";
+	};</source>
+			</p>
+			<p>
+			<source>
+<B>jaas.policy</B>
+
+	//This is only an example. It cannot be used without modifications.
+
+	//"standard" properties that can be read by anyone
+	grant { 
+		permission java.util.PropertyPermission "java.version", "read";
+		permission java.util.PropertyPermission "java.vendor", "read";
+		permission java.util.PropertyPermission "java.vendor.url", "read";
+		permission java.util.PropertyPermission "java.class.version", "read";
+		permission java.util.PropertyPermission "os.name", "read";
+		permission java.util.PropertyPermission "os.version", "read";
+		permission java.util.PropertyPermission "os.arch", "read";
+		permission java.util.PropertyPermission "file.separator", "read";
+		permission java.util.PropertyPermission "path.separator", "read";
+		permission java.util.PropertyPermission "line.separator", "read";
+
+		permission java.util.PropertyPermission "java.specification.version", "read";
+		permission java.util.PropertyPermission "java.specification.vendor", "read";
+		permission java.util.PropertyPermission "java.specification.name", "read";
+
+		permission java.util.PropertyPermission "java.vm.specification.version", "read";
+		permission java.util.PropertyPermission "java.vm.specification.vendor", "read";
+		permission java.util.PropertyPermission "java.vm.specification.name", "read";
+		permission java.util.PropertyPermission "java.vm.version", "read";
+		permission java.util.PropertyPermission "java.vm.vendor", "read";
+		permission java.util.PropertyPermission "java.vm.name", "read";
+	};
+
+	grant codebase "file:D:/Feide/-"{
+		permission java.security.AllPermission;
+	};
+
+	grant codebase "file:D:/JavaLibraries/-"{
+		permission java.security.AllPermission;
+	};
+
+	grant codebase "file:D:/win/eclipse/workspace/JAAS/-"{
+		permission javax.security.auth.AuthPermission "createLoginContext";
+		permission javax.security.auth.AuthPermission "modifyPrincipals";
+		permission javax.security.auth.AuthPermission "modifyPublicCredentials";
+		permission javax.security.auth.AuthPermission "modifyPrivateCredentials";
+		permission javax.security.auth.AuthPermission "doAsPrivileged";
+	
+		permission java.util.PropertyPermission "axis.xml.reuseParsers", "read";
+		permission java.util.PropertyPermission "axis.attachments.implementation", "read";
+		permission java.util.PropertyPermission "java.protocol.handler.pkgs", "read, write";
+		permission java.util.PropertyPermission "axis.byteBuffer.cacheIncrement", "read";
+		permission java.util.PropertyPermission "axis.byteBuffer.residentMaxSize", "read";
+		permission java.util.PropertyPermission "axis.byteBuffer.workBufferSize", "read";
+		permission java.util.PropertyPermission "axis.byteBuffer.backing", "read";
+		permission java.util.PropertyPermission "axis.doAutoTypes", "read";
+		permission java.util.PropertyPermission "http.nonProxyHosts", "read";
+		permission java.util.PropertyPermission "http.proxyUser", "read";
+		permission java.util.PropertyPermission "http.proxyHost", "read";
+	
+		permission java.net.SocketPermission "localhost", "resolve";
+		permission java.net.SocketPermission "127.0.0.1:8080", "connect,resolve";
+	
+		permission java.io.FilePermission "D:\\JavaLibraries\\axis-bin-1_2_1\\axis-1_2_1\\lib\\-", "read";
+		permission java.io.FilePermission "D:\\win\\eclipse\\workspace\\Moria\\-", "read";
+		permission java.io.FilePermission "D:\\win\\eclipse\\workspace\\JAAS\\-", "read,write";
+	};
+
+	grant Principal jaas.principals.MoriaPrincipal "eduPersonEntitlement:urn:mace:feide.no:gullgraverskolen.no:forsteklondike"{
+		permission java.util.PropertyPermission "user.home", "read";
+	};
+
+	grant Principal jaas.principals.EntitlementPrincipal "*:*:*:gullgraverskolen.no:*"{
+		permission java.util.PropertyPermission "java.home", "read";
+	}; </source>
+			</p>
+
+			<p>
+			The configuration file <code>jaas.config</code> and the policy file 
+			<code>jaas.policy</code> can be specified in the <code>java.policy</code> 
+			and <code>java.security</code> files located in the directory 
+			<code>lib/security/</code> in the java runtime folder. The security Manager 
+			can be constructed in the <code>Login</code> class (before 
+			the <code>LoginContext</code> is created). This is done like this:
+			<code>
+<pre>	System.setSecurityManager(new SecurityManager())</pre></code>
+			</p>
+			</subsection>
+
+			<subsection name = "How it works - Authentication">
+			<p>
+			The <code>no.feide.mellon.jaas.loginutility.Login</code> class initiates a 
+			<code>LoginContext</code> and calls the <code>LoginContext</code>s 
+			<code>login</code> method. The name in the loginconfiguration, 
+			<code>jaas.config</code>, is the same as the name of the application that is 
+			going to use this JAAS-module and the <code>CallbakHandler</code> used is the 
+			<code>no.feide.mellon.jaas.calbackhandlers.CommandlineCallbackHandler</code>.
+			</p>
+			<p>
+			You get three login attempts (specified in the <code>Login</code> class).
+			</p>
+			<p>
+			The only <code>LoginModule</code> used is 
+			<code>no.feid.mellon.jaas.loginmodules.MoriaLoginModule</code>, and it is 
+			required as specified in <code>jaas.config</code>. When the 
+			<code>LoginContext</code>s <code>login</code> method is called the 
+			<code>LoginContext</code> initiates the <code>MoriaLoginModule</code> and 
+			calls its <code>login</code> method. 
+			</p>
+			<p>
+			The <code>MoriaLoginModule</code> uses the given <code>CallbackHandler</code> to 
+			ask for username and password. The <code>login</code> method in 
+			<code>MoriaLoginModule</code> calls the <code>MoriaLoginModule</code>s 
+			<code>validate</code> method which constructs a <code>no.feide.mellon.v2_1.Moria</code> 
+			object and calls its <code>directNonInteractiveAuthentication</code> method. 
+			The username and password is checked and the attributes specified in the 
+			<code>MoriaLoginModules</code> static variable <code>ATTRIBUTE_NAMES</code> are 
+			returned. For each of the Attributes returned a new 
+			<code>no.feide.mellon.jaas.principals.MoriaPrincipal</code> is constructed. The 
+			<code>commit</code> method in <code>MoriaLoginModule</code> saves this 
+			principals in the <code>Subject</code> object returned to the <code>LoginContext</code>
+			if the <code>login</code> and <code>commit</code> method of the 
+			<code>MoriaLoginModule</code> both return true.
+			</p>
+			<p>
+			The <code>Login</code> class retrieves the <code>Subject</code> from the 
+			<code>LoginContext</code> and tries to run the 
+			<code>no.feide.mellon.jaas.loginutility.MoriaAction</code> as this subject. 
+			The <code>MoriaAction</code> starts the application, <code>Demo</code>. This 
+			means that the application is run as the authenticated subject.
+			</p>
+			</subsection>
+		
+			<subsection name="How it works - Authorization">
+			<p>
+			When run with the default <code>SecurityManager</code>, all the standard permissions 
+			will be checked. The application is run as the subject, so what the application can 
+			do is restricted by the subject's permissions. The permission are granted to 
+			principals and/or code and specified in <code>jaas.policy</code>. 
+			You can read more about policy files here: 
+			<a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/PolicyFiles.html">
+			"Default Policy Implementation and Policy File Syntax"</a>
+			I have used the default <code>Policy</code> implementation, 
+			<code>com.sun.security.auth.PolicyFile</code>. This means I have used the standard
+			described in the link above to write the <code>jaas.policy</code> file.
+			</p>
+			<p>
+			During login attributes are stored as <code>MoriaPrincipals</code> in the authenticated 
+			subject. The string representation of a <code>MoriaPrincipal</code> is 
+			"attributeName:attributeValue". This is used in the policy file. 
+			<code>MoriaPrincipals</code> cannot contain wildcards. To enable use of wildcards 
+			in the policy file for specific attributes, new principal types that extend 
+			<code>MoriaPrincipal</code> and implements the 
+			<code>com.sun.security.auth.PrincipalComparator</code> are implemented. These 
+			principals are <code>EntitlementPrincipal</code> and <code>ScopedAffiliationPrincipal</code>
+			and they are only used in the policy file.
+			</p>
+			<p>
+			You can use <code>EntitlementPrincipal</code> when you want to use wildcards in the 
+			attribute value of <code>eduPersonEntitlement</code>. The <code>eduPersonEntitlement</code> 
+			values have this format: a:b:c:d, where the number of ":" may vary. You can replace 
+			any of the parts a,b,c etc. with a wildcard. The parts a,b,c etc. cannot contain any 
+			":". For to values to mach, the number of ":" must be the same.  
+			</p>
+			<p>
+			You can use <code>ScopedAffiliationPrincipal</code> if you want to use wildcards 
+			in the attribute value of <code>eduPersonScopedAffiliation</code>. The 
+			<code>eduPersonScopedAffiliation</code> values have this format: 
+			"affiliation@securityDomain". The affiliation can be replaced by a wildcard, but 
+			the security domain cannot.
+			</p>
+			</subsection>
+
+
+
+			<subsection name="How to use it">
+			<p>
+			To use this module for your own application, you might have to change the 
+			<code>Login</code> class. When the <code>LoginContext</code> is created you can 
+			choose another <code>CallbackHandler</code>. And you can change/remove the part
+			where you get three login attempts. 
+			</p>
+			<p>
+			You have to change which FEIDE attributes you want to retrieve when you authenticate
+			against <code>Moria</code>. They are specified in the <code>MoriaLoginModule</code>,
+			but you might want to put in in a configuration file.
+			</p>
+			<p>
+			You might also need another <code>CallbackHandler</code> and additional special 
+			<code>Principal</code>s.
+			</p>
+			<p>
+			If you do not want to follow the policy file standard, but want to use xml or something
+			else, you can make your own. Then you will have to implement a new <code>Policy</code> 
+			class extending the <code>com.sun.security.auth.PolicyFile</code> class or implementing 
+			the <code>javax.security.auth.Policy</code> interface.
+			</p>
+			<p>
+			If you need any custom permissions, you have to implement them exteding
+			<code>java.security.BasicPermission</code> or <code>java.security.Permission</code>.
+			</p>
+			<p>
+			The <code>jaas.config</code> file and <code>jaas.policy</code> need to be written.
+			</p>
+			</subsection>
+
+			<subsection name="References">
+			<ul>
+				<li>
+				<a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/jaas/JAASRefGuide.html">							Java Authentication and Authorization Service (JAAS) Reference Guide</a>
+				</li>
+				<li>
+				<a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/jaas/tutorials/GeneralAcnOnly.html">
+				JAAS Authentication Tutorial</a>
+				</li>
+				<li>
+				<a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/jaas/tutorials/GeneralAcnAndAzn.html">
+				JAAS Authorization</a>
+				</li>
+				<li>
+				<a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/PolicyFiles.html">
+				Default Policy Implementation and Policy File Syntax</a>
+				</li>
+				<li>
+				<a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/jgss/tutorials/LoginSample.html">
+				Use of JAAS Login Utility</a>
+				</li>
+				<li>
+				<a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/permissions.html">
+				Permissions in the Java(TM) 2 SDK</a> 
+				</li>
+				<li>
+				<a href="http://www.javaworld.com/javaworld/jw-09-2002/jw-0913-jaas.html">
+				All that JAAS</a>
+				</li>
+			</ul>
+			</subsection>
+
+		</section>
+	</body>
+</document>

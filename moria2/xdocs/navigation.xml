@@ -42,6 +42,7 @@ $Id$
 				<item name="SSO" href="howto_service_sso.html"/>
 			    <item name="Error Handling" href="howto_service_errors.html"/>
 			    <item name="Migrating to Moria2" href="howto_service_migration.html"/>
+                <item name="JAAS Module" href="/mellon-jaas/index.html"/>
 			</item>
 			
 	    	<item name="Design" href="design.html"/>
@@ -68,6 +69,7 @@ $Id$
 				<item name="Web Module" href="/moria-web/index.html"/>
 				<item name="Mellon Client-Side API" href="/mellon/index.html">
 				    <item name="Mellon Demo" href="/mellon-demo/index.html"/>
+                    <item name="JAAS Module" href="/mellon-jaas/index.html"/>
 				</item>
 		    </item>
 		    
