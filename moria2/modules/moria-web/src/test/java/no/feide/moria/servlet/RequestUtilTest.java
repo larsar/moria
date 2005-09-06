@@ -95,17 +95,6 @@ public final class RequestUtilTest extends TestCase {
         } catch (IllegalArgumentException success) {
         }
 
-        try {
-            RequestUtil.createCookie("foo", "bar", -1);
-            fail("IllegalArgumentException should be raised, negative time to live");
-        } catch (IllegalArgumentException success) {
-        }
-
-        try {
-            RequestUtil.createCookie("foo", "bar", -10000);
-            fail("IllegalArgumentException should be raised, negative time to live");
-        } catch (IllegalArgumentException success) {
-        }
     }
 
     /**
