@@ -64,7 +64,7 @@ try {
 <table cellspacing="0">
 <tbody><tr valign="top">
 <td class="meny">
-   <%=bundle.getString("login")%><br><%=request.getAttribute("username")%>
+   <br><%=bundle.getString("login")%><%=request.getAttribute("username")%>
    <br>
    <!-- Logout-->
    <A href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&logout=user_logout" %>"><%=bundle.getString("user_logout")%></A>
@@ -132,10 +132,8 @@ try {
 
      <!-- mandatory table -->
      <td class="kropp">
-     <p>
-     <b><%= bundle.getString("user_info") + userorg + "." %> 
-     <br/><%=bundle.getString("user_info2") %></b>
-     </p>
+     <br><%= bundle.getString("user_info") + userorg + "." %> 
+     <br><br><%=bundle.getString("user_info2") %>
      
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
      <th> <%= bundle.getString("tc_value") + userorg%> </th></tr>
@@ -153,7 +151,7 @@ try {
        </tr>
      <%}%>
      </table>
-     <br><br><b><%=bundle.getString("user_table")%>
+     <br><br><%=bundle.getString("user_table")%>
      
      <!-- optional table -->
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
@@ -174,7 +172,7 @@ try {
      </table>
      
      <!-- Mandatory table for organizations -->
-     <br><b><%= bundle.getString("org_info") + userorg + "." %></b>
+     <br><br><%= bundle.getString("org_info") + userorg + "." %>
         
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
      <th> <%= bundle.getString("tc_value") + userorg%> </th></tr>
@@ -192,7 +190,7 @@ try {
        </tr>
      <%}%>
      </table>
-     <br><b><%=bundle.getString("org_info2")%>
+     <br><br><%=bundle.getString("org_info2")%>
      
      <!-- Optional table for organizations -->
      <table border=1> <tr><th> <%= bundle.getString("tc_description") %> </th>
