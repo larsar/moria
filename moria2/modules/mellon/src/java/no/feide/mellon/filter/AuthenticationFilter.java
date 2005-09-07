@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 
 import no.feide.mellon.Moria;
 import no.feide.mellon.MoriaException;
+import no.feide.moria.log.MessageLogger;
 
 /**
  * 
@@ -44,6 +45,11 @@ implements Filter {
      * The filter configuration.
      */
     private FilterConfig config = null;
+    
+    /**
+     * Used for logging.
+     */
+    MessageLogger log = new MessageLogger(AuthenticationFilter.class);
 
 
     /**
@@ -61,7 +67,7 @@ implements Filter {
         try {
             System.getProperties().load(getClass().getResourceAsStream("/mellon.properties"));
         } catch (IOException e) {
-            throw new ServletException("IOException caught and re-thrown as ServletException");
+            log.logWarn("Unable to read property file /mellon.properties; assuming properties are set in context", e);
         }
 
     }

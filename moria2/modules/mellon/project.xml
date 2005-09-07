@@ -31,6 +31,9 @@
     <!-- Misc deps -->
     &dep-servlet-api;
     &dep-commons-logging;
+      
+    <!-- Moria2 deps -->
+    &dep-moria-log;
 
   </dependencies>
 
