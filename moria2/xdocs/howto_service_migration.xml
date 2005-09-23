@@ -20,84 +20,96 @@ $Id$
 -->
 <document>
 	<properties>
-		<title>Migrating to Moria2</title>
+		<title>From Moria1 to Moria2</title>
 		<author email="cato.olsen@uninett.no">Cato Olsen</author>
 	</properties>
 	<body>
 		<section name="From Moria1 to Moria2">
+            <p>
+                This chapter is primarily for service developers that have some
+                experience with the previous generation of Moria (<b>Moria1</b>)
+                and wish to migrate to Moria2.
+            </p>
 			<p>
-			In this section we will briefly describe the changes between the
-			previous and current generations of Moria, and outline the steps
-			necessary to migrate a Moria-enabled service to the current
-			generation of Moria.
+                We will briefly describe the changes between the previous and
+                current generations, and outline the steps necessary to migrate
+                a Moria1-enabled service to Moria2.
 			</p>
-			<p>
-			The previous generation of the Moria system will be called Moria1
-			while the current will be called Moria2.
-			</p>
+
 			<subsection name="Differences Between Moria1 and Moria2">
 				<p>
-				There are basically three differences between Moria1 v0.9 and
-				the first Moria2 v2.1 release:
-				<ul>
-				    <li>
-				    The SOAP interface has been reworked; versioning of the
-				    interface has been added, the methods have been renamed, and
-				    an improved error handling has been integrated into the SOAP
-				    interface.
-				    </li>
-					<li>
-					Support for direct, non-interactive authentication; services
-					may collect user credentials themselves and authenticate/
-					retrieve user attributes without the need for a HTTP
-					redirect (if so allowed by Moria2).
-					</li>
-					<li>
-					Support for ticket based single sign-on; a service, on
-					successfully authenticating a user, may request a ticket
-					granting ticket and generate proxy tickets for other
-					services. These so-called subservices may then use the proxy
-					tickets to authenticate the user directly, as well as
-					requesting user attributes.
-					</li>
-				</ul>
-				For more details on the new Moria2 interface, please refer to
-				the service integration
-				<a href="howto_service_overview.html">documentation</a>.
+                    The Moria2 v2.0 SOAP interface is a direct port of the
+                    Moria1 v1.0 SOAP interface, which was never released. The
+                    new features of Moria2 becomes evident in the v2.1
+                    interface; therefore we will compare this with the Moria1
+                    v0.9 SOAP interface.
+                </p>
+                <p>
+                    There are basically three differences between the Moria1
+                    v0.9 and the Moria2 v2.1 SOAP interface.
+    				<ol>
+    				    <li>
+                            The <b>SOAP interface has been reworked</b>; proper
+                            versioning of the interface has been added, the
+                            methods have been renamed, and improved error
+                            handling has been integrated into the SOAP
+                            interface.
+    				    </li>
+    					<li>
+                            Support for <b>direct, non-interactive authentication</b>;
+                            services may collect user credentials themselves and
+                            authenticate/retrieve user attributes without the
+                            need for a HTTP redirect.
+    					</li>
+    					<li>
+                            Support for <b>ticket based single sign-on</b>; a
+                            service, on successfully authenticating a user, may
+                            request a ticket granting ticket and generate proxy
+                            tickets for other services. These so-called
+                            subservices may then use the proxy tickets to
+                            authenticate the user directly, as well as to
+                            request user attributes.
+    					</li>
+    				</ol>
                 </p>
 			</subsection>
+            
 			<subsection name="Migrating From Moria1 to Moria2">
 				<p>
-				For those accustomed to the Moria1 SOAP interface, the migration
-				to Moria2 is as simple as:
-				<ol>
-					<li>
-					Generating new client-side stubs with your SOAP library of
-					choice, based on the new WSDL.
-					</li>
-					<li>
-					Changing your code to match the similar, but renamed methods
-					(which will give stub methods with different names than you
-					might be used to).
-					</li>
-				</ol>
-				For those who have been using the pre-compiled Mellon
-				client-side API with Moria1 v0.9 as deployed by the
-				<a href="http://www.feide.no">FEIDE</a> project (included in the 
-				<code>feide-mellon-api-prod-0.9.jar</code> file), or the
-				matching servlet filter (included in the
-				<code>feide-mellon-filter-prod-0.9.jar</code> file), we
-				currently have no similar ready-to-use client-side API
-				available for Moria2. Please check the
-				<a href="http://www.feide.no">FEIDE</a> pages for updates.
+                    For those accustomed to the Moria1 SOAP interface, the
+                    migration to Moria2 is as simple as:
+    				<ol>
+    					<li>
+                            Generating new client-side stubs with your SOAP
+                            library of choice, based on the new WSDL.
+    					</li>
+    					<li>
+                            Changing your code to match the similar, but renamed
+                            methods (which will give stub methods with different
+                            names than you might be used to).
+    					</li>
+    				</ol>
+                    For those who have been using the pre-compiled Mellon
+    				client-side API with Moria1 v0.9, as deployed by the
+    				<a href="http://www.feide.no">FEIDE</a> project (included in
+                    the <code>feide-mellon-api-prod-0.9.jar</code> file), or the
+    				matching servlet filter (included in the
+    				<code>feide-mellon-filter-prod-0.9.jar</code> file), it is
+                    a simple matter of replacing your old versions with the new
+                    <b>Mellon2</b> API and/or filter. The API and filter are
+                    backwards-compatible with existing Moria1-integrated
+                    services, as well as offering the new and extended Moria2
+                    functionality.
 				</p>
 				<p>
-				However, keep in mind that the official, and only supported,
-				interface to Moria (all versions) is the interface presented
-				through the WSDL. All other client-side APIs or modules are
-				considered example code, to be used at your own risk.
+                    However, keep in mind that the official, and only supported,
+                    interface to Moria (all versions) is the SOAP interface
+                    presented through the WSDL. All other client-side APIs or
+                    modules are considered example code, to be used at your own
+                    risk.
                 </p>
 			</subsection>
+            
 		</section>
 	</body>
 </document>

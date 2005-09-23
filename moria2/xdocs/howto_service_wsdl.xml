@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>WSDL Versioning</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="WSDL Versioning">
+            <p>
+                This chapter outlines the currently available SOAP interface
+                versions.
+            </p>
+            <p>
+                Most service developers should use the <b>v2.1</b> interface,
+                unless you encounter problems with <a href="http://www.ws-i.org/">WS-I Basic Profile</a>
+                compliance. If so, use the v2.2 interface.
+		    </p>
+            <p>
+                The v2.0 interface should be considered obsolete, but is still
+                included for backwards compatibility.
+            </p>
+            <p>
+                <table>
+					<tr>
+                        <th>
+                            Version
+                        </th>
+                        <th>
+                            Description
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            v2.0
+                        </td>
+                        <td>
+                            The original basic SOAP interface, more or less a
+                            direct port from the  v1.0 SOAP interface of Moria1.
+                            <br></br>
+                            Please refer to the
+                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/package-frame.html">JavaDoc</a>
+                            for a detailed description of each method available.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            v2.1
+                        </td>
+                        <td>
+                            Improves on the v2.0 interface by adding proper
+                            error handling (as described in the
+                            <a href="howto_service_errors.html">Error Handling</a>
+                            overview), as well as methods to support 
+                            ticket-based SSO (as described in the
+                            <a href="howto_service_sso.html">Single Sign On</a>
+                            overview).
+                            <br></br>
+                            Please refer to the
+                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/package-frame.html">JavaDoc</a>
+                            for a detailed description of each method available.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            v2.2
+                        </td>
+                        <td>
+                            Functionally identical to the v2.1 interface, but
+                            conforms to
+                            <a href="http://www.ws-i.org/">WS-I Basic Profile 1.0</a>.
+                            In order to facilitate this through the limitations of
+                            <a href="http://ws.apache.org/axis/">Axis</a>, there
+                            is some added complexity to the SOAP encoding of
+                            multi-valued attributes. Each attribute now contains
+                            a string field named <tt><i>separator</i></tt>, and the
+                            values are represented as a single string field.
+                            Each value in this field is separated by the
+                            aforementioned separator string, and any natural
+                            occurrences of the separator in a value is encoded
+                            as two subsequent occurrences of the separator
+                            string. The separator string is on the form
+                            <tt>_abcd_</tt>, where <tt>abcd</tt> is a random
+                            four-letter sequence in lowercase. For single-valued
+                            attributes no separator is used.
+                            <br></br>
+                            Please refer to the
+                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_2/package-frame.html">JavaDoc</a>
+                            for a detailed description of each method available.
+                        </td>
+                    </tr>
+				</table>
+            </p>
+            
+		</section>
+	</body>
+</document>

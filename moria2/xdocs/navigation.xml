@@ -39,10 +39,14 @@ $Id$
 	        <item name="Authentication Servers" href="howto_organization_overview.html"/>
 	        
 			<item name="Service Integration" href="howto_service_overview.html">
-				<item name="SSO" href="howto_service_sso.html"/>
+                <item name="Moria2 and FEIDE" href="howto_service_feide.html"/>
+                <item name="WSDL Versioning" href="howto_service_wsdl.html"/>
+			    <item name="From Moria1 to Moria2" href="howto_service_migration.html"/>
+			    <item name="Interactive Authentication" href="howto_service_interactive.html"/>
+			    <item name="Direct Authentication" href="howto_service_direct.html"/>
+			    <item name="Other Methods" href="howto_service_other.html"/>
+				<item name="Single Sign On" href="howto_service_sso.html"/>
 			    <item name="Error Handling" href="howto_service_errors.html"/>
-			    <item name="Migrating to Moria2" href="howto_service_migration.html"/>
-                <item name="JAAS Module" href="/mellon-jaas/index.html"/>
 			</item>
 			
 	    	<item name="Design" href="design.html"/>

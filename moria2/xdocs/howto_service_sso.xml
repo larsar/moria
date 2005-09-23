@@ -26,45 +26,131 @@ $Id$
 	<body>
 		<section name="Single Sign On">
 			<p>
-			There are two ways to effectively attain SSO using Moria. This
-			section will describe both approaches.
-			</p>
-			<p>
-			For more information on which methods to use, please refer to the
-			<a href="howto_service_overview.html">Service Integration</a>
-			documentation.
+                There are two methods for using SSO through Moria2. This chapter
+                will describe both approaches.
 			</p>
 			<subsection name="Cookie-based SSO">
 				<p>
-				Given that a service is allowed to use SSO, each successful
-				authentication attempt will result in a SSO cookie being set by
-				Moria in the user's browser. This cookie will contain a unique
-				session ticket referring to the existing SSO session, which
-				will linger for a Moria-configured time following initial
-				authentication.
+                    Given that a service is allowed to use SSO, and the user
+                    does not actively disallow the use of SSO when logging on,
+                    each successful authentication attempt will result in a SSO
+                    cookie being set by Moria2 in the user's browser. This
+                    cookie will contain a unique session ticket referring to the
+                    existing SSO session, which will linger for a
+                    Moria2-configured time following initial authentication.
+                    Note that depending on the Moria2 administrator's choice of
+                    configuration, the cookie may or may not be persistent.
 				</p>
 				<p>
-				Thus, the next time the service (or any SSO-enabled service)
-				requests authentication, the user's SSO cookie will allow the
-				user to skip the login process. The service may override this
-				and insist on reauthentication if need be.
+                    Thus, the next time the service (or any SSO-enabled service)
+                    requests authentication, the user's SSO cookie will allow
+                    the user to skip the login process. The service may override
+                    this and insist on reauthentication if need be.
 				</p>
+                <p>
+                    Each user attribute the service is allowed to read is marked
+                    as being SSO enabled or disabled. If a service requests one
+                    or more SSO disabled attributes, the user will have to log
+                    on again. This is true even if the user has a valid SSO
+                    cookie.
+                </p>
+                <p>
+                    The actual steps involved in cookie-based SSO are identical
+                    to those for the <a href="howto_service_interactive.html">interactive authentication</a>.
+                </p>
 			</subsection>
 			<subsection name="Ticket-based SSO">
                 <p>
-                Any service that is allowed to get ticket granting tickets (the
-                virtual user attribute <i>tgt</i>) can use this TGT to generate
-                proxy tickets and pass these on to any subservice. This approach
-                to SSO is useful for portals, for example. Note that Moria does
-                not offer a mechanism for transferring proxy tickets to
-                subservices. However, it is strongly suggested that this should
-                be done in a way as not to compromise security.
+                    Ticket-based SSO requires that a service profile contains
+                    one or more <b>subservices</b>. A subservice is a regular
+                    service profile, with one exception; the parent service
+                    may perform authentication on behalf of its subservices,
+                    letting the subservices read user attributes through
+                    <b>proxy authentication</b> without requiring another round
+                    of interactive authentication.
+                </p>
+                <p> 
+                    If the service profile allows a service to use
+                    ticket-based SSO, the service may request an attribute
+                    <b><i>tgt</i></b> along with the ordinary user attributes.
+                    The <i>tgt</i> attribute, or <b>ticket granting ticket</b>,
+                    is used to issue a <b>proxy ticket</b> to a subservice.
+                    This approach is particularly useful for web portals.
+                </p>
+                <p> 
+                    Note that Moria does not offer a mechanism for transferring
+                    proxy tickets to subservices. However, it is strongly
+                    suggested that this should be done in a way as not to
+                    compromise security. A proxy ticket can <b>only</b> be used
+                    by the subservice it was issued to.
                 </p>
                 <p>
-                The subservice may then use the proxy ticket to verify the
-                earlier authentication, and to request necessary attributes on
-                its own behalf. Given, of course, that Moria allows the
-                subservice to read the requested attributes.
+                    The subservice may use a proxy ticket to verify the earlier
+                    authentication, and to request necessary attributes on its
+                    own behalf.
+                </p>
+                <p>
+                    The initial steps of ticket-based SSO are identical to those
+                    for the <a href="howto_service_interactive.html">interactive authentication</a>,
+                    with one exception; the service also requests (and receives)
+                    the attribute <b><i>tgt</i></b>.
+                </p>
+                <p>
+                    After this is completed, the following steps take place.
+                </p>
+                <ol>
+                    <li>
+                        <p>
+                            The service requests a proxy ticket for a
+                            subservice, using its <i>tgt</i>. Note that the
+                            <i>tgt</i> may be used <b>several times</b>, as long
+                            as the SSO session it belongs to does not exceed the
+                            Moria2-configured session lifetime.
+                        </p>
+                        <p>
+							Method used by service: <code>getProxyTicket</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getProxyTicket(java.lang.String, java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_getProxyTicket.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_getProxyTicket.html">Java/Axis Example</a>)
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            Moria2 responds with a proxy ticket, issued for the
+                            given subservice.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The service hands over the proxy ticket to the
+							subservice. How this is to be done is not specified
+                            by Moria2.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The subservice uses the proxy ticket to check the
+                            earlier authentication performed by the parent
+                            service, optionally including its own request for
+                            user attributes. Note that the proxy ticket <b>can
+                            only be used once</b>.
+                        </p>
+                        <p>
+							Method used by subservice: <code>proxyAuthentication</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#proxyAuthentication(java.lang.String[], java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_proxyAuthentication.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_proxyAuthentication.html">Java/Axis Example</a>)
+						</p>
+                    </li>
+					<li>
+                        If the proxy ticket can be matched to a previously
+                        authenticated user, Moria2 will return the requested
+                        attributes.
+					</li>
+                </ol>
+                <p>
+                    The subservice will only need to perform one SOAP call in
+                    order to accomplish this.
                 </p>
 			</subsection>
 		</section>

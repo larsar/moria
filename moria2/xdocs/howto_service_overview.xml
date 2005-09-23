@@ -26,369 +26,87 @@ $Id$
 	<body>
 		<section name="Service Integration">
 			<p>
-                The supported interface to Moria2 consists of a number of SOAP
-                methods defined by a WSDL. To allow for backwards compatibility,
-                each of these SOAP interfaces are versioned, starting with v2.0.
-                We use the <a href="http://ws.apache.org/axis/">Axis</a> SOAP
-                implementation for the Java examples below; example code for
-                other combinations of programming languages and SOAP
-                implementations may or may not be added later.
-			</p>
-			<p>
-                Note that although the example code has been tested and shown to
-                work, the only officially supported interface remains the SOAP
-                interfaces given by the various WSDLs.
-			</p>
-			<p>
-                Assuming that Moria2 is deployed locally, without SSL enabled,
-                the WSDL for the various interface versions can be found by browsing to
-                <source>http://localhost:8080/moria/v<i>X</i>_<i>Y</i>/Authentication?WSDL</source>
-                for interface version <i>X</i>.<i>Y</i>.
-			</p>
-			<p>
-                The service must authenticate itself to Moria2 using HTTP Basic
-                when using any of the SOAP methods; the HTTP Basic username is
-                used to check whether the service is allowed to perform the
-                method itself, as well as which user attributes the service may
-                be allowed to read.
-			</p>
-			<p>
-                Contact your Moria2 administrator to obtain a proper service
-                account. The Moria2 instance run by the
-                <a href="http://www.feide.no">FEIDE</a> project uses the
-                following WSDL URLs:
-			</p>
-            <table>
-                <tr>
-                    <th>Version</th>
-                    <th>URL</th>
-                    <th>Username to access WSDL</th>
-                    <th>Password to access WSDL</th>
-                </tr>
-                <tr>
-                    <td>v2.0</td>
-                    <td><a href="https://login.feide.no/moria2/v2_0/Authentication?WSDL">https://login.feide.no/moria2/v2_0/Authentication?WSDL</a></td>
-                    <td>demo_service</td>
-                    <td>demo_service</td>
-                </tr>
-                <tr>
-                    <td>v2.1</td>
-                    <td><a href="https://login.feide.no/moria2/v2_1/Authentication?WSDL">https://login.feide.no/moria2/v2_1/Authentication?WSDL</a></td>
-                    <td>demo_service</td>
-                    <td>demo_service</td>
-                </tr>
-                <tr>
-                    <td>v2.2</td>
-                    <td><a href="https://login.feide.no/moria2/v2_2/Authentication?WSDL">https://login.feide.no/moria2/v2_2/Authentication?WSDL</a></td>
-                    <td>demo_service</td>
-                    <td>demo_service</td>
-                </tr>
-            </table>
-            <p>
-                You may contact FEIDE on
-                <a href="mailto:administrasjon@feide.no">administrasjon@feide.no</a>
-                to apply for your own service account on this instance, or send
-                any technical questions you might have to
-                <a href="mailto:moria-support@uninett.no">moria-support@uninett.no</a>.
+                Welcome to the Moria2 Service Integration guide. This guide
+                consists of several chapters, which can be read from start
+                to end as a tutorial, or used as a quick reference.
             </p>
-			
-			<subsection name="SOAP Interface Versions">
-				<p>
-					These are the currently available SOAP interface versions:
-				</p>
-                <table>
-					<tr>
-                        <th>
-                            Version
-                        </th>
-                        <th>
-                            Description
-                        </th>
-                    </tr>
-                    <tr>
-                        <td>
-                            v2.0
-                        </td>
-                        <td>
-                            The original basic SOAP interface, more or less a
-                            direct port from the  v1.0 SOAP interface of Moria1.
-                            <br></br>
-                            Please refer to the
-                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/package-frame.html">JavaDoc</a>
-                            for a detailed description of each method available,
-                            or read the remainder of this document for an
-                            overview.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            v2.1
-                        </td>
-                        <td>
-                            Improves on the v2.0 interface by adding proper
-                            error handling (as described in the
-                            <a href="howto_service_errors.html">Error Handling</a>
-                            overview), as well as methods to support 
-                            ticket-based SSO (as described in the
-                            <a href="howto_service_sso.html">Single Sign On</a>
-                            overview).
-                            <br></br>
-                            Please refer to the
-                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/package-frame.html">JavaDoc</a>
-                            for a detailed description of each method available,
-                            or read the remainder of this document for an
-                            overview.
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            v2.2
-                        </td>
-                        <td>
-                            Functionally identical to the v2.1 interface, but
-                            conforms to
-                            <a href="http://www.ws-i.org/">WS-I Basic Profile 1.0</a>.
-                            In order to facilitate this through the limitations of
-                            <a href="http://ws.apache.org/axis/">Axis</a>, there
-                            is some added complexity to the SOAP encoding of
-                            multi-valued attributes. Each attribute now contains
-                            a string field named <tt><i>separator</i></tt>, and the
-                            values are represented as a single string field.
-                            Each value in this field is separated by the
-                            aforementioned separator string, and any natural
-                            occurrences of the separator in a value is encoded
-                            as two subsequent occurrences of the separator
-                            string. The separator string is on the form
-                            <tt>_abcd_</tt>, where <tt>abcd</tt> is a random
-                            four-letter sequence in lowercase. For single-valued
-                            attributes no separator is used.
-                            <br></br>
-                            Please refer to the
-                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_2/package-frame.html">JavaDoc</a>
-                            for a detailed description of each method available,
-                            or read the remainder of this document for an
-                            overview.
-                        </td>
-                    </tr>
-				</table>
+            <p>
+                The various chapters can be found in the navigation menu to the
+                left.
+            </p>
+            
+            <subsection name="Overview and Technologies">
                 <p>
-                    As a general rule of thumb, if your client SOAP library
-                    does not require the WS-I BP compliance of v2.2, use v2.1
-                    as the encoding of multi-valued attributes in v2.2 is
-                    somewhat more complex on the client side.
+                    First off, let us give a brief run-down on the various
+                    technologies and terms used throughout this guide.
                 </p>
-			</subsection>
-			
-			<subsection name="User Authentication">
-				<p>
-				There are two or three ways to perform authentication using Moria2,
-				depending on the version of the Moria2 SOAP interface used:
-				</p>
-				<ul>
-					<li>
-						<b>Interactive authentication (since v2.0)</b>
-						<p>
-						This is the typical use of Moria2 for web applications, and
-						works as follows:
-						</p>
-						<ol>
-							<li>
-							The Moria2-enabled service requests an authentication
-							session from Moria2, optionally including a request for
-							user attributes.
-							<p>
-							Method used by service: <code>initiateAuthentication</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean)">JavaDoc</a>, 
-							<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>, 
-							<a href="howto_service_example_java-axis_initiateAuthentication.html">Java/Axis Example</a>)
-							</p>
-							</li>
-							<li>
-							The service redirects the user to the Moria2 login page.
-							</li>
-							<li>
-							The user supplies his or her credentials to Moria2 for
-							authentication.
-							</li>
-							<li>
-							Following a successful authentication, Moria2 redirects
-							the user back to the originating service.
-							</li>
-							<li>
-							The service may now read the user attributes from Moria2
-							that were requested in the first step.
-							<p>
-							Method used by service: <code>getUserAttributes</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#getUserAttributes(java.lang.String)">JavaDoc</a>, 
-							<a href="howto_service_example_soap_getUserAttributes.html">SOAP Example</a>, 
-							<a href="howto_service_example_java-axis_getUserAttributes.html">Java/Axis Example</a>)
-							</p>
-							</li>
-						</ol>
-					</li>
-					<li>
-						<b>Direct non-interactive authentication (since v2.0)</b>
-						<p>
-						This is where the Moria2-enabled service authenticates the
-						user directly using a single method, instead of relying on
-						the Moria2 login page (thus allowing for situations where
-						HTTP redirects cannot be used). Note that this requires the
-						service itself to hand over the user credentials on behalf
-						of the user, which of course requires a certain degree of
-						trust from the Moria2 administrator:
-						</p>
-						<ol>
-							<li>
-							The user supplies his or her credentials to the
-							Moria2-enabled service.
-							</li>
-							<li>
-							The service sends the credentials to Moria2, optionally
-							including a request for user attributes.
-							<p>
-							Method used by service: <code>directNonInteractiveAuthentication</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String)">JavaDoc</a>, 
-							<a href="howto_service_example_soap_directNonInteractiveAuthentication.html">SOAP Example</a>, 
-							<a href="howto_service_example_java-axis_directNonInteractiveAuthentication.html">Java/Axis Example</a>)
-							</p>
-							</li>
-							<li>
-							Following a successful authentication, Moria2 returns
-							the requested attributes.
-							<p>
-							</p>
-							</li>
-						</ol>
-					</li>
-					<li>
-						<b>Proxy authentication (since v2.1)</b>
-						<p>
-						For Moria2-enabled services that contain one or more
-						subservices for which single-sign on is required (which is
-						likely the case for web portals, for example), proxy
-						authentication is the solution. Through using one of the two
-						above methods and requesting the user attribute <i>tgt</i>,
-						the service may issue proxy tickets to its subservices. The
-						subservices can then use these proxy tickets to confirm the
-						user's previous authentication and to retrieve user
-						attributes through Moria2:
-						</p>
-						<ol>
-							<li>
-							The Moria2-enabled service requests a proxy ticket for a
-							subservice.
-							<p>
-							Method used by service: <code>getProxyTicket</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getProxyTicket(java.lang.String, java.lang.String)">JavaDoc</a>, 
-							<a href="howto_service_example_soap_getProxyTicket.html">SOAP Example</a>, 
-							<a href="howto_service_example_java-axis_getProxyTicket.html">Java/Axis Example</a>)
-							</p>
-							</li>
-							<li>
-							The Moria2-enabled service hands over a proxy ticket to
-							a subservice.
-							</li>
-							<li>
-							The subservice sends the proxy ticket to Moria2,
-							optionally including a request for user attributes.
-							<p>
-							Method used by subservice: <code>proxyAuthentication</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#proxyAuthentication(java.lang.String[], java.lang.String)">JavaDoc</a>, 
-							<a href="howto_service_example_soap_proxyAuthentication.html">SOAP Example</a>, 
-							<a href="howto_service_example_java-axis_proxyAuthentication.html">Java/Axis Example</a>)
-							</p>
-							</li>
-							<li>
-							If the proxy ticket belongs to a previously
-							authenticated user, Moria2 returns the requested
-							attributes.
-							</li>
-						</ol>
-					</li>
-				</ul>
-			</subsection>
-			
-			<subsection name="Utility Methods">
-				<p>
-				In addition to user authentication, Moria2 offers a number of
-				utility methods for Moria2-enabled services to use:
-				</p>
-				<ul>
-					<li>
-					<b>User existence (since v2.0)</b>
-					<p>
-					In order to check whether a certain user is visible in the
-					Moria2 framework, Moria2-enabled services may use the following
-					method:
-					</p>
-					<p>
-					Method used by service/subservice: <code>verifyUserExistence</code>
-					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/AuthenticationIF.html#verifyUserExistence(java.lang.String)">JavaDoc</a>, 
-					<a href="howto_service_example_soap_verifyUserExistence.html">SOAP Example</a>, 
-					<a href="howto_service_example_java-axis_verifyUserExistence.html">Java/Axis Example</a>)
-					</p>
-					</li>
-					<li>
-					<b>Group existence (since v2.1)</b>
-					<p>
-					In order to check whether a certain user group is visible in the
-					Moria2 framework, Moria2-enabled services may use the following
-					method:
-					</p>
-					<p>
-					Method used by service/subservice: <code>verifyGroupExistence</code>
-					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyGroupExistence(java.lang.String)">JavaDoc</a>)
-					</p>
-					<p>
-					Note that this method has yet to be implemented, and its
-					specifications may be subject to change.
-					</p>
-					</li>
-					<li>
-					<b>Group attributes (since v2.1)</b>
-					<p>
-					In order to read the group attributes of a certain user group,
-					Moria2-enabled services may use the following method:
-					</p>
-					<p>
-					Method used by service/subservice: <code>getGroupAttributes</code>
-					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getGroupAttributes(java.lang.String)">JavaDoc</a>)
-					</p>
-					<p>
-					Note that this method has yet to be implemented, and its
-					specifications may be subject to change.
-					</p>
-					</li>
-					<li>
-					<b>User group membership (since v2.1)</b>
-					<p>
-					In order to check whether a certain user is member of a certain
-					user group, Moria2-enabled services may use the following
-					method:
-					</p>
-					<p>
-					Method used by service/subservice: <code>verifyUserMemberOfGroup</code>
-					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyUserMemberOfGroup(java.lang.String, java.lang.String)">JavaDoc</a>)
-					</p>
-					<p>
-					Note that this method has yet to be implemented, and its
-					specifications may be subject to change.
-					</p>
-					</li>
-				</ul>
-			</subsection>
-					
-			<subsection name="SOAP Implementations">
-				<p>
-				The following SOAP implementations have been tested and shown to
-				work with Moria2.
-				</p>
-				<table>
-					<tr><th>Language</th><th>Name</th><th>Tested with Moria2</th></tr>
-					<tr><td>C</td><td><a href="http://www.cs.fsu.edu/~engelen/soap.html">gSOAP</a></td><td>Yes; use the v2.2 SOAP interface.</td></tr>
-					<tr><td>Java</td><td><a href="http://ws.apache.org/axis/">Axis</a></td><td>Yes; use the v2.1 SOAP interface.</td></tr>
-				</table>
-			</subsection>
+                <p>
+                    <b>Moria2</b> is the name of the central authentication
+                    system described on this site. Its main responsibilities
+                    are to perform user authentication, and to relay
+                    information about the authenticated user (<b>user attributes</b>)
+                    to third-party services. The actual autorization is done
+                    entirely by the third-party service based on these user
+                    attributes.
+                </p>
+                <p>
+                    A <b>service</b> provides some form of protected content,
+                    or service, to end users - relying on Moria2 to perform the
+                    necessary authentication. User attributes are passed on
+                    from Moria2 to the service. In order to use Moria2, each
+                    service needs a registered <b>service account</b>, which
+                    basically describes what the service is allowed to do (which
+                    attributes it can read, and so forth). If you are
+                    considering integrating your service with a particular
+                    Moria2 instance, the Moria2 administrator should be able to
+                    provide you with the proper service account.
+                </p>
+                <p>
+                    User attributes are not stored in the Moria2 system itself,
+                    but on a number of <b>authentication servers</b>. Each
+                    authentication server belongs to an <b>organization</b>
+                    responsible for maintaining the local authentication
+                    server and its content. This is transparent to the service,
+                    which need only relate to Moria2.
+                </p>
+                <p>
+                    The communication between Moria2 and a service takes place
+                    over ordinary
+                    <a href="http://www.w3.org/Protocols/">HTTPS</a>, using a
+                    message format called <a href="http://www.w3.org/TR/soap/">Simple Object Access Protocol</a>,
+                    or <b>SOAP</b>. The interface to Moria2 is described using
+                    <a href="http://www.w3.org/TR/wsdl">Web Services Definition Language</a>, 
+                    or <b>WSDL</b>. There are other details to this communication (<a href="http://java.sun.com/xml/jaxrpc/index.jsp">JAX-RPC</a>
+                    conformance;  <a href="http://www.ws-i.org/">WS-I Basic Profile</a>
+                    conformance) that are well beyond the scope of this guide.
+                </p>
+                <p>
+                    In almost every case, service developers do not need to
+                    handle SOAP directly. Instead, a client SOAP library is
+                    used to generate <b>stubs</b> from the WSDL. These stubs
+                    are then used by the application, hiding the details of
+                    SOAP behind a convenient API. Several client libraries exist
+                    for various programming languages; the Moria2 project uses <a href="http://ws.apache.org/axis/">Axis</a>
+                    for its server- and client-side implementations but any one
+                    will do. Please refer to your chosen library for more
+                    information.
+                </p>
+                <p>
+                    The Moria2 project also provides a small, but growing number
+                    of ready-to-use client libraries, under the common name <b>Mellon2</b>.
+                    These should be considered unsupported example code for use
+                    at your own risk; the official interface to Moria2 is the
+                    WSDL itself, and the proper way to use Moria2 is to generate
+                    your own stubs.
+                </p>
+                <p>
+                    If you wish to start integrating your service with an
+                    operational Moria2 installation right away, you may <a href="howto_service_feide.html">jump to the chapter</a>
+                    describing the Moria2 installation run by <a href="http://www.feide.no">FEIDE</a>.
+                    Otherwise choose a chapter from the navigation menu on your
+                    left.
+                </p>
+            </subsection>
 			
 		</section>
 	</body>

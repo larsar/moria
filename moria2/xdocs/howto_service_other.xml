@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Other Methods</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Other Methods">
+			<p>
+                This chapter will describe the set of utility methods available
+                to services. These are methods not directly involved in the
+                process of authentication, but may useful for services in other
+                respects.
+            </p>
+            
+            <subsection name="User Existence">
+                <p>
+					In order to check whether a certain user is visible in the
+					Moria2 framework, services may use the following method.
+					</p>
+					<p>
+					Method used by service: <code>verifyUserExistence</code>
+					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyUserExistence(java.lang.String)">JavaDoc</a>, 
+					<a href="howto_service_example_soap_verifyUserExistence.html">SOAP Example</a>, 
+					<a href="howto_service_example_java-axis_verifyUserExistence.html">Java/Axis Example</a>)
+			</p>
+            </subsection>
+			
+		</section>
+	</body>
+</document>

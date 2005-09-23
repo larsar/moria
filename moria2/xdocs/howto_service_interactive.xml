@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Interactive Authentication</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Interactive Authentication">
+			<p>
+                This chapter will outline the most common authentication method,
+                <b>interactive authentication</b>. It is called interactive
+                because Moria2 requires the user to type in his or hers
+                credentials on a web page provided by Moria2. Of course, this
+                limits its use to web services.
+            </p>
+            
+            <subsection name="Step-by-Step Overview">
+                <p>
+                    These are the basic steps involved in an interactive
+                    authentication.
+                </p>
+                <ol>
+                    <li>
+                        <p>
+                            The user attempts to access some protected content
+                            provided by a Moria2-enabled web service.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The service contacts Moria2 and requests an <b>authentication session</b>.
+                            Usually the service will ask for a number of <b>user
+                            attributes</b>. Also, the service must provide an
+                            <b>URL</b> back to the service; Moria2 will redirect
+                            the user back to this URL once the user has
+                            completed the login web page.
+                        </p>
+                        <p>
+                            Method used by service: <code>initiateAuthentication</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#initiateAuthentication(java.lang.String[], java.lang.String, java.lang.String, boolean)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_initiateAuthentication.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_initiateAuthentication.html">Java/Axis Example</a>)
+						</p>
+                    </li>
+                    <li>
+                        <p>
+                            Moria2 checks the request against the stored service
+                            profile. If the request is valid then a <b>URL</b>
+                            to the login page is returned to the service.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The service <b>redirects</b> the user to the URL
+                            provided by Moria2 in step 3. Note that if the
+                            service delays more than the Moria2-configured
+                            timeout, the authentication session will be lost
+                            and the service will have to repeat from step 2.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The user types in his or hers credentials (user
+                            name, password, and organization) on the Moria2
+                            login page.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            If the credentials are valid, the user is
+                            <b>redirected back</b> to the URL given by the
+                            service in step 2. This URL will now contain a
+                            <b>session key</b>.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            On receiving a redirect back to the URL given by the
+                            service in step 2, the service will now know that
+                            the user was successfully authenticated by Moria2.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The service can now extract the the <b>session key</b>
+                            (see step 6) from the URL. Using this session key,
+                            the service can contact Moria2 and request the
+                            <b>actual values</b> of the user attributes it asked
+                            for in step 2. Note that this session key <b>can
+                            only be used once</b>.
+                        </p>
+                        <p>
+							Method used by service: <code>getUserAttributes</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getUserAttributes(java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_getUserAttributes.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_getUserAttributes.html">Java/Axis Example</a>)
+						</p>
+                    </li>
+                    <li>
+                        <p>
+                            Moria2 returns the requested attribute values.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The service now has the necessary information to
+                            authorize the user (or not, as the case may be) to
+                            access the protected content.
+                        </p>
+                    </li>
+                </ol>
+                <p>
+                    The service will only need to perform two SOAP calls and one
+                    HTTP redirect in order to accomplish this.
+                </p>
+            </subsection>
+			
+		</section>
+	</body>
+</document>

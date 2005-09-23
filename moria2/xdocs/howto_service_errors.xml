@@ -26,22 +26,23 @@ $Id$
 	<body>
 		<section name="Error Handling">
 			<p>
-			This section will outline how errors are distributed from Moria to
-			the client service through the SOAP interface. For more information
-			please refer to the <a href="http://ws.apache.org/axis/index.html">Axis</a>
-			documentation regarding server-side exception handling.
+                This chapter will outline how error messages  are sent from
+                Moria2 to the client service through the SOAP interface. For
+                more information please refer to the <a href="http://ws.apache.org/axis/index.html">Axis</a>
+			    documentation regarding server-side exception handling.
 			</p>
 			<p>
-			The information below is currently only valid for the v2.1 of the
-			SOAP interface (and upwards). The v2.0 interface will use the more
-			generic <code>RemoteException</code>s, where the actual
-			<i>faultcode</i> (see below) will always be <i>Server</i> and the
-			<i>faultstring</i> will include the Java exception cause.
+                The information below is currently valid for v2.1 (and later)
+                of the SOAP interface. The v2.0 interface will use the more
+                generic <code>RemoteException</code>s, where the actual
+                <i>faultcode</i> (see below) will always be <i>Server</i> and
+                the <i>faultstring</i> will include the Java exception cause.
 			</p>
+            
 			<subsection name="SOAP Faults">
 				<p>
-				The SOAP Fault message from Moria will be on the form shown
-				below:
+                    The SOAP Fault message from Moria2 will be on the form shown
+                    below:
 				<source>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"&gt;
@@ -52,17 +53,16 @@ $Id$
 		&lt;/SOAP-ENV:Fault&gt;
 	&lt;/SOAP-ENV:Body&gt;
 &lt;/SOAP-ENV:Envelope&gt;</source>
-				In this example, the <i>faultcode</i> element shows that this
-				was caused by the client (that is, the Moria-enabled client
-				service using a SOAP operation). The <i>faultstring</i>, using a
-				set of pre-defined error strings, shows that in this case, the
-				client service was not authorized to perform the requested
-				SOAP operation.
+    				In this example, the <i>faultcode</i> element shows that
+                    this was caused by the client service. The <i>faultstring</i>,
+                    using a set of pre-defined error strings, shows that in this
+                    case the client service was not authorized to perform the
+                    requested SOAP operation.
 				</p>
                 <p>
-                These are the possible values and combinations for the
-                <i>faultcode</i> and <i>faultstring</i> elements, with
-                descriptions:
+                    These are the possible values and combinations for the
+                    <i>faultcode</i> and <i>faultstring</i> elements, with
+                    descriptions:
 				<table>
                     <tr>
                         <th>faultcode</th>
@@ -80,35 +80,35 @@ $Id$
                         <td><i>Server</i></td>
                         <td><i>AUTHENTICATION UNAVAILABLE</i></td>
                         <td><code>no.feide.moria.servlet.soap.AuthenticationUnavailableException</code></td>
-                        <td>Moria was unable to reach the third-party
-                        (LDAP) server responsible for user authentication.</td>
+                        <td>Moria2 was unable to reach the third-party (LDAP)
+                            server responsible for user authentication.</td>
                     </tr>
                     <tr>
                         <td><i>Client</i></td>
                         <td><i>AUTHORIZATION FAILED</i></td>
                         <td><code>no.feide.moria.servlet.soap.AuthorizationFailedException</code></td>
                         <td>An operation was attempted, or parameters were used,
-                        that the client service was not authorized for.</td>
+                            that the client service was not authorized for.</td>
                     </tr>
                     <tr>
                         <td><i>Client</i></td>
                         <td><i>ILLEGAL INPUT</i></td>
                         <td><code>no.feide.moria.servlet.soap.IllegalInputException</code></td>
                         <td>An operation was attempted, or parameters were used,
-                        that the client service was not authorized for.</td>
+                            that the client service was not authorized for.</td>
                     </tr>
                     <tr>
                         <td><i>Server</i></td>
                         <td><i>MORIA INTERNAL</i></td>
                         <td><code>no.feide.moria.servlet.soap.InternalException</code></td>
-                        <td>An unexpected internal error occured in Moria.</td>
+                        <td>An unexpected internal error occured in Moria2.</td>
                     </tr>
                     <tr>
                         <td><i>Client</i></td>
                         <td><i>UNKNOWN TICKET</i></td>
                         <td><code>no.feide.moria.servlet.soap.UnknownTicketException</code></td>
                         <td>The ticket used by the client service in a SOAP
-                        operation was unknown to Moria.</td>
+                            operation was unknown to Moria2.</td>
                     </tr>
                 </table>
                 </p>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Moria2 and FEIDE</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Moria2 and FEIDE">
+            <p>
+                <a href="http://www.feide.no">FEIDE</a> runs a Moria2
+                installation providing an authentication solution primarily for
+                Norwegian research and educational institutions. This chapter
+                gives a quick overview of the details for this particular
+                instance of Moria2.
+            </p>
+            
+            <subsection name="Contact Points">
+                <p>
+                    <ul>
+                        <li>
+                            You may contact the FEIDE administration on <a href="mailto:administrasjon@feide.no">administrasjon@feide.no</a>
+                            to apply for your own service account on this
+                            instance.
+                        </li>
+                        <li>
+                            Any technical questions you might have can be sent
+                            to <a href="mailto:moria-support@uninett.no">moria-support@uninett.no</a>.
+                        </li>
+                    </ul>
+                </p>
+            </subsection>
+            
+            <subsection name="WSDL Locations">
+                <p>
+                    WSDLs for the Moria2 instance run by FEIDE can be found on
+                    the following URLs, for various versions of the SOAP
+                    interface.
+                </p>
+                <p>
+                    <table>
+                        <tr>
+                            <th>Version</th>
+                            <th>URL</th>
+                            <th>Username to access WSDL</th>
+                            <th>Password to access WSDL</th>
+                        </tr>
+                        <tr>
+                            <td>v2.0</td>
+                            <td><a href="https://login.feide.no/moria2/v2_0/Authentication?WSDL">https://login.feide.no/moria2/v2_0/Authentication?WSDL</a></td>
+                            <td>demo_service</td>
+                            <td>demo_service</td>
+                        </tr>
+                        <tr>
+                            <td>v2.1</td>
+                            <td><a href="https://login.feide.no/moria2/v2_1/Authentication?WSDL">https://login.feide.no/moria2/v2_1/Authentication?WSDL</a></td>
+                            <td>demo_service</td>
+                            <td>demo_service</td>
+                        </tr>
+                        <tr>
+                            <td>v2.2</td>
+                            <td><a href="https://login.feide.no/moria2/v2_2/Authentication?WSDL">https://login.feide.no/moria2/v2_2/Authentication?WSDL</a></td>
+                            <td>demo_service</td>
+                            <td>demo_service</td>
+                        </tr>
+                    </table>
+                </p>
+                <p>
+                    The differences between each version is described
+                    in <a href="howto_service_wsdl.html">this</a> chapter.
+                </p>
+            </subsection>
+            
+            <subsection name="Available User Attributes">
+                <p>
+                    FEIDE defines a standard set of user attributes for use
+                    within its Moria2 instance. The current attribute definition
+                    can be found <a href="http://www.feide.no/dokumenter/feide-schema-current.html">here</a>.
+                </p>
+            </subsection>
+            
+            <subsection name="Available Internal Services">
+                <p>
+                    A number of Moria2-internal services may be accessed on
+                    the following URLs.
+                </p>
+                <p>
+                    <table>
+                        <tr>
+                            <th>Service</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><a href="https://login.feide.no/moria2/Status">Status</a></td>
+                            <td>System status page. Also shows connectivity status to authentication servers.</td>
+                        </tr>
+                        <tr>
+                            <td><a href="https://login.feide.no/moria2/Statistics">Statistics</a></td>
+                            <td>Usage statistics for each service.</td>
+                        </tr>
+                        <tr>
+                            <td><a href="https://login.feide.no/moria2/Information">Insight</a></td>
+                            <td>Users may log on to review the information published about them through this Moria2 instance.</td>
+                        </tr>
+                    </table>
+                </p>
+            </subsection>
+			
+		</section>
+	</body>
+</document>

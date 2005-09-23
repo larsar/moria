@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Direct Authentication</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Direct Authentication">
+			<p>
+                This chapter will describe the authentication method
+                <b>direct non-interactive authentication</b>. It is called
+                direct because Moria2 does not handle the user's credentials;
+                this is received directly from the service. This method is
+                useful for services that are not web-based/have no possibility
+                to handle redirects.
+            </p>
+            
+            <subsection name="Step-by-Step Overview">
+                <p>
+                    These are the basic steps involved in a direct
+                    non-interactive authentication.
+                </p>
+                <ol>
+                    <li>
+                        <p>
+                            The user attempts to access some protected content
+                            provided by a Moria2-enabled web service.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The service receives the user's credentials. The
+                            username is on the form <b><i>localID</i>@<i>organization</i></b>,
+                            where <i>localID</i> is the local username assigned
+                            to the user by his or hers home organization <i>organization</i>.
+                            Exactly how the service receives these credentials
+                            is up to the service implementation.
+						</p>
+                    </li>
+                    <li>
+                        <p>
+                            The service contancts Moria2 and requests a <b>direct
+                            non-interactive authentication</b> session. The service
+                            will usually also request one or more user
+                            attributes.
+                        </p>
+                        <p>
+							Method used by service: <code>directNonInteractiveAuthentication</code>
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String)">JavaDoc</a>, 
+							<a href="howto_service_example_soap_directNonInteractiveAuthentication.html">SOAP Example</a>, 
+							<a href="howto_service_example_java-axis_directNonInteractiveAuthentication.html">Java/Axis Example</a>)
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            Moria2 checks the request against the stored service
+                            profile. If the request is valid then the user's
+                            credentials are checked.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            Given that step 4 completes successfully, Moria2
+                            returns the <b>requested attribute values</b>.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            The service now has the necessary information to
+                            authorize the user (or not, as the case may be) to
+                            access the protected content.
+                        </p>
+                    </li>
+                </ol>
+                <p>
+                    Note that in this case, the service will only need to
+                    perform a single SOAP call, as well as handle the retrieval
+                    of user credentials.
+                </p>
+            </subsection>
+            
+            <subsection name="Security Considerations">
+                <p>
+                    Use of direct non-interactive authentication potentially
+                    allows a service to harvest users' credentials. This is
+                    a serious security consideration when a user accesses a
+                    service from any organization other than the user's own
+                    home organization. The Moria2 administrator will take care
+                    to only allow this authentication method for trusted
+                    services.
+                </p>
+            </subsection>
+			
+		</section>
+	</body>
+</document>
