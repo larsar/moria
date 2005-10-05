@@ -129,40 +129,46 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
 			</p>
 			<ul>
 				<li>
-				Each user element must have an attribute containing the username.
-				Moria2 may be configured to use an arbitrary attribute as username;
-				contact the Moria2 administrator to learn what the correct attribute
-				for usernames should be. The usernames must be on the form given by
-				<i>localID@organization</i>, where <i>localID</i> should be unique
-				within the organization, and the realm <i>organization</i> is the
-				organization short-form identifier described in
-				<a href="#Indexing_Information">this</a> section.
+                    Each user element must have an attribute containing the
+                    username. Moria2 may be configured to use an arbitrary
+                    attribute as username; contact the Moria2 administrator to
+                    learn what the correct attribute for usernames should be.
+                    The usernames must be on the form given by <i>localID@organization</i>,
+                    where <i>localID</i> should be unique within the
+                    organization, and the realm <i>organization</i> is the
+                    organization short-form identifier described in <a href="#Indexing_Information">this</a>
+                    section.
 				</li>
 				<li>
-				The server must <b>either</b> allow Moria2 to do a subtree equality search (at
-				least non-anonymous; see <a href="#Indexing_Information">this</a>
-				section) for the attribute containing the username, <b>or</b>
-				have user element DNs on the form
-				<pre>
-				DN=<i>localID</i>,<i>LDAP search base</i>
-				</pre>
-				where <i>localID</i> can be extracted from a username on the
-				form <i>localID@organization</i>.
+                    The server must <b>either</b> allow Moria2 to do a subtree
+                    equality search (at least non-anonymous; see <a href="#Indexing_Information">this</a>
+                    section) for the attribute containing the username, <b>or</b>
+                    have user element DNs on the form
+                    <pre>
+                        uid=<i>localID</i>,<i>LDAP search base</i>
+                    </pre>
+                    where <i>localID</i> can be extracted from a username on the
+                    form <i>localID@organization</i>. Note that the Moria2
+                    administrator may configure Moria2 to use a different
+                    attribute than <tt>uid</tt>; however, <tt>uid</tt> is used
+                    in the Moria2 instance provided by <a href="http://www.feide.no">FEIDE</a>.
 				</li>
 				<li>
-				The server must allow LDAP simple bind using the user element's DN and the user's
-				password.
+                    The server must allow LDAP simple bind using the user
+                    element's DN and the user's password.
 				</li>
 				<li>
-				The server must allow reading of attributes from the user element given by DN
-				following a simple bind using the DN itself.
+                    The server must allow reading of attributes from the user
+                    element given by DN following a simple bind using the DN
+                    itself.
 				</li>
 			</ul>
 			<p>
-			Optimally, Moria2 should be able to do an equality subtree
-			search for a user element's DN and then perform a non-anonymous simple
-			bind using this DN. Unless the DN contains sensitive user data the
-			initial search phase could potentially be done as an anonymous search.
+                Optimally, Moria2 should be able to do an equality subtree
+                search for a user element's DN and then perform a non-anonymous
+                simple bind using this DN. Unless the DN contains sensitive user
+                data the initial search phase could potentially be done as an
+                anonymous search.
 			</p>
 			</subsection>
 			
