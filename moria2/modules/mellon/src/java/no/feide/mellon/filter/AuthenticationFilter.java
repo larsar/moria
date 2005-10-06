@@ -19,7 +19,9 @@
 package no.feide.mellon.filter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -36,20 +38,49 @@ import no.feide.mellon.MoriaException;
 import no.feide.moria.log.MessageLogger;
 
 /**
- * 
+ * The less-than-elegant use of system properties to store filter configuration
+ * has been preserved to provide maximum backwards compatibility with the
+ * Mellon1 version of this filter.
  */
 public class AuthenticationFilter
 implements Filter {
 
     /**
-     * The filter configuration.
-     */
-    private FilterConfig config = null;
-    
-    /**
      * Used for logging.
      */
-    MessageLogger log = new MessageLogger(AuthenticationFilter.class);
+    private MessageLogger log = new MessageLogger(AuthenticationFilter.class);
+
+
+    /**
+     * Required configuration properties.<br>
+     * <br>
+     * Current values are
+     * <ul>
+     * <li><code>"no.feide.mellon.serviceUsername"</code></li>
+     * <li><code>"no.feide.mellon.servicePassword"</code></li>
+     * <li><code>"no.feide.mellon.endpoint"</code></li>
+     * </ul>
+     */
+    public static final String[] REQUIRED_PROPERTIES = {"no.feide.mellon.serviceUsername", "no.feide.mellon.servicePassword", "no.feide.mellon.endpoint"};
+
+
+    /**
+     * Optional configuration properties.<br>
+     * <br>
+     * Current values are
+     * <ul>
+     * <li><code>"no.feide.mellon.requestedAttributes"</code></li>
+     * <li><code>"no.feide.mellon.runtimeConfiguration"</code></li>
+     * </ul>
+     */
+    public static final String[] OPTIONAL_PROPERTIES = {"no.feide.mellon.requestedAttributes", "no.feide.mellon.runtimeConfiguration"};
+
+    /**
+     * The filename of the filter configuration file.<br>
+     * <br>
+     * Current value is <code>"/mellon.properties"</code>.
+     */
+    public static final String PROPERTY_FILE = "/mellon.properties";
 
 
     /**
@@ -57,28 +88,88 @@ implements Filter {
      * @param config
      *            The filter configuration.
      * @throws ServletException
-     *             If unable to read the filter configuration.
+     *             If unable to set the filter's Mellon2 configuration.
      */
     public void init(FilterConfig config) throws ServletException {
 
-        this.config = config;
+        // Read filter configuration properties from file.
+        Properties properties = new Properties();
+        InputStream file = getClass().getResourceAsStream(PROPERTY_FILE);
+        if (file != null)
+            try {
+                properties.load(file);
+            } catch (IOException e) {
+                log.logWarn("Unable to read an existing property file '" + PROPERTY_FILE + "'", e);
+            }
 
-        // Read filter configuration properties.
-        try {
-            System.getProperties().load(getClass().getResourceAsStream("/mellon.properties"));
-        } catch (IOException e) {
-            log.logWarn("Unable to read property file /mellon.properties; assuming properties are set in context", e);
-        }
+        // Process required configuration properties.
+        for (int i = 0; i < REQUIRED_PROPERTIES.length; i++)
+            setProperty(REQUIRED_PROPERTIES[i], config, properties);
+
+        // Process optional configuration properties.
+        for (int i = 0; i < OPTIONAL_PROPERTIES.length; i++)
+            try {
+                setProperty(OPTIONAL_PROPERTIES[i], config, properties);
+            } catch (ServletException e) {
+                log.logInfo("Optional property '" + OPTIONAL_PROPERTIES[i] + "' not set");
+            }
 
     }
 
 
     /**
-     * Remove configuration.
+     * Utility method used to set each configuration property. System properties
+     * already set take precedence over properties set in the filter's
+     * configuration, which again take precedence over properties set in the
+     * configuration file <code>PROPERTY_FILE</code>.
+     * @param property
+     *            The property to set. string.
+     * @param filterConfig
+     *            The filter's configuration.
+     * @param propertyFile
+     *            Properties read from the file <code>PROPERTY_FILE</code>.
+     * @throws ServletException
+     *             If unable to set <code>property</code> based on these three
+     *             sources.
+     */
+    private void setProperty(String property, FilterConfig filterConfig, Properties propertyFile)
+    throws ServletException {
+
+        // Make sure to log any success before returning.
+        String value = null;
+        try {
+
+            // Check already set system properties.
+            value = System.getProperty(property);
+            if (value != null)
+                return;
+
+            // Check filter configuration.
+            value = filterConfig.getInitParameter(property);
+            if (value != null) {
+                System.setProperty(property, value);
+                return;
+            }
+
+            // Check property file.
+            value = propertyFile.getProperty(property);
+            if (value != null) {
+                System.setProperty(property, value);
+                return;
+            }
+
+        } finally {
+            log.logDebug(property + "=" + value);
+        }
+
+        throw new ServletException("Unable to set property '" + property + "'");
+    }
+
+
+    /**
+     * Does nothing.
      */
     public void destroy() {
-
-        config = null;
 
     }
 
@@ -101,7 +192,7 @@ implements Filter {
      * @throws ServletException
      *             If a problem should occur using the client-side API.
      */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
     throws IOException, ServletException {
 
         // Get the service instance.
@@ -130,7 +221,6 @@ implements Filter {
                 // Construct the URL that Moria2 should redirect the user back
                 // to after authentication.
                 final HttpServletRequest httpRequest = (HttpServletRequest) request;
-                ;
                 String backToMellonURL = httpRequest.getRequestURL().toString();
                 if (httpRequest.getQueryString() != null)
                     backToMellonURL += "?" + httpRequest.getQueryString() + "&moriaID=";
@@ -191,5 +281,4 @@ implements Filter {
 
         }
 
-    }
-}
+    }}
