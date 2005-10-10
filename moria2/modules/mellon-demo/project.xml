@@ -31,9 +31,11 @@
     <!-- Misc deps -->
     &dep-servlet-api;
     &dep-commons-logging;
+    &dep-log4j;
 
     <!-- Moria2 deps -->
     &dep-mellon;
+    &dep-moria-log;
 
   </dependencies>
 
