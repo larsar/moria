@@ -97,7 +97,8 @@ $Id$
                     These should be considered unsupported example code for use
                     at your own risk; the official interface to Moria2 is the
                     WSDL itself, and the proper way to use Moria2 is to generate
-                    your own stubs.
+                    your own stubs. Please refer to the <a href="mellon/index.html">Mellon2</a>
+                    documentation for further information.
                 </p>
                 <p>
                     If you wish to start integrating your service with an

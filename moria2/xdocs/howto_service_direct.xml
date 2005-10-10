@@ -65,7 +65,7 @@ $Id$
                         </p>
                         <p>
 							Method used by service: <code>directNonInteractiveAuthentication</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String)">JavaDoc</a>, 
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/Authentication.html#directNonInteractiveAuthentication(java.lang.String[], java.lang.String, java.lang.String)">JavaDoc</a>, 
 							<a href="howto_service_example_soap_directNonInteractiveAuthentication.html">SOAP Example</a>, 
 							<a href="howto_service_example_java-axis_directNonInteractiveAuthentication.html">Java/Axis Example</a>)
                         </p>

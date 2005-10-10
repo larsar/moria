@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+
+<project name="Mellon2">
+	<title>Mellon2</title>
+	<body>
+
+		<search/>
+
+		<links>
+	    	<item name="UNINETT" href="http://www.uninett.no/"/>
+	    	<item name="FEIDE" href="http://www.feide.no/"/>
+	    </links>
+
+
+	    <menu name="Overview">
+	        <item name="Mellon2 API" href="index.html">
+    	        <item name="Servlet Filter" href="servlet_filter.html"/>
+            </item>
+	        <item name="Demo Services" href="../mellon-demo/index.html"/>
+			<item name="JAAS Module" href="../mellon-jaas/index.html"/>
+        </menu>	    
+	    
+	    <menu name="SourceForge">
+		    <item href="http://sourceforge.net"
+		          img="http://sourceforge.net/sflogo.php?group_id=78969&amp;type=1"/>
+	    </menu>
+	    
+	</body>
+</project>

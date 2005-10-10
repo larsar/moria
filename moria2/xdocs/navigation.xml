@@ -44,8 +44,8 @@ $Id$
 			    <item name="From Moria1 to Moria2" href="howto_service_migration.html"/>
 			    <item name="Interactive Authentication" href="howto_service_interactive.html"/>
 			    <item name="Direct Authentication" href="howto_service_direct.html"/>
-			    <item name="Other Methods" href="howto_service_other.html"/>
 				<item name="Single Sign On" href="howto_service_sso.html"/>
+			    <item name="Other Methods" href="howto_service_other.html"/>
 			    <item name="Error Handling" href="howto_service_errors.html"/>
 			</item>
 			
@@ -71,8 +71,8 @@ $Id$
 				<item name="Log API" href="/moria-log/index.html"/>
 				<item name="Store Manager" href="/moria-sm/index.html"/>
 				<item name="Web Module" href="/moria-web/index.html"/>
-				<item name="Mellon Client-Side API" href="/mellon/index.html">
-				    <item name="Mellon Demo" href="/mellon-demo/index.html"/>
+				<item name="Mellon2" href="/mellon/index.html">
+				    <item name="Demo Services" href="/mellon-demo/index.html"/>
                     <item name="JAAS Module" href="/mellon-jaas/index.html"/>
 				</item>
 		    </item>

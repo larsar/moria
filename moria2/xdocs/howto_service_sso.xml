@@ -109,7 +109,7 @@ $Id$
                         </p>
                         <p>
 							Method used by service: <code>getProxyTicket</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#getProxyTicket(java.lang.String, java.lang.String)">JavaDoc</a>, 
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/Authentication.html#getProxyTicket(java.lang.String, java.lang.String)">JavaDoc</a>, 
 							<a href="howto_service_example_soap_getProxyTicket.html">SOAP Example</a>, 
 							<a href="howto_service_example_java-axis_getProxyTicket.html">Java/Axis Example</a>)
                         </p>
@@ -137,7 +137,7 @@ $Id$
                         </p>
                         <p>
 							Method used by subservice: <code>proxyAuthentication</code>
-							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#proxyAuthentication(java.lang.String[], java.lang.String)">JavaDoc</a>, 
+							(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/Authentication.html#proxyAuthentication(java.lang.String[], java.lang.String)">JavaDoc</a>, 
 							<a href="howto_service_example_soap_proxyAuthentication.html">SOAP Example</a>, 
 							<a href="howto_service_example_java-axis_proxyAuthentication.html">Java/Axis Example</a>)
 						</p>

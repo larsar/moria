@@ -39,7 +39,7 @@ $Id$
 					</p>
 					<p>
 					Method used by service: <code>verifyUserExistence</code>
-					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/AuthenticationIF.html#verifyUserExistence(java.lang.String)">JavaDoc</a>, 
+					(<a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/Authentication.html#verifyUserExistence(java.lang.String)">JavaDoc</a>, 
 					<a href="howto_service_example_soap_verifyUserExistence.html">SOAP Example</a>, 
 					<a href="howto_service_example_java-axis_verifyUserExistence.html">Java/Axis Example</a>)
 			</p>

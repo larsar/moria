@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+Copyright (c) 2004 UNINETT FAS
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+
+<document>
+
+	<properties>
+		<title>Mellon2 API</title>
+    	<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+
+	<body>
+
+    <section name="Mellon2 API">
+        
+        <subsection name="Overview">
+            <p>
+                The only officially supported service interface to Moria2
+                remains the <b>SOAP interface</b> defined by the published
+                WSDLs. However, to ease the service integration process, a
+                ready-to-use client-side API is also made available. This
+                library is called <b>Mellon2</b>.
+            </p>
+            <p>
+                We may or may not publish Mellon2 APIs for other languages than
+                Java; refer to the Moria2 <a href="http://sourceforge.net/project/showfiles.php?group_id=78969">file list</a>
+                for a current list of available Mellon2 APIs.
+            </p>
+            <p>
+                Note that all published Mellon2 APIs are considered <b>example code</b>
+                only, to be used at your own risk.
+            </p>
+        </subsection>
+
+        <subsection name="Download">
+            <p>
+                Please refer to the Moria2 <a href="http://sourceforge.net/project/showfiles.php?group_id=78969">file list</a>
+                for available releases of the Mellon2 client-side API.
+                Alternatively, Mellon2 can be built from the code available from
+                the <a href="http://sourceforge.net/cvs/?group_id=78969">CVS</a>
+                repository.
+            </p>
+        </subsection>
+        
+        <subsection name="Mellon2 Java">
+            <p>
+                The Mellon2 Java client-side API consists of <a href="http://ws.apache.org/axis/">Axis</a>-generated
+                client stubs, with a <b>wrapper class</b> hiding most of the
+                stub-specific details. The wrapper class is designed to be as
+                similar to the previous Mellon1 equivalent as possible, and is
+                the primary Mellon2 Java interface service developers should
+                use.
+            </p>
+            <p>
+                Please refer to the <a href="apidocs/index.html">JavaDoc</a> for
+                more information. JavaDoc for the wrapper class can be found
+                <a href="apidocs/no/feide/mellon/Moria.html">here</a>.
+            </p>
+        </subsection>
+        
+    </section>
+  </body>
+</document>

@@ -57,7 +57,7 @@ $Id$
                             direct port from the  v1.0 SOAP interface of Moria1.
                             <br></br>
                             Please refer to the
-                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/package-frame.html">JavaDoc</a>
+                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_0/package-summary.html">JavaDoc</a>
                             for a detailed description of each method available.
                         </td>
                     </tr>
@@ -75,7 +75,7 @@ $Id$
                             overview).
                             <br></br>
                             Please refer to the
-                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/package-frame.html">JavaDoc</a>
+                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_1/package-summary.html">JavaDoc</a>
                             for a detailed description of each method available.
                         </td>
                     </tr>
@@ -103,7 +103,7 @@ $Id$
                             attributes no separator is used.
                             <br></br>
                             Please refer to the
-                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_2/package-frame.html">JavaDoc</a>
+                            <a href="moria-web/apidocs/no/feide/moria/webservices/v2_2/package-summary.html">JavaDoc</a>
                             for a detailed description of each method available.
                         </td>
                     </tr>

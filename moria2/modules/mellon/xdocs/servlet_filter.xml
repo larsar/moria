@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+Copyright (c) 2004 UNINETT FAS
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+
+<document>
+
+	<properties>
+		<title>Servlet Filter</title>
+    	<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+
+	<body>
+
+    <section name="Servlet Filter">
+        
+        <p>
+            This chapter will describe a sample servlet filter, that provides
+            authentication and attribute retrieval using the <a href="index.html">Mellon2 API</a>.
+            The actual steps taken are identical to those for <a href="../howto_service_interactive.html">interactive authentication</a>.
+            Ticket-based SSO is not supported, and exceptions are not trapped
+            (that is, they are thrown as <tt>ServletException</tt>s from the
+            filter).
+        </p>
+        <p>
+            For more on servlet filters, please read <a href="http://java.sun.com/products/servlet/Filters.html">this</a>
+            article.
+        </p>
+        <p>
+            Please note that this filter implementation has been designed to be
+            as <b>backwards compatible</b> with the corresponding Mellon1
+            servlet filter as possible.
+        </p>
+        <p>
+            More information may be found in the servlet filter's <a href="apidocs\no\feide\mellon\filter\AuthenticationFilter.html">JavaDoc</a>.
+        </p>
+        
+        <subsection name="Download">
+            <p>
+                The Mellon2 Java client-side API contains both the Java API
+                itself and the servlet filter.
+            </p>
+            <p>
+                Please refer to the Mellon2 API <a href="index.html#Download">download</a>
+                section.
+            </p>
+        </subsection>
+        
+        <subsection name="Configuration">
+            <p>
+                A number of configuration properties are available for use with
+                the Mellon2 servlet filter. Some of these are <b>optional</b>, while
+                others are <b>required</b>.
+            </p>
+            <p>
+                A configuration property can be set using one of three methods.
+            </p>
+            <p>
+                <ol>
+                    <li>
+                        By defining it as a <b>system property</b>. This takes
+                        precedence over the two methods below.
+                    </li>
+                    <li>
+                        By setting it in the <b>servlet filter's configuration.</b>
+                        This takes precedence over the method below. Please
+                        refer to your servlet container's documentation for how
+                        to do this.
+                    </li>
+                    <li>
+                        By setting it in a <b>configuration</b> file. This file
+                        should be placed in the servlet's <b>root folder</b>; if
+                        your servlet container unpacks the servlet's WAR file in
+                        a folder <tt>CONTAINER_HOME/webapps/myservlet</tt>, the
+                        file should ble placed in <tt>CONTAINER_HOME/webapps/myservlet/WEB-INF/classes</tt>.
+                    </li>
+                </ol>
+            </p>
+            <p>
+                The following configuration properties are available for use
+                with the Mellon2 servlet filter.
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>no.feide.mellon.serviceUsername</td>
+                        <td>Yes</td>
+                        <td>The Moria2 service account's username.</td>
+                    </tr>
+                    <tr>
+                        <td>no.feide.mellon.servicePassword</td>
+                        <td>Yes</td>
+                        <td>The Moria2 service account's password.</td>
+                    </tr>
+                    <tr>
+                        <td>no.feide.mellon.endpoint</td>
+                        <td>Yes</td>
+                        <td>The SOAP v2.1 service endpoint of the Moria2
+                            instance you are using. Please refer to <a href="../howto/service/feide.html">this</a>
+                            section for a list of service endpoints provided by
+                            <a href="http://www.feide.no">FEIDE</a>.</td>
+                    </tr>
+                    <tr>
+                        <td>no.feide.mellon.requestedAttributes</td>
+                        <td>No</td>
+                        <td>The attributes to request from Moria2, as a comma-separated list.</td>
+                    </tr>
+                </table>
+            </p>
+            <p>
+                With the exception of <tt>no.feide.mellon.endpoint</tt>, this
+                list is identical to the Moria1 configuration properties.
+            </p>
+            <p>
+                Example <tt>/mellon.properties</tt> configuration file:
+                <source>
+# The service credentials.
+no.feide.mellon.serviceUsername=demo_service
+no.feide.mellon.servicePassword=demo_service
+
+# The attributes requested from Moria2.
+no.feide.mellon.requestedAttributes=eduPersonAffiliation,eduPersonOrgDN
+
+# The Moria2 service endpoint.
+no.feide.mellon.endpoint=https://login.feide.no/moria2/v2_1/Authentication</source>
+            </p>
+        </subsection>
+
+    </section>
+  </body>
+</document>
