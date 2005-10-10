@@ -70,10 +70,9 @@ implements Filter {
      * Current values are
      * <ul>
      * <li><code>"no.feide.mellon.requestedAttributes"</code></li>
-     * <li><code>"no.feide.mellon.runtimeConfiguration"</code></li>
      * </ul>
      */
-    public static final String[] OPTIONAL_PROPERTIES = {"no.feide.mellon.requestedAttributes", "no.feide.mellon.runtimeConfiguration"};
+    public static final String[] OPTIONAL_PROPERTIES = {"no.feide.mellon.requestedAttributes"};
 
     /**
      * The filename of the filter configuration file.<br>
