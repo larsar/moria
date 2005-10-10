@@ -307,6 +307,7 @@ implements DirectoryManagerBackend {
                             log.logDebug("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn, mySessionTicket);
 
                         }
+                        log.logDebug("Matched " + pattern + " to " + rdn + ',' + ldap.getNameInNamespace());
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
                     }
 
