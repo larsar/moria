@@ -36,6 +36,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import no.feide.moria.log.MessageLogger;
+import no.feide.moria.controller.MoriaController;
 
 /**
  * The StatisticsServlet shows the usage of Moria.
@@ -161,6 +162,7 @@ extends HttpServlet {
         out.println("<br><i>" + bundle.getString("vortex_number") + "</i>");
         
         out.println("<br><h3>" + bundle.getString("stat_info2") + "</h3>");
+        out.println(bundle.getString("stat_info3"));
         
         //Statistics from moria2
         String filename2 = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML);
@@ -179,56 +181,70 @@ extends HttpServlet {
                 + config.get(RequestUtil.RESOURCE_MAIL) + "\">" + config.get(RequestUtil.RESOURCE_MAIL) + "</a></small></td>");
         out.println("<td class=\"invers\" align=\"right\"><small>" + config.get(RequestUtil.RESOURCE_DATE) + "</small></td>");
         out.println("</tr></tbody></table></p>");
-        
+                        
         // Finish up.
         out.println("</body></html>");
         
+
     }
 
     private void printStatistics(PrintWriter out, ResourceBundle bundle, String filename) {
         Properties config = getConfig();
         if (config != null) {
-          StatisticsHandler handler = new StatisticsHandler();
-          
-          // Read ignore-list from config file
-          String ignorestring = (String)config.get(RequestUtil.PROP_BACKENDSTATUS_IGNORE);
-          String[] ignore = ignorestring.split(",");
-          for (int i=0; i<ignore.length; i++) {
-              handler.addIgnoreService(ignore[i]);
-          }
-          SAXParserFactory factory = SAXParserFactory.newInstance();
-          try {
-             SAXParser saxParser = factory.newSAXParser();
-             saxParser.parse(new File(filename), handler);
-             
-             final int nummonths = handler.getNumMonths();
-             if (nummonths > 0) {
-                 out.println("<p><table border=1><tr><th>" + bundle.getString("stat_services") + "</th>");
-                 for (int i = 0; i < nummonths; i++) {
-                     out.print("<th>");
-                     out.print(bundle.getString(handler.getMonthName(i)));
-                     out.print("</th>");
-                 }
-                 for (int j = 0; j < handler.getNumStatisticsData(); j++) {
-                     StatisticsData data = handler.getStatisticsData(j);
-                     out.print("<tr>");
-                     out.print("<td>" + data.getName() + "</td>");
-                     for (int i = 0; i < nummonths; i++) {
-                         out.print("<td align=right>");
-                         out.print(Integer.toString(data.getCount(handler.getMonthName(i))));
-                         out.print("</td>");
-                     }
-                     out.print("</tr>");
-                 }
-
-                 
-                 out.println("</table>");
-             }
-          }
-          catch (Throwable t) {
-              out.println("Error while parsing xml");
-              out.println(t.getMessage());
-          }
+            StatisticsHandler handler = new StatisticsHandler();
+            
+            // Read ignore-list from config file
+            String ignorestring = (String)config.get(RequestUtil.PROP_BACKENDSTATUS_IGNORE);
+            String[] ignore = ignorestring.split(",");
+            for (int i=0; i<ignore.length; i++) {
+                handler.addIgnoreService(ignore[i]);
+            }
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            try {
+                SAXParser saxParser = factory.newSAXParser();
+                saxParser.parse(new File(filename), handler);
+                
+                int numstats = handler.getNumStatisticsCollections();
+                if (numstats == 1) numstats = 0;
+                for (int s = -1; s < numstats; s++) {                 
+                    StatisticsCollection stat = null;
+                    if (s < 0) {
+                        stat = handler.getAccumStatistics();
+                        out.print("<p>");
+                    }
+                    else {
+                        stat = handler.getStatisticsCollection(s);
+                        out.println("<p><b>" + stat.getOrgName() + "</b>");
+                    } 
+                    final int nummonths = stat.getNumMonths();
+                    if (nummonths > 0) {
+                        out.println("<table border=1><tr><th>" + bundle.getString("stat_services") + "</th>");
+                        for (int i = 0; i < nummonths; i++) {
+                            out.print("<th>");
+                            out.print(bundle.getString(stat.getMonthName(i)));
+                            out.print("</th>");
+                        }
+                        for (int j = 0; j < stat.getNumStatisticsData(); j++) {
+                            StatisticsData data = stat.getStatisticsData(j);
+                            out.print("<tr>");
+                            out.print("<td>" + data.getName() + "</td>");
+                            for (int i = 0; i < nummonths; i++) {
+                                out.print("<td align=right>");
+                                out.print(Integer.toString(data.getCount(stat.getMonthName(i))));
+                                out.print("</td>");
+                            }
+                            out.print("</tr>");
+                        }
+                        
+                        
+                        out.println("</table>");
+                    }
+                }
+            }
+            catch (Throwable t) {
+                out.println("Error while parsing xml");
+                out.println(t.getMessage());
+            }
         }
     }
     

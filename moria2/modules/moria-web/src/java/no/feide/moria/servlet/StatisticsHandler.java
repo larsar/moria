@@ -32,22 +32,27 @@ import java.util.Vector;
  */
 public class StatisticsHandler extends DefaultHandler {
     
-    private Vector stats;
-    private Vector allmonths;
-    private StatisticsData currentStat;
-    private String currentchars;
-    private Vector ignorevector;
+    private String currentchars = null;
+    private String statname = "";
+    private Vector ignorevector = new Vector();
+    private StatisticsCollection accumstats = new StatisticsCollection("");
+    private Vector orgstats = new Vector();
     
     /**
      * Constructor
      *
      */
     public StatisticsHandler()  {
-        this.currentStat = null;
-        this.stats = new Vector();
-        this.allmonths = new Vector();
-        this.currentchars = null;
-        this.ignorevector = new Vector();
+    }
+    
+    public StatisticsCollection getAccumStatistics() {
+        return this.accumstats;
+    }
+    public int getNumStatisticsCollections() {
+        return this.orgstats.size();
+    }
+    public StatisticsCollection getStatisticsCollection(final int idx) {
+        return (StatisticsCollection) this.orgstats.get(idx);
     }
     
     public void addIgnoreService(final String servicename) {
@@ -97,22 +102,27 @@ public class StatisticsHandler extends DefaultHandler {
 
         /* Look for <Service> and allocate a new StatisticsData if found */
         if (eName.equals("Service")) {
-            currentStat = new StatisticsData();
+            this.statname = "";
         }
         else if (eName.equals("Name")) {
             currentchars = "";
         }
         else if (eName.equals("Month")) {
-            if ((currentStat != null) && !this.shouldIgnore(currentStat.getName())) {
-                final int n = attrs.getLength();
+            if (!this.shouldIgnore(this.statname)) {
                 final String monthname = attrs.getValue(new String("name"));
                 final String countstring = attrs.getValue(new String("count"));
-            
+                String orgname = attrs.getValue(new String("org"));
+                
+                // in case an old statistics.xml file is parsed
+                if (orgname == null) orgname = "Unknown Organization";
+                
                 if (monthname != null && countstring != null) {
                     try {
                         Integer tmp = new Integer(countstring);
-                        currentStat.addMonth(monthname, tmp.intValue());
-                        this.addUniqueMonth(monthname);
+                        this.accumstats.addMonth(this.statname, monthname, tmp.intValue());
+                        this.findStatisticsCollection(orgname).addMonth(this.statname,
+                                                      monthname,
+                                                      tmp.intValue());
                     } 
                     catch (NumberFormatException e) {
                         // something is wrong in the xml file
@@ -139,15 +149,9 @@ public class StatisticsHandler extends DefaultHandler {
         if (eName.equals("")) eName = qName;
         
         if (eName.equals("Service")) {
-            if (!this.shouldIgnore(currentStat.getName())) {
-                this.stats.add(currentStat);
-            }
-            this.currentStat = null;
         }
         else if (eName.equals("Name")) {
-            if (currentStat != null) {
-                currentStat.setName(currentchars);
-            }
+            this.statname = currentchars;
             currentchars = null;
         }
     }
@@ -157,33 +161,18 @@ public class StatisticsHandler extends DefaultHandler {
             currentchars += s;
         }
     }
+    private StatisticsCollection findStatisticsCollection(final String orgname) {
+        for (int i = 0; i < this.orgstats.size(); i++) {
+            StatisticsCollection col = (StatisticsCollection) this.orgstats.get(i);
+            if (col.getOrgName().equals(orgname)) return col;
+        }
+        StatisticsCollection col = new StatisticsCollection(orgname);
+        this.orgstats.add(col);
+        return col;
+    }
 
     
-    public int getNumMonths() {
-        return this.allmonths.size();
-    }
     
-    public String getMonthName(final int idx) {
-        return (String) this.allmonths.get(idx);
-    }
-    public int getNumStatisticsData() {
-        return this.stats.size();
-    }
-    public StatisticsData getStatisticsData(final int idx) {
-        return (StatisticsData) this.stats.get(idx);
-    }
     
-    /**
-     * @param monthname
-     * 
-     * Adds a month to the list of unique months (if not already in list)
-     */
-    private void addUniqueMonth(final String monthname) {
-        final int n = this.allmonths.size();
-        for (int i = 0; i < n; i++) {
-            String tmp = (String) this.allmonths.get(i);
-            if (monthname.equals(tmp)) return;
-        }
-        this.allmonths.add(monthname);
-    }
+
 }

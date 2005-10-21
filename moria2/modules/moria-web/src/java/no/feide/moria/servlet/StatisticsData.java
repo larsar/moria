@@ -41,7 +41,15 @@ public class StatisticsData {
     }
     
     public void addMonth(final String month, final int count) {
-        this.monthdata.put(month, new Integer(count));
+        Integer oldcount = (Integer) this.monthdata.get(month);
+        if (oldcount != null) {
+            int val = oldcount.intValue();
+            val += count;
+            this.monthdata.put(month, new Integer(val));
+        }
+        else {
+          this.monthdata.put(month, new Integer(count));
+        }
     }
         
     public String getName() {
