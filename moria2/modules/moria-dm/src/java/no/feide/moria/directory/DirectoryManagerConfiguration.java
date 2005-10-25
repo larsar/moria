@@ -146,13 +146,13 @@ public class DirectoryManagerConfiguration {
 
         // Get index filename, with sanity checks.
         Attribute a = indexElement.getAttribute("file");
-        if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
+        if ((a == null) || (a.getValue() == null) || (a.getValue().equals("")))
             throw new DirectoryManagerConfigurationException("Index file not set in configuration file");
         indexFilename = a.getValue();
 
         // Get index update frequency, with sanity checks.
         a = indexElement.getAttribute("update");
-        if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
+        if ((a == null) || (a.getValue() == null) || (a.getValue().equals("")))
             throw new DirectoryManagerConfigurationException("Index update frequency not set in configuration file");
         indexUpdateFrequency = 1000 * Integer.parseInt(a.getValue());
         if (indexUpdateFrequency <= 0)
