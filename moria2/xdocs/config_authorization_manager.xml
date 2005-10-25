@@ -149,8 +149,11 @@ $Id$
                     </tr>
                     <tr>
                         <td><i>ProxyAuth</i></td>
-                        <td>Allows a subsystem to perform user authentication
-                            using a proxy ticket.</td>
+                        <td>
+                            Allows a subsystem to perform user authentication
+                            using a proxy ticket. Also needed for the parent
+                            system in order to be able to issue a proxy ticket.
+                        </td>
                     </tr>
                     <tr>
                         <td><i>VerifyUserExistence</i></td>
