@@ -159,8 +159,6 @@ implements DirectoryManagerBackend {
      */
     public final void open(final IndexedReference[] references) {
 
-        log.logDebug("open: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
-
         // Sanity check.
         if ((references == null) || (references.length == 0))
             throw new IllegalArgumentException("Reference cannot be NULL or an empty array");
@@ -186,8 +184,6 @@ implements DirectoryManagerBackend {
     public final boolean userExists(final String username)
     throws BackendException {
 
-        log.logDebug("userExists: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
-
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
             return false;
@@ -206,6 +202,11 @@ implements DirectoryManagerBackend {
                     ldap = connect(references[j]);
                     if (ldapSearch(ldap, pattern) != null)
                         return true;
+                } catch (NamingException e) {
+                    // Unable to connect, but we might have other sources.
+                    log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName());
+                    log.logDebug("Stack trace:", e);
+                    continue;
                 } finally {
 
                     // Close the LDAP connection.
@@ -214,7 +215,8 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logWarn("Unable to close the backend connection to " + references[j], mySessionTicket, e);
+                            log.logWarn("Unable to close the backend connection to '" + references[j] + "': " + e.getClass().getName(), mySessionTicket);
+                            log.logDebug("Stack trace:", e);
                         }
                     }
                 }
@@ -271,7 +273,14 @@ implements DirectoryManagerBackend {
                 try {
 
                     // Context for this reference.
-                    ldap = connect(references[j]);
+                    try {
+                        ldap = connect(references[j]);
+                    } catch (NamingException e) {
+                        // Connection failed, but we might have other sources.
+                        log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName());
+                        log.logDebug("Stack trace:", e);
+                        continue;
+                    }
 
                     // Skip search phase if the reference(s) are explicit.
                     String rdn = "";
@@ -346,7 +355,7 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logInfo("Unable to close the backend connection to " + references[j] + " - ignoring", mySessionTicket, e);
+                            log.logWarn("Unable to close the backend connection to " + references[j] + " - ignoring", mySessionTicket, e);
                         }
                     }
                 }
@@ -387,8 +396,6 @@ implements DirectoryManagerBackend {
      */
     private HashMap getAttributes(final InitialLdapContext ldap, final String rdn, final String[] attributes)
     throws BackendException {
-
-        log.logDebug("getAttributes: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Sanity checks.
         if (ldap == null)
@@ -487,8 +494,6 @@ implements DirectoryManagerBackend {
      */
     public void close() {
 
-        log.logDebug("close: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
-
         // Does nothing.
 
     }
@@ -512,8 +517,6 @@ implements DirectoryManagerBackend {
      */
     private String ldapSearch(final InitialLdapContext ldap, final String pattern)
     throws BackendException {
-
-        log.logDebug("ldapSearch: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Check pattern for illegal content.
         String[] illegals = {"*", "\2a"};
@@ -579,23 +582,19 @@ implements DirectoryManagerBackend {
      * @param url
      *            The backend provider URL.
      * @return The opened backend connection.
-     * @throws BackendException
+     * @throws NamingException
      *             If unable to connect to the provider given by
      *             <code>url</code>.
      */
     private InitialLdapContext connect(final String url)
-    throws BackendException {
+    throws NamingException {
 
         log.logDebug("connect: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Prepare connection.
         Hashtable env = new Hashtable(defaultEnv);
         env.put(Context.PROVIDER_URL, url);
-        try {
-            return new InitialLdapContext(env, null);
-        } catch (NamingException e) {
-            throw new BackendException("Unable to connect to " + url, e);
-        }
+        return new InitialLdapContext(env, null);
 
     }
 }
