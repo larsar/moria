@@ -704,7 +704,7 @@ public final class MoriaController {
     throws AuthorizationException {
 
         // Sanity checks.
-        if (servicePrincipal == null || servicePrincipal == "")
+        if (servicePrincipal == null || servicePrincipal.equals(""))
             throw new IllegalArgumentException("Service principal must be a non-empty string");
         if (operation == null || operation.length() == 0)
             throw new IllegalArgumentException("Operation must be a non-empty string");
@@ -773,7 +773,7 @@ public final class MoriaController {
     throws AuthorizationException {
 
         // Sanity check.
-        if (servicePrincipal == null || servicePrincipal == "")
+        if (servicePrincipal == null || servicePrincipal.equals(""))
             throw new IllegalArgumentException("Service principal must be a non-empty string");
 
         try {
