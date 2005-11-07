@@ -24,6 +24,17 @@ package no.feide.moria.directory.backend;
  */
 public class BackendException
 extends Exception {
+    
+    /**
+     * Basic constructor.
+     * @param message
+     *            The exception message.
+     */
+    public BackendException(final String message) {
+
+        super(message);
+
+    }
 
     /**
      * Constructor.
