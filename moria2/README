@@ -4,8 +4,7 @@ Development setup for Eclipse, using Maven:
 1) Check out the entire Moria tree from CVS.
 
 2) For each module in the modules directory, run 'maven eclipse'.
-   Windows:  > for /d %i in (moria-*) do cd %i && maven eclipse && cd ..
-   Mac/UNIX: > for a in moria-*; do (cd $a) && (maven eclipse) && (cd ..) done
+   Alternatively, do a 'maven project:eclipse' in the main project's root directory.
    
 
 3) Set MAVEN_REPO variable in Eclipse (global; 
