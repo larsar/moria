@@ -152,36 +152,19 @@ implements DirectoryManagerBackendFactory {
                 if (!(new File(value).exists()))
                     throw new DirectoryManagerConfigurationException("Truststore file " + value + " does not exist");
                 
-                // DEBUG
-                Provider[] providers = Security.getProviders();
-                for (int i=0; i<providers.length; i++) {
-                    log.logDebug("PRE: " + providers[i].getName());
-                }
-                
                 // Explicitly set com.sun.net.ssl.internal.ssl.Provider...
                 com.sun.net.ssl.internal.ssl.Provider.install();
                 Security.insertProviderAt(new com.sun.net.ssl.internal.ssl.Provider(), 1);                
                 System.setProperty("java.protocol.handler.pkgs", "javax.net.ssl");
                 
-                // DEBUG
-                providers = Security.getProviders();
-                for (int i=0; i<providers.length; i++) {
-                    log.logDebug("POST: " + providers[i].getName());
-                }
-                
-                
-                // Get and set truststore filename.
-                log.logDebug("Truststore was " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG               
+                // Get and set truststore filename.               
                 System.setProperty("javax.net.ssl.trustStore", value);
-                log.logDebug("Truststore is now " + System.getProperty("javax.net.ssl.trustStore"));  // DEBUG
-                log.logDebug("Truststore should be " + value);  // DEBUG
 
                 // Get and set truststore password.
                 value = trustStoreElement.getAttributeValue("password");
                 if (value == null)
                     throw new DirectoryManagerConfigurationException("Attribute \"password\" not found in Truststore element");
                 System.setProperty("javax.net.ssl.trustStorePassword", value);
-                log.logDebug("System: " + System.getProperties().toString());  // DEBUG
 
                 // Now we're ready to use SSL.
                 Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
