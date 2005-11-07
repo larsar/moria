@@ -34,6 +34,7 @@ import javax.naming.LimitExceededException;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.SizeLimitExceededException;
 import javax.naming.TimeLimitExceededException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -110,8 +111,6 @@ implements DirectoryManagerBackend {
      */
     protected JNDIBackend(final String sessionTicket, final int timeout, final boolean ssl, final String usernameAttributeName, final String guessedAttributeName)
     throws IllegalArgumentException, NullPointerException {
-
-        log.logDebug("JNDIBackend: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Assignments, with sanity checks.
         if (usernameAttributeName == null)
@@ -253,8 +252,6 @@ implements DirectoryManagerBackend {
      */
     public final HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException {
-
-        log.logDebug("authenticate: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Sanity check.
         if (userCredentials == null)
@@ -537,7 +534,7 @@ implements DirectoryManagerBackend {
             url = (String) ldap.getEnvironment().get(Context.PROVIDER_URL);
 
             // Perform the search.
-            results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 1, 1000 * myTimeout, new String[] {}, false, false));
+            results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 0, 1000 * myTimeout, new String[] {}, false, false));
             if (!results.hasMore())
                 return null;
 
@@ -546,29 +543,36 @@ implements DirectoryManagerBackend {
             // The search timed out.
             throw new BackendException("Search on " + url + " for " + pattern + " timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
 
+        } catch (SizeLimitExceededException e) {
+
+            // The search returned too many results.
+            log.logWarn("Search on " + url + " for " + pattern + " returned too many results", mySessionTicket);
+            return null;            
+            
         } catch (NameNotFoundException e) {
 
             // Element not found. Possibly non-existing reference.
             log.logDebug("Could not find " + pattern + " on " + url, mySessionTicket); // Necessary?
             return null;
 
-        } catch (LimitExceededException e) {
-
-            // We hit some configured limit on the server's part.
-            log.logDebug("Search on " + url + " for " + pattern + " exceeded some configured limit", mySessionTicket);
-            return null;
-
         } catch (NamingException e) {
 
             // All other exceptions.
-            throw new BackendException("Unable to complete search for " + pattern + " on " + url, e);
+            throw new BackendException("Search on " + url + " for " + pattern + " failed", e);
 
         }
 
-        // We just found an element.
+        // We just found at least one element. Did we get an ambigious result?
         SearchResult entry = null;
         try {
             entry = (SearchResult) results.next();
+            String buffer = new String();
+            while (results.hasMoreElements())
+                buffer = buffer + ", " + ((SearchResult) results.next()).getName();
+            if (!buffer.equals(""))
+                log.logWarn("Search on " + url + " for " + pattern + " gave ambiguous result: [" + entry.getName() + buffer + "]", mySessionTicket);
+            // TODO: Throw BackendException, or a subclass, or just (as now) pick the first and hope for the best?
+            buffer = null;
         } catch (NamingException e) {
             throw new BackendException("Unable to read search results", e);
         }
@@ -588,8 +592,6 @@ implements DirectoryManagerBackend {
      */
     private InitialLdapContext connect(final String url)
     throws NamingException {
-
-        log.logDebug("connect: Truststore is " + System.getProperty("javax.net.ssl.trustStore")); // DEBUG
 
         // Prepare connection.
         Hashtable env = new Hashtable(defaultEnv);
