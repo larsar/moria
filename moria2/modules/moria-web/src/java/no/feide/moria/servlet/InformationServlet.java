@@ -355,7 +355,7 @@ public class InformationServlet extends HttpServlet {
             // Pictures are stored for later use in the JSP
             String[] picarr = (String[]) userData.get(new String("jpegPhoto"));
             if (picarr != null && picarr.length > 0) {
-                request.setAttribute("picture", picarr);
+                request.setAttribute(PictureServlet.PICTURE_ATTRIBUTE, picarr);
             }
             
             Vector tabledata = printTableToVector(userData, bundle);

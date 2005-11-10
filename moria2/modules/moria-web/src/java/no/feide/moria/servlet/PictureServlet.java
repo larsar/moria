@@ -24,40 +24,63 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+
+import no.feide.moria.log.MessageLogger;
+
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.IOException;
+
 /**
  * This Servlet is only used to show pictures.
- * 
  * @author Eva Indal
  * @version $Revision$
  */
-public class PictureServlet extends HttpServlet {
+public class PictureServlet
+extends HttpServlet {
+
+    /**
+     * Used for logging.
+     */
+    MessageLogger log = new MessageLogger(PictureServlet.class);
+    
+    /**
+     * Name of the request attribute containing the actual picture(s).
+     */
+    public static final String PICTURE_ATTRIBUTE = "picture";
+
 
     /**
      * Implements the HttpServlet.doGet method.
-     *
-     * @param request   The HTTP request.
-     * @param response  The HTTP response.
+     * @param request
+     *            The HTTP request.
+     * @param response
+     *            The HTTP response.
      * @throws IOException
      * @throws ServletException
-     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse)
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response) 
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
-           try {
-           int idx = 0;
-           String index = request.getParameter("index");
-           if (index != null) {
-               idx = Integer.parseInt(index);
-           }
-           response.setContentType("image/jpeg");
-           String [] picture = (String[]) request.getSession().getAttribute("picture");
-           ServletOutputStream writer = response.getOutputStream();
-           writer.write(picture[idx].getBytes("ISO-8859-1"));
-           writer.close();
-           } catch (Throwable t) {
-               System.err.println("Picture failed");
-           }
+                
+        try {
 
-}
+            int idx = 0;
+            String index = request.getParameter("index");
+            if (index != null) {
+                idx = Integer.parseInt(index);
+            }
+            response.setContentType("image/jpeg");
+            String[] picture = (String[]) request.getSession().getAttribute(PICTURE_ATTRIBUTE);
+            byte[] decoded = Base64.decodeBase64(picture[idx].getBytes("ISO-8859-1"));
+            ServletOutputStream writer = response.getOutputStream();
+            writer.write(decoded);
+            writer.close();
+
+        } catch (Throwable t) {
+            log.logWarn("Picture display failed", t);
+        }
+
+    }
 }
