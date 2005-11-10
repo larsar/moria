@@ -350,12 +350,8 @@ extends HttpServlet {
         Iterator i = allowedOrganizations.values().iterator();
         while (i.hasNext())
             try {
-                String s = (String) i.next();
-                if (!MoriaController.isOrganizationAllowedForService(servicePrincipal, s)) {
-                    log.logInfo("Removed organization " + s + " for service " + servicePrincipal);
+                if (!MoriaController.isOrganizationAllowedForService(servicePrincipal, (String) i.next()))
                     i.remove();
-                } else
-                    log.logInfo("Allowed organization " + s + " for service " + servicePrincipal);
             } catch (UnknownServicePrincipalException e) {
                 // This is ignored; an unknown service principal should never
                 // even reach this stage - and the worst consequence will be an
@@ -425,7 +421,7 @@ extends HttpServlet {
         try {
             config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
         } catch (ClassCastException e) {
-            log.logCritical("Config is not correctly set in context.");
+            log.logCritical("Config is not correctly set in context");
             throw new IllegalStateException();
             }
 
