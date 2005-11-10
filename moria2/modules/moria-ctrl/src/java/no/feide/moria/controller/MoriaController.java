@@ -38,7 +38,7 @@ import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.DirectoryManager;
 import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
-//import no.feide.moria.ldap.SimpleLdapServer;
+// import no.feide.moria.ldap.SimpleLdapServer;
 import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
 import no.feide.moria.log.MessageLogger;
@@ -254,7 +254,7 @@ public final class MoriaController {
             }
 
             // Starting SimpleLdapServer on (hard-coded) port 389.
-            //SimpleLdapServer.start(389);
+            // SimpleLdapServer.start(389);
 
         }
     }
@@ -269,7 +269,7 @@ public final class MoriaController {
             if (ready) {
 
                 // Shutting down SimpleLdapServer.
-                //SimpleLdapServer.stop();
+                // SimpleLdapServer.stop();
 
                 authzManager = null;
                 amReady = false;
@@ -780,7 +780,7 @@ public final class MoriaController {
 
             // Check whether the service is accessible for users from this
             // user's organization.
-            if (userOrganization != null && !authzManager.allowUserorg(servicePrincipal, userOrganization)) {
+            if (!isOrganizationAllowedForService(servicePrincipal, userOrganization)) {
 
                 // Access denied.
                 accessLogger.logService(AccessStatusType.ACCESS_DENIED_USERORG, servicePrincipal, null, null);
@@ -796,6 +796,35 @@ public final class MoriaController {
             throw new AuthorizationException("Unknown service '" + servicePrincipal + "'");
 
         }
+    }
+
+
+    /**
+     * Check whether a given service may allow users from a given organization.
+     * @param servicePrincipal
+     *            The service's unique principal.
+     * @param userOrganization
+     *            The home organization, in short form.
+     * @return <code>true</code> if users from this organization can access
+     *         this service.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> or
+     *             <code>userOrganization</code> is <code>null</code> or an
+     *             empty string.
+     * @throws UnknownServicePrincipalException
+     *             If <code>servicePrincipal</code> is unknown.
+     */
+    public static boolean isOrganizationAllowedForService(final String servicePrincipal, final String userOrganization)
+    throws IllegalArgumentException, UnknownServicePrincipalException {
+
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalArgumentException("Service principal must be a non-empty string");
+        if (userOrganization == null || userOrganization.equals(""))
+            throw new IllegalArgumentException("User organization must be a non-empty string");
+
+        // Can this organization use this service?
+        return (userOrganization != null && authzManager.allowUserorg(servicePrincipal, userOrganization));
+
     }
 
 
