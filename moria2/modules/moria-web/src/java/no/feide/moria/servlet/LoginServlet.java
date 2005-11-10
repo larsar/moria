@@ -22,9 +22,11 @@ package no.feide.moria.servlet;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import no.feide.moria.authorization.UnknownServicePrincipalException;
 import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.AuthorizationException;
 import no.feide.moria.controller.DirectoryUnavailableException;
@@ -341,9 +344,27 @@ extends HttpServlet {
                 request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
         request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
 
-        /* Configured values */
-        request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, RequestUtil.parseConfig(getConfig(),
-                RequestUtil.PROP_ORG, bundle.getLocale().getLanguage()));
+        // Resolve list of allowed organizations.
+        TreeMap allowedOrganizations = RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, bundle.getLocale().getLanguage());
+        final String servicePrincipal = (String) serviceProperties.get(RequestUtil.CONFIG_SERVICE_PRINCIPAL);
+        Iterator i = allowedOrganizations.values().iterator();
+        while (i.hasNext())
+            try {
+                String s = (String) i.next();
+                if (!MoriaController.isOrganizationAllowedForService(servicePrincipal, s)) {
+                    log.logInfo("Removed organization " + s + " for service " + servicePrincipal);
+                    i.remove();
+                } else
+                    log.logInfo("Allowed organization " + s + " for service " + servicePrincipal);
+            } catch (UnknownServicePrincipalException e) {
+                // This is ignored; an unknown service principal should never
+                // even reach this stage - and the worst consequence will be an
+                // empty organization list.
+                log.logWarn("Unknown service principal: " + servicePrincipal);
+            }
+        request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, allowedOrganizations);
+        
+        // Set language.
         request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(),
                 RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
 

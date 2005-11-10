@@ -35,6 +35,10 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 
+import no.feide.moria.authorization.UnknownServicePrincipalException;
+import no.feide.moria.controller.MoriaController;
+import no.feide.moria.log.MessageLogger;
+
 /**
  * This class is a toolkit for the servlets. Its main functionality is to
  * retrieve resource bundles.
@@ -42,6 +46,11 @@ import javax.servlet.http.Cookie;
  * @version $Revision$
  */
 public final class RequestUtil {
+
+    /**
+     * Used for logging.
+     */
+    static MessageLogger log = new MessageLogger(RequestUtil.class);
 
     /**
      * Prefix for all web module properties. <br>
@@ -128,8 +137,7 @@ public final class RequestUtil {
     /**
      * Configuration property giving the lifetime, in hours, for the cookie used
      * to remember the user's previously selected organization.
-     * <em>This property is required.</em>
-     * <br>
+     * <em>This property is required.</em> <br>
      * <br>
      * Current value is <code>PATH_PREFIX + "cookie.org.ttl"</code>.
      * @see #PROP_COOKIE_ORG
@@ -201,12 +209,12 @@ public final class RequestUtil {
      * Current value is <code>"login"</code>.
      */
     public static final String BUNDLE_LOGIN = "login";
-     
+
     /**
      * Bundle for the Welcome page for the Information Service.
      */
     public static final String BUNDLE_INFOWELCOME = "infowelcome";
-    
+
     /**
      * Bundle for the Statistics page.
      */
@@ -219,23 +227,20 @@ public final class RequestUtil {
     public static final String PROP_INFORMATION_FEIDEATTRIBS_XML = PATH_PREFIX + "information.feideattribs_xml";
 
     /**
-     * Configuration property for the StatusServlet status.xml file
-     * path.
+     * Configuration property for the StatusServlet status.xml file path.
      */
     public static final String PROP_BACKENDSTATUS_STATUS_XML = PATH_PREFIX + "backendstatus.status_xml";
 
     /**
-     * Configuration property for the StatusServlet statistics.xml file
-     * path.
+     * Configuration property for the StatusServlet statistics.xml file path.
      */
     public static final String PROP_BACKENDSTATUS_STATISTICS_XML = PATH_PREFIX + "backendstatus.statistics_xml";
-    
+
     /**
-     * Configuration property for the StatusServlet statistics2.xml file
-     * path.
+     * Configuration property for the StatusServlet statistics2.xml file path.
      */
     public static final String PROP_BACKENDSTATUS_STATISTICS2_XML = PATH_PREFIX + "backendstatus.statistics2_xml";
-    
+
     /**
      * Configuration property for the StatisticsServlet's ignored services
      */
@@ -250,7 +255,7 @@ public final class RequestUtil {
      * Bundle for the information page about the information servlet.
      */
     public static final String BUNDLE_INFOABOUT = "infoabout";
-    
+
     /**
      * Bundle for the status servlet.
      */
@@ -270,39 +275,39 @@ public final class RequestUtil {
      * Link to faq, shown on the login page.
      */
     public static final String FAQ_LINK = PATH_PREFIX + "faqlink";
-    
+
     /**
      * URL to the Status servlet, as shown on the FAQ page.<br>
-     * <em>This property is required.</em>
-     * <br>
+     * <em>This property is required.</em> <br>
      * Current value is <code>PATH_PREFIX + "faq.status"</code>.
      */
     public static final String PROP_FAQ_STATUS = PATH_PREFIX + "faq.status";
-    
+
     /**
      * URL to the Statistics servlet, used for language selection.
      */
     public static final String PROP_STATISTICS_URL = PATH_PREFIX + "statistics.url";
-    
+
     /**
      * Organization name of the Moria owner, as shown on the FAQ page.<br>
      * <br>
      * Current value is <code>PATH_PREFIX + "faq.owner"</code>.
      */
     public static final String PROP_FAQ_OWNER = PATH_PREFIX + "faq.owner";
-    
+
     /**
      * Link to pictures from the information service.
      */
     public static final String PIC_LINK = PATH_PREFIX + "piclink";
-    
+
     /**
      * TODO
      */
     public static final String RESOURCE_MAIL = PATH_PREFIX + "resource.mail";
-    public static final String RESOURCE_DATE = PATH_PREFIX + "resource.date";
-    public static final String RESOURCE_LINK = PATH_PREFIX + "resource.link";
 
+    public static final String RESOURCE_DATE = PATH_PREFIX + "resource.date";
+
+    public static final String RESOURCE_LINK = PATH_PREFIX + "resource.link";
 
     /**
      * Name of property from authorization module giving the default language
@@ -323,6 +328,11 @@ public final class RequestUtil {
      * From Authorization config: Service name.
      */
     public static final String CONFIG_DISPLAY_NAME = "displayName";
+
+    /**
+     * From Authorization configuration; service principal.
+     */
+    public static final String CONFIG_SERVICE_PRINCIPAL = "name";
 
     /**
      * From Authorization config: Service URL.
@@ -361,7 +371,7 @@ public final class RequestUtil {
      * Parameter in request object: Deny SSO.
      */
     public static final String PARAM_DENYSSO = "denySSO";
-    
+
     /**
      * Base URL attribute in request object. Used to fill in the URL to the
      * authentication web page. <br>
@@ -461,6 +471,7 @@ public final class RequestUtil {
      */
     public static final String ERROR_NO_CREDENTIALS = "noCredentials";
 
+
     /**
      * Default private constructor.
      */
@@ -503,9 +514,7 @@ public final class RequestUtil {
      * @throws MissingResourceException
      *             If the resource bundle cannot be found.
      */
-    public static ResourceBundle getBundle(final String bundleName, final String requestParamLang,
-            final String langFromCookie, final String serviceLang,
-            final String browserLang, final String moriaLang) {
+    public static ResourceBundle getBundle(final String bundleName, final String requestParamLang, final String langFromCookie, final String serviceLang, final String browserLang, final String moriaLang) {
 
         // Sanity checks.
         if (bundleName == null || bundleName.equals(""))
@@ -741,8 +750,8 @@ public final class RequestUtil {
      *             <code>element</code> or <code>language</code> is
      *             <code>null</code> or an empty string.
      * @throws IllegalStateException
-     *             If no elements of type <code>element</code> are found in the
-     *             configuration <code>config</code>. Also thrown if the
+     *             If no elements of type <code>element</code> are found in
+     *             the configuration <code>config</code>. Also thrown if the
      *             values found in <code>config</code> contains less than or
      *             more than one occurrence of the ':' separator character.
      */
@@ -781,7 +790,8 @@ public final class RequestUtil {
             if (shortName.indexOf(":") != -1 || longName.indexOf(":") != -1)
                 throw new IllegalStateException("Config has wrong format.");
 
-            // Add this declaration to the list.
+            // Add all known organizations (from Web Module configuration) to
+            // list.
             names.put(longName, shortName);
         }
 
@@ -827,7 +837,7 @@ public final class RequestUtil {
      *            ServletContext containing the configuration.
      * @return The configuration.
      * @throws IllegalStateException
-     *            If config is not properly set in the context.
+     *             If config is not properly set in the context.
      */
     static Properties getConfig(final ServletContext context) {
 
