@@ -42,7 +42,8 @@ public class StatisticsCollection {
         return this.allmonths.size();
     }
     public String getMonthName(final int idx) {
-        return (String) this.allmonths.get(idx);
+        StatisticsMonth month = (StatisticsMonth) this.allmonths.get(idx);
+        return month.getMonthName();
     }
     public int getNumStatisticsData() {
         return this.stats.size();
@@ -71,11 +72,23 @@ public class StatisticsCollection {
      * @param monthname
      */
     private void addUniqueMonth(final String monthname) {
+        StatisticsMonth month = new StatisticsMonth(monthname);
         final int n = this.allmonths.size();
+        
+        // first check if month is already in Vector
         for (int i = 0; i < n; i++) {
-            String tmp = (String) this.allmonths.get(i);
-            if (monthname.equals(tmp)) return;
+            StatisticsMonth tmp = (StatisticsMonth) this.allmonths.get(i);
+            if (month.equals(tmp)) return;
         }
-        this.allmonths.add(monthname);
+        // insert the month in sorted order
+        for (int i = 0; i < n; i++) {
+            StatisticsMonth tmp = (StatisticsMonth) this.allmonths.get(i);
+            if (month.getMonthNum() <= tmp.getMonthNum()) {
+                this.allmonths.add(i, month);
+                return;
+            }
+        }
+        // just add at end of Vector if we get here
+        this.allmonths.add(month);
     }
 }
