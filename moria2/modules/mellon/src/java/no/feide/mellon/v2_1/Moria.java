@@ -23,8 +23,8 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 import no.feide.mellon.MoriaException;
-import no.feide.moria.servlet.soap.AuthenticationFailedException;
-import no.feide.moria.servlet.soap.AuthenticationUnavailableException;
+import no.feide.moria.webservices.v2_2.AuthenticationFailedException;  // Workaround since Axis 1.3 doesn't generate the proper exception.
+import no.feide.moria.webservices.v2_2.AuthenticationUnavailableException;  // Workaround since Axis 1.3 doesn't generate the proper exception.
 import no.feide.moria.servlet.soap.AuthorizationFailedException;
 import no.feide.moria.servlet.soap.IllegalInputException;
 import no.feide.moria.servlet.soap.InternalException;
