@@ -61,7 +61,9 @@ request.getHeader("Accept-Language"), "nb");
 
 <dt>3. <a href="#d0e59"><%=bundle.getString("q3")%></a></dt>
 
-<dt>4. <a href="#d0e64"><%=bundle.getString("q0")%></a></dt>
+<dt>4. <a href="#sikker"><%=bundle.getString("q4")%></a></dt>
+
+<dt>5. <a href="#d0e64"><%=bundle.getString("q0")%></a></dt>
 </dl>
 
 <h2><a name="d0e5"></a>1.&nbsp;<%=bundle.getString("q1")%></h2>
@@ -137,12 +139,32 @@ if ((owner == null) || owner.length() == 0)
 <div>
 <h2><a name="d0e59"></a>3.&nbsp;<%=bundle.getString("q3")%></h2>
 
-<p><%=bundle.getString("answer3_1")%></p>
+    <p><%=bundle.getString("answer3_1")%></p>
+    
+    <p><%=bundle.getString("answer3_2")%></p>
+
+<!-- Not even trying to detect or recognize the various browsers. Just listing three popular ones -->
+    <div class="itemizedlist">
+    <ul type="disc">
+    <li><%=bundle.getString("answer3_opera")%></li>
+    <li><%=bundle.getString("answer3_firefox")%></li>
+    <li><%=bundle.getString("answer3_ie")%></li>
+    </li>
+    </div>
 
 </div>
 
 <div>
-<h2><a name="d0e64"></a>4.&nbsp;<%=bundle.getString("q0")%></h2>
+    <h2><a name="sikker">4.&nbsp;<%=bundle.getString("q4")%></a></h2>
+
+	<p><%=bundle.getString("answer4_1")%></p>
+	
+	<p><%=bundle.getString("answer4_2")%> <a href="<%=bundle.getString("answer4_3_URL")%>"><%=bundle.getString("answer4_3_txt")%></a><%=bundle.getString("answer4_4")%></p>
+
+</div>
+
+<div>
+<h2><a name="d0e64"></a>5.&nbsp;<%=bundle.getString("q0")%></h2>
 
 <p>
 <%=bundle.getString("answer0_1")%>
