@@ -9,10 +9,6 @@ package no.feide.moria.webservices.v2_2;
 
 public class Authentication_ServiceLocator extends org.apache.axis.client.Service implements no.feide.moria.webservices.v2_2.Authentication_Service {
 
-/**
- * Test!
- */
-
     public Authentication_ServiceLocator() {
     }
 
@@ -22,7 +18,7 @@ public class Authentication_ServiceLocator extends org.apache.axis.client.Servic
     }
 
     // Use to get a proxy class for Authentication
-    private java.lang.String Authentication_address = "http://localhost:8080/moria/v2_2/Authentication";
+    private java.lang.String Authentication_address = "http://localhost:8080/moria2/v2_2/Authentication";
 
     public java.lang.String getAuthenticationAddress() {
         return Authentication_address;

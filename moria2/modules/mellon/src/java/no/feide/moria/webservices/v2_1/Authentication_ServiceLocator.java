@@ -18,7 +18,7 @@ public class Authentication_ServiceLocator extends org.apache.axis.client.Servic
     }
 
     // Use to get a proxy class for Authentication
-    private java.lang.String Authentication_address = "http://localhost:8080/moria/v2_1/Authentication";
+    private java.lang.String Authentication_address = "http://localhost:8080/moria2/v2_1/Authentication";
 
     public java.lang.String getAuthenticationAddress() {
         return Authentication_address;
