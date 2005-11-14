@@ -203,6 +203,65 @@
                  type="java:no.feide.moria.servlet.soap.UnknownTicketException"/>
 
   </service>
+    
+    
+  <!-- 
+       Moria v2.3 API.
+  -->
+  <service name="/v2_3/Authentication"
+           provider="java:RPC"
+           style="wrapped"
+           use="literal">
+
+    <namespace>http://v2_3.webservices.moria.feide.no</namespace>
+
+    <parameter name="wsdlTargetNamespace"
+               value="http://v2_3.webservices.moria.feide.no"/>
+
+    <parameter name="wsdlServiceElement"
+               value="Authentication"/>
+
+    <parameter name="wsdlServicePort"
+               value="Authentication"/>
+
+    <parameter name="wsdlPortType"
+               value="Authentication"/>
+
+    <parameter name="className"
+               value="no.feide.moria.webservices.v2_3.AuthenticationImpl"/>
+
+    <parameter name="allowedMethods"
+               value="*"/>
+
+    <beanMapping xmlns:ns="http://v2_3.webservices.moria.feide.no"
+                 qname="ns:Attribute"
+                 type="java:no.feide.moria.webservices.v2_3.Attribute"/>
+
+    <beanMapping xmlns:ns="http://v2_3.webservices.moria.feide.no"
+                 qname="ns:AuthenticationFailedException"
+                 type="java:no.feide.moria.servlet.soap.AuthenticationFailedException"/>
+
+    <beanMapping xmlns:ns="http://v2_3.webservices.moria.feide.no"
+                 qname="ns:AuthenticationUnavailableException"
+                 type="java:no.feide.moria.servlet.soap.AuthenticationUnavailableException"/>
+
+    <beanMapping xmlns:ns="http://v2_3.webservices.moria.feide.no"
+                 qname="ns:AuthorizationFailedException"
+                 type="java:no.feide.moria.servlet.soap.AuthorizationFailedException"/>
+
+    <beanMapping xmlns:ns="http://v2_3.webservices.moria.feide.no"
+                 qname="ns:IllegalInputException"
+                 type="java:no.feide.moria.servlet.soap.IllegalInputException"/>
+
+    <beanMapping xmlns:ns="http://v2_3.webservices.moria.feide.no"
+                 qname="ns:InternalException"
+                 type="java:no.feide.moria.servlet.soap.InternalException"/>
+
+    <beanMapping xmlns:ns="http://v2_3.webservices.moria.feide.no"
+                 qname="ns:UnknownTicketException"
+                 type="java:no.feide.moria.servlet.soap.UnknownTicketException"/>
+
+  </service>
   
 
   <!--
