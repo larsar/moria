@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.util.MissingResourceException;
 
 import no.feide.moria.log.MessageLogger;
 import no.feide.moria.controller.MoriaController;
@@ -214,7 +215,12 @@ extends HttpServlet {
                     }
                     else {
                         stat = handler.getStatisticsCollection(s);
-                        out.println("<p><b>" + stat.getOrgName() + "</b>");
+                        String name = stat.getOrgName();
+                        try {
+                            out.println("<p><b>" + bundle.getString(name) + "</b>");
+                        } catch (MissingResourceException m) {
+                            out.println("<p><b>" + name + "</b>");
+                        }
                     } 
                     final int nummonths = stat.getNumMonths();
                     if (nummonths > 0) {
@@ -227,7 +233,13 @@ extends HttpServlet {
                         for (int j = 0; j < stat.getNumStatisticsData(); j++) {
                             StatisticsData data = stat.getStatisticsData(j);
                             out.print("<tr>");
-                            out.print("<td>" + data.getName() + "</td>");
+                            String name = data.getName();
+                            // Print the translated name for a service if it exists
+                            try {
+                                out.print("<td>" + bundle.getString(name) + "</td>");
+                            } catch (MissingResourceException m) {
+                                out.print("<td>" + name + "</td>");
+                            } 
                             for (int i = 0; i < nummonths; i++) {
                                 out.print("<td align=right>");
                                 out.print(Integer.toString(data.getCount(stat.getMonthName(i))));
