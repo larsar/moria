@@ -81,7 +81,7 @@ public final class AuthorizationManager {
      * @param element
      *            The XML element to parse.
      * @return AuthorizationAttribute with same attributes as the supplied
-     *        <code>element</code>.
+     *         <code>element</code>.
      * @throws IllegalConfigException
      *             If the element's sso attribute is not <code>true</code> or
      *             <code>false</code>.
@@ -104,9 +104,7 @@ public final class AuthorizationManager {
             throw new IllegalConfigException("allowSSO has to be set.");
         } else {
             allowSSOStr = element.getAttribute("sso").getValue();
-            if (!(allowSSOStr.equals("true") || allowSSOStr.equals("false"))) {
-                throw new IllegalConfigException("allowSSO has to be 'true' or 'false'");
-            }
+            if (!(allowSSOStr.equals("true") || allowSSOStr.equals("false"))) { throw new IllegalConfigException("allowSSO has to be 'true' or 'false'"); }
         }
 
         if (element.getAttribute("secLevel") != null) {
@@ -122,15 +120,15 @@ public final class AuthorizationManager {
 
 
     /**
-     * Parses the content of an Attributes element. The element can contain 0
-     * or more Attribute elements which will be transformed into
+     * Parses the content of an Attributes element. The element can contain 0 or
+     * more Attribute elements which will be transformed into
      * AuthorizationAttributes and returned in a HashMap with attribute name as
      * key.
      * @param element
-     *            The DOM element that contains <code>Attribute</code>
-     *            child elements.
-     * @return HashMap with AuthorizationAttributes as value and
-     *         attribute name as key.
+     *            The DOM element that contains <code>Attribute</code> child
+     *            elements.
+     * @return HashMap with AuthorizationAttributes as value and attribute name
+     *         as key.
      * @throws IllegalConfigException
      *             If <code>element</code> is not of type
      *             <code>Attributes</code>.
@@ -177,24 +175,19 @@ public final class AuthorizationManager {
 
         if (element == null) { throw new IllegalArgumentException("Element cannot be null"); }
 
-        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Subsystem")
-            && !element.getName().equalsIgnoreCase("Organization")) {
-            throw new IllegalConfigException("Element must be of type 'Operation', 'Subsystem' or 'Organization'");
-        }
+        if (!element.getName().equalsIgnoreCase("Operation") && !element.getName().equalsIgnoreCase("Subsystem") && !element.getName().equalsIgnoreCase("Organization")) { throw new IllegalConfigException("Element must be of type 'Operation', 'Subsystem' or 'Organization'"); }
 
         if (element.getAttribute("name") == null) { throw new IllegalConfigException("Element's name attribute must be set."); }
 
-        if (element.getAttributeValue("name").equalsIgnoreCase("")) {
-            throw new IllegalConfigException("Element's name attribute cannot be an empty string.");
-        }
+        if (element.getAttributeValue("name").equalsIgnoreCase("")) { throw new IllegalConfigException("Element's name attribute cannot be an empty string."); }
 
         return element.getAttributeValue("name");
     }
 
 
     /**
-     * Parses the content of an Attributes element. The element can contain
-     * 0 or more Attribute elements which will be transformed into
+     * Parses the content of an Attributes element. The element can contain 0 or
+     * more Attribute elements which will be transformed into
      * AuthorizationAttributes and returned in a HashMap with attribute name as
      * key.
      * @param element
@@ -216,10 +209,7 @@ public final class AuthorizationManager {
         /* Validate element */
         if (element == null) { throw new IllegalArgumentException("Element cannot be null."); }
 
-        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems")
-            && !element.getName().equalsIgnoreCase("Affiliation") && !element.getName().equalsIgnoreCase("OrgsAllowed")) {
-            throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems', 'Affiliation' or 'OrgsAllowed'");
-        }
+        if (!element.getName().equalsIgnoreCase("Operations") && !element.getName().equalsIgnoreCase("Subsystems") && !element.getName().equalsIgnoreCase("Affiliation") && !element.getName().equalsIgnoreCase("OrgsAllowed")) { throw new IllegalConfigException("Element isn't of type 'Operations', 'Subsystems', 'Affiliation' or 'OrgsAllowed'"); }
 
         /* Create AuthorizationAttribute of all child elements */
         final Iterator it = (element.getChildren()).iterator();
@@ -240,7 +230,8 @@ public final class AuthorizationManager {
      * @throws IllegalConfigException
      *             If the <code>name</code> attribute is not set for the given
      *             element, or if any of the following tags are missing:
-     *             <ul><code>
+     *             <ul>
+     *             <code>
      *             <li>DisplayName
      *             <li>URL
      *             <li>Language
@@ -249,7 +240,8 @@ public final class AuthorizationManager {
      *             <li>Operations
      *             <li>Affiliation
      *             <li>OrgsAllowed
-     *             </code></ul>
+     *             </code>
+     *             </ul>
      * @throws IllegalArgumentException
      *             If <code>element</code> is <code>null</code>.
      */
@@ -335,9 +327,7 @@ public final class AuthorizationManager {
 
         if (element == null) { throw new IllegalArgumentException("Element cannot be null"); }
 
-        if (!element.getName().equalsIgnoreCase("ClientAuthorizationConfig")) {
-            throw new IllegalConfigException("Wrong type of element: " + element.getName());
-        }
+        if (!element.getName().equalsIgnoreCase("ClientAuthorizationConfig")) { throw new IllegalConfigException("Wrong type of element: " + element.getName()); }
 
         final List children = element.getChildren("Client");
         final Iterator it = children.iterator();
@@ -360,7 +350,8 @@ public final class AuthorizationManager {
      * @throws IllegalConfigException
      *             If the content of the child element is null.
      */
-    private static String getChildContent(final Element element, final String childName)
+    private static String getChildContent(final Element element,
+                                          final String childName)
     throws IllegalConfigException {
 
         final String value = element.getChildText(childName);
@@ -380,8 +371,8 @@ public final class AuthorizationManager {
      * @throws NoConfigException
      *             If the authorization manager is not activated.
      * @throws IllegalArgumentException
-     *             If <code>servicePrincipal</code> is <code>null</code>
-     *             or an empty string.
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string.
      */
     private AuthorizationClient getAuthzClient(final String servicePrincipal) {
 
@@ -389,9 +380,7 @@ public final class AuthorizationManager {
         if (!activated) { throw new NoConfigException(); }
 
         /* Validate input parameters */
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string.");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string."); }
 
         return (AuthorizationClient) authzClients.get(servicePrincipal);
     }
@@ -408,7 +397,8 @@ public final class AuthorizationManager {
      * @throws UnknownServicePrincipalException
      *             If the service principal does not exist.
      */
-    public boolean allowAccessTo(final String servicePrincipal, final String[] requestedAttributes)
+    public boolean allowAccessTo(final String servicePrincipal,
+                                 final String[] requestedAttributes)
     throws UnknownServicePrincipalException {
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
@@ -430,7 +420,8 @@ public final class AuthorizationManager {
      * @throws UnknownServicePrincipalException
      *             If the service principal does not exist.
      */
-    public boolean allowSSOForAttributes(final String servicePrincipal, final String[] requestedAttributes)
+    public boolean allowSSOForAttributes(final String servicePrincipal,
+                                         final String[] requestedAttributes)
     throws UnknownServicePrincipalException {
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
@@ -452,7 +443,8 @@ public final class AuthorizationManager {
      * @throws UnknownServicePrincipalException
      *             If the servicePrincipal does not exist.
      */
-    public boolean allowOperations(final String servicePrincipal, final String[] requestedOperations)
+    public boolean allowOperations(final String servicePrincipal,
+                                   final String[] requestedOperations)
     throws UnknownServicePrincipalException {
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
@@ -475,7 +467,8 @@ public final class AuthorizationManager {
      * @throws UnknownServicePrincipalException
      *             If the servicePrincipal does not exist.
      */
-    public boolean allowUserorg(final String servicePrincipal, final String userorg)
+    public boolean allowUserorg(final String servicePrincipal,
+                                final String userorg)
     throws UnknownServicePrincipalException {
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
@@ -580,9 +573,7 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate parameters */
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -608,13 +599,12 @@ public final class AuthorizationManager {
      *             <code>null</code>.
      * @see AuthorizationClient#getSecLevel(java.lang.String[])
      */
-    public int getSecLevel(final String servicePrincipal, final String[] requestedAttributes)
+    public int getSecLevel(final String servicePrincipal,
+                           final String[] requestedAttributes)
     throws UnknownServicePrincipalException, UnknownAttributeException {
 
         /* Validate arguments */
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
         if (requestedAttributes == null) { throw new IllegalArgumentException("requestedAttributes cannot be null"); }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
@@ -644,9 +634,7 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -672,9 +660,7 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -700,9 +686,7 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
         if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
@@ -728,12 +712,11 @@ public final class AuthorizationManager {
     throws UnknownServicePrincipalException {
 
         /* Validate argument */
-        if (servicePrincipal == null || servicePrincipal.equals("")) {
-            throw new IllegalArgumentException("servicePrincipal must be a non-empty string");
-        }
+        if (servicePrincipal == null || servicePrincipal.equals("")) { throw new IllegalArgumentException("servicePrincipal must be a non-empty string"); }
 
         final AuthorizationClient authzClient = getAuthzClient(servicePrincipal);
-        if (authzClient == null) { throw new UnknownServicePrincipalException("Service principal does not exist: '" + servicePrincipal + "'"); }
+        if (authzClient == null)
+            throw new UnknownServicePrincipalException("Unknown service principal: '" + servicePrincipal + "'");
 
         return authzClient.getOperations();
     }
@@ -747,5 +730,34 @@ public final class AuthorizationManager {
     public HashSet getCachableAttributes() {
 
         return new HashSet(cachableAttributes);
+    }
+
+
+    /**
+     * Get the list of attribute names not allowed for use in an SSO context for
+     * a given service.
+     * @param servicePrincipal
+     *            The service principal. Must be a non-empty string.
+     * @return An array of attribute names. May be an empty array, but never
+     *         <code>null</code>.
+     * @throws UnknownServicePrincipalException
+     *             If the <code>servicePrincipal</code> is unknown.
+     * @throws IllegalArgumentException
+     *             If <code>servicePrincipal</code> is <code>null</code> or
+     *             an empty string.
+     */
+    public String[] getNonSSOAttributeNames(final String servicePrincipal)
+    throws UnknownServicePrincipalException, IllegalArgumentException {
+
+        // Sanity check.
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalArgumentException("Service principal must be a non-empty string");
+
+        // Resolve client.
+        final AuthorizationClient client = getAuthzClient(servicePrincipal);
+        if (client == null)
+            throw new UnknownServicePrincipalException("Unknown service principal: '" + servicePrincipal + "'");
+
+        return client.getNonSSOAttributeNames();
     }
 }

@@ -23,6 +23,8 @@ package no.feide.moria.authorization;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Stack;
 
 import no.feide.moria.log.MessageLogger;
 
@@ -125,7 +127,8 @@ final class AuthorizationClient {
      *            The organizations affiliated to the service. Cannot be
      *            <code>null</code>.
      * @param orgsAllowed
-     *            The organizations that are allowed to use the service. Cannot be null.
+     *            The organizations that are allowed to use the service. Cannot
+     *            be null.
      * @param operations
      *            Operations that the service can perform. Cannot be
      *            <code>null</code>.
@@ -134,18 +137,19 @@ final class AuthorizationClient {
      *            <code>null</code>.
      * @param attributes
      *            Attributes the service can access. Cannot be <code>null</code>.
-     *
      * @throws IllegalArgumentException
      *             If any of <code>name</code>,<code>displayName</code>,
      *             <code>url</code>,<code>language</code>,
      *             <code>home</code>,<code>affiliation</code>,
-     *                     <code>allowedOrg</code>,
-     *             <code>operations</code>, or <code>attributes</code> are
-     *             <code>null</code> or an empty string (where applicable).
+     *             <code>allowedOrg</code>, <code>operations</code>, or
+     *             <code>attributes</code> are <code>null</code> or an empty
+     *             string (where applicable).
      */
-      AuthorizationClient(final String name, final String displayName, final String url, final String language,
-                          final String home, final HashSet affiliation, final HashSet orgsAllowed,
-                          final HashSet operations, final HashSet subsystems, final HashMap attributes) {
+    AuthorizationClient(final String name, final String displayName,
+                        final String url, final String language,
+                        final String home, final HashSet affiliation,
+                        final HashSet orgsAllowed, final HashSet operations,
+                        final HashSet subsystems, final HashMap attributes) {
 
         if (name == null || name.equals("")) { throw new IllegalArgumentException("Name must be a non empty string."); }
 
@@ -217,9 +221,8 @@ final class AuthorizationClient {
 
     /**
      * Checks attributes for use with single sign-on (SSO). If all attributes
-     * are registered in
-     * the web service's attributes list and all attributes are allowed to use
-     * with SSO, then so be it.
+     * are registered in the web service's attributes list and all attributes
+     * are allowed to use with SSO, then so be it.
      * @param requestedAttributes
      *            The names of all requested attributes.
      * @return true if the attributes can be used with SSO, else false.
@@ -228,18 +231,40 @@ final class AuthorizationClient {
      */
     boolean allowSSOForAttributes(final String[] requestedAttributes) {
 
-        boolean allow = true;
+        // Sanity check.
+        if (requestedAttributes == null)
+            throw new IllegalArgumentException("Requested attributes cannot be NULL");
 
-        if (requestedAttributes == null) { throw new IllegalArgumentException("requestedAttributes cannot be null"); }
-
+        // Check all requested attributes against available attributes.
         for (int i = 0; i < requestedAttributes.length; i++) {
             final String attrName = requestedAttributes[i];
-            if (!attributes.containsKey(attrName) || !((AuthorizationAttribute) attributes.get(attrName)).getAllowSSO()) {
-                allow = false;
-                break;
-            }
+            if (!attributes.containsKey(attrName) || !((AuthorizationAttribute) attributes.get(attrName)).getAllowSSO())
+                // SSO not allowed for these attributes.
+                return false;
         }
-        return allow;
+
+        // SSO allowed for these attributes.
+        return true;
+    }
+
+
+    /**
+     * Get the attributes not allowed for use in an SSO context for this client.
+     * @return An array of attribute names. May be an empty array, but never
+     *         <code>null</code>.
+     */
+    protected String[] getNonSSOAttributeNames() {
+
+        Stack buffer = new Stack();
+        Iterator i = attributes.keySet().iterator();
+        AuthorizationAttribute attribute;
+        while (i.hasNext()) {
+            attribute = (AuthorizationAttribute) attributes.get(i.next());
+            if (!attribute.getAllowSSO())
+                buffer.push(attribute.getName());
+        }
+        return (String[]) buffer.toArray(new String[] {});
+
     }
 
 
@@ -251,8 +276,8 @@ final class AuthorizationClient {
      * @return true if the supplied organization name is affiliated with the
      *         client.
      * @throws IllegalArgumentException
-     *             If <code>organization</code> is <code>null</code> or
-     *             an empty string.
+     *             If <code>organization</code> is <code>null</code> or an
+     *             empty string.
      */
     boolean hasAffiliation(final String organization) {
 
@@ -284,23 +309,23 @@ final class AuthorizationClient {
         return true;
     }
 
+
     /**
      * Returns true for the organizations that are allowed to use this service.
-     *
      * @param organization
-     *                          The organization requesting authorization.
+     *            The organization requesting authorization.
      * @return true if the organization can use this service.
      * @throws IllegalArgumentException
      *             If <code>organization</code> is <code>null</code>.
      */
     boolean allowUserorg(final String organization) {
 
-        //Sanity check.
+        // Sanity check.
         if (organization == null) {
             log.logInfo("organization = " + organization);
             throw new IllegalArgumentException("Organization cannot be null");
         }
-        //If no allowed organizations are defined, then all denied
+        // If no allowed organizations are defined, then all denied
         if (orgsAllowed == null) {
             log.logInfo("orgsAllowed = " + orgsAllowed);
             return false;
@@ -355,13 +380,7 @@ final class AuthorizationClient {
         if (object == this) { return true; }
         if (object instanceof AuthorizationClient) {
             final AuthorizationClient client = (AuthorizationClient) object;
-            if (client.getName().equals(name) && client.getDisplayName().equals(displayName)
-                && client.getURL().equals(url) && client.getLanguage().equals(language)
-                && client.getHome().equals(home) && client.getAffiliation().equals(affiliation)
-                && client.getOrgsAllowed().equals(orgsAllowed) && client.getOperations().equals(operations)
-                && client.getSubsystems().equals(subsystems) && client.getAttributes().equals(attributes)) {
-                return true;
-            }
+            if (client.getName().equals(name) && client.getDisplayName().equals(displayName) && client.getURL().equals(url) && client.getLanguage().equals(language) && client.getHome().equals(home) && client.getAffiliation().equals(affiliation) && client.getOrgsAllowed().equals(orgsAllowed) && client.getOperations().equals(operations) && client.getSubsystems().equals(subsystems) && client.getAttributes().equals(attributes)) { return true; }
         }
         return false;
     }
@@ -395,16 +414,13 @@ final class AuthorizationClient {
 
     /**
      * Returns a string representation of this object.
-     * @return A string representation of this object:
-     * Name: NAME DisplayName:
+     * @return A string representation of this object: Name: NAME DisplayName:
      *         DISPLAYNAME URL: URL Language: LANGUAGE Home: HOME Affiliations:
      *         AFFILIATION Operations: OPERATIONS Attributes: ATTRIBUTES
      */
     public String toString() {
 
-        return "Name: " + name + " DisplayName: " + displayName + " URL: " + url
-               + " Language: " + language + " Home: " + home + " Affiliation: " + affiliation
-               + " Operations: " + operations + "Attributes: " + attributes;
+        return "Name: " + name + " DisplayName: " + displayName + " URL: " + url + " Language: " + language + " Home: " + home + " Affiliation: " + affiliation + " Operations: " + operations + "Attributes: " + attributes;
     }
 
 
@@ -466,6 +482,7 @@ final class AuthorizationClient {
 
         return new HashSet(affiliation);
     }
+
 
     /**
      * Returns the organizations that are allowed to use the client.

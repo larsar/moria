@@ -23,45 +23,62 @@ package no.feide.moria.store;
 import java.util.HashMap;
 
 /**
- * This class is a container for userdata that persists across logins (for
- * SSO Light and Proxy authentication).
- *
+ * This class is a container for userdata that persists across logins (for SSO
+ * Light and Proxy authentication).
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
  * @version $Revision$
  */
-public final class CachedUserData implements MoriaStoreData {
+public final class CachedUserData
+implements MoriaStoreData {
 
     /** The internal hashmap used to store the attributes. */
     private final HashMap attributes;
 
+
     /**
      * Constructs a new instance encapsulating the userdata given as argument.
-     *
      * @param attributes
-     *          A hashmap containing the user attributes.
+     *            A hashmap containing the user attributes.
      */
     public CachedUserData(final HashMap attributes) {
+
         if (attributes == null)
             throw new IllegalArgumentException("Argument can not be null");
         this.attributes = attributes;
     }
 
+
     /**
      * Adds an attribute. Needed to add ticket granting tickets to cache.
-     *
-     * @param name Attribute name.
-     * @param data Attribute data.
+     * @param name
+     *            Attribute name.
+     * @param data
+     *            Attribute data.
      */
     public void addAttribute(final String name, final Object data) {
+
         this.attributes.put(name, data);
     }
 
+
+    /**
+     * Remove an attribute. Needed to purge non-SSO-enabled attributes.
+     * @param name
+     *            Attribute name.
+     */
+    public void removeAttribute(final String name) {
+
+        attributes.remove(name);
+
+    }
+
+
     /**
      * Gets a map containing the attributes.
-     *
      * @return A clone of the internal attribute map.
      */
     public HashMap getAttributes() {
+
         return (HashMap) attributes.clone();
     }
 }

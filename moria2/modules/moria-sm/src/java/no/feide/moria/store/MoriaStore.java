@@ -232,6 +232,10 @@ public interface MoriaStore {
      *          associated with.
      * @param ssoTicketId
      *          Ticket associated with a set of cached user data.
+     * @param ssoEnabledAttributeNames
+     *            The names of those attributes which should be stored with the
+     *            authentication attempt; should include only those attributes
+     *            the service is allowed to use in an SSO context.
      * @throws InvalidTicketException
      *          If either ticket is found invalid.
      * @throws NonExistentTicketException
@@ -241,7 +245,7 @@ public interface MoriaStore {
      * @throws IllegalArgumentException
      *          If either ticket id is null or zero length.
      */
-    void setTransientAttributes(final String loginTicketId, final String ssoTicketId)
+    void setTransientSSOAttributes(final String loginTicketId, final String ssoTicketId, final String[] ssoEnabledAttributeNames)
             throws InvalidTicketException, NonExistentTicketException, MoriaStoreException;
 
     /**

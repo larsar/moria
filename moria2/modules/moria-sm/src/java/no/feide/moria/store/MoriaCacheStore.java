@@ -111,7 +111,7 @@ implements MoriaStore {
         }
 
         /* Add listener to primarily handle view events. */
-        //store.addTreeCacheListener(new MoriaTreeCacheListener(store));
+        // store.addTreeCacheListener(new MoriaTreeCacheListener(store));
         ticketDefaultTTLs.put(MoriaTicketType.LOGIN_TICKET, new Long(300000L));
         ticketDefaultTTLs.put(MoriaTicketType.SERVICE_TICKET, new Long(300000L));
         ticketDefaultTTLs.put(MoriaTicketType.SSO_TICKET, new Long(28800000L));
@@ -647,12 +647,15 @@ implements MoriaStore {
 
 
     /**
-     * Sets transient attributes stored with authentication attempt.
+     * Sets transient attributes stored with authentication attempt in an SSO
+     * context, which implies that not all cached (for potential SSO attributes)
+     * should be included.
      * @param loginTicketId
      *            Ticket that identifies the AuthnAttempt that the attributes
      *            will be associated with.
      * @param transientAttributes
-     *            Attributes to store with the AuthnAttempt.
+     *            Attributes which are to be stored with the authentication
+     *            attempt.
      * @throws InvalidTicketException
      *             If ticket is found invalid.
      * @throws NonExistentTicketException
@@ -706,6 +709,10 @@ implements MoriaStore {
      *            will be associated with.
      * @param ssoTicketId
      *            Ticket associated with a set of cached user data.
+     * @param ssoEnabledAttributeNames
+     *            The names of those attributes which should be stored with the
+     *            authentication attempt. Only those transient (cached)
+     *            attributes named in this parameter will be stored.
      * @throws InvalidTicketException
      *             If either ticket is found invalid.
      * @throws NonExistentTicketException
@@ -714,10 +721,10 @@ implements MoriaStore {
      *             If the operation fails.
      * @throws IllegalArgumentException
      *             If either ticket id is null or zero length.
-     * @see no.feide.moria.store.MoriaStore#setTransientAttributes(java.lang.String,
-     *      java.lang.String)
+     * @see no.feide.moria.store.MoriaStore#setTransientSSOAttributes(java.lang.String,
+     *      java.lang.String, java.lang.String[])
      */
-    public void setTransientAttributes(final String loginTicketId, final String ssoTicketId)
+    public void setTransientSSOAttributes(final String loginTicketId, final String ssoTicketId, final String[] ssoEnabledAttributeNames)
     throws InvalidTicketException, NonExistentTicketException,
     MoriaStoreException {
 
@@ -725,6 +732,8 @@ implements MoriaStore {
         if (loginTicketId == null || loginTicketId.equals("")) { throw new IllegalArgumentException("loginTicketId must be a non-empty string."); }
 
         if (ssoTicketId == null || ssoTicketId.equals("")) { throw new IllegalArgumentException("ssoTicketId must be a non-empty string."); }
+        if (ssoEnabledAttributeNames == null)
+            throw new IllegalArgumentException("Allowed SSO attribute names cannot be NULL");
 
         MoriaTicket loginTicket = getFromStore(MoriaTicketType.LOGIN_TICKET, loginTicketId);
 
@@ -738,24 +747,27 @@ implements MoriaStore {
         validateTicket(loginTicket, MoriaTicketType.LOGIN_TICKET, null);
         validateTicket(ssoTicket, MoriaTicketType.SSO_TICKET, null);
 
-        CachedUserData cachedUserData = null;
-        MoriaAuthnAttempt authnAttempt = null;
-
-        MoriaStoreData ssoData = ssoTicket.getData();
-
-        if (ssoData != null && ssoData instanceof CachedUserData) {
-            cachedUserData = (CachedUserData) ssoData;
-        } else {
-            throw new InvalidTicketException("No cached user data associated with sso ticket. [" + ssoTicketId + "]");
-        }
-
+        // Look up the authentication attempt.
         MoriaStoreData loginData = loginTicket.getData();
-
+        MoriaAuthnAttempt authnAttempt = null;
         if (loginData != null && loginData instanceof MoriaAuthnAttempt) {
             authnAttempt = (MoriaAuthnAttempt) loginData;
         } else {
             throw new InvalidTicketException("No authentication attempt associated with login ticket. [" + loginTicketId + "]");
         }
+
+        // Get all cached attributes.
+        MoriaStoreData ssoData = ssoTicket.getData();
+        CachedUserData cachedUserData = null;
+        if (ssoData != null && ssoData instanceof CachedUserData) {
+
+            // Create a new copy, since we'll be modifying it.
+            cachedUserData = new CachedUserData(((CachedUserData) ssoData).getAttributes());
+            for (int i=0; i<ssoEnabledAttributeNames.length; i++)
+                cachedUserData.removeAttribute(ssoEnabledAttributeNames[i]);
+
+        } else
+            throw new InvalidTicketException("No cached user data associated with sso ticket. [" + ssoTicketId + "]");
 
         /* Transfer cached userdata to login attempt. */
         authnAttempt.setTransientAttributes(cachedUserData.getAttributes());

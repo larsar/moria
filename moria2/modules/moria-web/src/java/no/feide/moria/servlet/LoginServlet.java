@@ -1,20 +1,17 @@
 /*
  * Copyright (c) 2004 UNINETT FAS
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
- *
+ * 
+ * This program is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version. This program is distributed
+ * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received
+ * a copy of the GNU General Public License along with this program; if not,
+ * write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ * 
  * $Id$
  */
 
@@ -59,8 +56,7 @@ extends HttpServlet {
     private final MessageLogger log = new MessageLogger(LoginServlet.class);
 
     /**
-     * List of parameters required by <code>LoginServlet</code>.
-     * <br>
+     * List of parameters required by <code>LoginServlet</code>. <br>
      * <br>
      * Current required parameters are:
      * <ul>
@@ -93,27 +89,25 @@ extends HttpServlet {
      * @see RequestUtil#PROP_FAQ_STATUS
      */
     private static final String[] REQUIRED_PARAMETERS = {
-        RequestUtil.PROP_COOKIE_DENYSSO,
-        RequestUtil.PROP_LOGIN_TICKET_PARAM,
-        RequestUtil.PROP_COOKIE_SSO,
-        RequestUtil.PROP_COOKIE_LANG,
-        RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE,
-        RequestUtil.PROP_COOKIE_DENYSSO_TTL,
-        RequestUtil.PROP_COOKIE_ORG,
-        RequestUtil.PROP_COOKIE_ORG_TTL,
-        RequestUtil.PROP_COOKIE_SSO_TTL,
-        RequestUtil.PROP_COOKIE_LANG_TTL,
-        RequestUtil.PROP_LOGIN_URL_PREFIX,
-        RequestUtil.FAQ_LINK,
-        RequestUtil.PROP_FAQ_STATUS
-    };
+                                                         RequestUtil.PROP_COOKIE_DENYSSO,
+                                                         RequestUtil.PROP_LOGIN_TICKET_PARAM,
+                                                         RequestUtil.PROP_COOKIE_SSO,
+                                                         RequestUtil.PROP_COOKIE_LANG,
+                                                         RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE,
+                                                         RequestUtil.PROP_COOKIE_DENYSSO_TTL,
+                                                         RequestUtil.PROP_COOKIE_ORG,
+                                                         RequestUtil.PROP_COOKIE_ORG_TTL,
+                                                         RequestUtil.PROP_COOKIE_SSO_TTL,
+                                                         RequestUtil.PROP_COOKIE_LANG_TTL,
+                                                         RequestUtil.PROP_LOGIN_URL_PREFIX,
+                                                         RequestUtil.FAQ_LINK,
+                                                         RequestUtil.PROP_FAQ_STATUS};
 
 
     /**
-     * Handles the GET request. The GET request should contain a login ticket
-     * as parameter.
-     * An SSO ticket can also be presented by the user's web
-     * browser (in form of a cookie). The method will try to perform an SSO
+     * Handles the GET request. The GET request should contain a login ticket as
+     * parameter. An SSO ticket can also be presented by the user's web browser
+     * (in form of a cookie). The method will try to perform an SSO
      * authentication if the conditions for this is met, else it will present
      * the login page to the user.
      * @param request
@@ -128,7 +122,8 @@ extends HttpServlet {
 
     // TODO: Elaborate the JavaDoc, with references to RequestUtil and required
     // parameters.
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response)
+    public void doGet(final HttpServletRequest request,
+                      final HttpServletResponse response)
     throws IOException, ServletException {
 
         // Get current configuration.
@@ -160,8 +155,7 @@ extends HttpServlet {
                 final String ssoTicketId = RequestUtil.getCookieValue(config.getProperty(RequestUtil.PROP_COOKIE_SSO), request.getCookies());
 
                 if (ssoTicketId != null) {
-                    serviceTicket = MoriaController.attemptSingleSignOn(
-                            request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM)), ssoTicketId);
+                    serviceTicket = MoriaController.attemptSingleSignOn(request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM)), ssoTicketId);
 
                     // Redirect back to web service.
                     response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -171,10 +165,12 @@ extends HttpServlet {
                     return;
                 }
             } catch (UnknownTicketException e) {
-                //SSO failed; continue with normal authentication.
+                // SSO failed; continue with normal authentication.
             } catch (MoriaControllerException e) {
                 // Do not handle this exception here. Will be handled by the
                 // showLoginPage method.
+            } catch (UnknownServicePrincipalException e) {
+                // TODO: Resolve handling.
             }
         }
 
@@ -197,7 +193,8 @@ extends HttpServlet {
      * @throws ServletException
      *             Required by interface.
      */
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response)
+    public void doPost(final HttpServletRequest request,
+                       final HttpServletResponse response)
     throws IOException, ServletException {
 
         // Get current configuration.
@@ -221,8 +218,7 @@ extends HttpServlet {
             denySSOStr = "false";
 
         // Set cookie to remember user's SSO choice.
-        final Cookie denySSOCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO),
-                denySSOStr, new Integer((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO_TTL)).intValue());
+        final Cookie denySSOCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO), denySSOStr, new Integer((String) config.get(RequestUtil.PROP_COOKIE_DENYSSO_TTL)).intValue());
         response.addCookie(denySSOCookie);
         request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(denySSO));
 
@@ -232,16 +228,13 @@ extends HttpServlet {
         if (org == null || org.equals("") || org.equals("null")) {
             showLoginPage(request, response, RequestUtil.ERROR_NO_ORG);
             return;
-        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG,
-                    (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE)).containsValue(org)) {
+        } else if (!RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE)).containsValue(org)) {
             showLoginPage(request, response, RequestUtil.ERROR_INVALID_ORG);
             return;
         }
 
         // Store user's organization selection in cookie.
-        final Cookie orgCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_ORG),
-                request.getParameter(RequestUtil.PARAM_ORG),
-                new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
+        final Cookie orgCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getParameter(RequestUtil.PARAM_ORG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_ORG_TTL)).intValue());
         response.addCookie(orgCookie);
 
         /* Attempt login */
@@ -274,9 +267,7 @@ extends HttpServlet {
 
         // If we didn't disallow SSO, then store the SSO ticket in a cookie.
         if (!denySSO) {
-            final Cookie ssoTicketCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO),
-                    (String) tickets.get(MoriaController.SSO_TICKET),
-                    new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
+            final Cookie ssoTicketCookie = RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_SSO), (String) tickets.get(MoriaController.SSO_TICKET), new Integer((String) config.get(RequestUtil.PROP_COOKIE_SSO_TTL)).intValue());
             response.addCookie(ssoTicketCookie);
         }
 
@@ -300,8 +291,10 @@ extends HttpServlet {
      * @throws ServletException
      *             When the JSP throws this exception.
      */
-    // TODO: Elaborate JavaDoc
-    private void showLoginPage(final HttpServletRequest request, final HttpServletResponse response, String errorType)
+    // TODO: Elaborate JavaDoc for this method.
+    private void showLoginPage(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               String errorType)
     throws IOException, ServletException {
 
         // Get configuration.
@@ -310,8 +303,7 @@ extends HttpServlet {
 
         // Get the login ticket name and set the base authentication page URL.
         final String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
-        request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?"
-                + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + loginTicketId);
+        request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + loginTicketId);
 
         // Get service properties and set security level.
         try {
@@ -320,7 +312,7 @@ extends HttpServlet {
             request.setAttribute(RequestUtil.ATTR_SEC_LEVEL, "" + MoriaController.getSecLevel(loginTicketId));
 
             // TODO: Move error handling into doGet instead, where
-            // MoriaControllException is ignored.
+            // MoriaControllerException is ignored.
         } catch (UnknownTicketException e) {
             errorType = RequestUtil.ERROR_UNKNOWN_TICKET;
         } catch (IllegalInputException e) {
@@ -332,73 +324,60 @@ extends HttpServlet {
         // Set error message, if any.
         request.setAttribute(RequestUtil.ATTR_ERROR_TYPE, errorType);
 
-        // Decide which language to use for login page.
-        String serviceLang = null;
-        if (serviceProperties != null)
-            serviceLang = (String) serviceProperties.get(RequestUtil.CONFIG_LANG);
-        String langFromCookie = null;
-        if (request.getCookies() != null)
-            langFromCookie = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
-        final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN,
-                request.getParameter(RequestUtil.PARAM_LANG), langFromCookie, serviceLang,
-                request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
-        request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
+        // This entire section is skipped if no service could be looked up due
+        // to a problem with the login ticket.
+        if (serviceProperties != null) {
 
-        // Resolve list of allowed organizations.
-        TreeMap allowedOrganizations = RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, bundle.getLocale().getLanguage());
-        final String servicePrincipal = (String) serviceProperties.get(RequestUtil.CONFIG_SERVICE_PRINCIPAL);
-        Iterator i = allowedOrganizations.values().iterator();
-        while (i.hasNext())
-            try {
-                if (!MoriaController.isOrganizationAllowedForService(servicePrincipal, (String) i.next()))
-                    i.remove();
-            } catch (UnknownServicePrincipalException e) {
-                // This is ignored; an unknown service principal should never
-                // even reach this stage - and the worst consequence will be an
-                // empty organization list.
-                log.logWarn("Unknown service principal: " + servicePrincipal);
+            // Decide which language to use for login page.
+            final String serviceLanguage = (String) serviceProperties.get(RequestUtil.CONFIG_LANG);
+            String cookieLanguage = null;
+            if (request.getCookies() != null)
+                cookieLanguage = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
+            final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN, request.getParameter(RequestUtil.PARAM_LANG), cookieLanguage, serviceLanguage, request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
+            request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
+            request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
+
+            // Set/update the user's language cookie.
+            request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
+            if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
+                response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
             }
-        request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, allowedOrganizations);
-        
-        // Set language.
-        request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(),
-                RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
 
-        // Can we get organization from URL parameter?
-        String selectedOrg = request.getParameter(RequestUtil.PARAM_ORG);
-        if (selectedOrg == null || selectedOrg.equals("")) {
+            // Resolve list of allowed organizations, removing those that are
+            // not.
+            TreeMap allowedOrganizations = RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, bundle.getLocale().getLanguage());
+            final String servicePrincipal = (String) serviceProperties.get(RequestUtil.CONFIG_SERVICE_PRINCIPAL);
+            Iterator i = allowedOrganizations.values().iterator();
+            while (i.hasNext())
+                try {
+                    if (!MoriaController.isOrganizationAllowedForService(servicePrincipal, (String) i.next()))
+                        i.remove();
+                } catch (UnknownServicePrincipalException e) {
+                    // This is ignored; an unknown service principal should
+                    // never even reach this stage - and the worst consequence
+                    // will be an empty organization list.
+                    log.logWarn("Unknown service principal: " + servicePrincipal);
+                }
+            request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, allowedOrganizations);
 
-            // Can we get organization from user's cookie?
+            // Get organization from URL parameter, service configuration and
+            // user cookie, with the latter prioritized highest.
+            String selectedOrg = request.getParameter(RequestUtil.PARAM_ORG);
+            selectedOrg = (String) serviceProperties.get(RequestUtil.CONFIG_HOME);
             if (request.getCookies() != null)
                 selectedOrg = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getCookies());
+            request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, selectedOrg);
 
-            // Can we get organization from service configuration?
-            if (selectedOrg == null || selectedOrg.equals("")) {
-                if (serviceProperties != null)
-                    selectedOrg = (String) serviceProperties.get(RequestUtil.CONFIG_HOME);
-            }
-
-        }
-        request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, selectedOrg);
-
-        // Did the user select a different language?
-        request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
-        if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
-            response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG),
-                    request.getParameter(RequestUtil.PARAM_LANG),
-                    new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
-        }
-
-        /* Service attributes */
-        if (serviceProperties != null) {
+            // Set service display name and URL.
             request.setAttribute(RequestUtil.ATTR_CLIENT_NAME, serviceProperties.get(RequestUtil.CONFIG_DISPLAY_NAME));
             request.setAttribute(RequestUtil.ATTR_CLIENT_URL, serviceProperties.get(RequestUtil.CONFIG_URL));
+
         }
 
-        // Link to the faq
+        // Set link to the FAQ.
         request.setAttribute("faqlink", config.get(RequestUtil.FAQ_LINK));
 
-        /* Process jsp */
+        // Process JSP.
         final RequestDispatcher rd = getServletContext().getNamedDispatcher("Login.JSP");
         rd.forward(request, response);
     }
@@ -423,7 +402,7 @@ extends HttpServlet {
         } catch (ClassCastException e) {
             log.logCritical("Config is not correctly set in context");
             throw new IllegalStateException();
-            }
+        }
 
         // Has the configuration been set at all?
         if (config == null) {
@@ -435,8 +414,8 @@ extends HttpServlet {
         for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
             String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
             if ((parvalue == null) || (parvalue.equals(""))) {
-                	log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
-                    throw new IllegalStateException();
+                log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
+                throw new IllegalStateException();
             }
         }
         return config;

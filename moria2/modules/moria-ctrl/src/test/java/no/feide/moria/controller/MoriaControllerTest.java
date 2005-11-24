@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashSet;
 
+import no.feide.moria.authorization.UnknownServicePrincipalException;
+
 /**
  * Test suite for the MoriaController class.
  * @author Lars Preben S. Arnesen &lt;lars.preben.arnesen@conduct.no&gt;
@@ -294,6 +296,8 @@ public final class MoriaControllerTest extends TestCase {
             MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
             fail("UnknownTicketException should be raised, SSO ticket should be removed from the store");
         } catch (UnknownTicketException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
 
         /* Use of same login ticket twice, authentication failure = OK */
@@ -364,21 +368,29 @@ public final class MoriaControllerTest extends TestCase {
             MoriaController.attemptSingleSignOn(null, "foo");
             fail("IllegalInputException should be raised, loginTicketId is null.");
         } catch (IllegalInputException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
         try {
             MoriaController.attemptSingleSignOn("", "foo");
             fail("IllegalInputException should be raised, loginTicketId is an empty string.");
         } catch (IllegalInputException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
         try {
             MoriaController.attemptSingleSignOn("foo", null);
             fail("IllegalInputException should be raised, ssoTicketId is null.");
         } catch (IllegalInputException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
         try {
             MoriaController.attemptSingleSignOn("foo", "");
             fail("IllegalInputException should be raised, ssoTicketId is an empty string.");
         } catch (IllegalInputException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
 
 
@@ -387,6 +399,8 @@ public final class MoriaControllerTest extends TestCase {
             MoriaController.attemptSingleSignOn("doesNotExist", "foo");
             fail("UnknownTicketException should be raised, non-existing loginTicketId");
         } catch (UnknownTicketException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
 
         /* Invalid ssoTicket */
@@ -396,6 +410,8 @@ public final class MoriaControllerTest extends TestCase {
             MoriaController.attemptSingleSignOn(loginTicketId, "doesNotExist");
             fail("UnknownTicketException should be raised, non-existing ssoTicketId");
         } catch (UnknownTicketException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
 
         /* Force authentication */
@@ -410,6 +426,8 @@ public final class MoriaControllerTest extends TestCase {
             MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
             fail("UnknownTicketException should be raised, authentication attempt requires interactive authentication.");
         } catch (UnknownTicketException success) {
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
         /* userorg */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, validPrincipal);
@@ -418,10 +436,11 @@ public final class MoriaControllerTest extends TestCase {
         newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false, "limited");
         try {
             final String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
-            final Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, "limited");
+            MoriaController.getUserAttributes(serviceTicketId, "limited");
             fail("AuthorizationException should be raised. Userorg not allowed.");
         } catch (AuthorizationException success) {
-            
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
       
         /* Normal use */
@@ -432,10 +451,14 @@ public final class MoriaControllerTest extends TestCase {
 
         newLoginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                          validPrincipal);
-        final String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
-        final Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
-
-        validateMaps(expectedAttrs, actualAttrs);
+        try { 
+            final String serviceTicketId = MoriaController.attemptSingleSignOn(newLoginTicketId, ssoTicketId);
+            final Map actualAttrs = MoriaController.getUserAttributes(serviceTicketId, validPrincipal);
+            validateMaps(expectedAttrs, actualAttrs);
+        } catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
+        }
+        
     }
 
     /**
@@ -952,7 +975,11 @@ public final class MoriaControllerTest extends TestCase {
         /* Verify that SSO is possible */
         loginTicketId = MoriaController.initiateAuthentication(validAttrs, validPrefix, validPostfix, false,
                                                                validPrincipal);
-        MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
+        try {
+            MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
+        }  catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
+        }
 
         /* Invalidate ticket and verify that SSO is no longer possible */
         MoriaController.invalidateSSOTicket(ssoTicketId);
@@ -962,7 +989,8 @@ public final class MoriaControllerTest extends TestCase {
             MoriaController.attemptSingleSignOn(loginTicketId, ssoTicketId);
             fail("UnknownTicketException should be raised, invalidated SSO-ticket");
         } catch (UnknownTicketException success) {
-
+        }  catch (UnknownServicePrincipalException failure) {
+            fail("UnknownServicePrincipalException should not be caught");
         }
     }
 

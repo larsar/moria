@@ -348,9 +348,9 @@ public final class MoriaController {
      *             If the <code>loginTicketId</code> and/or
      *             <code>ssoTicketId</code> is null or empty.
      */
-    public static String attemptSingleSignOn(final String loginTicketId, final String ssoTicketId)
+public static String attemptSingleSignOn(final String loginTicketId, final String ssoTicketId)
     throws UnknownTicketException, InoperableStateException,
-    IllegalInputException {
+    IllegalInputException, UnknownServicePrincipalException {
 
         /* Check controller status */
         if (!ready) { throw new InoperableStateException(NOT_READY); }
@@ -395,8 +395,9 @@ public final class MoriaController {
         /* Transfer attributes from cached user data to authentication attempt. */
         final String serviceTicket;
         try {
-            /* Put transient attributes into authnattempt */
-            store.setTransientAttributes(loginTicketId, ssoTicketId);
+            // Put transient (SSO-enabled) attributes into authentication
+            // attempt, removing non-SSO attributes in the process.
+            store.setTransientSSOAttributes(loginTicketId, ssoTicketId, authzManager.getNonSSOAttributeNames(authnAttempt.getServicePrincipal()));
 
             /* set loginTicket userorg from SSO ticket */
             String userorg = store.getTicketUserorg(ssoTicketId, MoriaTicketType.SSO_TICKET);
@@ -420,7 +421,6 @@ public final class MoriaController {
         accessLogger.logUser(AccessStatusType.SUCCESSFUL_SSO_AUTHENTICATION, authnAttempt.getServicePrincipal(), null, loginTicketId, serviceTicket);
         return serviceTicket;
     }
-
 
     /**
      * Performs interactive login attempt using tickets and credentials. The
@@ -500,7 +500,7 @@ public final class MoriaController {
             messageLogger.logCritical(CAUGHT_STORE, loginTicketId, e);
             throw new InoperableStateException(STORE_DOWN);
         } catch (UnknownServicePrincipalException e) {
-            // should not happen
+            // Should not happen.
             throw new AuthorizationException("Access to the requested service is denied for " + userorg + ".");
         }
 
@@ -895,7 +895,7 @@ public final class MoriaController {
                     filteredAttributes.put(requestedAttributes[i], cachedAttributes.get(requestedAttributes[i]));
             }
 
-            // the service principal is unknown
+            // The service principal is unknown.
         } catch (UnknownServicePrincipalException e) {
             accessLogger.logService(AccessStatusType.GET_USER_ATTRIBUTES_DENIED_INVALID_PRINCIPAL, servicePrincipal, serviceTicketId, null);
             messageLogger.logInfo("UnknownServicePrincipalException caught", e);
