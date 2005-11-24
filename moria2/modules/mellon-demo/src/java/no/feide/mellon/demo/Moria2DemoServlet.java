@@ -232,7 +232,7 @@ extends HttpServlet {
             if (ticket == null) {
 
                 // No ticket; redirect for authentication.
-                String redirectURL = service.initiateAuthentication(convert(config.getProperty(CONFIG_MASTER_ATTRIBUTE_REQUEST)), request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", true);
+                String redirectURL = service.initiateAuthentication(convert(config.getProperty(CONFIG_MASTER_ATTRIBUTE_REQUEST)), request.getRequestURL().toString() + "?" + PARAM_TICKET + "=", "", false);
                 response.sendRedirect(redirectURL);
 
             } else {
