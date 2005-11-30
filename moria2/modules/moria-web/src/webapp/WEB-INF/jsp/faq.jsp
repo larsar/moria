@@ -29,7 +29,7 @@ final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_FAQ,
                                                     request.getParameter(RequestUtil.PARAM_LANG),
                                                     langFromCookie,
                                                     null,
-request.getHeader("Accept-Language"), "nb");
+						    request.getHeader("Accept-Language"), "nb");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -52,58 +52,80 @@ request.getHeader("Accept-Language"), "nb");
 <td width="0%"><a class="noline" href="<%=pconfig.get(RequestUtil.RESOURCE_LINK)%>"><%=bundle.getString("header_feide")%></a></td>
 <td class="dekor1" width="100%">&nbsp;</td>
 </tr></tbody></table>
+    
+    <div class="kropp">
 
-<div class="kropp">
-<dl>
-<dt>1. <a href="#d0e5"><%=bundle.getString("q1")%></a></dt>
+    <h1><%=bundle.getString("header_title")%></h1>
 
-<dt>2. <a href="#d0e31"><%=bundle.getString("q2")%></a></dt>
+    <div>
+    <h2><%=bundle.getString("basic_info_header")%></h2>
+    
+    <p><%=bundle.getString("basic_info1")%> <%=bundle.getString("basic_info2")%></p>
+    <p><%=bundle.getString("basic_info3")%> <a href="<%=bundle.getString("basic_link_URL")%>"><%=bundle.getString("basic_link_link")%></a>.
+    <%=bundle.getString("basic_info4")%></p>
+    
+    </div>
 
-<dt>3. <a href="#d0e59"><%=bundle.getString("q3")%></a></dt>
-
-<dt>4. <a href="#sikker"><%=bundle.getString("q4")%></a></dt>
-
-<dt>5. <a href="#d0e64"><%=bundle.getString("q0")%></a></dt>
-</dl>
-
-<h2><a name="d0e5"></a>1.&nbsp;<%=bundle.getString("q1")%></h2>
-
-<p><%=bundle.getString("answer1_1")%>:</p>
-
-<div class="orderedlist">
-<ol type="1">
-<%
-String owner = (String) pconfig.get(RequestUtil.PROP_FAQ_OWNER);
+    <h1><%=bundle.getString("q_header")%></h1>   
+    <dl>
+    <dt>1. <a href="#d0e5"><%=bundle.getString("q1")%></a></dt>
+    
+    <dt>2. <a href="#missingorg"><%=bundle.getString("q5")%></a></dt> 
+    
+    <dt>3. <a href="#d0e31"><%=bundle.getString("q2")%></a></dt>
+    
+    <dt>4. <a href="#d0e59"><%=bundle.getString("q3")%></a></dt>
+    
+    <dt>5. <a href="#sikker"><%=bundle.getString("q4")%></a></dt>
+    
+    <dt>6. <a href="#d0e64"><%=bundle.getString("q0")%></a></dt>
+    </dl>
+    
+    <h2><a name="d0e5"></a>1.&nbsp;<%=bundle.getString("q1")%></h2>
+	
+    <p><%=bundle.getString("answer1_1")%>:</p>
+	
+    <div class="orderedlist">
+    <ol type="1">
+	<%
+	String owner = (String) pconfig.get(RequestUtil.PROP_FAQ_OWNER);
 if ((owner == null) || owner.length() == 0)
     owner = bundle.getString("answer1_owner");
 %>
-<li>
-<p><%=bundle.getString("answer1_2")%> <%=owner%>.</p>
-</li>
-
-<li>
-<p><%=bundle.getString("answer1_3")%></p>
-</li>
-
-<li>
-<p><%=bundle.getString("answer1_4")%></p>
-</li>
-
-<li>
-<p><%=bundle.getString("answer1_5")%></p>
-</li>
-
-<li>
-<p><%=bundle.getString("answer1_6")%></p>
-
-</li>
-</ol>
-
-<p><%=bundle.getString("answer1_7")%></p>
+    <li>
+	<p><%=bundle.getString("answer1_2")%> <%=owner%>.</p>
+	</li>
+	
+	<li>
+	<p><%=bundle.getString("answer1_3")%></p>
+	</li>
+	
+	<li>
+	<p><%=bundle.getString("answer1_4")%></p>
+	</li>
+	
+	<li>
+	<p><%=bundle.getString("answer1_5")%></p>
+	</li>
+	
+	<li>
+	<p><%=bundle.getString("answer1_6")%></p>
+	
+    </li>
+  </ol>
+	
+  <p><%=bundle.getString("answer1_7")%></p>
 </div>
 
 
-<h2><a name="d0e31"></a>2.&nbsp;<%=bundle.getString("q2")%></h2>
+<div>	
+	<h2><a name="missingorg">2.&nbsp;<%=bundle.getString("q5")%></a></h2>
+	
+	<p><%=bundle.getString("answer5_1")%></p>
+        
+</div>
+
+<h2><a name="d0e31"></a>3.&nbsp;<%=bundle.getString("q2")%></h2>
 
 
 <p><%=bundle.getString("answer2_1")%>:</p>
@@ -137,7 +159,7 @@ if ((owner == null) || owner.length() == 0)
 </div>
 
 <div>
-<h2><a name="d0e59"></a>3.&nbsp;<%=bundle.getString("q3")%></h2>
+<h2><a name="d0e59"></a>4.&nbsp;<%=bundle.getString("q3")%></h2>
 
     <p><%=bundle.getString("answer3_1")%></p>
     
@@ -155,7 +177,7 @@ if ((owner == null) || owner.length() == 0)
 </div>
 
 <div>
-    <h2><a name="sikker">4.&nbsp;<%=bundle.getString("q4")%></a></h2>
+    <h2><a name="sikker">5.&nbsp;<%=bundle.getString("q4")%></a></h2>
 
 	<p><%=bundle.getString("answer4_1")%></p>
 	
@@ -164,7 +186,7 @@ if ((owner == null) || owner.length() == 0)
 </div>
 
 <div>
-<h2><a name="d0e64"></a>5.&nbsp;<%=bundle.getString("q0")%></h2>
+<h2><a name="d0e64"></a>6.&nbsp;<%=bundle.getString("q0")%></h2>
 
 <p>
 <%=bundle.getString("answer0_1")%>
