@@ -22,7 +22,7 @@ try {
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="icon" href="/favicon.ico" type="image/png">
+<link rel="icon" href="../resource/favicon.ico" type="image/png">
 <style type="text/css">
 @import url("../resource/stil.css");
 </style>
@@ -52,38 +52,36 @@ function fokuser(){document.loginform.username.focus();}
             if (request.getAttribute(RequestUtil.ATTR_SELECTED_LANG).equals(shortName)) {%>
                 [<%=longName%>]
             <%} else {%>
-                <td align="centre"><small><a class="invers" href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>"><%=longName%></a></small></td>
+                <td align="centre"><small> <a class="invers" href="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&"+RequestUtil.PARAM_LANG+"=" + shortName %>">[<%=longName%>]</a> </small></td>
             <%}%>
         <%}%>
 <td class="dekor1" width="100%">&nbsp;</td>
 </tr></tbody></table> 
+<!-- This is the end of the FEIDE header - currently a red band with logo inserted into it -->
 
 <div class="midt">
-<table cellspacing="0">
-<tbody><tr valign="top">
+
+<table cellspacing="0" border="0"><!--This is the start of the page content --> 
+<tbody>
 <td class="kropp">
         <tr>
-          <td valign="middle">&nbsp;
-          </td>
-          <td valign="middle">
-            <table summary="" cellspacing="0" cellpadding="0" border="0" >
+           <td valign="middle">
+            <table summary="" cellspacing="0" cellpadding="0" border="0"><!-- This is a table around the "Moria-description" -->
               <tr>
-                <td valign="top"><font size="+3"Moria</font> -&nbsp;</td>
+                <td valign="top"><font size="+3">Moria</font> -&nbsp;</td>
                 <td><font size="-1"><b><%=bundle.getString("body_title")%></b><br>
 				</font></td>
               </tr>
-            </table>
+            </table> <!-- This is the end of the "Moria"-description table -->
           </td>
         </tr>
-      <!--/table-->
     </td>
-    <td width="5%" rowspan="2">&nbsp;</td>
-  </tr>
 
 <% if (request.getAttribute(RequestUtil.ATTR_ERROR_TYPE) != null) { %>
+<!--We have an error situation-->
   <tr>
    <td colspan="2">
-   <table summary="" cellpadding="0" cellspacing="0" border="0" width="100%">
+   <table summary="" cellpadding="0" cellspacing="0" border="0" width="100%"> <!--Table for error message and description-->
     <tr>
     <td valign="top">
         </td>
@@ -91,22 +89,25 @@ function fokuser(){document.loginform.username.focus();}
     <b><%=bundle.getString("error_" + (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE))%></b><br/>
     <i><%=bundle.getString("error_" + (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE) + "_desc")%></i>
 
+    <p><%=bundle.getString("error_commonString")%></p>    
+
     </td>
     </tr>
-    </table>
+    </table> <!-- Error msg table end -->
     </td>
    </tr>
 <%}%>
 
 <% String errorType = (String) request.getAttribute(RequestUtil.ATTR_ERROR_TYPE);
    if (errorType == null || !(errorType.equals(RequestUtil.ERROR_UNKNOWN_TICKET) || errorType.equals(RequestUtil.ERROR_MORIA_DOWN))) { %>
+   <!--No error, or an error situation where we can try again-->
   <tr valign="top">
     <td width="20%">
-      <table summary="" cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF">
+      <table summary="" cellpadding="7" cellspacing="0" border="0" bgcolor="#EEEEFF"> <!--This is the table for the login form -->
         <tr>
           <td>
             <form action="<%= request.getAttribute(RequestUtil.ATTR_BASE_URL)%>" method="POST" name="loginform" autocomplete="off">
-              <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF">
+              <table summary="" cellpadding="3" cellspacing="3" border="0" bgcolor="#EEEEFF"> <!--This is a table for the fields of the form-->
                 <tbody>
 
                   <tr>
@@ -152,15 +153,15 @@ function fokuser(){document.loginform.username.focus();}
                     </td>
                   </tr>
                 </tbody>
-              </table>
+              </table> <!--This ends the table for the fields  -->
             </form>
           </td>
         </tr>
-      </table>
+      </table> <!-- This ends the entire login form -->
 
     </td>
     <td width="70%">
-      <table summary="" cellspacing="3" cellpadding="3" border="0" >
+      <table summary="" cellspacing="3" cellpadding="3" border="0" > <!-- This is the table for the explanations -->
       <tr valign="top">
         <td>-</td>
         <td><%=RequestUtil.insertLink("CLIENT_LINK",
@@ -177,20 +178,18 @@ function fokuser(){document.loginform.username.focus();}
         <td><%=RequestUtil.insertLink("CLIENT_LINK",
                                          bundle.getString("expl_data_"+request.getAttribute(RequestUtil.ATTR_SEC_LEVEL)),
                                          (String) request.getAttribute(RequestUtil.ATTR_CLIENT_NAME),
-                                         (String) request.getAttribute(RequestUtil.ATTR_CLIENT_URL))%><BR/>
+                                         (String) request.getAttribute(RequestUtil.ATTR_CLIENT_URL))%><br/>
 
 
        </td>
       </tr>
-      
+      <tr>
             <td>-</td>
-        <td><%=bundle.getString("expl_link1")%><A HREF=<%=request.getAttribute("faqlink")%>><%=bundle.getString("expl_link2")%></A>
-        <%=bundle.getString("expl_link3")%><BR/>
-
+        <td><%=bundle.getString("expl_link1")%> <a href=<%=request.getAttribute("faqlink")%>><%=bundle.getString("expl_link2")%></a> <%=bundle.getString("expl_link3")%><br/>
 
        </td>
       </tr>
-          
+         
       <tr>
         <td>&nbsp;</td>
         <td><hr noshade="noshade" size="1"/></td>
@@ -200,7 +199,7 @@ function fokuser(){document.loginform.username.focus();}
         <td>
 	</td>
       </tr>
-    </table>
+    </table> <!-- This is the end of the explanation table -->
   </td>
 
 <%} else {%>
@@ -210,7 +209,7 @@ function fokuser(){document.loginform.username.focus();}
 
 
 </tr>
-</table>
+</table> <!-- This is the end of the page content table -->
 </tbody>
 </div>
 
