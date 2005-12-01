@@ -200,21 +200,27 @@ public class DirectoryManager {
         // Do the call through a temporary backend instance.
         DirectoryManagerBackend backend = backendFactory.createBackend(sessionTicket);
         IndexedReference[] references = index.getReferences(username);
-        if (references != null) {
-
-            // Found at least one reference.
-            backend.open(references);
-
-        } else {
-
-            // Could not find the user.
-            return false;
-
+        try {
+            if (references != null) {
+    
+                // Found at least one reference.
+                backend.open(references);
+    
+            } else {
+    
+                // Could not find the user.
+                return false;
+    
+            }
+    
+            // Check that the user actually exists.
+            return backend.userExists(username);
+        } finally {
+            
+            // Close the backend.
+            backend.close();
+            
         }
-
-        // Check that the user actually exists.
-        return backend.userExists(username);
-
     }
 
 
