@@ -296,20 +296,37 @@ extends HttpServlet {
                                final HttpServletResponse response,
                                String errorType)
     throws IOException, ServletException {
+        
+        /*
+         * Preparations requiring module configuration only:
+         */ 
 
         // Get configuration.
         final Properties config = getConfig();
-        HashMap serviceProperties = null;
+        
+        // Get the login ticket.
+        final String loginTicket = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
+        
+        // Set the base authentication page URL.
+        request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + loginTicket);
+        
+        // Set link to the FAQ.
+        request.setAttribute("faqlink", config.get(RequestUtil.FAQ_LINK));
+        
+        // Set the user's language cookie, if language was changed.
+        if (request.getParameter(RequestUtil.PARAM_LANG) != null)
+            response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
 
-        // Get the login ticket name and set the base authentication page URL.
-        final String loginTicketId = request.getParameter(config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM));
-        request.setAttribute(RequestUtil.ATTR_BASE_URL, config.getProperty(RequestUtil.PROP_LOGIN_URL_PREFIX) + "?" + config.getProperty(RequestUtil.PROP_LOGIN_TICKET_PARAM) + "=" + loginTicketId);
-
+        /*
+         * Preparations also requiring service properties. 
+         */
+        
         // Get service properties and set security level.
+        HashMap serviceProperties = null;
         try {
 
-            serviceProperties = MoriaController.getServiceProperties(loginTicketId);
-            request.setAttribute(RequestUtil.ATTR_SEC_LEVEL, "" + MoriaController.getSecLevel(loginTicketId));
+            serviceProperties = MoriaController.getServiceProperties(loginTicket);
+            request.setAttribute(RequestUtil.ATTR_SEC_LEVEL, "" + MoriaController.getSecLevel(loginTicket));
 
             // TODO: Move error handling into doGet instead, where
             // MoriaControllerException is ignored.
@@ -321,61 +338,88 @@ extends HttpServlet {
             errorType = RequestUtil.ERROR_MORIA_DOWN;
         }
 
-        // Set error message, if any.
-        request.setAttribute(RequestUtil.ATTR_ERROR_TYPE, errorType);
-
-        // This entire section is skipped if no service could be looked up due
-        // to a problem with the login ticket.
+        // Set service display name and URL.
         if (serviceProperties != null) {
+            request.setAttribute(RequestUtil.ATTR_CLIENT_NAME, serviceProperties.get(RequestUtil.CONFIG_DISPLAY_NAME));
+            request.setAttribute(RequestUtil.ATTR_CLIENT_URL, serviceProperties.get(RequestUtil.CONFIG_URL));
+        }
+        
+        /*
+         * Preparations also requiring user cookies.
+         */
+        
+        // Get user cookies.
+        final Cookie[] userCookies = request.getCookies();
 
-            // Decide which language to use for login page.
-            final String serviceLanguage = (String) serviceProperties.get(RequestUtil.CONFIG_LANG);
-            String cookieLanguage = null;
-            if (request.getCookies() != null)
-                cookieLanguage = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getCookies());
-            final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN, request.getParameter(RequestUtil.PARAM_LANG), cookieLanguage, serviceLanguage, request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
-            request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
-            request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
+        // Can we get page language from user's cookie?
+        String cookieLanguage = null;
+        if (userCookies != null)
+            cookieLanguage = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_LANG), userCookies);
 
-            // Set/update the user's language cookie.
-            request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
-            if (request.getParameter(RequestUtil.PARAM_LANG) != null) {
-                response.addCookie(RequestUtil.createCookie((String) config.get(RequestUtil.PROP_COOKIE_LANG), request.getParameter(RequestUtil.PARAM_LANG), new Integer((String) config.get(RequestUtil.PROP_COOKIE_LANG_TTL)).intValue()));
-            }
+        // Can we get page language from service defaults?
+        String serviceLanguage = null;
+        if (serviceProperties != null)
+            serviceLanguage = (String) serviceProperties.get(RequestUtil.CONFIG_LANG);
 
-            // Resolve list of allowed organizations, removing those that are
-            // not.
-            TreeMap allowedOrganizations = RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, bundle.getLocale().getLanguage());
-            final String servicePrincipal = (String) serviceProperties.get(RequestUtil.CONFIG_SERVICE_PRINCIPAL);
+        // Set page language.
+        final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_LOGIN, request.getParameter(RequestUtil.PARAM_LANG), cookieLanguage, serviceLanguage, request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
+        request.setAttribute(RequestUtil.ATTR_BUNDLE, bundle);
+        request.setAttribute(RequestUtil.ATTR_LANGUAGES, RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON));
+        request.setAttribute(RequestUtil.ATTR_SELECTED_LANG, bundle.getLocale());
+
+        /*
+         * Preparations also requiring service principal. 
+         */
+        
+        // Can we get the service principal?
+        String servicePrincipal = null;
+        if (serviceProperties != null)
+            servicePrincipal = (String) serviceProperties.get(RequestUtil.CONFIG_SERVICE_PRINCIPAL);
+
+        // Resolve list of allowed organizations for this service principal.
+        TreeMap allowedOrganizations = null;
+        if (servicePrincipal != null) {
+            
+            // Remove illegal organizations for this (known) service.
+            allowedOrganizations = RequestUtil.parseConfig(getConfig(), RequestUtil.PROP_ORG, bundle.getLocale().getLanguage());
             Iterator i = allowedOrganizations.values().iterator();
-            while (i.hasNext())
+            while (i.hasNext()) {
                 try {
                     if (!MoriaController.isOrganizationAllowedForService(servicePrincipal, (String) i.next()))
                         i.remove();
                 } catch (UnknownServicePrincipalException e) {
                     // This is ignored; an unknown service principal should
-                    // never even reach this stage - and the worst consequence
-                    // will be an empty organization list.
-                    log.logWarn("Unknown service principal: " + servicePrincipal);
+                    // never even reach this stage.
+                    log.logWarn("Unexpected service principal: " + servicePrincipal);
                 }
-            request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, allowedOrganizations);
-
-            // Get organization from URL parameter, service configuration and
-            // user cookie, with the latter prioritized highest.
-            String selectedOrg = request.getParameter(RequestUtil.PARAM_ORG);
-            selectedOrg = (String) serviceProperties.get(RequestUtil.CONFIG_HOME);
-            if (request.getCookies() != null)
-                selectedOrg = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_ORG), request.getCookies());
-            request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, selectedOrg);
-
-            // Set service display name and URL.
-            request.setAttribute(RequestUtil.ATTR_CLIENT_NAME, serviceProperties.get(RequestUtil.CONFIG_DISPLAY_NAME));
-            request.setAttribute(RequestUtil.ATTR_CLIENT_URL, serviceProperties.get(RequestUtil.CONFIG_URL));
-
+            }
         }
+        request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, allowedOrganizations);
+        
+        // Get default organization from service configuration, if possible.
+        String defaultOrganization = null;
+        if (serviceProperties != null)
+            defaultOrganization = (String) serviceProperties.get(RequestUtil.CONFIG_HOME);
+        
+        // Override with default organization from URL parameter.
+        String value = request.getParameter(RequestUtil.PARAM_ORG);
+        if (value != null)
+            defaultOrganization = value;
+        
+        // Override with default organization from user cookie.
+        value = RequestUtil.getCookieValue((String) config.get(RequestUtil.PROP_COOKIE_ORG), userCookies); 
+        if (value != null)
+            defaultOrganization = value;
+        
+        // Set default organization.
+        request.setAttribute(RequestUtil.ATTR_SELECTED_ORG, defaultOrganization);
 
-        // Set link to the FAQ.
-        request.setAttribute("faqlink", config.get(RequestUtil.FAQ_LINK));
+        /*
+         * Finish preparations and show page.
+         */
+        
+        // Set error message, if any.
+        request.setAttribute(RequestUtil.ATTR_ERROR_TYPE, errorType);
 
         // Process JSP.
         final RequestDispatcher rd = getServletContext().getNamedDispatcher("Login.JSP");
