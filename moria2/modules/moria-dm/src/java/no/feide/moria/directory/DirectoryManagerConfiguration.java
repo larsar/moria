@@ -142,7 +142,6 @@ public class DirectoryManagerConfiguration {
 
         // Get the index element, with sanity checks.
         final Element indexElement = rootElement.getChild("Index");
-        HashMap indexConfig = new HashMap();
 
         // Get index filename, with sanity checks.
         Attribute a = indexElement.getAttribute("file");
@@ -212,11 +211,10 @@ public class DirectoryManagerConfiguration {
 
         // Get the backend element, with sanity checks.
         final Element backendElement = rootElement.getChild("Backend");
-        HashMap backendConfig = new HashMap();
 
         // Get backend class, with sanity checks.
         final Attribute a = backendElement.getAttribute("class");
-        if ((a == null) || (a.getValue() == null) || (a.getValue() == ""))
+        if ((a == null) || (a.getValue() == null) || (a.getValue().equals("")))
             throw new DirectoryManagerConfigurationException("Backend class not set in configuration file");
         try {
             backendFactoryClass = Class.forName(a.getValue());
