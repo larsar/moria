@@ -71,12 +71,26 @@ extends HttpServlet {
             if (index != null) {
                 idx = Integer.parseInt(index);
             }
+
+            // login.feide.no/Picture can be entered as an URL without any further arguments.
+	    // That will lead to a null pointer exception, caught by the catch-clause below, but 
+            // we really should avoid creating such errors. For one, they end up in the log file looking
+	    // horribly serious, when there is little reason to worry.
+
+
             response.setContentType("image/jpeg");
             String[] picture = (String[]) request.getSession().getAttribute(PICTURE_ATTRIBUTE);
-            byte[] decoded = Base64.decodeBase64(picture[idx].getBytes("ISO-8859-1"));
-            ServletOutputStream writer = response.getOutputStream();
-            writer.write(decoded);
-            writer.close();
+	    
+	    if (picture == null) {
+		log.logWarn("PictureServlet called without picture context. Nothing to display");
+	    }
+	    else {
+		    byte[] decoded = Base64.decodeBase64(picture[idx].getBytes("ISO-8859-1"));
+
+		    ServletOutputStream writer = response.getOutputStream();
+		    writer.write(decoded);
+		    writer.close();
+	    }
 
         } catch (Throwable t) {
             log.logWarn("Picture display failed", t);
