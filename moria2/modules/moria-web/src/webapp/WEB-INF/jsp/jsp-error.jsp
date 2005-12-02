@@ -37,7 +37,7 @@ final ResourceBundle bundle = RequestUtil.getBundle(
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= bundle.getLocale() %>" >
 <head>
-<link rel="icon" href="/favicon.ico" type="image/png">
+<link rel="icon" href="../resource/favicon.ico" type="image/png">
 <style type="text/css">
 @import url("../resource/stil.css");
 </style>
@@ -58,81 +58,87 @@ final ResourceBundle bundle = RequestUtil.getBundle(
 <table cellspacing="0">
 <tbody><tr valign="top">
 <td class="kropp">
-     <h3>
-			<%=bundle.getString("general_message")%>
-    </h3>
+     <h3><%=bundle.getString("general_message")%></h3>
 
 <%
-  Class eclass = exception.getClass();
-    
-  if (eclass == AuthenticationException.class) { %>
-    <p><%=bundle.getString("error_authentication")%></p><br/> <%;
+
+  String errmsg = null;
+  String errdesc = null;
+
+  Class eclass = null;
+    // It is possible to enter https://login.feide.no/Error, which will generate a "false" error and a NULL exception.
+    // That case will be logged, and we'll present the "unknown error" (catch all) 
+   
+   if (exception == null) {
+       messageLogger.logCritical("exception is null. The error page has been requested directly without an actual error occuring", exception);
+   }
+   else
+       eclass = exception.getClass();
+
+  Class errclass;
+
+  //If it's a ServletException, the actual error class has to be "dug out"
+  if (eclass == ServletException.class) {
+      ServletException se = (ServletException) exception;
+      Throwable servletThrowable = se.getRootCause();
+      errclass = servletThrowable.getClass();
   }
-  else if (eclass == AuthorizationException.class) { %>
-    <p><%=bundle.getString("error_authorization")%></p><br/><%;
+  else
+    errclass = eclass; // direct errorclass available
+
+  if (errclass == AuthenticationException.class) { 
+      errmsg  = bundle.getString("error_authentication_msg");
+      errdesc = bundle.getString("error_authentication_desc");
   }
-  else if (eclass == DirectoryUnavailableException.class) { %>
-    <p><%=bundle.getString("error_directory")%></p><br/>;<%
+  else if (errclass == AuthorizationException.class) {
+      errmsg = bundle.getString("error_authorization_msg");
+      errdesc = bundle.getString("error_authorization_desc");
   }
-  else if (eclass == IllegalInputException.class) { %>
-    <p><%=bundle.getString("error_illegalinput")%></p><br/><%;
+  else if (errclass == DirectoryUnavailableException.class) { 
+      errmsg = bundle.getString("error_directory_msg");
+      errdesc = bundle.getString("error_directory_desc");
   }
-  else if (eclass == InoperableStateException.class) { %>
-    <p><%=bundle.getString("error_inoperable")%></p><br/><%;
+  else if (errclass == IllegalInputException.class) { 
+      errmsg = bundle.getString("error_illegalinput_msg");
+      errdesc = bundle.getString("error_illegalinput_desc");
   }
-  else if (eclass == MoriaControllerException.class) { %>
-    <p><%=bundle.getString("error_moriacontroller")%></p><br/><%;
+  else if (errclass == UnknownTicketException.class) {
+      errmsg = bundle.getString("error_unknownticket_msg");
+      errdesc = bundle.getString("error_unknownticket_desc");
   }
-  else if (eclass == UnknownTicketException.class) {%>
-    <p><%=bundle.getString("error_unknownticket")%></p><br/><%;
+  else if (errclass == InoperableStateException.class) { 
+      errmsg = bundle.getString("error_inoperable_msg");
+      errdesc = bundle.getString("error_inoperable_desc");
+      // This is currently the end of normal errors. The rest are internal errors
   }
-  else if (eclass == IllegalArgumentException.class) {%>
-    <p><%=bundle.getString("error_illegalargument")%></p><br/><%;
+  else if (errclass == MoriaControllerException.class) { 
+      errmsg = bundle.getString("error_moriacontroller");
+      errdesc = bundle.getString("error_internalerror");
   }
-  else if (eclass == NullPointerException.class) {%>
-    <p><%=bundle.getString("error_nullpointer")%></p><br/><%;
+  else if (errclass == IllegalArgumentException.class) {
+      errmsg = bundle.getString("error_illegalargument_msg");
+      errdesc = bundle.getString("error_internalerror");
   }
-  else if (eclass == IllegalStateException.class) {%>
-    <p><%=bundle.getString("error_illegalstate")%></p><br/><%;
+  else if (errclass == NullPointerException.class) {
+      errmsg = bundle.getString("error_nullpointer");
+      errdesc = bundle.getString("error_internalerror");
   }
-  else if (eclass == ServletException.class) {
-  ServletException se = (ServletException) exception;
-  Throwable servletThrowable = se.getRootCause();
-  	if (servletThrowable.getClass() == AuthenticationException.class) { %>
-		<p><%=bundle.getString("error_authentication")%></p><br/><%;
-  	}
-  	else if (servletThrowable.getClass() == AuthorizationException.class) { %>
-		<p><%=bundle.getString("error_authorization")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == DirectoryUnavailableException.class) { %>
-		<p><%=bundle.getString("error_directory")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == IllegalInputException.class) { %>
-		<p><%=bundle.getString("error_illegalinput")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == InoperableStateException.class) { %>
-		<p><%=bundle.getString("error_inoperable")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == MoriaControllerException.class) { %>
-		<p><%=bundle.getString("error_moriacontroller")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == UnknownTicketException.class) { %>
-		<p><%=bundle.getString("error_unknownticket")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == IllegalArgumentException.class) { %>
-		<p><%=bundle.getString("error_illegalargument")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == NullPointerException.class) { %>
-		<p><%=bundle.getString("error_nullpointer")%></p><br/><%;
-	}
-	else if (servletThrowable.getClass() == IllegalStateException.class) {%>
-    	<p><%=bundle.getString("error_illegalstate")%></p><br/><%;
-    }
-	}
-  else { %>
-   <p><%=bundle.getString("error_rest")%></p><br/><%;
+  else if (errclass == IllegalStateException.class) {
+      errmsg = bundle.getString("error_illegalstate");
+      errdesc = bundle.getString("error_internalerror");
+  }
+  else { 
+      errmsg = bundle.getString("error_rest");
+      errdesc = bundle.getString("error_internalerror");
+      // This is the catch-all part: "unknown error", which should not happen normally.
+      // Two cases where this might occur: the resource files are wrong or the error page is requested directly
    }
    %>
+      <p><b><%= errmsg %></b></p>
+	  <p><%= errdesc %></p>
+
+     <dd>
+     
 
 </tr>
 </table>
