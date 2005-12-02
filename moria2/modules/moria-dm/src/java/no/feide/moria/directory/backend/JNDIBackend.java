@@ -516,7 +516,7 @@ implements DirectoryManagerBackend {
     throws BackendException {
 
         // Check pattern for illegal content.
-        String[] illegals = {"*", "\2a"};
+        String[] illegals = {"*", "\\2a"};
         for (int i = 0; i < illegals.length; i++) {
             if (pattern.indexOf(illegals[i]) > -1)
                 return null;
