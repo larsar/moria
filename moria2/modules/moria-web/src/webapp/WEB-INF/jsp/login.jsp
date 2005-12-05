@@ -188,6 +188,28 @@ function fokuser(){document.loginform.username.focus();}
         <td><%=bundle.getString("expl_link1")%> <a href=<%=request.getAttribute("faqlink")%>><%=bundle.getString("expl_link2")%></a> <%=bundle.getString("expl_link3")%><br/>
 
        </td>
+       <tr>
+            <td>&nbsp;</td>
+        <td><% String showAttributes = (String)request.getAttribute(RequestUtil.PARAM_SHOW_ATTRS);
+        if (showAttributes.equals("false")) { %>
+        <a href="<%=request.getAttribute(RequestUtil.ATTR_BASE_URL) + "&" + RequestUtil.PARAM_SHOW_ATTRS + "=true" %>"><%=bundle.getString("expl_link4")%></a>
+        <%
+        } else if (showAttributes.equals("true")) {
+        %>
+        <ul>
+        <%
+        String[] attributes = (String[]) request.getAttribute(RequestUtil.ATTR_REQUESTED_ATTRIBUTES);
+        for (int i = 0; i < attributes.length; i++) {
+        String attr;
+        try {
+                attr = bundle.getString(attributes[i]);
+                } catch (Exception e) {
+                attr = attributes[i];
+        }%><li><%=attr%>
+        <%}
+        }%>
+       </ul>
+       </td>
       </tr>
          
       <tr>

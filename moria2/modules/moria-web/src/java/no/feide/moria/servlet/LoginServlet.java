@@ -169,7 +169,7 @@ extends HttpServlet {
             } catch (MoriaControllerException e) {
                 // Do not handle this exception here. Will be handled by the
                 // showLoginPage method.
-            } catch (UnknownServicePrincipalException e) {
+            //} catch (UnknownServicePrincipalException e) {
                 // TODO: Resolve handling.
             }
         }
@@ -395,6 +395,17 @@ extends HttpServlet {
             }
         }
         request.setAttribute(RequestUtil.ATTR_ORGANIZATIONS, allowedOrganizations);
+        
+        // Get the requested attributes
+        try {
+            String [] attrs = MoriaController.getRequestedAttributes(loginTicket, servicePrincipal);
+            request.setAttribute(RequestUtil.ATTR_REQUESTED_ATTRIBUTES, attrs);
+       } catch (Exception e) {
+            log.logWarn("Unable to get the requested attributes: " + servicePrincipal);
+        }
+        String showAttrs = request.getParameter(RequestUtil.PARAM_SHOW_ATTRS);
+        String show = showAttrs != null ? showAttrs : "false";
+        request.setAttribute(RequestUtil.PARAM_SHOW_ATTRS, show);
         
         // Get default organization from service configuration, if possible.
         String defaultOrganization = null;

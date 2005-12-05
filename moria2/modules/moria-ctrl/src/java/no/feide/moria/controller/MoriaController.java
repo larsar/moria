@@ -826,7 +826,43 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
         return (userOrganization != null && authzManager.allowUserorg(servicePrincipal, userOrganization));
 
     }
+    
+    /**
+     * Gets the name of the attributes a service requests, based on the loginTicket.
+     * 
+     * @param loginTicket the login ticket
+     * @param servicePrincipal the name of the service that requested the attributes
+     * @return An array with attribute names.
+     * @throws IllegalInputException
+     * @throws UnknownTicketException
+     * @throws InoperableStateException
+     * @throws AuthorizationException
+     */
+    public static String[] getRequestedAttributes(final String loginTicket, final String servicePrincipal)
+    throws IllegalInputException, UnknownTicketException,
+    InoperableStateException, AuthorizationException {
+        // Sanity checks.
+        if (!ready)
+            throw new InoperableStateException(NOT_READY);
+        if (loginTicket == null || loginTicket.equals(""))
+            throw new IllegalInputException("Login ticket ID must be a non-empty string.");
+        if (servicePrincipal == null || servicePrincipal.equals(""))
+            throw new IllegalInputException("Service principal must be a non-empty string.");
 
+        String[] attr = null;
+        try {
+            attr = store.getAuthnAttempt(loginTicket, true, servicePrincipal).getRequestedAttributes();
+        } catch (MoriaStoreException e) {
+            messageLogger.logCritical(CAUGHT_STORE, e);
+            throw new InoperableStateException(STORE_DOWN);
+        } catch (InvalidTicketException e) {
+            throw new UnknownTicketException(NONEXISTENT_TICKET);
+        } catch (NonExistentTicketException e) {
+            throw new UnknownTicketException(NONEXISTENT_TICKET);
+        }
+
+        return attr;
+    }
 
     /**
      * Retrieves user attributes from an authentication attempt. The method
@@ -1591,4 +1627,5 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
             throw new AuthenticationException();
         return org;
     }
+       
 }
