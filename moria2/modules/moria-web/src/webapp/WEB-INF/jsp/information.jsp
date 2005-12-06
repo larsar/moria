@@ -8,6 +8,13 @@
 			pageEncoding="ISO-8859-1"
 			import="java.util.ResourceBundle, java.util.Vector, no.feide.moria.servlet.RequestUtil,
 			java.util.TreeMap, java.util.Iterator, java.util.Properties" %>
+			
+<% // The Information service does not allow caching.
+response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+response.setHeader("Pragma","no-cache"); //HTTP 1.0
+response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
+%>
 
 <% ResourceBundle bundle = (ResourceBundle) request.getAttribute("bundle"); %>
 <% Vector tabledata = (Vector) request.getAttribute("tabledata"); %>
