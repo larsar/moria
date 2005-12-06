@@ -169,7 +169,7 @@ extends HttpServlet {
             } catch (MoriaControllerException e) {
                 // Do not handle this exception here. Will be handled by the
                 // showLoginPage method.
-            //} catch (UnknownServicePrincipalException e) {
+            } catch (UnknownServicePrincipalException e) {
                 // TODO: Resolve handling.
             }
         }
