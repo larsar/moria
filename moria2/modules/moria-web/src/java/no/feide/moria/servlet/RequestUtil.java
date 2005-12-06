@@ -366,6 +366,11 @@ public final class RequestUtil {
      * Current value is <code>"language"</code>.
      */
     public static final String PARAM_LANG = "language";
+    
+    /**
+     * Attribute URL parameter, used when attributes are shown on the login page.
+     */
+    public static final String PARAM_SHOW_ATTRS = "showAttributes";
 
     /**
      * Parameter in request object: Deny SSO.
@@ -430,6 +435,11 @@ public final class RequestUtil {
      * Attribute in request object: Language bundle.
      */
     public static final String ATTR_BUNDLE = "bundle";
+
+    /**
+     * Attribute in request object: Requested attributes.
+     */
+    public static final String ATTR_REQUESTED_ATTRIBUTES = "requestedAttributes";
 
     /**
      * Error type: No organization selected.
