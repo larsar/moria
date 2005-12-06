@@ -88,27 +88,27 @@ final ResourceBundle bundle = RequestUtil.getBundle(
 
   if (errclass == AuthenticationException.class) { 
       errmsg  = bundle.getString("error_authentication_msg");
-      errdesc = bundle.getString("error_authentication_desc");
+      errdesc = bundle.getString("error_authentication_help");
   }
   else if (errclass == AuthorizationException.class) {
       errmsg = bundle.getString("error_authorization_msg");
-      errdesc = bundle.getString("error_authorization_desc");
+      errdesc = bundle.getString("error_authorization_help");
   }
   else if (errclass == DirectoryUnavailableException.class) { 
       errmsg = bundle.getString("error_directory_msg");
-      errdesc = bundle.getString("error_directory_desc");
+      errdesc = bundle.getString("error_directory_help");
   }
   else if (errclass == IllegalInputException.class) { 
       errmsg = bundle.getString("error_illegalinput_msg");
-      errdesc = bundle.getString("error_illegalinput_desc");
+      errdesc = bundle.getString("error_illegalinput_help");
   }
   else if (errclass == UnknownTicketException.class) {
       errmsg = bundle.getString("error_unknownticket_msg");
-      errdesc = bundle.getString("error_unknownticket_desc");
+      errdesc = bundle.getString("error_unknownticket_help");
   }
   else if (errclass == InoperableStateException.class) { 
       errmsg = bundle.getString("error_inoperable_msg");
-      errdesc = bundle.getString("error_inoperable_desc");
+      errdesc = bundle.getString("error_inoperable_help");
       // This is currently the end of normal errors. The rest are internal errors
   }
   else if (errclass == MoriaControllerException.class) { 
@@ -116,7 +116,7 @@ final ResourceBundle bundle = RequestUtil.getBundle(
       errdesc = bundle.getString("error_internalerror");
   }
   else if (errclass == IllegalArgumentException.class) {
-      errmsg = bundle.getString("error_illegalargument_msg");
+      errmsg = bundle.getString("error_illegalargument");
       errdesc = bundle.getString("error_internalerror");
   }
   else if (errclass == NullPointerException.class) {
