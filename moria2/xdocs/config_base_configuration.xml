@@ -26,45 +26,38 @@ $Id$
     <body>
         <section name="Base Configuration">
             <p>
-            Moria is dependent on three inital properties which has to be
-            specified as system properties in the VM (or classloader, if your
-            application server supports this functionality). The three are:
+                Moria is dependent on two inital properties which has to be
+                specified as system properties in the VM (or classloader, if
+                your
+                application server supports this functionality). These
+                properties are:
             </p>
             <ol>
                 <li>
-                <pre>no.feide.moria.configuration.base</pre>
-                Should point to the Configuration Manager's base property file.
-                Example:
-                <pre>no.feide.moria.configuration.base=/full/path/base.properties</pre>
+                    <pre>no.feide.moria.configuration.base</pre>
+                    Should point to the Configuration Manager's base property
+                    file. Example:
+                    <pre>no.feide.moria.configuration.base=/full/path/base.properties</pre>
                 </li>
                 <li>
-                <pre>Dno.feide.moria.store.nodeid</pre>
-                The JBossCache node ID for this instance. A unique (in the
-                JBossCache cluster's context; see the 
-                <a href="#Store Manager">Store Manager</a> section) 
-                three-character alphanumeric string. Example:
-                <pre>Dno.feide.moria.store.nodeid=xy1</pre>
-                </li>
-                <li>
-                <pre>log4j.configuration</pre>
-                Log4j's configuration file (optional). Example:
-                <pre>log4j.configuration=/full/path/log4j.xml</pre>
+                    <pre>log4j.configuration</pre>
+                    Log4j's configuration file (optional). Example:
+                    <pre>log4j.configuration=/full/path/log4j.xml</pre>
                 </li>
             </ol>
             <p>
-            The last property may be considered optional as log4j on
-            initialization has its own regime of locating its configuration, but
-            this is the preferred way to do it when using Moria.
+                The last property may be considered optional as log4j on
+                initialization has its own regime of locating its configuration,
+                but this is the preferred way to do it when using Moria2.
             </p>
             <p>
-            This example starts <a href="http://www.caucho.com/">Resin</a> with
-            the required properties:
+                This example starts <a href="http://www.caucho.com/">Resin</a>
+                with the required properties:
             </p>
             <source>
 $ cd $RESIN_HOME/bin
 $ httpd \
-> -Dno.feide.moria.configuration.base=/config/base.properties \
-> -Dno.feide.moria.store.nodeid=007
+> -Dno.feide.moria.configuration.base=/config/base.properties
             </source>
         </section>
     </body>
