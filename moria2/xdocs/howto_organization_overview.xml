@@ -136,12 +136,12 @@ Place - Suite 330, Boston, MA 02111-1307, USA.
                     The usernames must be on the form given by <i>localID@organization</i>,
                     where <i>localID</i> should be unique within the
                     organization, and the realm <i>organization</i> is the
-                    organization short-form identifier described in <a href="#Indexing_Information">this</a>
+                    organization short-form identifier described in the <a href="#Indexing_Information">above</a>
                     section.
 				</li>
 				<li>
                     The server must <b>either</b> allow Moria2 to do a subtree
-                    equality search (at least non-anonymous; see <a href="#Indexing_Information">this</a>
+                    equality search (at least non-anonymous; see the <a href="#Indexing_Information">above</a>
                     section) for the attribute containing the username, <b>or</b>
                     have user element DNs on the form
                     <pre>
