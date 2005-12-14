@@ -73,8 +73,9 @@ $Id$
                     The communication between Moria2 and a service takes place
                     over ordinary
                     <a href="http://www.w3.org/Protocols/">HTTPS</a>, using a
-                    message format called <a href="http://www.w3.org/TR/soap/">Simple Object Access Protocol</a>,
-                    or <b>SOAP</b>. The interface to Moria2 is described using
+                    message format called <a href="http://www.w3.org/TR/soap/">SOAP</a>.
+                    More information on <b>SOAP</b> can be found <a href="http://en.wikipedia.org/wiki/SOAP">here</a>.
+                    The interface to Moria2 is described using
                     <a href="http://www.w3.org/TR/wsdl">Web Services Definition Language</a>, 
                     or <b>WSDL</b>. There are other details to this communication (<a href="http://java.sun.com/xml/jaxrpc/index.jsp">JAX-RPC</a>
                     conformance;  <a href="http://www.ws-i.org/">WS-I Basic Profile</a>
