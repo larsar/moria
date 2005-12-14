@@ -35,8 +35,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 
-import no.feide.moria.authorization.UnknownServicePrincipalException;
-import no.feide.moria.controller.MoriaController;
 import no.feide.moria.log.MessageLogger;
 
 /**
@@ -221,10 +219,10 @@ public final class RequestUtil {
     public static final String BUNDLE_STATISTICSSERVLET = "statistics";
 
     /**
-     * Configuration property for the InformationServlet feideattribs xml file
-     * path.
+     * Configuration property for the Information service's attribute
+     * description XML file.
      */
-    public static final String PROP_INFORMATION_FEIDEATTRIBS_XML = PATH_PREFIX + "information.feideattribs_xml";
+    public static final String PROP_INFORMATION_DESCRIPTIONS = PATH_PREFIX + "information.descriptions";
 
     /**
      * Configuration property for the StatusServlet status.xml file path.
@@ -301,12 +299,18 @@ public final class RequestUtil {
     public static final String PIC_LINK = PATH_PREFIX + "piclink";
 
     /**
-     * TODO
+     * TODO: Add JavaDoc. Is this in use?
      */
     public static final String RESOURCE_MAIL = PATH_PREFIX + "resource.mail";
 
+    /**
+     * TODO: Add JavaDoc. Is this in use?
+     */
     public static final String RESOURCE_DATE = PATH_PREFIX + "resource.date";
 
+    /**
+     * TODO: Add JavaDoc. Is this in use?
+     */
     public static final String RESOURCE_LINK = PATH_PREFIX + "resource.link";
 
     /**

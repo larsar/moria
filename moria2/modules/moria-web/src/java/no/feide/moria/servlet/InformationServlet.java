@@ -84,7 +84,7 @@ public class InformationServlet extends HttpServlet {
      * <li><code>RequestUtil.PROP_COOKIE_DENYSSO</code>
      * <li><code>RequestUtil.PROP_LOGIN_TICKET_PARAM</code>
      * <li><code>RequestUtil.PROP_INFORMATION_URL_PREFIX</code>
-     * <li><code>RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML</code>
+     * <li><code>RequestUtil.PROP_INFORMATION_DESCRIPTIONS</code>
      * <li><code>RequestUtil.PIC_LINK</code>
      * </ul>
      * @see RequestUtil#PROP_COOKIE_LANG
@@ -92,7 +92,7 @@ public class InformationServlet extends HttpServlet {
      * @see RequestUtil#PROP_COOKIE_DENYSSO
      * @see RequestUtil#PROP_LOGIN_TICKET_PARAM
      * @see RequestUtil#PROP_INFORMATION_URL_PREFIX
-     * @see RequestUtil#PROP_INFORMATION_FEIDEATTRIBS_XML
+     * @see RequestUtil#PROP_INFORMATION_DESCRIPTIONS
      * @see RequestUtil#PIC_LINK
      */
     private static final String[] REQUIRED_PARAMETERS = {
@@ -101,7 +101,7 @@ public class InformationServlet extends HttpServlet {
         RequestUtil.PROP_COOKIE_DENYSSO,
         RequestUtil.PROP_LOGIN_TICKET_PARAM,
         RequestUtil.PROP_INFORMATION_URL_PREFIX,
-        RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML,
+        RequestUtil.PROP_INFORMATION_DESCRIPTIONS,
         RequestUtil.PIC_LINK
     };
 
@@ -125,9 +125,9 @@ public class InformationServlet extends HttpServlet {
             AttribsHandler handler = new AttribsHandler();
             SAXParserFactory factory = SAXParserFactory.newInstance();
             try {
-               String filename = (String) config.get(RequestUtil.PROP_INFORMATION_FEIDEATTRIBS_XML);
+               String filename = (String) config.get(RequestUtil.PROP_INFORMATION_DESCRIPTIONS);
                if ((filename == null) || (filename.equals(""))) {
-                   log.logCritical("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+                   log.logCritical("Required configuration property PROP_INFORMATION_DESCRIPTIONS is not set");
                    throw new IllegalStateException();
                }
                SAXParser saxParser = factory.newSAXParser();
@@ -302,7 +302,7 @@ public class InformationServlet extends HttpServlet {
         request.setAttribute("bundle", bundle);
         String urlPrefix = (String)config.get(RequestUtil.PROP_INFORMATION_URL_PREFIX);
         if ((urlPrefix == null) || (urlPrefix.equals(""))) {
-            log.logCritical("Required configuration property PROP_INFORMATION_FEIDEATTRIBS_XML is not set");
+            log.logCritical("Required configuration property PROP_INFORMATION_DESCRIPTIONS is not set");
             throw new IllegalStateException();
         } else {
             request.setAttribute("urlPrefix", urlPrefix);
