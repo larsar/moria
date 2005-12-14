@@ -117,7 +117,7 @@ $Id$
                             <td>Usage statistics for each service.</td>
                         </tr>
                         <tr>
-                            <td><a href="https://login.feide.no/moria2/Information">Insight</a></td>
+                            <td><a href="https://login.feide.no/moria2/Information">Information</a></td>
                             <td>Users may log on to review the information published about them through this Moria2 instance.</td>
                         </tr>
                     </table>
