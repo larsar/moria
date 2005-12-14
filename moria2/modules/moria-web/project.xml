@@ -42,7 +42,7 @@
     &dep-servlet-api;
     &dep-jsp-api;
     &dep-xerces-xercesImpl;
-    &dep-xerces-xmlParserAPIs;
+    &dep-xerces-xml-apis;
     &dep-jdom;
     &dep-commons-codec;
 

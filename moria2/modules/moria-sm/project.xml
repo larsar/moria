@@ -26,7 +26,7 @@
     <!-- Misc deps -->
     &dep-log4j;
     &dep-xerces-xercesImpl;
-    &dep-xerces-xmlParserAPIs;
+    &dep-xerces-xml-apis;
 
     <!-- JBossCache deps -->
     &dep-concurrent;

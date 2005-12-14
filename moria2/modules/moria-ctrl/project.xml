@@ -32,7 +32,7 @@
     &dep-log4j;
     &dep-servlet-api;
     &dep-xerces-xercesImpl;
-    &dep-xerces-xmlParserAPIs;
+    &dep-xerces-xml-apis;
     &dep-jdom;
     
     <!-- XMLRPC deps -->
