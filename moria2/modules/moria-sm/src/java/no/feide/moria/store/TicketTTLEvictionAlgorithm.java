@@ -35,6 +35,10 @@ import org.jboss.cache.eviction.EvictionException;
 import org.jboss.cache.eviction.EvictionPolicy;
 import org.jboss.cache.eviction.Region;
 
+/* TODO: Switch to java.util.concurrent.* classes instead.
+ * See http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html
+ * for more information.
+ */
 import EDU.oswego.cs.dl.util.concurrent.ReentrantWriterPreferenceReadWriteLock;
 import EDU.oswego.cs.dl.util.concurrent.Sync;
 import EDU.oswego.cs.dl.util.concurrent.SyncList;
