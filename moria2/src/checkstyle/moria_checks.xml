@@ -44,7 +44,6 @@
 
         <!-- Moria modifications -->
         <property name="tabWidth" value="4"/>
-
         <module name="LineLength">
           <property name="max" value="150"/>
         </module>
@@ -109,12 +108,12 @@
         <!-- Modifier Checks                                    -->
         <!-- See http://checkstyle.sf.net/config_modifiers.html -->
         <module name="ModifierOrder"/>
-        <module name="RedundantModifier"/>
+        <!-- module name="RedundantModifier"/ -->
 
         <!-- Checks for blocks. You know, those {}'s         -->
         <!-- See http://checkstyle.sf.net/config_blocks.html -->
         <module name="AvoidNestedBlocks"/>
-        <module name="EmptyBlock"/>
+        <!-- module name="EmptyBlock"/ -->
         <module name="LeftCurly"/>
         <!-- <module name="NeedBraces"/> -->
         <module name="RightCurly"/>
@@ -131,9 +130,9 @@
 	</module>
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
-        <module name="MagicNumber"/>
+        <!-- module name="MagicNumber"/ -->
         <module name="MissingSwitchDefault"/>
-        <module name="RedundantThrows"/>
+        <!-- module name="RedundantThrows"/ -->
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
 
@@ -153,7 +152,7 @@
             <property name="format" value="\s+$"/>
             <property name="message" value="Line has trailing spaces."/>
         </module>
-        <module name="TodoComment"/>
+        <!-- module name="TodoComment"/ -->
         <module name="UpperEll"/>
 
     </module>
