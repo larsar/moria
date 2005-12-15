@@ -77,6 +77,11 @@ public class Moria1DemoServlet
 extends HttpServlet {
 
     /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 855155044401873910L;
+
+    /**
      * The system property giving the configuration file name for the Demo
      * servlet. <br>
      * <br>
@@ -162,7 +167,15 @@ extends HttpServlet {
     /**
      * Required parameters.
      */
-    private static final String[] REQUIRED_PARAMETERS = {CONFIG_SERVICE_ENDPOINT, CONFIG_MASTER_USERNAME, CONFIG_MASTER_PASSWORD, CONFIG_MASTER_ATTRIBUTE_REQUEST, CONFIG_SLAVE_USERNAME, CONFIG_SLAVE_PASSWORD, CONFIG_SLAVE_ATTRIBUTE_REQUEST, CONFIG_LOGOUT_URL};
+    private static final String[] REQUIRED_PARAMETERS = {
+                                                         CONFIG_SERVICE_ENDPOINT,
+                                                         CONFIG_MASTER_USERNAME,
+                                                         CONFIG_MASTER_PASSWORD,
+                                                         CONFIG_MASTER_ATTRIBUTE_REQUEST,
+                                                         CONFIG_SLAVE_USERNAME,
+                                                         CONFIG_SLAVE_PASSWORD,
+                                                         CONFIG_SLAVE_ATTRIBUTE_REQUEST,
+                                                         CONFIG_LOGOUT_URL};
 
     /**
      * Name of the URL parameter used to retrieve the Moria service ticket. <br>
@@ -179,7 +192,7 @@ extends HttpServlet {
      * @throws ServletException
      *             Never.
      */
-    public void init() throws ServletException {
+    public final void init() throws ServletException {
 
         // Set the truststore.
         final Properties config = getConfig();
@@ -206,8 +219,9 @@ extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
-    public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
-    throws IOException, ServletException {
+    public final void doGet(final HttpServletRequest request,
+                            final HttpServletResponse response) throws IOException,
+                                                               ServletException {
 
         // Be sure to dump all exceptions.
         try {
@@ -246,7 +260,6 @@ extends HttpServlet {
                 out.println("<h1 align=\"center\">Authentication successful</h1>");
                 out.println("<p align=\"center\"><a href=\"" + config.getProperty(CONFIG_LOGOUT_URL) + "\">Logout</a></p>");
                 out.println("<i>System '" + config.getProperty(CONFIG_MASTER_USERNAME) + "':</i>");
-                String ticketGrantingTicket = null; // For later use.
 
                 // Get and display attributes.
                 // TODO: Catch exceptions here.
