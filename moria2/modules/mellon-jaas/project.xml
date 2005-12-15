@@ -29,7 +29,7 @@
     &dep-wsdl4j;
 
     <!-- Misc deps -->
-    &dep-servlet-api;
+    &dep-j2ee;
     &dep-commons-logging;
 
     <!-- Moria2 deps -->

@@ -211,28 +211,15 @@
 
 
 <!--
-      TODO: Replace with proper dependencies.
+      J2EE.
   -->
-<!ENTITY dep-servlet-api "
+<!ENTITY dep-j2ee "
   <dependency>
-    <groupId>jboss</groupId>
-    <artifactId>javax.servlet</artifactId>
-    <version>4.0.1sp1</version>
+    <groupId>j2ee</groupId>
+    <artifactId>j2ee</artifactId>
+    <version>1.4</version>
     <type>jar</type>
-    <url>http://www.jboss.org/</url>
-    <properties>
-      <war.bundle>false</war.bundle>
-    </properties>
-  </dependency>
-  ">
-
-<!ENTITY dep-jsp-api "
-  <dependency>
-    <groupId>jboss</groupId>
-    <artifactId>javax.servlet.jsp</artifactId>
-    <version>4.0.1sp1</version>
-    <type>jar</type>
-    <url>http://www.jboss.org/</url>
+    <url>http://java.sun.com/</url>
     <properties>
       <war.bundle>false</war.bundle>
     </properties>

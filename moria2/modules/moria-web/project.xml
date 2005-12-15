@@ -39,8 +39,7 @@
 
     <!-- Misc deps -->
     &dep-log4j;
-    &dep-servlet-api;
-    &dep-jsp-api;
+    &dep-j2ee;
     &dep-xerces-xercesImpl;
     &dep-xerces-xml-apis;
     &dep-jdom;
