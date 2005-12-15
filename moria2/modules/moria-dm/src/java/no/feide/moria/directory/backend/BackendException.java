@@ -24,7 +24,13 @@ package no.feide.moria.directory.backend;
  */
 public class BackendException
 extends Exception {
-    
+
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = -671305694308654063L;
+
+
     /**
      * Basic constructor.
      * @param message
@@ -35,6 +41,7 @@ extends Exception {
         super(message);
 
     }
+
 
     /**
      * Constructor.

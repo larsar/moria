@@ -58,7 +58,7 @@ implements DirectoryManagerBackend {
      *            user names are case insensitive, while attribute values are
      *            stored as specified in the configuration.
      * @throws DirectoryManagerConfigurationException
-     *            If config lacks a mandatory element.
+     *             If config lacks a mandatory element.
      */
     protected DummyBackend(final Element config) {
 
@@ -124,7 +124,7 @@ implements DirectoryManagerBackend {
      * Checks whether a user exists.
      * @param username
      *            The username. Case is ignored.
-     * @return    true if the user exists, false otherwise.
+     * @return true if the user exists, false otherwise.
      * @see DirectoryManagerBackend#userExists(String)
      */
     public final boolean userExists(final String username) {
@@ -151,8 +151,8 @@ implements DirectoryManagerBackend {
      *             If userCredentials are <code>null</code>.
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
-    public final HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws AuthenticationFailedException {
+    public final HashMap authenticate(final Credentials userCredentials,
+                                      final String[] attributeRequest) throws AuthenticationFailedException {
 
         // Sanity check.
         if (userCredentials == null)
@@ -165,12 +165,10 @@ implements DirectoryManagerBackend {
             // Successful authentication; return any requested user attributes.
             return user.getAttributes(attributeRequest);
 
-        } else {
-
-            // Bad authentication.
-            throw new AuthenticationFailedException("User \"" + userCredentials.getUsername() + "\" failed authentication");
-
         }
+
+        // Bad authentication.
+        throw new AuthenticationFailedException("User \"" + userCredentials.getUsername() + "\" failed authentication");
 
     }
 

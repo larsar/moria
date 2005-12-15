@@ -28,15 +28,14 @@ import no.feide.moria.directory.index.IndexedReference;
  *
  */
 public interface DirectoryManagerBackend {
-    
-    
+
     /**
      * The character set used when encoding attribute values.<br>
      * <br>
-     * Current value is <code>"ISO-8859-1"</code>. 
+     * Current value is <code>"ISO-8859-1"</code>.
      */
     public static final String ATTRIBUTE_VALUE_CHARSET = "ISO-8859-1";
-    
+
     /**
      * The list of "virtual" attributes, that is, attributes that are generated
      * by Moria itself, and not read from any physical attribute through the
@@ -46,6 +45,7 @@ public interface DirectoryManagerBackend {
      */
     // TODO: Use the identical constant value from MoriaController instead?
     public static final String[] VIRTUAL_ATTRIBUTES = {"tgt"};
+
 
     /**
      * Opens a new backend connection.
@@ -69,8 +69,7 @@ public interface DirectoryManagerBackend {
 
 
     /**
-     * Attempts to authenticate a user and retrieve a set of user
-     * attributes.
+     * Attempts to authenticate a user and retrieve a set of user attributes.
      * @param userCredentials
      *            The user's credentials. Cannot be <code>null</code>.
      * @param attributeRequest
@@ -85,8 +84,9 @@ public interface DirectoryManagerBackend {
      * @throws BackendException
      *             If there was a problem accessing the backend.
      */
-    HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws AuthenticationFailedException, BackendException;
+    HashMap authenticate(final Credentials userCredentials,
+                         final String[] attributeRequest) throws AuthenticationFailedException,
+                                                         BackendException;
 
 
     /**

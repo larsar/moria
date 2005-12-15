@@ -48,6 +48,7 @@ public interface DirectoryManagerIndex {
     /**
      * Return the username associated with a certain search base.
      * @param base
+     *            The search base.
      * @return The username. May be an empty string if <code>base</code> is
      *         unknown.
      */
@@ -57,6 +58,7 @@ public interface DirectoryManagerIndex {
     /**
      * Return the password associated with a certain search base.
      * @param base
+     *            The search base.
      * @return The password. May be an empty string if <code>base</code> is
      *         unknown.
      */

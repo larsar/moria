@@ -71,21 +71,18 @@ public class DirectoryManager {
 
     /**
      * Sets or updates the Directory Manager's configuration. The first time
-     * this
-     * method is used, it will force an initial index update by reading the
-     * index
-     * through <code>IndexUpdater.readIndex()</code>.
+     * this method is used, it will force an initial index update by reading the
+     * index through <code>IndexUpdater.readIndex()</code>.
      * @param config
      *            The configuration. The actual parsing is done by the
      *            <code>DirectoryManagerConfiguration</code> constructor.
      * @throws DirectoryManagerConfigurationException
-     *             If unable create a new configuration object from config
-     *             or config is null, and also not able to fall back to a
-     *             previous working configuration to
-     *             fall back to (in which case a warning will be logged
-     *             instead). Also thrown if unable to resolve the backend
-     *             factory class (as specified in the configuration file) or if
-     *             unable to instantiate this class.
+     *             If unable create a new configuration object from config or
+     *             config is null, and also not able to fall back to a previous
+     *             working configuration to fall back to (in which case a
+     *             warning will be logged instead). Also thrown if unable to
+     *             resolve the backend factory class (as specified in the
+     *             configuration file) or if unable to instantiate this class.
      * @see DirectoryManagerConfiguration#DirectoryManagerConfiguration(Properties)
      * @see IndexUpdater#readIndex()
      */
@@ -106,12 +103,11 @@ public class DirectoryManager {
                 // Critical error; we don't have a working configuration.
                 throw new DirectoryManagerConfigurationException("Unable to set initial configuration", e);
 
-            } else {
-
-                // Non-critical error; we still have a working configuration.
-                log.logWarn("Unable to update existing configuration", e);
-
             }
+
+            // Non-critical error; we still have a working configuration.
+            log.logWarn("Unable to update existing configuration", e);
+
 
         }
 
@@ -190,8 +186,8 @@ public class DirectoryManager {
      *             <code>setConfig(Properties)</code> first.
      * @see DirectoryManagerBackend#userExists(String)
      */
-    public final boolean userExists(final String sessionTicket, final String username)
-    throws BackendException {
+    public final boolean userExists(final String sessionTicket,
+                                    final String username) throws BackendException {
 
         // Sanity check.
         if (configuration == null)
@@ -202,24 +198,24 @@ public class DirectoryManager {
         IndexedReference[] references = index.getReferences(username);
         try {
             if (references != null) {
-    
+
                 // Found at least one reference.
                 backend.open(references);
-    
+
             } else {
-    
+
                 // Could not find the user.
                 return false;
-    
+
             }
-    
+
             // Check that the user actually exists.
             return backend.userExists(username);
         } finally {
-            
+
             // Close the backend.
             backend.close();
-            
+
         }
     }
 
@@ -260,9 +256,11 @@ public class DirectoryManager {
      * @see #setConfig(Properties)
      * @see DirectoryManagerBackend#authenticate(Credentials, String[])
      */
-    public final HashMap authenticate(final String sessionTicket, final Credentials userCredentials, final String[] attributeRequest)
-    throws AuthenticationFailedException, BackendException,
-    IllegalStateException {
+    public final HashMap authenticate(final String sessionTicket,
+                                      final Credentials userCredentials,
+                                      final String[] attributeRequest) throws AuthenticationFailedException,
+                                                                      BackendException,
+                                                                      IllegalStateException {
 
         // Sanity checks.
         if (configuration == null)

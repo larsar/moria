@@ -21,7 +21,6 @@ package no.feide.moria.directory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Properties;
 import org.jdom.Attribute;
 import org.jdom.Element;

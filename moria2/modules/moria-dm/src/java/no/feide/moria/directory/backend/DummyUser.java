@@ -55,7 +55,8 @@ public class DummyUser {
      *             If <code>username</code> or <code>password</code> is
      *             <code>null</code>.
      */
-    public DummyUser(final String username, final String password, final HashMap attributes) {
+    public DummyUser(final String username, final String password,
+                     final HashMap attributes) {
 
         super();
 
@@ -82,13 +83,13 @@ public class DummyUser {
      *            The username to match. Cannot be <code>null</code>.
      * @param password
      *            The password to match. Cannot be <code>null</code>.
-     * @return
-     *            true if authentication succeeds, false otherwise.
+     * @return true if authentication succeeds, false otherwise.
      * @throws IllegalArgumentException
      *             If <code>username</code> or <code>password</code> is
      *             <code>null</code>.
      */
-    public final boolean authenticate(final String username, final String password) {
+    public final boolean authenticate(final String username,
+                                      final String password) {
 
         // Sanity checks.
         if (username == null)
@@ -105,7 +106,7 @@ public class DummyUser {
     /**
      * Gets this user's attributes.
      * @param request
-     *         The attribute request. Case is ignored.
+     *            The attribute request. Case is ignored.
      * @return The requested user's attributes, if any were found. Note that the
      *         attribute names returned will match the case of the attribute
      *         names in the request.

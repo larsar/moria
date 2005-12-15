@@ -20,11 +20,9 @@
 package no.feide.moria.directory.backend;
 
 import java.io.File;
-import java.security.Provider;
 import java.security.Security;
 
 import no.feide.moria.directory.DirectoryManagerConfigurationException;
-import no.feide.moria.log.MessageLogger;
 
 import org.jdom.Element;
 
@@ -33,11 +31,6 @@ import org.jdom.Element;
  */
 public class JNDIBackendFactory
 implements DirectoryManagerBackendFactory {
-    
-    /**
-     * The message logger.
-     */
-    private MessageLogger log = new MessageLogger(JNDIBackendFactory.class);
 
     /**
      * The number of seconds before a backend connection times out. Default is
@@ -61,8 +54,8 @@ implements DirectoryManagerBackendFactory {
 
 
     /**
-     * Sets the factory-specific configuration. Must be called before
-     * creating a new backend, or the backend will not work as intended. <br>
+     * Sets the factory-specific configuration. Must be called before creating a
+     * new backend, or the backend will not work as intended. <br>
      * <br>
      * Note that using this method with an updated configuration that modifies
      * any JVM global settings (currently all settings in the
@@ -93,8 +86,8 @@ implements DirectoryManagerBackendFactory {
      *             If <code>config</code> is null.
      * @throws DirectoryManagerConfigurationException
      *             If the configuration element is not a <code>JNDI</code>
-     *             <code>Backend</code> element, or if the optional
-     *             <code>Truststore</code> element
+     *             <code>Backend</code>
+     *             element, or if the optional <code>Truststore</code> element
      *             is found, but without either of the <code>filename</code>
      *             or <code>password</code> attributes. Also thrown if the
      *             <code>timeout</code> attribute contains an illegal timeout
@@ -103,8 +96,7 @@ implements DirectoryManagerBackendFactory {
      *             or if the <code>filename</code> file does not exist.
      * @see DirectoryManagerBackendFactory#setConfig(Element)
      */
-    public final synchronized void setConfig(final Element config)
-    throws DirectoryManagerConfigurationException {
+    public final synchronized void setConfig(final Element config) throws DirectoryManagerConfigurationException {
 
         // Sanity checks.
         if (config == null)
@@ -151,13 +143,13 @@ implements DirectoryManagerBackendFactory {
                     throw new DirectoryManagerConfigurationException("Attribute \"filename\" not found in Truststore element");
                 if (!(new File(value).exists()))
                     throw new DirectoryManagerConfigurationException("Truststore file " + value + " does not exist");
-                
+
                 // Explicitly set com.sun.net.ssl.internal.ssl.Provider...
                 com.sun.net.ssl.internal.ssl.Provider.install();
-                Security.insertProviderAt(new com.sun.net.ssl.internal.ssl.Provider(), 1);                
+                Security.insertProviderAt(new com.sun.net.ssl.internal.ssl.Provider(), 1);
                 System.setProperty("java.protocol.handler.pkgs", "javax.net.ssl");
-                
-                // Get and set truststore filename.               
+
+                // Get and set truststore filename.
                 System.setProperty("javax.net.ssl.trustStore", value);
 
                 // Get and set truststore password.
@@ -184,7 +176,7 @@ implements DirectoryManagerBackendFactory {
      *            <code>DirectoryManagerBackend</code> (actually
      *            <code>JNDIBackend</code> instances) for logging purposes.
      *            May be <code>null</code> or an empty string.
-     * @return    The new JNDIBackend.
+     * @return The new JNDIBackend.
      * @see DirectoryManagerBackendFactory#createBackend(String)
      */
     public final synchronized DirectoryManagerBackend createBackend(final String sessionTicket) {

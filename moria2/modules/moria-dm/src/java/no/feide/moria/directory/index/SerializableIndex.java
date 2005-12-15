@@ -56,8 +56,14 @@ implements Serializable, DirectoryManagerIndex {
      */
     private HashMap realms = new HashMap();
 
+    /**
+     * Internal list of usernames for each association/exception.
+     */
     private HashMap usernames = new HashMap();
 
+    /**
+     * Internal list of passwords for each association/exception.
+     */
     private HashMap passwords = new HashMap();
 
 
@@ -160,23 +166,22 @@ implements Serializable, DirectoryManagerIndex {
         // Extract the realm, with sanity check.
         int i = id.lastIndexOf('@');
         if ((i > 0) && (associations.containsKey(id.substring(i + 1)))) {
-         
+
             // Gather associations, usernames and passwords.
             String[] gatheredAssociations = (String[]) associations.get(id.substring(i + 1));
             ArrayList gatheredUsernames = new ArrayList(gatheredAssociations.length);
             ArrayList gatheredPasswords = new ArrayList(gatheredAssociations.length);
-            for (int j=0; j<gatheredAssociations.length; j++) {
+            for (int j = 0; j < gatheredAssociations.length; j++) {
                 gatheredUsernames.add(usernames.get(gatheredAssociations[j]));
                 gatheredPasswords.add(passwords.get(gatheredAssociations[j]));
             }
-            newReferences.add(new IndexedReference((String[]) gatheredAssociations, (String[]) gatheredUsernames.toArray(new String[] {}), (String[]) gatheredPasswords.toArray(new String[] {}), false));
+            newReferences.add(new IndexedReference(gatheredAssociations, (String[]) gatheredUsernames.toArray(new String[] {}), (String[]) gatheredPasswords.toArray(new String[] {}), false));
         }
 
         // Did we find any references?
         if (newReferences.size() == 0)
             return null;
-        else
-            return (IndexedReference[]) newReferences.toArray(new IndexedReference[] {});
+        return (IndexedReference[]) newReferences.toArray(new IndexedReference[] {});
 
     }
 
@@ -233,7 +238,10 @@ implements Serializable, DirectoryManagerIndex {
      *             <code>username</code>, or <code>password</code> is
      *             <code>null</code>.
      */
-    public final void addAssociation(final String realm, final String base, final String username, final String password) {
+    public final void addAssociation(final String realm,
+                                     final String base,
+                                     final String username,
+                                     final String password) {
 
         // Sanity checks.
         if (realm == null)
@@ -251,7 +259,7 @@ implements Serializable, DirectoryManagerIndex {
             // Update existing association.
             ArrayList bases = new ArrayList(Arrays.asList((String[]) associations.get(realm)));
             bases.add(base);
-            associations.put(realm, (String[]) bases.toArray(new String[] {}));
+            associations.put(realm, bases.toArray(new String[] {}));
 
         } else {
 
@@ -288,7 +296,9 @@ implements Serializable, DirectoryManagerIndex {
      *             If either <code>id</code> or <code>reference</code> is
      *             <code>null</code>.
      */
-    public final void addException(final String id, final String reference, final String realm) {
+    public final void addException(final String id,
+                                   final String reference,
+                                   final String realm) {
 
         // Sanity checks.
         if (id == null)
@@ -337,8 +347,7 @@ implements Serializable, DirectoryManagerIndex {
      *             If <code>base</code> is <code>null</code> or an empty
      *             string.
      */
-    public final String getUsername(final String base)
-    throws IllegalArgumentException {
+    public final String getUsername(final String base) throws IllegalArgumentException {
 
         // Sanity check.
         if ((base == null) || (base.length() == 0))
@@ -348,8 +357,7 @@ implements Serializable, DirectoryManagerIndex {
         // recognized.
         if (usernames.containsKey(base))
             return (String) usernames.get(base);
-        else
-            return "";
+        return "";
 
     }
 
@@ -366,8 +374,7 @@ implements Serializable, DirectoryManagerIndex {
      *             If <code>base</code> is <code>null</code> or an empty
      *             string.
      */
-    public final String getPassword(final String base)
-    throws IllegalArgumentException {
+    public final String getPassword(final String base) throws IllegalArgumentException {
 
         // Sanity check.
         if ((base == null) || (base.length() == 0))
@@ -377,8 +384,7 @@ implements Serializable, DirectoryManagerIndex {
         // recognized.
         if (passwords.containsKey(base))
             return (String) passwords.get(base);
-        else
-            return "";
+        return "";
 
     }
 

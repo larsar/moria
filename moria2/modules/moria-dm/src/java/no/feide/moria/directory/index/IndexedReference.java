@@ -66,7 +66,9 @@ public class IndexedReference {
      *             <code>passwords</code> are <code>null</code> or contain a
      *             different number of elements than <code>references</code>.
      */
-    public IndexedReference(final String[] references, final String[] usernames, final String[] passwords, final boolean explicitReference)
+    public IndexedReference(final String[] references,
+                            final String[] usernames, final String[] passwords,
+                            final boolean explicitReference)
     throws IllegalArgumentException {
 
         super();
@@ -99,8 +101,8 @@ public class IndexedReference {
         return (String[]) myReferences.clone();
 
     }
-    
-    
+
+
     /**
      * Gets the usernames.
      * @return One or more usernames.
@@ -110,8 +112,8 @@ public class IndexedReference {
         return (String[]) myUsernames.clone();
 
     }
-    
-    
+
+
     /**
      * Gets the external passwords.
      * @return One or more passwords.

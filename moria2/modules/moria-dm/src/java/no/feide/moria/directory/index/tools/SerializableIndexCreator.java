@@ -45,12 +45,19 @@ public final class SerializableIndexCreator {
     private static SerializableIndex generatedIndex = new SerializableIndex();
 
 
-    /** Default private constructor.  */
-    private SerializableIndexCreator() { };
+    /**
+     * Default private constructor.
+     */
+    private SerializableIndexCreator() {
+
+        // Does nothing.
+
+    };
+
 
     /**
-     * Main method. Reads the index file, writes the index object, and
-     * finally verifies that the generated and written contents match.
+     * Main method. Reads the index file, writes the index object, and finally
+     * verifies that the generated and written contents match.
      * @param args
      *            First element should be the index specification file, second
      *            element should be the index object output file.
@@ -62,8 +69,9 @@ public final class SerializableIndexCreator {
      *             If unable to read the <code>SerializableIndex</code> object
      *             from file when verifying results.
      */
-    public static void main(final String[] args)
-    throws IOException, JDOMException, ClassNotFoundException {
+    public static void main(final String[] args) throws IOException,
+                                                JDOMException,
+                                                ClassNotFoundException {
 
         // Show usage.
         if (args.length != 2) {
@@ -100,8 +108,7 @@ public final class SerializableIndexCreator {
         for (int i = 0; i < exceptions.size(); i++) {
 
             Element exception = (Element) exceptions.get(i);
-            generatedIndex.addException(exception.getAttributeValue("id"), exception.getAttributeValue("reference"),
-                    exception.getAttributeValue("realm"));
+            generatedIndex.addException(exception.getAttributeValue("id"), exception.getAttributeValue("reference"), exception.getAttributeValue("realm"));
 
         }
 

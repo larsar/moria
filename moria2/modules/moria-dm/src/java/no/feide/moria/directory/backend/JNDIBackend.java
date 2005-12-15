@@ -30,7 +30,6 @@ import javax.naming.AuthenticationException;
 import javax.naming.AuthenticationNotSupportedException;
 import javax.naming.ConfigurationException;
 import javax.naming.Context;
-import javax.naming.LimitExceededException;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -109,7 +108,10 @@ implements DirectoryManagerBackend {
      *             If <code>guessedAttributeName</code> or
      *             <code>usernameAttribute</code> is <code>null</code>.
      */
-    protected JNDIBackend(final String sessionTicket, final int timeout, final boolean ssl, final String usernameAttributeName, final String guessedAttributeName)
+    protected JNDIBackend(final String sessionTicket, final int timeout,
+                          final boolean ssl,
+                          final String usernameAttributeName,
+                          final String guessedAttributeName)
     throws IllegalArgumentException, NullPointerException {
 
         // Assignments, with sanity checks.
@@ -180,8 +182,7 @@ implements DirectoryManagerBackend {
      * @throws BackendException
      *             If there is a problem accessing the backend.
      */
-    public final boolean userExists(final String username)
-    throws BackendException {
+    public final boolean userExists(final String username) throws BackendException {
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
@@ -250,8 +251,9 @@ implements DirectoryManagerBackend {
      * @throws IllegalArgumentException
      *             If <code>userCredentials</code> is <code>null</code>.
      */
-    public final HashMap authenticate(final Credentials userCredentials, final String[] attributeRequest)
-    throws AuthenticationFailedException, BackendException {
+    public final HashMap authenticate(final Credentials userCredentials,
+                                      final String[] attributeRequest) throws AuthenticationFailedException,
+                                                                      BackendException {
 
         // Sanity check.
         if (userCredentials == null)
@@ -391,8 +393,9 @@ implements DirectoryManagerBackend {
      * @see javax.naming.directory.InitialDirContext#getAttributes(java.lang.String,
      *      java.lang.String[])
      */
-    private HashMap getAttributes(final InitialLdapContext ldap, final String rdn, final String[] attributes)
-    throws BackendException {
+    private HashMap getAttributes(final InitialLdapContext ldap,
+                                  final String rdn,
+                                  final String[] attributes) throws BackendException {
 
         // Sanity checks.
         if (ldap == null)
@@ -406,8 +409,8 @@ implements DirectoryManagerBackend {
         Vector request = new Vector(Arrays.asList(attributes));
         for (int i = 0; i < DirectoryManagerBackend.VIRTUAL_ATTRIBUTES.length; i++)
             while (request.remove(DirectoryManagerBackend.VIRTUAL_ATTRIBUTES[i])) {
+                // Repeat until done...
             }
-        ;
         String[] parsedAttributes = (String[]) request.toArray(new String[] {});
 
         // The context provider URL and DN, for later logging.
@@ -417,11 +420,11 @@ implements DirectoryManagerBackend {
         // Get the attributes from an already initialized LDAP connection.
         Attributes oldAttrs = null;
         try {
-                       
+
             // Remember the URL and bind DN, for later logging.
             final Hashtable environment = ldap.getEnvironment();
             url = (String) environment.get(Context.PROVIDER_URL);
-            dn = (String) environment.get(Context.SECURITY_PRINCIPAL); 
+            dn = (String) environment.get(Context.SECURITY_PRINCIPAL);
 
             // Get the attributes.
             oldAttrs = ldap.getAttributes(rdn, parsedAttributes);
@@ -432,7 +435,7 @@ implements DirectoryManagerBackend {
             // returned and the event is logged.
             log.logWarn("No user element found (DN was '" + dn + "')");
             oldAttrs = new BasicAttributes();
-            
+
         } catch (NamingException e) {
             String a = new String();
             for (int i = 0; i < attributes.length; i++)
@@ -473,7 +476,7 @@ implements DirectoryManagerBackend {
                         throw new BackendException("Unable to use ISO-8859-1 encoding", e);
                     }
                 }
-                newAttrs.put(parsedAttributes[i], (String[]) newValues.toArray(new String[] {}));
+                newAttrs.put(parsedAttributes[i], newValues.toArray(new String[] {}));
 
             }
 
@@ -512,8 +515,8 @@ implements DirectoryManagerBackend {
      *             If there was a problem accessing the backend. Typical causes
      *             include timeouts.
      */
-    private String ldapSearch(final InitialLdapContext ldap, final String pattern)
-    throws BackendException {
+    private String ldapSearch(final InitialLdapContext ldap,
+                              final String pattern) throws BackendException {
 
         // Check pattern for illegal content.
         String[] illegals = {"*", "\\2a"};
@@ -547,8 +550,8 @@ implements DirectoryManagerBackend {
 
             // The search returned too many results.
             log.logWarn("Search on " + url + " for " + pattern + " returned too many results", mySessionTicket);
-            return null;            
-            
+            return null;
+
         } catch (NameNotFoundException e) {
 
             // Element not found. Possibly non-existing reference.
@@ -571,7 +574,8 @@ implements DirectoryManagerBackend {
                 buffer = buffer + ", " + ((SearchResult) results.next()).getName();
             if (!buffer.equals(""))
                 log.logWarn("Search on " + url + " for " + pattern + " gave ambiguous result: [" + entry.getName() + buffer + "]", mySessionTicket);
-            // TODO: Throw BackendException, or a subclass, or just (as now) pick the first and hope for the best?
+            // TODO: Throw BackendException, or a subclass, or just (as now)
+            // pick the first and hope for the best?
             buffer = null;
         } catch (NamingException e) {
             throw new BackendException("Unable to read search results", e);
@@ -590,8 +594,7 @@ implements DirectoryManagerBackend {
      *             If unable to connect to the provider given by
      *             <code>url</code>.
      */
-    private InitialLdapContext connect(final String url)
-    throws NamingException {
+    private InitialLdapContext connect(final String url) throws NamingException {
 
         // Prepare connection.
         Hashtable env = new Hashtable(defaultEnv);

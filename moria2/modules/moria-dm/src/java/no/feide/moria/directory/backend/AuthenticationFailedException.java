@@ -26,6 +26,12 @@ public class AuthenticationFailedException
 extends Exception {
 
     /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 6223030794569477662L;
+
+
+    /**
      * Constructor.
      * @param message
      *            The exception message.

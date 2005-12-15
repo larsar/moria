@@ -26,8 +26,6 @@ import javax.naming.NamingException;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.StartTlsRequest;
 import javax.naming.ldap.StartTlsResponse;
-import javax.net.ssl.SSLSession;
-
 
 /**
  * A simple tool to test TLS (StartTLS) behaviour against LDAP servers.
@@ -35,22 +33,30 @@ import javax.net.ssl.SSLSession;
  */
 public final class StartTlsTester {
 
-    /** Default private constructor.  */
-    private StartTlsTester() { };
+    /** Default private constructor. */
+    private StartTlsTester() {
+
+        // Does nothing.
+
+    };
+
 
     /**
-     * Main method. Reads the index file, writes the index object, and
-     * finally verifies that the generated and written contents match.
+     * Main method. Reads the index file, writes the index object, and finally
+     * verifies that the generated and written contents match.
      * @param args
-     *            <ol><li>truststore filename</li>
+     *            <ol>
+     *            <li>truststore filename</li>
      *            <li>truststore password</li>
-     *            <li>LDAP URL</li></ol>
+     *            <li>LDAP URL</li>
+     *            </ol>
      * @throws NamingException
      *             If there is an LDAP problem.
      * @throws IOException
      *             If unable to read from or write to truststore file.
      */
-    public static void main(final String[] args) throws NamingException, IOException {
+    public static void main(final String[] args) throws NamingException,
+                                                IOException {
 
         // Show usage?
         if (args.length < 3) {
@@ -62,7 +68,7 @@ public final class StartTlsTester {
         }
 
         // Uncomment (or run with -D) to enable SSL debugging.
-        //System.setProperty("javax.net.debug", "ssl");
+        // System.setProperty("javax.net.debug", "ssl");
 
         // Status.
         final String truststoreFilename = args[0];
@@ -78,7 +84,8 @@ public final class StartTlsTester {
         // Prepare environment.
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put("java.naming.ldap.derefAliases", "never");  // Due to OpenSSL problems.
+        env.put("java.naming.ldap.derefAliases", "never"); // Due to OpenSSL
+                                                            // problems.
         env.put(Context.PROVIDER_URL, url);
 
         // Opening.
@@ -90,7 +97,7 @@ public final class StartTlsTester {
 
         // Opening TLS connection.
         System.out.println("Opening SSL connection");
-        SSLSession ssl = tls.negotiate();
+        tls.negotiate();
 
         // Closing.
         System.out.println("Closing");

@@ -46,8 +46,8 @@ public class Credentials {
      *            The user's password. May not be <code>null</code> or an
      *            empty string.
      * @throws IllegalArgumentException
-     *             If <code>username</code> or <code>password</code>
-     *             is null or an empty string.
+     *             If <code>username</code> or <code>password</code> is null
+     *             or an empty string.
      */
     public Credentials(final String username, final String password) {
 

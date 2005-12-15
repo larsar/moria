@@ -35,6 +35,12 @@ public class DirectoryManagerConfigurationException
 extends RuntimeException {
 
     /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 2741780154996396695L;
+
+
+    /**
      * Constructor. Creates a new exception with only an exception message.
      * @param message
      *            The exception message.
@@ -56,7 +62,8 @@ extends RuntimeException {
      *            The exception cause.
      * @see Exception#Exception(java.lang.String, java.lang.Throwable)
      */
-    public DirectoryManagerConfigurationException(final String message, final Throwable cause) {
+    public DirectoryManagerConfigurationException(final String message,
+                                                  final Throwable cause) {
 
         super(message, cause);
 
