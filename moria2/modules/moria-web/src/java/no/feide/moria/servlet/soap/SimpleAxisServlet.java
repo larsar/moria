@@ -52,7 +52,14 @@ import org.w3c.dom.Document;
 public final class SimpleAxisServlet
 extends AxisServlet {
 
-    /** Logger for this class. */
+    /**
+     * Serial version UID.
+     */
+    private static final long serialVersionUID = 6202683940363529171L;
+    
+    /** 
+     * Logger for this class.
+     * */
     private MessageLogger messageLogger = new MessageLogger(SimpleAxisServlet.class);
 
 
@@ -213,7 +220,7 @@ extends AxisServlet {
                 requestDispatcher.forward(request, response);
             } catch (Exception e) {
                 //handleException("Unable to dispatch request to " +
-                // jspLocation + "/axis.jsp", e, request, response);
+                // jspLocation + "/Axis.JSP", e, request, response);
                 return;
             }
         }
@@ -484,12 +491,12 @@ extends AxisServlet {
                 InternalException internal = new InternalException("");
                 request.setAttribute("faultCode", internal.getFaultcode());
                 request.setAttribute("faultString", internal.getFaultstring());
-                messageLogger.logCritical("Unknown internal exception", (Exception) cause);
+                messageLogger.logCritical("Unknown internal exception", cause);
 
             }
 
             /* Log what we're doing. */
-            messageLogger.logWarn("Replying with SOAP Fault - faultCode: '" + request.getAttribute("faultCode") + "' faultString: '" + request.getAttribute("faultString") + "'");
+            messageLogger.logWarn("Replying with SOAP Fault - faultCode: '" + request.getAttribute("faultCode") + "' faultString: '" + request.getAttribute("faultString") + "'", cause);
 
             /* Get the request dispatcher. */
             requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-SOAP-Error.JSP");
@@ -498,7 +505,7 @@ extends AxisServlet {
 
             /* Not a SOAP request? */
             request.setAttribute("logMessage", message);
-            requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-Error.jsp");
+            requestDispatcher = request.getSession().getServletContext().getNamedDispatcher("Axis-Error.JSP");
 
         }
 
