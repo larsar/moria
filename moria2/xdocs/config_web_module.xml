@@ -208,7 +208,7 @@ $Id$
                 </p>
                 <ul>
                     <li>
-                    <code>no.feide.moria.web.information.feideattribs_xml</code>
+                    <code>no.feide.moria.web.information.descriptions</code>
                     <p>
                     Gives the path and name of the file containing the actual
                     attribute descriptions. The XML file contains a root element
@@ -427,7 +427,7 @@ no.feide.moria.web.resource.mail=info@some.org
 no.feide.moria.web.information.url_prefix=http://localhost:8080/moria/Information
 
 # Configuration property for the attribute description file name.
-no.feide.moria.web.information.feideattribs_xml=/some/path/attribs.xml
+no.feide.moria.web.information.descriptions=/some/path/attribs.xml
 
 # Link to the Picture servlet, used to show jpegPhoto attribute in InformationServlet.
 no.feide.moria.web.piclink=http://localhost:8080/moria/Picture
