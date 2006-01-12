@@ -358,7 +358,9 @@ $Id$
         from the web service are sent through the Axis servlet, and the user's requests
         are sent through the Login servlet. From the servlets all requests are sent to
         the Controller intermediary for processing.
-        <img src="moria2.png"/>
+        <!-- REMOVED DUE TO MISSING IMAGE
+            <img src="moria2.png"/>
+             REMOVED DUE TO MISSING IMAGE -->
       </p>
 
       <subsection name="Controller">
@@ -386,12 +388,13 @@ $Id$
           configuration is passed to the corresponding module.
         </p>
         <p>
-          A configuration file for the configuration manager is required to be set as a
-          system property in the VM before initialization, and this file must
-          contain a property for the time interval for watching the files on the file system
-          along with paths to the individual module configuration files. The content of
-          the configuration managers config file is described in detail in the
-          <a href="configuration.html">configuration documentation</a>.
+            A configuration file for the Configuration Manager is required to be
+            set as a system property in the VM before initialization, and this
+            file must contain a property for the time interval for watching the
+            files on the file system along with paths to the individual module
+            configuration files. The content of the Configuration Manager's
+            configuration file is described in detail in the Configuration
+            Manager <a href="config_configuration_manager.html">documentation</a>.
         </p>
       </subsection>
 
@@ -470,7 +473,7 @@ $Id$
 	<p>
 	  The second mode, for access logging, is only used in the controller.  This mode's intended
 	  use is for usage statistics. Each incident is logged in a predefined format using
-	  predefined identifiers.  See the <a href="TODO">javadoc</a> for more details.
+	  predefined identifiers.  See the <a href="moria-log\apidocs\index.html">JavaDoc</a> for more details.
 	</p>
       </subsection>
 
