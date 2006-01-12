@@ -31,7 +31,7 @@ import java.util.HashMap;
  * @version $Revision$
  *
  * The AttribsHandler class extends the xml DefaultHandler
- * to read the simple feideattribs xml file.
+ * to read the simple attribute description file.
  */
 public class AttribsHandler extends DefaultHandler {
 

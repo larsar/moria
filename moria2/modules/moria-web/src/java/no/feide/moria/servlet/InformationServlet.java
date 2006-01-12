@@ -61,7 +61,7 @@ public class InformationServlet extends HttpServlet {
     private HashMap feideattribsStored = null;
     
     /**
-     * Monitor for the feideattribs xml file.
+     * Monitor for the attribute description file.
      */
     private FileMonitor feideattribsMonitor = null;
 
@@ -112,7 +112,7 @@ public class InformationServlet extends HttpServlet {
     }
 
     /**
-     * Implements a simple xml parser that parses the feideattribs.xml file
+     * Implements a simple xml parser that parses the attribute description file
      * into a HashMap with AttribsData instances.
      *
      * @see AttribsHandler
@@ -124,8 +124,8 @@ public class InformationServlet extends HttpServlet {
           if (config != null) {
             AttribsHandler handler = new AttribsHandler();
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            String filename = (String) config.get(RequestUtil.PROP_INFORMATION_DESCRIPTIONS);
             try {
-               String filename = (String) config.get(RequestUtil.PROP_INFORMATION_DESCRIPTIONS);
                if ((filename == null) || (filename.equals(""))) {
                    log.logCritical("Required configuration property PROP_INFORMATION_DESCRIPTIONS is not set");
                    throw new IllegalStateException();
@@ -134,7 +134,7 @@ public class InformationServlet extends HttpServlet {
                saxParser.parse(new File(filename), handler);
                feideattribsMonitor = new FileMonitor(filename);
             } catch (Throwable t) {
-                log.logCritical("Error parsing feideattribs.xml");
+                log.logCritical("Error parsing attribute description file '" + filename + "'");
               throw new IllegalStateException();
             } finally {
               feideattribsStored = handler.getAttribs();
@@ -264,7 +264,7 @@ public class InformationServlet extends HttpServlet {
      */
     public final void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        if (getAttribs() == null) throw new IOException("feideattribs.xml not parsed");
+        if (getAttribs() == null) throw new IOException("Attribute description file not parsed");
 
         String ticketId = request.getParameter("moriaID");
 

@@ -245,9 +245,9 @@ public final class RequestUtil {
     public static final String PROP_BACKENDSTATUS_IGNORE = PATH_PREFIX + "backendstatus.ignore";
 
     /**
-     * Bundle for the information servlet.
+     * Bundle for the Information servlet's attribute descriptions. 
      */
-    public static final String BUNDLE_INFORMATIONSERVLET = "feideattribs";
+    public static final String BUNDLE_INFORMATIONSERVLET = "attributes";
 
     /**
      * Bundle for the information page about the information servlet.

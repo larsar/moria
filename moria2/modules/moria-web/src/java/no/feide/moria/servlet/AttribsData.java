@@ -32,8 +32,9 @@ import java.util.Comparator;
  * Stores data for all possible user attributes registered. The attributes
  * are read from an xml file to make it easy to add and change the attributes.
  *
- * The attribute is identified by the "key" keyword, which stores the attribute name,
- * but each attribute has other data as well. See feideattribs.xml for more information.
+ * The attribute is identified by the "key" keyword, which stores the attribute
+ * name, but each attribute has other data as well. See the attribute
+ * description file for more information.
  *
  */
 
