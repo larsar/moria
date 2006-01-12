@@ -68,7 +68,7 @@ $Id$
                 short-form organization names appearing elsewhere in other
                 configuration files, such as the <a href="config_web_module.html#Web Module">Web
                 Module</a> configuration file.
-                <i>Not currently used.</i>
+                <b><i>Not currently used.</i></b>
                 <!--
                 TODO: Is this actually not used?
                 -->
