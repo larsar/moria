@@ -50,7 +50,7 @@ import no.feide.moria.log.MessageLogger;
  * @version $Revision$
  */
 public final class LoginServlet
-extends HttpServlet {
+extends MoriaServlet {
 
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(LoginServlet.class);
@@ -103,6 +103,13 @@ extends HttpServlet {
                                                          RequestUtil.FAQ_LINK,
                                                          RequestUtil.PROP_FAQ_STATUS};
 
+    /**
+     * 
+     * @return The required parameters for this servlet.
+     */
+    public static String[] getRequiredParameters() {
+        return REQUIRED_PARAMETERS;
+    }
 
     /**
      * Handles the GET request. The GET request should contain a login ticket as
@@ -449,30 +456,6 @@ extends HttpServlet {
      * @see #REQUIRED_PARAMETERS
      */
     private Properties getConfig() {
-
-        /* Read configuration from context. */
-        final Properties config;
-        try {
-            config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
-        } catch (ClassCastException e) {
-            log.logCritical("Config is not correctly set in context");
-            throw new IllegalStateException();
-        }
-
-        // Has the configuration been set at all?
-        if (config == null) {
-            log.logCritical("Configuration is not set in context");
-            throw new IllegalStateException();
-        }
-
-        // Are we missing some required properties?
-        for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-            String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
-            if ((parvalue == null) || (parvalue.equals(""))) {
-                log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
-                throw new IllegalStateException();
-            }
-        }
-        return config;
+        return getServletConfig(getRequiredParameters(), log);
     }
 }

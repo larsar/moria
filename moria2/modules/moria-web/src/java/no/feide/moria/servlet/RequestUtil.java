@@ -235,6 +235,11 @@ public final class RequestUtil {
     public static final String PROP_BACKENDSTATUS_STATISTICS_XML = PATH_PREFIX + "backendstatus.statistics_xml";
 
     /**
+     * Configuration property for the StatusServlet statistics2 basename file path.
+     */
+    public static final String PROP_BACKENDSTATUS_STATISTICS2_BASENAME_XML = PATH_PREFIX + "backendstatus.statistics2_basename_xml";
+
+    /**
      * Configuration property for the StatusServlet statistics2.xml file path.
      */
     public static final String PROP_BACKENDSTATUS_STATISTICS2_XML = PATH_PREFIX + "backendstatus.statistics2_xml";
@@ -376,6 +381,10 @@ public final class RequestUtil {
      */
     public static final String PARAM_SHOW_ATTRS = "showAttributes";
 
+    /**
+     * Attribute URL parameter, used to show statistics from the previous year.
+     */
+    public static final String PARAM_OLD_STATISTICS = "old_statistics";
     /**
      * Parameter in request object: Deny SSO.
      */

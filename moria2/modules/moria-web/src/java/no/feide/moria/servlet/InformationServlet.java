@@ -51,7 +51,7 @@ import java.util.Vector;
  * @author Eva Indal
  * @version $Revision$
  */
-public class InformationServlet extends HttpServlet {
+public class InformationServlet extends MoriaServlet {
 
     /**
      * A hash map containing all possible attributes for a user.
@@ -104,7 +104,14 @@ public class InformationServlet extends HttpServlet {
         RequestUtil.PROP_INFORMATION_DESCRIPTIONS,
         RequestUtil.PIC_LINK
     };
-
+    
+    /**
+     * 
+     * @return the required parameters for this servlet.
+     */
+    public static String[] getRequiredParameters() {
+        return REQUIRED_PARAMETERS;
+    }
     /**
      * Constructor.
      */
@@ -119,8 +126,13 @@ public class InformationServlet extends HttpServlet {
      *      AttribsData
      */
     public final synchronized HashMap getAttribs() {
-         if (feideattribsMonitor == null || feideattribsMonitor.hasChanged()) {
-          Properties config = getConfig();
+       if (feideattribsMonitor == null || feideattribsMonitor.hasChanged()) {
+          Properties config; 
+          try {
+               config = getServletConfig(getRequiredParameters(), log);
+          } catch (IllegalStateException e) {
+              config = null;
+          }              
           if (config != null) {
             AttribsHandler handler = new AttribsHandler();
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -217,40 +229,6 @@ public class InformationServlet extends HttpServlet {
         return out;
     }
 
-
-    /**
-     * Get the config from the context. The configuration is expected to be set
-     * by the controller before requests are sent to this servlet.
-     *
-     * @return The configuration.
-     * @throws IllegalStateException
-     *          If the config is not properly set.
-     *
-     */
-    private Properties getConfig() {
-        final Properties config;
-
-        /* Validate config */
-        try {
-            config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
-        } catch (ClassCastException e) {
-            throw new IllegalStateException("Config is not correctly set in context.");
-        }
-        if (config == null)
-            throw new IllegalStateException("Config is not set in context.");
-
-        // Are we missing some required properties?
-        for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-            String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
-            if ((parvalue == null) || (parvalue.equals(""))) {
-                	log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
-                    throw new IllegalStateException();
-            }
-        }
-        return config;
-
-    }
-
     /**
      * Implements the HttpServlet.doGet method.
      *
@@ -277,12 +255,12 @@ public class InformationServlet extends HttpServlet {
 
         /*
          * Makes a Properties object named config, which gets the config
-         * from the getConfig() method
+         * from the getServletConfig() method
          */
         Properties config;
 
         try {
-            config = getConfig();
+            config = getServletConfig(getRequiredParameters(), log);
         } catch (IllegalStateException e) {
             config = null;
         }

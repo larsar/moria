@@ -21,6 +21,7 @@
 package no.feide.moria.servlet;
 
 import java.io.File;
+import java.util.Calendar;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -44,13 +45,10 @@ import no.feide.moria.controller.MoriaController;
  * @version $Revision$
  */
 public class StatisticsServlet
-extends HttpServlet {
+extends MoriaServlet {
 
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(StatusServlet.class);
-
-    /** Copy of configuration properties. */
-    private Properties config = null;
 
     /**
      * List of parameters required by <code>StatusServlet</code>.
@@ -68,8 +66,17 @@ extends HttpServlet {
     private static final String[] REQUIRED_PARAMETERS = {
             RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML,
             RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML,
+            RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_BASENAME_XML,
             RequestUtil.PROP_BACKENDSTATUS_IGNORE,
             RequestUtil.PROP_COOKIE_LANG };
+
+    /**
+     * 
+     * @return the required parameters for this servlet.
+     */
+    public static String[] getRequiredParameters() {
+        return REQUIRED_PARAMETERS;
+    }
 
     /**
      * Handles the GET requests.
@@ -92,6 +99,21 @@ extends HttpServlet {
         PrintWriter out = response.getWriter();
         String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
         
+        String year = request.getParameter("year");
+        if (year != null && year != "") {
+            try {
+                int number = Integer.parseInt(year);
+                if (number < 2005) year = null;
+            }
+            catch (NumberFormatException e) {
+                year = null;
+            }
+        }
+        if (year == null || year.equals("")) {
+            int yearnumber = Calendar.getInstance().get(Calendar.YEAR);
+            Integer tmp = new Integer(yearnumber);
+            year = tmp.toString();
+        }       
         /* Resource bundle. */
         String language = null;
         String langFromCookie = null;
@@ -152,23 +174,29 @@ extends HttpServlet {
         out.println("<table cellspacing=\"0\">");
         out.println("<tbody><tr valign=\"top\">");
         out.println("<td class=\"kropp\">");
+        
+        //Print info
+        if (year.equals("2005")) {
+            
+            // Link to new statistics
+            out.println("<a href=" + (String)config.get(RequestUtil.PROP_STATISTICS_URL) + ">" + bundle.getString("stat_2006") + "</a>");
+            this.printOldStatistics(out, bundle);
                 
-        //Print statistics    
-        out.println("<br><h3>" + bundle.getString("stat_info") + "</h3>");
-        
-        //Statistics from moria1
-        String filename = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML);
-        this.printStatistics(out, bundle, filename);
-        
-        out.println("<br><i>" + bundle.getString("vortex_number") + "</i>");
-        
-        out.println("<br><h3>" + bundle.getString("stat_info2") + "</h3>");
-        out.println(bundle.getString("stat_info3"));
-        
-        //Statistics from moria2
-        String filename2 = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML);
-        this.printStatistics(out, bundle, filename2);
-        
+            //Statistics from moria2
+            out.println("<br><h3>" + bundle.getString("stat_info2") + "</h3>");
+            out.println(bundle.getString("stat_info3"));
+            String filename2 = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML);
+            this.printStatistics(out, bundle, filename2);
+        }
+        else {
+            // Link to statistics for 2005
+            out.println("<a href=" + (String)config.get(RequestUtil.PROP_STATISTICS_URL) + "?year=2005" + ">" + bundle.getString("stat_2005") + "</a>" );
+            out.println("<br><h3>" + bundle.getString("stat_info") + "</h3>");
+            out.println(bundle.getString("stat_info3"));
+            String filename2 = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_BASENAME_XML);
+            filename2 += "_" + year + ".xml";
+            this.printStatistics(out, bundle, filename2);
+        }
         //Layout
         out.println("</tr>");
         out.println("</table>");
@@ -188,7 +216,20 @@ extends HttpServlet {
         
 
     }
-
+    
+    private void printOldStatistics(PrintWriter out, ResourceBundle bundle) {
+        Properties config = getConfig();
+        
+        // Print statistics    
+        out.println("<br><h3>" + bundle.getString("stat_info") + "</h3>");
+        
+        //Statistics from moria1
+        String filename = (String) config.get(RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML);
+        this.printStatistics(out, bundle, filename);
+        
+        out.println("<br><i>" + bundle.getString("vortex_number") + "</i>");
+    }
+    
     private void printStatistics(PrintWriter out, ResourceBundle bundle, String filename) {
         Properties config = getConfig();
         if (config != null) {
@@ -224,12 +265,14 @@ extends HttpServlet {
                     } 
                     final int nummonths = stat.getNumMonths();
                     if (nummonths > 0) {
+                        // Make table
                         out.println("<table border=1><tr><th>" + bundle.getString("stat_services") + "</th>");
                         for (int i = 0; i < nummonths; i++) {
                             out.print("<th>");
                             out.print(bundle.getString(stat.getMonthName(i)));
                             out.print("</th>");
                         }
+                        out.print("<th>" + bundle.getString("stat_sum") + "</th>");
                         for (int j = 0; j < stat.getNumStatisticsData(); j++) {
                             StatisticsData data = stat.getStatisticsData(j);
                             out.print("<tr>");
@@ -240,11 +283,15 @@ extends HttpServlet {
                             } catch (MissingResourceException m) {
                                 out.print("<td>" + name + "</td>");
                             } 
+                            // Print numbers and summarize
+                            int sum = 0;
                             for (int i = 0; i < nummonths; i++) {
+                                sum += data.getCount(stat.getMonthName (i));
                                 out.print("<td align=right>");
                                 out.print(Integer.toString(data.getCount(stat.getMonthName(i))));
                                 out.print("</td>");
                             }
+                            out.print("<td align=right>" + Integer.toString(sum) + "</td>");
                             out.print("</tr>");
                         }
                         
@@ -273,29 +320,7 @@ extends HttpServlet {
      * @see RequestUtil#PROP_CONFIG
      */
     private Properties getConfig() {
-
-        // Validate configuration, and check whether we have a fallback.
-        try {
-            config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
-        } catch (ClassCastException e) {
-            log.logCritical("Unable to get configuration from context");
-            throw new IllegalStateException();
-        }
-        if (config == null) {
-            log.logCritical("Configuration is not set");
-            throw new IllegalStateException();
-        }
-          
-
-        // Are we missing some required properties?
-        for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-            String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
-            if ((parvalue == null) || (parvalue.equals(""))) {
-                	log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
-                    throw new IllegalStateException();
-            }
-        }
-        return config;
+        return getServletConfig(getRequiredParameters(), log);
     }
     
 
