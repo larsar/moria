@@ -65,7 +65,6 @@ extends MoriaServlet {
      */
     private static final String[] REQUIRED_PARAMETERS = {
             RequestUtil.PROP_BACKENDSTATUS_STATISTICS_XML,
-            RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_XML,
             RequestUtil.PROP_BACKENDSTATUS_STATISTICS2_BASENAME_XML,
             RequestUtil.PROP_BACKENDSTATUS_IGNORE,
             RequestUtil.PROP_COOKIE_LANG };
