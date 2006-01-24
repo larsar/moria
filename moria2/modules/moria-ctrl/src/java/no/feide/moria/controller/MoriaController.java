@@ -20,6 +20,8 @@
 
 package no.feide.moria.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -209,6 +211,8 @@ public final class MoriaController {
      * Private constructor. Never to be used.
      */
     private MoriaController() {
+        
+        // Never to be used; no action taken.
 
     }
 
@@ -347,6 +351,10 @@ public final class MoriaController {
      * @throws IllegalInputException
      *             If the <code>loginTicketId</code> and/or
      *             <code>ssoTicketId</code> is null or empty.
+     * @throws UnknownServicePrincipalException
+     *             If the service principal cannot be resolved, in which case
+     *             there is probably an issue with the Authentication Module
+     *             configuration. 
      */
 public static String attemptSingleSignOn(final String loginTicketId, final String ssoTicketId)
     throws UnknownTicketException, InoperableStateException,
@@ -1393,34 +1401,35 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
 
 
     /**
-     * Validates a URL. Uses blacklist to indicate whether the URL should be
-     * accepted or not.
+     * Validates a URL.
      * @param url
      *            The URL to validate.
-     * @return true if the URL is valid, else false.
+     * @return <code>true</code> if the URL is valid, else <code>false</code>.
      * @throws IllegalArgumentException
-     *             if url is null or empty.
+     *             if <code>url</code> is <code>null</code> or an empty string.
+     * @see URI
      */
     static boolean isLegalURL(final String url) {
-
-        // TODO: Implement a more complete URL validator
-
-        if (url == null || url.equals("")) { throw new IllegalArgumentException("'url' must be a non-empty string."); }
-
-        final String[] illegal = new String[] {"\n", "\r"};
-
-        /* Protocol */
-        if (url.indexOf("http://") != 0 && url.indexOf("https://") != 0) { return false; }
-
-        /* Illegal characters */
-        for (int i = 0; i < illegal.length; i++) {
-            if (url.indexOf(illegal[i]) != -1) {
-                messageLogger.logDebug("URL is invalid. Contains '" + illegal[i] + "'. " + url);
+        
+        // Sanity checks.
+        if (url == null || url.equals(""))
+            throw new IllegalArgumentException("URL must be a non-empty string");
+        
+        try {
+            URI validator = new URI(url);
+            final String protocol = validator.getScheme();
+            if (protocol == null ||
+                (!protocol.equalsIgnoreCase("http") &&
+                 !protocol.equalsIgnoreCase("https"))) {
+                messageLogger.logWarn("Illegal URL protocol '" + url + "'");
                 return false;
             }
+        } catch (URISyntaxException e) {
+           messageLogger.logWarn("Illegal URL '" + url + "'");
+           return false;
         }
-
         return true;
+
     }
 
 
