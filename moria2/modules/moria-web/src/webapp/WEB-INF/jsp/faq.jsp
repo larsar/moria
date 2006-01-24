@@ -36,7 +36,8 @@ final ResourceBundle bundle = RequestUtil.getBundle(RequestUtil.BUNDLE_FAQ,
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= bundle.getLocale() %>" >
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="icon" href="../resource/favicon.ico" type="image/png">
+<link rel="icon" href="/favicon.ico" type="image/png">
+<LINK REL="SHORTCUT ICON" HREF="/favicon.ico"> 
 <style type="text/css">
 @import url("../resource/stil.css");
 </style>

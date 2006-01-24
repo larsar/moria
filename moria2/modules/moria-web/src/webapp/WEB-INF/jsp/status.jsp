@@ -14,6 +14,7 @@
 	  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
   <head>
+    <link rel="icon" href="/favicon.ico" type="image/png">
     <title>Moria Web Service - Status</title>
   </head>
   <%
