@@ -29,9 +29,14 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Vector;
+import javax.net.ssl.HttpsURLConnection;
+import java.net.URL;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.net.MalformedURLException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.SAXParser;
@@ -44,19 +49,19 @@ import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.log.MessageLogger;
+import no.feide.moria.store.MoriaStore;
+import no.feide.moria.store.MoriaStoreException;
+import no.feide.moria.store.MoriaStoreFactory;
 
 /**
  * The StatusServlet shows the status of Moria.
  * @version $Revision$
  */
 public class StatusServlet
-extends HttpServlet {
+extends MoriaServlet {
 
     /** Used for logging. */
     private final MessageLogger log = new MessageLogger(StatusServlet.class);
-
-    /** Copy of configuration properties. */
-    private Properties config = null;
 
     /**
      * List of parameters required by <code>StatusServlet</code>.
@@ -72,6 +77,14 @@ extends HttpServlet {
             RequestUtil.PROP_BACKENDSTATUS_STATUS_XML,
             RequestUtil.PROP_COOKIE_LANG };
     
+    /**
+     * 
+     * @return the required parameters for this servlet.
+     */
+    public static String[] getRequiredParameters() {
+        return REQUIRED_PARAMETERS;
+    }
+
     /**
      * A hash map containing the attributes for a test-user.
      * Each item in the hashmap maps from a user name to an
@@ -127,6 +140,142 @@ extends HttpServlet {
         
     }
 
+    /**
+     * Checks the config
+     * 
+     * @param bundle
+     * @return
+     */
+    private Vector checkConfigStatus(ResourceBundle bundle) {
+        Vector statusConfig = new Vector();
+        // InformationServlet
+        try {
+            this.getServletConfig(InformationServlet.getRequiredParameters(), log);
+        } catch (IllegalStateException e) {
+            String errorMsg = bundle.getString("config_info");
+            statusConfig.add(errorMsg);
+        }
+
+        // LoginServlet
+        try {
+            this.getServletConfig(LoginServlet.getRequiredParameters(), log);
+        } catch (IllegalStateException e) {
+            String errorMsg = bundle.getString("config_login");
+            statusConfig.add(errorMsg);
+        }
+
+        // StatisticsServlet
+        try {
+            this.getServletConfig(StatisticsServlet.getRequiredParameters(), log);
+        } catch (IllegalStateException e) {
+            String errorMsg = bundle.getString("config_statistics");
+            statusConfig.add(errorMsg);
+        }
+
+        return statusConfig; 
+    }
+    
+    /**
+     * Checks the modules
+     * 
+     * @param bundle
+     * @return
+     */
+    private Vector checkModules(ResourceBundle bundle) {
+        Map statusMap = MoriaController.getStatus();
+        Vector statusMsg = new Vector();
+        
+        if (statusMap != null) {
+
+            String[] states = {"moria", "init", "am", "dm", "sm", "web"};
+            Map moduleNames = new HashMap();
+            moduleNames.put("moria", "Moria");
+            moduleNames.put("init", "Controller");
+            moduleNames.put("am", "Authorization manager");
+            moduleNames.put("dm", "Directory manager");
+            moduleNames.put("sm", "Store manager");
+            moduleNames.put("web", "Web application");
+
+            for (int i = 0; i < states.length; i++) {
+
+                Object stateObject = statusMap.get(states[i]);
+                Boolean isReady = new Boolean(false);
+
+                if (stateObject instanceof Boolean) {
+                    isReady = (Boolean) stateObject;
+                }
+
+                if (states[i].equals("moria") && isReady.booleanValue()) {
+                    statusMsg = new Vector(); // return an empty vector
+                    break;
+                } else if (!isReady.booleanValue()) {                
+                    String errormsg = bundle.getString("module_1") + moduleNames.get(states[i]) + bundle.getString("module_2") + "<br>";
+                    statusMsg.add(errormsg);
+                }
+            }
+        }
+        return statusMsg;
+    }
+    
+    /**
+     * Checks the SOAP page.
+     * 
+     * @param bundle
+     * @return
+     */
+    private Vector checkSoap(ResourceBundle bundle) {
+        
+        Vector soapMsg = new Vector();
+        
+        try {
+            URL url = new URL("https://login.feide.no/moria2/v2_1/Authentication?wsdl");
+            java.net.Authenticator.setDefault(new Authenticator() {
+                protected java.net.PasswordAuthentication getPasswordAuthentication() 
+                {
+                    char[] passwd = {'d', 'e', 'm', 'o', '_', 's', 'e', 'r', 'v', 'i', 'c', 'e'};
+                    return new PasswordAuthentication(new String("demo_service"), passwd);
+                }
+            });
+                     
+            
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            int code = connection.getResponseCode();
+            if (code != HttpsURLConnection.HTTP_OK) {
+              String err = new String(bundle.getString("soap_error") + new Integer(code).toString());
+              soapMsg.add(err);
+            }
+        //should not happen    
+        } catch(MalformedURLException e) {
+            String err = bundle.getString("soap_exception1");
+            soapMsg.add(err);
+        } catch (IOException e) {
+            String err = bundle.getString("soap_exception2");
+            soapMsg.add(err);
+        }
+        
+        return soapMsg;
+    }
+    
+    public Vector checkBackend(ResourceBundle bundle) {
+        
+        Vector backendMsg = new Vector();
+        
+        for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            BackendStatusUser userData = (BackendStatusUser) backendDataUsers.get(key);
+            String org = userData.getOrganization();
+            try {
+                final Map attributes = MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE},
+                        userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
+            } catch (Exception e) {
+                String err = bundle.getString("ldap_error") + org;
+                backendMsg.add(err);
+            }
+        }
+    return backendMsg;
+    }
 
     /**
      * Handles the GET requests.
@@ -146,10 +295,11 @@ extends HttpServlet {
     throws IOException, ServletException {
         getBackendStatusData();
         
+        Properties config = getConfig();
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-        
+                
         /* Resource bundle. */
         String language = null;
         String langFromCookie = null;
@@ -169,8 +319,8 @@ extends HttpServlet {
         final ResourceBundle bundle = RequestUtil.getBundle(
                 RequestUtil.BUNDLE_STATUSSERVLET,
                 language, langFromCookie, null,
-                request.getHeader("Accept-Language"), (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
-        
+                request.getHeader("Accept-Language"), 
+                (String) config.get(RequestUtil.PROP_LOGIN_DEFAULT_LANGUAGE));
         
         // Header
         out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
@@ -211,44 +361,22 @@ extends HttpServlet {
         out.println("<td class=\"kropp\">");
                 
         // Check status
-        Map statusMap = MoriaController.getStatus();
-        String statusMsg = "";
-
-        if (statusMap != null) {
-
-            String[] states = {"moria", "init", "am", "dm", "sm", "web"};
-            Map moduleNames = new HashMap();
-            moduleNames.put("moria", "Moria");
-            moduleNames.put("init", "Controller");
-            moduleNames.put("am", "Authorization manager");
-            moduleNames.put("dm", "Directory manager");
-            moduleNames.put("sm", "Store manager");
-            moduleNames.put("web", "Web application");
-
-            for (int i = 0; i < states.length; i++) {
-
-                Object stateObject = statusMap.get(states[i]);
-                Boolean isReady = new Boolean(false);
-
-                if (stateObject instanceof Boolean) {
-                    isReady = (Boolean) stateObject;
-                }
-
-                if (states[i].equals("moria") && isReady.booleanValue()) {
-                    statusMsg = bundle.getString("ready_msg") + System.getProperty("line.separator");
-                    break;
-                } else {
-                    statusMsg += moduleNames.get(states[i]) + " ready: " + isReady.toString().toUpperCase()
-                            + "<br />" + System.getProperty("line.separator");
-                }
+        Vector allerrors = new Vector();
+        allerrors.addAll(checkModules(bundle));
+        allerrors.addAll(checkConfigStatus(bundle));
+        allerrors.addAll(checkSoap(bundle));
+        allerrors.addAll(checkBackend(bundle));
+        if (allerrors.size()>0) {
+            for (int i = 0; i < allerrors.size(); i++) {
+            out.println((String)(allerrors.get(i)));
             }
+        } else if (allerrors.size() == 0) {
+            out.println(bundle.getString("ready_msg"));
         }
-        // Print the status message
-        out.println("<p><b>" + bundle.getString("testuser_status") + ": </b><br/>" + statusMsg + "</p>");
         
         // Prepare to check test users.
         out.println("<p><table border=1><tr><th>" + bundle.getString("table_organization") + "</th><th>" + bundle.getString("table_status") + "</th></tr>");
-  
+
         // Start checking a new user.
         for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
@@ -257,7 +385,7 @@ extends HttpServlet {
             try {
                 final Map attributes = MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE},
                         userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
-        	
+            
                 // This test user worked.
                 out.println("<td>OK</td>");
                 
@@ -301,7 +429,7 @@ extends HttpServlet {
         
         // Done with all test users.
         out.println("</table></p>");
-                      
+
         //Layout
         out.println("</tr>");
         out.println("</table>");
@@ -334,31 +462,13 @@ extends HttpServlet {
      * @see RequestUtil#PROP_CONFIG
      */
     private Properties getConfig() {
-
-        // Validate configuration, and check whether we have a fallback.
         try {
-            config = (Properties) getServletContext().getAttribute(RequestUtil.PROP_CONFIG);
-        } catch (ClassCastException e) {
-            log.logCritical("Unable to get configuration from context");
-            throw new IllegalStateException();
+            return getServletConfig(getRequiredParameters(), log);
         }
-        if (config == null) {
-            log.logCritical("Configuration is not set");
-            throw new IllegalStateException();
+        catch (IllegalStateException e) {
+         return null;   
         }
-          
-
-        // Are we missing some required properties?
-        for (int i = 0; i < REQUIRED_PARAMETERS.length; i++) {
-            String parvalue = config.getProperty(REQUIRED_PARAMETERS[i]);
-            if ((parvalue == null) || (parvalue.equals(""))) {
-                	log.logCritical("Required parameter '" + REQUIRED_PARAMETERS[i] + "' is not set");
-                    throw new IllegalStateException();
-            }
-        }
-        return config;
     }
     
-
 }
 
