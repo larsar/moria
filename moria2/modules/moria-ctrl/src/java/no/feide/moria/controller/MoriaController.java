@@ -371,6 +371,20 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
         final MoriaAuthnAttempt authnAttempt;
         try {
             authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
+            
+            // DEBUG CODE STARTS
+            final String[] nonSSOAttributes = authzManager.getNonSSOAttributeNames(authnAttempt.getServicePrincipal());
+            final String[] requestedAttributes = authnAttempt.getRequestedAttributes();
+            String unavailableAttributes = "";
+            for (int i=0; i<requestedAttributes.length; i++)
+                for (int j=0; j<nonSSOAttributes.length; j++)
+                    if (requestedAttributes[i].equalsIgnoreCase(nonSSOAttributes[j]))
+                        unavailableAttributes = unavailableAttributes + requestedAttributes[i] + ", ";
+            if (unavailableAttributes.length() > 0)
+                unavailableAttributes = unavailableAttributes.substring(0, unavailableAttributes.length() - 2);
+            messageLogger.logInfo("Requested attributes not available in SSO context: [" + unavailableAttributes + "]", loginTicketId);
+            // DEBUG CODE ENDS
+            
         } catch (InvalidTicketException e) {
             accessLogger.logUser(AccessStatusType.INVALID_LOGIN_TICKET, null, null, loginTicketId, null);
             messageLogger.logWarn(CAUGHT_INVALID_TICKET, loginTicketId, e);
