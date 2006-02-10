@@ -211,7 +211,7 @@ public final class MoriaController {
      * Private constructor. Never to be used.
      */
     private MoriaController() {
-        
+
         // Never to be used; no action taken.
 
     }
@@ -354,9 +354,10 @@ public final class MoriaController {
      * @throws UnknownServicePrincipalException
      *             If the service principal cannot be resolved, in which case
      *             there is probably an issue with the Authentication Module
-     *             configuration. 
+     *             configuration.
      */
-public static String attemptSingleSignOn(final String loginTicketId, final String ssoTicketId)
+    public static String attemptSingleSignOn(final String loginTicketId,
+                                             final String ssoTicketId)
     throws UnknownTicketException, InoperableStateException,
     IllegalInputException, UnknownServicePrincipalException {
 
@@ -371,21 +372,22 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
         final MoriaAuthnAttempt authnAttempt;
         try {
             authnAttempt = store.getAuthnAttempt(loginTicketId, true, null);
-            
-            // DEBUG CODE STARTS
-            final String[] nonSSOAttributes = authzManager.getNonSSOAttributeNames(authnAttempt.getServicePrincipal());
+
+            // Warn when service attempts to get non-SSO attributes in SSO
+            // context.
+            final String servicePrincipal = authnAttempt.getServicePrincipal();
+            final String[] nonSSOAttributes = authzManager.getNonSSOAttributeNames(servicePrincipal);
             final String[] requestedAttributes = authnAttempt.getRequestedAttributes();
             String unavailableAttributes = "";
-            for (int i=0; i<requestedAttributes.length; i++)
-                for (int j=0; j<nonSSOAttributes.length; j++)
+            for (int i = 0; i < requestedAttributes.length; i++)
+                for (int j = 0; j < nonSSOAttributes.length; j++)
                     if (requestedAttributes[i].equalsIgnoreCase(nonSSOAttributes[j]))
                         unavailableAttributes = unavailableAttributes + requestedAttributes[i] + ", ";
             if (unavailableAttributes.length() > 0) {
                 unavailableAttributes = unavailableAttributes.substring(0, unavailableAttributes.length() - 2);
-                messageLogger.logDebug("Requested attributes not available in SSO context: [" + unavailableAttributes + "]", loginTicketId);
+                messageLogger.logWarn("Service '" + servicePrincipal + "' denied attributes in SSO context: [" + unavailableAttributes + "]", loginTicketId);
             }
-            // DEBUG CODE ENDS
-            
+
         } catch (InvalidTicketException e) {
             accessLogger.logUser(AccessStatusType.INVALID_LOGIN_TICKET, null, null, loginTicketId, null);
             messageLogger.logWarn(CAUGHT_INVALID_TICKET, loginTicketId, e);
@@ -445,6 +447,7 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
         return serviceTicket;
     }
 
+
     /**
      * Performs interactive login attempt using tickets and credentials. The
      * authentication is performed by the directory service, using the supplied
@@ -485,7 +488,11 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      *             If the directory of the user's home organization is
      *             unavailable.
      */
-    public static Map attemptLogin(final String loginTicketId, final String ssoTicketId, final String userId, final String password, final boolean denySSO)
+    public static Map attemptLogin(final String loginTicketId,
+                                   final String ssoTicketId,
+                                   final String userId,
+                                   final String password,
+                                   final boolean denySSO)
     throws UnknownTicketException, InoperableStateException,
     IllegalInputException, AuthenticationException,
     DirectoryUnavailableException, AuthorizationException {
@@ -658,7 +665,11 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      *             If the controller is not yet ready for use, or if the store
      *             cannot be accessed at this time.
      */
-    public static String initiateAuthentication(final String[] attributes, final String returnURLPrefix, final String returnURLPostfix, final boolean forceInteractiveAuthentication, final String servicePrincipal)
+    public static String initiateAuthentication(final String[] attributes,
+                                                final String returnURLPrefix,
+                                                final String returnURLPostfix,
+                                                final boolean forceInteractiveAuthentication,
+                                                final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
     InoperableStateException {
 
@@ -723,7 +734,9 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      *             If <code>servicePrincipal</code> is an empty string, or
      *             <code>operation</code> is unknown or <code>null</code>.
      */
-    private static void authorizationCheck(final String servicePrincipal, final String[] attributes, final String operation)
+    private static void authorizationCheck(final String servicePrincipal,
+                                           final String[] attributes,
+                                           final String operation)
     throws AuthorizationException {
 
         // Sanity checks.
@@ -792,7 +805,8 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      * @throws IllegalArgumentException
      *             If <code>servicePrincipal</code> is an empty string.
      */
-    private static void organizationCheck(final String servicePrincipal, final String userOrganization)
+    private static void organizationCheck(final String servicePrincipal,
+                                          final String userOrganization)
     throws AuthorizationException {
 
         // Sanity check.
@@ -837,7 +851,8 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      * @throws UnknownServicePrincipalException
      *             If <code>servicePrincipal</code> is unknown.
      */
-    public static boolean isOrganizationAllowedForService(final String servicePrincipal, final String userOrganization)
+    public static boolean isOrganizationAllowedForService(final String servicePrincipal,
+                                                          final String userOrganization)
     throws IllegalArgumentException, UnknownServicePrincipalException {
 
         if (servicePrincipal == null || servicePrincipal.equals(""))
@@ -849,21 +864,26 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
         return (userOrganization != null && authzManager.allowUserorg(servicePrincipal, userOrganization));
 
     }
-    
+
+
     /**
-     * Gets the name of the attributes a service requests, based on the loginTicket.
-     * 
-     * @param loginTicket the login ticket
-     * @param servicePrincipal the name of the service that requested the attributes
+     * Gets the name of the attributes a service requests, based on the
+     * loginTicket.
+     * @param loginTicket
+     *            the login ticket
+     * @param servicePrincipal
+     *            the name of the service that requested the attributes
      * @return An array with attribute names.
      * @throws IllegalInputException
      * @throws UnknownTicketException
      * @throws InoperableStateException
      * @throws AuthorizationException
      */
-    public static String[] getRequestedAttributes(final String loginTicket, final String servicePrincipal)
+    public static String[] getRequestedAttributes(final String loginTicket,
+                                                  final String servicePrincipal)
     throws IllegalInputException, UnknownTicketException,
     InoperableStateException, AuthorizationException {
+
         // Sanity checks.
         if (!ready)
             throw new InoperableStateException(NOT_READY);
@@ -886,6 +906,7 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
 
         return attr;
     }
+
 
     /**
      * Retrieves user attributes from an authentication attempt. The method
@@ -917,7 +938,8 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      * @throws InoperableStateException
      *             If Moria is not ready for use.
      */
-    public static Map getUserAttributes(final String serviceTicketId, final String servicePrincipal)
+    public static Map getUserAttributes(final String serviceTicketId,
+                                        final String servicePrincipal)
     throws IllegalInputException, UnknownTicketException,
     InoperableStateException, AuthorizationException {
 
@@ -1018,7 +1040,10 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      * @throws DirectoryUnavailableException
      *             If directory of the user's home organization is unavailable.
      */
-    public static Map directNonInteractiveAuthentication(final String[] requestedAttributes, final String userId, final String password, final String servicePrincipal)
+    public static Map directNonInteractiveAuthentication(final String[] requestedAttributes,
+                                                         final String userId,
+                                                         final String password,
+                                                         final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, AuthenticationException,
     DirectoryUnavailableException {
@@ -1089,7 +1114,9 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      * @throws UnknownTicketException
      *             If the proxy ticket is invalid or does not exist.
      */
-    public static Map proxyAuthentication(final String[] requestedAttributes, final String proxyTicketId, final String servicePrincipal)
+    public static Map proxyAuthentication(final String[] requestedAttributes,
+                                          final String proxyTicketId,
+                                          final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, UnknownTicketException {
 
@@ -1189,7 +1216,9 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      *             If the <code>ticketGrantingTicket</code> is invalid or does
      *             not exist, or <code>userorg</code> is not set in ticket.
      */
-    public static String getProxyTicket(final String ticketGrantingTicket, final String proxyServicePrincipal, final String servicePrincipal)
+    public static String getProxyTicket(final String ticketGrantingTicket,
+                                        final String proxyServicePrincipal,
+                                        final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, UnknownTicketException {
 
@@ -1267,7 +1296,8 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      * @throws DirectoryUnavailableException
      *             If the directory for the user is not available.
      */
-    public static boolean verifyUserExistence(final String userId, final String servicePrincipal)
+    public static boolean verifyUserExistence(final String userId,
+                                              final String servicePrincipal)
     throws AuthorizationException, IllegalInputException,
     InoperableStateException, DirectoryUnavailableException {
 
@@ -1327,7 +1357,8 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      * @see ConfigurationManager#MODULE_SM
      * @see ConfigurationManager#MODULE_WEB
      */
-    public static synchronized void setConfig(final String module, final Properties properties) {
+    public static synchronized void setConfig(final String module,
+                                              final Properties properties) {
 
         if (module.equals(ConfigurationManager.MODULE_AM)) {
             if (authzManager != null) {
@@ -1421,27 +1452,26 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
      *            The URL to validate.
      * @return <code>true</code> if the URL is valid, else <code>false</code>.
      * @throws IllegalArgumentException
-     *             if <code>url</code> is <code>null</code> or an empty string.
+     *             if <code>url</code> is <code>null</code> or an empty
+     *             string.
      * @see URI
      */
     static boolean isLegalURL(final String url) {
-        
+
         // Sanity checks.
         if (url == null || url.equals(""))
             throw new IllegalArgumentException("URL must be a non-empty string");
-        
+
         try {
             URI validator = new URI(url);
             final String protocol = validator.getScheme();
-            if (protocol == null ||
-                (!protocol.equalsIgnoreCase("http") &&
-                 !protocol.equalsIgnoreCase("https"))) {
+            if (protocol == null || (!protocol.equalsIgnoreCase("http") && !protocol.equalsIgnoreCase("https"))) {
                 messageLogger.logWarn("Illegal URL protocol '" + url + "'");
                 return false;
             }
         } catch (URISyntaxException e) {
-           messageLogger.logWarn("Illegal URL '" + url + "'");
-           return false;
+            messageLogger.logWarn("Illegal URL '" + url + "'");
+            return false;
         }
         return true;
 
@@ -1651,5 +1681,5 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
             throw new AuthenticationException();
         return org;
     }
-       
+
 }
