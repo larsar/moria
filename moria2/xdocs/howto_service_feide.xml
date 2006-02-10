@@ -120,6 +120,10 @@ $Id$
                             <td><a href="https://login.feide.no/moria2/Information">Information</a></td>
                             <td>Users may log on to review the information published about them through this Moria2 instance.</td>
                         </tr>
+                        <tr>
+                            <td><a href="https://login.feide.no/moria2/Logout">Logout</a></td>
+                            <td>Users may browse to this URL to effectively log out; removes SSO cookie and deletes any corresponding session.</td>
+                        </tr>
                     </table>
                 </p>
             </subsection>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2004 UNINETT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA 02111-1307, USA.
+
+$Id$
+-->
+<document>
+	<properties>
+		<title>Logout</title>
+		<author email="cato.olsen@uninett.no">Cato Olsen</author>
+	</properties>
+	<body>
+		<section name="Logout">
+			<p>
+                Logging out from an existing Moria2 SSO session is simply done
+                by browsing to the Moria2 instance's logout URL, for example by
+                redirecting the user. This will accomplish two things:
+                <ol>
+                    <li>
+                        Any existing Moria2 SSO cookie will be removed from the
+                        user's browser.
+                    </li>
+                    <li>
+                        Any existing SSO session matching the cookie will be
+                        removed from Moria2 memory.
+                    </li>
+                </ol>
+			</p>
+            <p>
+                In addition, the logout service also takes an <b>URL parameter</b>.
+                Following logout, the user will be redirected to the URL passed
+                on in this parameter instead of being shown the default Moria2
+                logout page. This allows a service to decide how to present the
+                user with logouts. The name of the parameter is configurable
+                at the discretion of the Moria2 administrator.
+            </p>
+            <p>
+                A service may very well implement its own form of
+                session management. Please note that the logout procedure
+                described here <b>only applies to a SSO session as it exists
+                internally in Moria2</b>. It is technically possible for a user
+                to log out of Moria2 and still be logged into such a service, or
+                vice versa.
+            </p>
+            
+            <subsection name="Logouts in FEIDE">
+                <p>
+                    Please refer to <a href="howto_service_feide.html">this</a>
+                    chapter for a link to the logout service as found in the
+                    instance of Moria2 run by <a href="http://www.feide.no">FEIDE</a>.
+                </p>
+                <p>
+                    The name of the logout URL parameter in the FEIDE instance is
+                    <code>redirect</code>; thus, you would add the following
+                    substring on the end of the logout service's URL:
+                </p>
+                <p align="center">
+                    <code>?redirect=http://some.other.server/some/other/page</code>
+                </p>
+            </subsection>
+		</section>
+	</body>
+</document>
