@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 
 import no.feide.moria.controller.AuthenticationException;
 import no.feide.moria.controller.AuthorizationException;
@@ -294,6 +295,19 @@ implements Authentication {
 
         try {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
+            
+            // DEBUG CODE STARTS
+            String attributeNames = "";
+            Set keySet = returnAttributes.keySet();
+            if (keySet != null) {
+                Iterator i = keySet.iterator();
+                while (i.hasNext())
+                    attributeNames = attributeNames + i.next() + ", ";
+                attributeNames = attributeNames.substring(0, attributeNames.length() - 2);
+            }
+            messageLogger.logInfo("Returned attributes: [" + attributeNames + "]", serviceTicket);
+            // DEBUG CODE ENDS
+            
             return mapToAttributeArray(returnAttributes, serviceTicket);
         } catch (no.feide.moria.controller.IllegalInputException e) {
 
