@@ -288,7 +288,7 @@ implements Authentication {
                     attributeNames = attributeNames + i.next() + ", ";
                 attributeNames = attributeNames.substring(0, attributeNames.length() - 2);
             }
-            messageLogger.logInfo("Returned attributes: [" + attributeNames + "]", serviceTicket);
+            messageLogger.logDebug("Returned attributes: [" + attributeNames + "]", serviceTicket);
             // DEBUG CODE ENDS
             
             return mapToAttributeArray(returnAttributes, serviceTicket);

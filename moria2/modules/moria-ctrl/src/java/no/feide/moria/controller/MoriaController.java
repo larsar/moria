@@ -380,9 +380,10 @@ public static String attemptSingleSignOn(final String loginTicketId, final Strin
                 for (int j=0; j<nonSSOAttributes.length; j++)
                     if (requestedAttributes[i].equalsIgnoreCase(nonSSOAttributes[j]))
                         unavailableAttributes = unavailableAttributes + requestedAttributes[i] + ", ";
-            if (unavailableAttributes.length() > 0)
+            if (unavailableAttributes.length() > 0) {
                 unavailableAttributes = unavailableAttributes.substring(0, unavailableAttributes.length() - 2);
-            messageLogger.logInfo("Requested attributes not available in SSO context: [" + unavailableAttributes + "]", loginTicketId);
+                messageLogger.logDebug("Requested attributes not available in SSO context: [" + unavailableAttributes + "]", loginTicketId);
+            }
             // DEBUG CODE ENDS
             
         } catch (InvalidTicketException e) {
