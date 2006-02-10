@@ -368,10 +368,10 @@ extends MoriaServlet {
         allerrors.addAll(checkBackend(bundle));
         if (allerrors.size()>0) {
             for (int i = 0; i < allerrors.size(); i++) {
-            out.println((String)(allerrors.get(i)));
+            out.println("<font color=#FFFFFF>" + (String)(allerrors.get(i)) + "</font>" + "<br>");
             }
         } else if (allerrors.size() == 0) {
-            out.println(bundle.getString("ready_msg"));
+            out.println("<font color=#FFFFFF>" + bundle.getString("ready_msg") + "</font>");
         }
         
         // Prepare to check test users.
