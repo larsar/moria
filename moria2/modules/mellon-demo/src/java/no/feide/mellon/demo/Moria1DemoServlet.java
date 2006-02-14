@@ -119,28 +119,6 @@ extends HttpServlet {
     private static final String CONFIG_MASTER_PASSWORD = "no.feide.mellon.demo.master.password";
 
     /**
-     * A comma-separated list of attributes requested by the subservice. <br>
-     * <br>
-     * Current value is
-     * <code>"no.feide.mellon.demo.slave.attributeRequest"</code>.
-     */
-    private static final String CONFIG_SLAVE_ATTRIBUTE_REQUEST = "no.feide.mellon.demo.slave.attributeRequest";
-
-    /**
-     * The username used to access Moria2 as a subservice. <br>
-     * <br>
-     * Current value is <code>"no.feide.mellon.demo.slave.username"</code>.
-     */
-    private static final String CONFIG_SLAVE_USERNAME = "no.feide.mellon.demo.slave.username";
-
-    /**
-     * The password used to access Moria2 as a subservice. <br>
-     * <br>
-     * Current value is <code>"no.feide.mellon.demo.slave.password"</code>.
-     */
-    private static final String CONFIG_SLAVE_PASSWORD = "no.feide.mellon.demo.slave.password";
-
-    /**
      * The URL that the user should be redirected to in order to complete
      * logout. <br>
      * <br>
@@ -171,10 +149,6 @@ extends HttpServlet {
                                                          CONFIG_SERVICE_ENDPOINT,
                                                          CONFIG_MASTER_USERNAME,
                                                          CONFIG_MASTER_PASSWORD,
-                                                         CONFIG_MASTER_ATTRIBUTE_REQUEST,
-                                                         CONFIG_SLAVE_USERNAME,
-                                                         CONFIG_SLAVE_PASSWORD,
-                                                         CONFIG_SLAVE_ATTRIBUTE_REQUEST,
                                                          CONFIG_LOGOUT_URL};
 
     /**
