@@ -173,10 +173,8 @@ extends HttpServlet {
                                                          CONFIG_SERVICE_ENDPOINT,
                                                          CONFIG_MASTER_USERNAME,
                                                          CONFIG_MASTER_PASSWORD,
-                                                         CONFIG_MASTER_ATTRIBUTE_REQUEST,
                                                          CONFIG_SLAVE_USERNAME,
                                                          CONFIG_SLAVE_PASSWORD,
-                                                         CONFIG_SLAVE_ATTRIBUTE_REQUEST,
                                                          CONFIG_LOGOUT_URL};
 
     /**
