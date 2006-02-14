@@ -41,6 +41,7 @@ import no.feide.moria.servlet.RequestUtil;
 import org.apache.axis.MessageContext;
 import org.apache.axis.session.Session;
 import org.apache.axis.transport.http.AxisHttpSession;
+import org.apache.log4j.Level;
 
 /**
  * @author Bj&oslash;rn Ola Smievoll &lt;b.o@smievoll.no&gt;
@@ -202,17 +203,19 @@ public final class AuthenticationImpl implements Authentication {
         try {
             Map returnAttributes = MoriaController.getUserAttributes(serviceTicket, servicePrincipal);
             
-            // DEBUG CODE STARTS
-            String attributeNames = "";
-            Set keySet = returnAttributes.keySet();
-            if (keySet != null) {
-                Iterator i = keySet.iterator();
-                while (i.hasNext())
-                    attributeNames = attributeNames + i.next() + ", ";
-                attributeNames = attributeNames.substring(0, attributeNames.length() - 2);
+            // Prepare debug output.
+            if (messageLogger.isEnabledFor(Level.DEBUG)) {
+                String attributeNames = "";
+                Set keySet = returnAttributes.keySet();
+                if (keySet != null) {
+                    Iterator i = keySet.iterator();
+                    while (i.hasNext())
+                        attributeNames = attributeNames + i.next() + ", ";
+                    if (attributeNames.length() > 0)
+                        attributeNames = attributeNames.substring(0, attributeNames.length() - 2);
+                }
+                messageLogger.logDebug("Returned attributes [" + attributeNames + "] to service '" + servicePrincipal + "'", serviceTicket);
             }
-            messageLogger.logDebug("Returned attributes: [" + attributeNames + "]", serviceTicket);
-            // DEBUG CODE ENDS
             
             return mapToAttributeArray(returnAttributes, serviceTicket);
         } catch (IllegalInputException iie) {

@@ -28,6 +28,7 @@ import java.io.Serializable;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
+import org.apache.log4j.Priority;
 
 /**
  * Logs generic messages from the system, may include ticket id and/or
@@ -372,15 +373,19 @@ implements Serializable {
 
 
     /**
-     * Get the effective (inherited or not) log level.
-     * @return The effective log level, or <code>null</code> if the logger is
-     *         not instantiated.
+     * Checks whether the actual log level would generate log output for a given
+     * log level.
+     * @param level
+     *            The desired level to check against.
+     * @return <code>true</code> if log output for the given level would
+     *         result, otherwise <code>false</code>.
      */
-    public Level getEffectiveLevel() {
-
+    public boolean isEnabledFor(final Priority level) {
+        
         if (logger == null)
-            return null;
-        return logger.getEffectiveLevel();
+            return false;
+        return logger.isEnabledFor(level);
 
     }
+
 }
