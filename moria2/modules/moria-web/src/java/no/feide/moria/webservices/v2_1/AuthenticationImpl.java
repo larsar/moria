@@ -283,7 +283,6 @@ implements Authentication {
             // Prepare debug output.
             if (messageLogger.isEnabledFor(Level.DEBUG)) {
                 
-                messageLogger.logInfo("Dang!");
                 String attributeNames = "";
                 Set keySet = returnAttributes.keySet();
                 if (keySet != null) {
