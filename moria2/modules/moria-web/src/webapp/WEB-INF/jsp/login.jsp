@@ -68,7 +68,7 @@ function fokuser(){document.loginform.username.focus();}
            <td valign="middle">
             <table summary="" cellspacing="0" cellpadding="0" border="0"><!-- This is a table around the "Moria-description" -->
               <tr>
-                <td valign="top"><font size="+3">Moria</font> -&nbsp;</td>
+                <td valign = "top"><nobr><font size="+3">Moria</font></td><td> -&nbsp;</td></nobr>
                 <td><font size="-1"><b><%=bundle.getString("body_title")%></b><br>
 				</font></td>
               </tr>
