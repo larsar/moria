@@ -53,6 +53,8 @@ import no.feide.moria.store.MoriaStoreException;
 import no.feide.moria.store.MoriaStoreFactory;
 import no.feide.moria.store.NonExistentTicketException;
 
+import org.apache.log4j.Level;
+
 /**
  * Intermediator for the sub modules of Moria. The controller is the only entry
  * point for accessing Moria. Basically, all work is done by the authorization
@@ -559,7 +561,7 @@ public final class MoriaController {
         // Authentication.
         final HashMap fetchedAttributes;
         try {
-            fetchedAttributes = directoryManager.authenticate(loginTicketId, new Credentials(userId, password), (String[]) retrieveAttributes.toArray(new String[retrieveAttributes.size()]));
+            fetchedAttributes = authenticate(loginTicketId, new Credentials(userId, password), (String[]) retrieveAttributes.toArray(new String[retrieveAttributes.size()]));
         } catch (AuthenticationFailedException e) {
             accessLogger.logUser(AccessStatusType.BAD_USER_CREDENTIALS, null, userId, loginTicketId, null);
             messageLogger.logDebug("AuthenticationFailedException caught", loginTicketId, e);
@@ -1070,7 +1072,7 @@ public final class MoriaController {
         /* Authenticate */
         final HashMap attributes;
         try {
-            attributes = directoryManager.authenticate(null, new Credentials(userId, password), requestedAttributes);
+            attributes = authenticate(null, new Credentials(userId, password), requestedAttributes);
         } catch (AuthenticationFailedException e) {
             accessLogger.logService(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null);
             messageLogger.logInfo("AuthenticationFailedException caught", e);
@@ -1680,6 +1682,44 @@ public final class MoriaController {
         if (org == null)
             throw new AuthenticationException();
         return org;
+    }
+
+
+    /**
+     * Convenience method to assure certain pre-authentication checks.
+     * @param sessionTicket
+     *            The session ticket.
+     * @param userCredentials
+     *            The user's credentials.
+     * @param attributeRequest
+     *            The attribute request.
+     * @return The returned attributes.
+     * @throws AuthenticationFailedException
+     *             If authentication fails.
+     * @throws BackendException
+     *             If the backend fails to authenticate/retrieve attributes.
+     * @throws IllegalStateException
+     *             If Moria2 is in an illegal state.
+     * @see DirectoryManager#authenticate(java.lang.String,
+     *      no.feide.moria.directory.Credentials, java.lang.String[])
+     */
+    private static final HashMap authenticate(final String sessionTicket,
+                                       final Credentials userCredentials,
+                                       final String[] attributeRequest)
+    throws AuthenticationFailedException, BackendException,
+    IllegalStateException {
+
+        // User password should not contain any character other than a-z, A-Z or
+        // 0-9. Anything other will be logged as a warning.
+        if (messageLogger.isEnabledFor(Level.WARN)) {
+            String checkPassword = userCredentials.getPassword().replaceAll("[b-zA-Z0-9]", "a");
+            checkPassword = checkPassword.replaceAll("[^a]", "A");
+            if (checkPassword.contains("A"))
+                messageLogger.logWarn("User '" + userCredentials.getUsername() + "' attempts login with suspicious password (should only contain [a-zA-Z0-9])", sessionTicket);
+        }
+
+        return directoryManager.authenticate(sessionTicket, userCredentials, attributeRequest);
+
     }
 
 }
