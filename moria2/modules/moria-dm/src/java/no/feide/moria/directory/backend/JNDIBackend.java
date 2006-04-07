@@ -21,10 +21,8 @@ package no.feide.moria.directory.backend;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.naming.AuthenticationException;
 import javax.naming.AuthenticationNotSupportedException;
@@ -405,14 +403,6 @@ implements DirectoryManagerBackend {
         if ((attributes == null) || (attributes.length == 0))
             return new HashMap();
 
-        // Eliminate all occurrences of so-called "virtual" attributes.
-        Vector request = new Vector(Arrays.asList(attributes));
-        for (int i = 0; i < DirectoryManagerBackend.VIRTUAL_ATTRIBUTES.length; i++)
-            while (request.remove(DirectoryManagerBackend.VIRTUAL_ATTRIBUTES[i])) {
-                // Repeat until done...
-            }
-        String[] parsedAttributes = (String[]) request.toArray(new String[] {});
-
         // The context provider URL and DN, for later logging.
         String url = "unknown backend";
         String dn = "unknown dn";
@@ -427,7 +417,7 @@ implements DirectoryManagerBackend {
             dn = (String) environment.get(Context.SECURITY_PRINCIPAL);
 
             // Get the attributes.
-            oldAttrs = ldap.getAttributes(rdn, parsedAttributes);
+            oldAttrs = ldap.getAttributes(rdn, attributes);
 
         } catch (NameNotFoundException e) {
 
@@ -445,12 +435,12 @@ implements DirectoryManagerBackend {
 
         // Translate retrieved attributes from Attributes to HashMap.
         HashMap newAttrs = new HashMap();
-        for (int i = 0; i < parsedAttributes.length; i++) {
+        for (int i = 0; i < attributes.length; i++) {
 
             // Did we get an attribute back at all?
-            Attribute oldAttr = oldAttrs.get(parsedAttributes[i]);
+            Attribute oldAttr = oldAttrs.get(attributes[i]);
             if (oldAttr == null) {
-                log.logDebug("Requested attribute '" + parsedAttributes[i] + "' not found on '" + url + "'", mySessionTicket);
+                log.logDebug("Requested attribute '" + attributes[i] + "' not found on '" + url + "'", mySessionTicket);
             } else {
 
                 // Map the attribute values to String[].
@@ -476,7 +466,7 @@ implements DirectoryManagerBackend {
                         throw new BackendException("Unable to use ISO-8859-1 encoding", e);
                     }
                 }
-                newAttrs.put(parsedAttributes[i], newValues.toArray(new String[] {}));
+                newAttrs.put(attributes[i], newValues.toArray(new String[] {}));
 
             }
 

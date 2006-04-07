@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
@@ -40,6 +41,7 @@ import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.DirectoryManager;
 import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
+import no.feide.moria.directory.backend.DirectoryManagerBackend;
 // import no.feide.moria.ldap.SimpleLdapServer;
 import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
@@ -1686,7 +1688,8 @@ public final class MoriaController {
 
 
     /**
-     * Convenience method to assure certain pre-authentication checks.
+     * Convenience method to assure certain pre-authentication checks. Also
+     * removes the TGT attribute from the request sent to the DM.
      * @param sessionTicket
      *            The session ticket.
      * @param userCredentials
@@ -1717,8 +1720,13 @@ public final class MoriaController {
             if (checkPassword.contains("A"))
                 messageLogger.logWarn("User '" + userCredentials.getUsername() + "' attempts login with suspicious password (should only contain [a-zA-Z0-9])", sessionTicket);
         }
+        
+        // Remove the TGT identifier.
+        Vector request = new Vector(Arrays.asList(attributeRequest));
+        request.remove(TGT_IDENTIFIER);
+        final String[] parsedRequest = (String[]) request.toArray(new String[] {});
 
-        return directoryManager.authenticate(sessionTicket, userCredentials, attributeRequest);
+        return directoryManager.authenticate(sessionTicket, userCredentials, parsedRequest);
 
     }
 

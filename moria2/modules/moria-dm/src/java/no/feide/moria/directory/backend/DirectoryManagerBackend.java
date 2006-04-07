@@ -37,17 +37,6 @@ public interface DirectoryManagerBackend {
     public static final String ATTRIBUTE_VALUE_CHARSET = "ISO-8859-1";
 
     /**
-     * The list of "virtual" attributes, that is, attributes that are generated
-     * by Moria itself, and not read from any physical attribute through the
-     * backend.<br>
-     * <br>
-     * Current value is <code>{"tgt"}</code>.
-     */
-    // TODO: Use the identical constant value from MoriaController instead?
-    public static final String[] VIRTUAL_ATTRIBUTES = {"tgt"};
-
-
-    /**
      * Opens a new backend connection.
      * @param references
      *            The backend references in question. Cannot be
