@@ -41,7 +41,6 @@ import no.feide.moria.directory.Credentials;
 import no.feide.moria.directory.DirectoryManager;
 import no.feide.moria.directory.backend.AuthenticationFailedException;
 import no.feide.moria.directory.backend.BackendException;
-import no.feide.moria.directory.backend.DirectoryManagerBackend;
 // import no.feide.moria.ldap.SimpleLdapServer;
 import no.feide.moria.log.AccessLogger;
 import no.feide.moria.log.AccessStatusType;
@@ -705,19 +704,46 @@ public final class MoriaController {
         }
 
         // Create authentication attempt.
-        final String loginTicketId;
-        try {
-            loginTicketId = store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, forceInteractiveAuthentication, servicePrincipal);
-        } catch (MoriaStoreException e) {
-            messageLogger.logCritical(CAUGHT_STORE, e);
-            throw new InoperableStateException(STORE_DOWN);
-        }
+        final String loginTicketId = createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, forceInteractiveAuthentication, servicePrincipal);
 
         // Log successful authentication initialization, and return the ticket
         // ID.
         accessLogger.logService(AccessStatusType.SUCCESSFUL_AUTH_INIT, servicePrincipal, null, loginTicketId);
 
         return loginTicketId;
+    }
+
+
+    /**
+     * Create a new authentication attempt in the internal session storage.
+     * @param attributes
+     *            The requested attributes.
+     * @param returnURLPrefix
+     *            The return URL prefix.
+     * @param returnURLPostfix
+     *            The return URL postfix.
+     * @param forceInteractiveAuthentication
+     *            Should the user be forced through (re-)authentication?
+     * @param servicePrincipal
+     *            The client service's principal.
+     * @return The newly created authentication attempt's ticket.
+     * @throws InoperableStateException
+     *             If the session storage is unavailable.
+     */
+    private static String createAuthnAttempt(final String[] attributes,
+                                             final String returnURLPrefix,
+                                             final String returnURLPostfix,
+                                             boolean forceInteractiveAuthentication,
+                                             final String servicePrincipal)
+    throws InoperableStateException {
+
+        try {
+            return store.createAuthnAttempt(attributes, returnURLPrefix, returnURLPostfix, forceInteractiveAuthentication, servicePrincipal);
+        } catch (MoriaStoreException e) {
+            messageLogger.logCritical(CAUGHT_STORE, e);
+            throw new InoperableStateException(STORE_DOWN);
+        }
+
     }
 
 
@@ -1038,13 +1064,15 @@ public final class MoriaController {
      *             <code>servicePrincipal</code> is <code>null</code> or an
      *             empty string.
      * @throws InoperableStateException
-     *             If Moria is not currently ready for use.
+     *             If Moria is not currently ready for use. Also used to wrap
+     *             any <code>UnknownTicketException</code>s, as these would
+     *             indicate a serious internal problem with the session store.
      * @throws AuthenticationException
      *             If the authentication failed due to bad user credentials.
      * @throws DirectoryUnavailableException
      *             If directory of the user's home organization is unavailable.
      */
-    public static Map directNonInteractiveAuthentication(final String[] requestedAttributes,
+public static Map directNonInteractiveAuthentication(final String[] requestedAttributes,
                                                          final String userId,
                                                          final String password,
                                                          final String servicePrincipal)
@@ -1071,26 +1099,25 @@ public final class MoriaController {
         // Does the user's organization allow this service?
         organizationCheck(servicePrincipal, getUserOrg(userId));
 
-        /* Authenticate */
-        final HashMap attributes;
+        // Create authentication attempt.
+        final String loginTicketId = createAuthnAttempt(requestedAttributes, "http://not.used", "", false, servicePrincipal);
+
+        // Authenticate and return any attributes.
         try {
-            attributes = authenticate(null, new Credentials(userId, password), requestedAttributes);
-        } catch (AuthenticationFailedException e) {
-            accessLogger.logService(AccessStatusType.BAD_USER_CREDENTIALS, servicePrincipal, null, null);
-            messageLogger.logInfo("AuthenticationFailedException caught", e);
-            throw new AuthenticationException();
-        } catch (BackendException e) {
-            messageLogger.logWarn("Directory is unavailable. Tried to authenticate user: " + userId, e);
-            throw new DirectoryUnavailableException();
+            
+            final Map tickets = attemptLogin(loginTicketId, null, userId, password, false);
+            accessLogger.logUser(AccessStatusType.SUCCESSFUL_DIRECT_AUTHENTICATION, servicePrincipal, userId, null, loginTicketId);
+            return getUserAttributes((String) tickets.get(MoriaController.SERVICE_TICKET), servicePrincipal);
+            
+        } catch (UnknownTicketException e) {
+            
+            // This should never happen, as we create and use the tickets inside
+            // this one method.
+            messageLogger.logCritical("Unexpected non-existent ticket during direct non-interactive authentication", loginTicketId);
+            throw new InoperableStateException(NONEXISTENT_TICKET);
+            
         }
-
-        // Log user access.
-        accessLogger.logUser(AccessStatusType.SUCCESSFUL_DIRECT_AUTHENTICATION, servicePrincipal, userId, null, null);
-
-        // Return the attributes (if any).d
-        return attributes;
     }
-
 
     /**
      * Performs a ticket based proxy authentication. A proxy ticket and a set of
@@ -1707,8 +1734,8 @@ public final class MoriaController {
      *      no.feide.moria.directory.Credentials, java.lang.String[])
      */
     private static final HashMap authenticate(final String sessionTicket,
-                                       final Credentials userCredentials,
-                                       final String[] attributeRequest)
+                                              final Credentials userCredentials,
+                                              final String[] attributeRequest)
     throws AuthenticationFailedException, BackendException,
     IllegalStateException {
 
@@ -1720,7 +1747,7 @@ public final class MoriaController {
             if (checkPassword.contains("A"))
                 messageLogger.logWarn("User '" + userCredentials.getUsername() + "' attempts login with suspicious password (should only contain [a-zA-Z0-9])", sessionTicket);
         }
-        
+
         // Remove the TGT identifier.
         Vector request = new Vector(Arrays.asList(attributeRequest));
         request.remove(TGT_IDENTIFIER);
