@@ -328,14 +328,14 @@ implements DirectoryManagerBackend {
 
                         // Authentication failed, but we may have other
                         // references.
-                        log.logDebug("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
+                        log.logDebug("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j] + " - authentication failed", mySessionTicket);
                         continue;
 
                     } catch (AuthenticationNotSupportedException e) {
 
                         // Password authentication not supported for the DN.
                         // We may still have other references.
-                        log.logDebug("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j], mySessionTicket);
+                        log.logDebug("Failed to authenticate user " + userCredentials.getUsername() + " on " + references[j] + " - authentication not supported", mySessionTicket);
                         continue;
 
                     }
@@ -361,7 +361,7 @@ implements DirectoryManagerBackend {
         }
 
         // No user was found.
-        throw new AuthenticationFailedException("Failed to authenticate user " + userCredentials.getUsername());
+        throw new AuthenticationFailedException("Failed to authenticate user " + userCredentials.getUsername() + " - no user found");
 
     }
 
