@@ -72,7 +72,7 @@ implements DirectoryManagerBackend {
     private String guessedAttribute;
 
     /** The session ticket used when logging from this instance. */
-    private String mySessionTicket;
+    private String mySessionTicket = null;
 
 
     /**
@@ -202,8 +202,8 @@ implements DirectoryManagerBackend {
                         return true;
                 } catch (NamingException e) {
                     // Unable to connect, but we might have other sources.
-                    log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName());
-                    log.logDebug("Stack trace:", e);
+                    log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName(), mySessionTicket);
+                    log.logDebug("Stack trace:", mySessionTicket, e);
                     continue;
                 } finally {
 
@@ -214,7 +214,7 @@ implements DirectoryManagerBackend {
                         } catch (NamingException e) {
                             // Ignored.
                             log.logWarn("Unable to close the backend connection to '" + references[j] + "': " + e.getClass().getName(), mySessionTicket);
-                            log.logDebug("Stack trace:", e);
+                            log.logDebug("Stack trace:", mySessionTicket, e);
                         }
                     }
                 }
@@ -274,8 +274,8 @@ implements DirectoryManagerBackend {
                         ldap = connect(references[j]);
                     } catch (NamingException e) {
                         // Connection failed, but we might have other sources.
-                        log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName());
-                        log.logDebug("Stack trace:", e);
+                        log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName(), mySessionTicket);
+                        log.logDebug("Stack trace:", mySessionTicket, e);
                         continue;
                     }
 
@@ -291,14 +291,14 @@ implements DirectoryManagerBackend {
                         // Anonymous search or not?
                         ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
                         if ((usernames[j].length() == 0) && (passwords[j].length() > 0))
-                            log.logWarn("Search username is empty but search password is not - possible index problem");
+                            log.logWarn("Search username is empty but search password is not - possible index problem", mySessionTicket);
                         else if ((passwords[j].length() == 0) && (usernames[j].length() > 0))
-                            log.logWarn("Search password is empty but search username is not - possible index problem");
+                            log.logWarn("Search password is empty but search username is not - possible index problem", mySessionTicket);
                         else if ((passwords[j].length() == 0) && (usernames[j].length() == 0)) {
-                            log.logDebug("Anonymous search for user element DN");
+                            log.logDebug("Anonymous search for user element DN", mySessionTicket);
                             ldap.removeFromEnvironment(Context.SECURITY_AUTHENTICATION);
                         } else
-                            log.logDebug("Non-anonymous search for user element DN");
+                            log.logDebug("Non-anonymous search for user element DN", mySessionTicket);
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, usernames[j]);
                         ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, passwords[j]);
 
@@ -312,8 +312,8 @@ implements DirectoryManagerBackend {
                             rdn = guessedAttribute + '=' + rdn.substring(0, rdn.indexOf('@'));
                             log.logDebug("No subtree match for " + pattern + " on " + references[j] + " - guessing on RDN " + rdn, mySessionTicket);
 
-                        }
-                        log.logDebug("Matched " + pattern + " to " + rdn + ',' + ldap.getNameInNamespace());
+                        } else
+                            log.logDebug("Matched " + pattern + " to " + rdn + ',' + ldap.getNameInNamespace(), mySessionTicket);
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, rdn + ',' + ldap.getNameInNamespace());
                     }
 
@@ -423,7 +423,7 @@ implements DirectoryManagerBackend {
 
             // Successful authentication but missing user element; no attributes
             // returned and the event is logged.
-            log.logWarn("No user element found (DN was '" + dn + "')");
+            log.logWarn("No user element found (DN was '" + dn + "')", mySessionTicket);
             oldAttrs = new BasicAttributes();
 
         } catch (NamingException e) {
