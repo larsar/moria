@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Timer;
 
 import javax.naming.AuthenticationException;
 import javax.naming.AuthenticationNotSupportedException;
@@ -50,7 +51,7 @@ import org.apache.commons.codec.binary.Base64;
  * Java Naming and Directory Interface (JNDI) backend. Used to authenticate
  * users and retrieve the associated attributes.
  */
-public class JNDIBackend
+public final class JNDIBackend
 implements DirectoryManagerBackend {
 
     /** The message logger. */
@@ -139,6 +140,9 @@ implements DirectoryManagerBackend {
         // Use LDAP v3.
         defaultEnv.put("java.naming.ldap.version", "3");
 
+        // Add timeout value for connection attempts (not searches).
+        defaultEnv.put("com.sun.jndi.ldap.connect.timeout", String.valueOf(1000 * timeout));
+
         // Should we enable SSL?
         if (ssl)
             defaultEnv.put(Context.SECURITY_PROTOCOL, "ssl");
@@ -180,7 +184,8 @@ implements DirectoryManagerBackend {
      * @throws BackendException
      *             If there is a problem accessing the backend.
      */
-    public final boolean userExists(final String username) throws BackendException {
+    public final boolean userExists(final String username)
+    throws BackendException {
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
@@ -250,8 +255,8 @@ implements DirectoryManagerBackend {
      *             If <code>userCredentials</code> is <code>null</code>.
      */
     public final HashMap authenticate(final Credentials userCredentials,
-                                      final String[] attributeRequest) throws AuthenticationFailedException,
-                                                                      BackendException {
+                                      final String[] attributeRequest)
+    throws AuthenticationFailedException, BackendException {
 
         // Sanity check.
         if (userCredentials == null)
@@ -295,10 +300,10 @@ implements DirectoryManagerBackend {
                         else if ((passwords[j].length() == 0) && (usernames[j].length() > 0))
                             log.logWarn("Search password is empty but search username is not - possible index problem", mySessionTicket);
                         else if ((passwords[j].length() == 0) && (usernames[j].length() == 0)) {
-                            log.logDebug("Anonymous search for user element DN", mySessionTicket);
+                            log.logDebug("Anonymous search for user element DN on " + references[j], mySessionTicket);
                             ldap.removeFromEnvironment(Context.SECURITY_AUTHENTICATION);
                         } else
-                            log.logDebug("Non-anonymous search for user element DN", mySessionTicket);
+                            log.logDebug("Non-anonymous search for user element DN on " + references[j], mySessionTicket);
                         ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, usernames[j]);
                         ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, passwords[j]);
 
@@ -393,7 +398,8 @@ implements DirectoryManagerBackend {
      */
     private HashMap getAttributes(final InitialLdapContext ldap,
                                   final String rdn,
-                                  final String[] attributes) throws BackendException {
+                                  final String[] attributes)
+    throws BackendException {
 
         // Sanity checks.
         if (ldap == null)
@@ -518,23 +524,29 @@ implements DirectoryManagerBackend {
         // The context provider URL, for later logging.
         String url = "unknown backend";
 
-        // Start counting the (milli)seconds.
+        // Start counting the (milli)seconds and prepare for timeouts.
         long searchStart = System.currentTimeMillis();
+        JNDISearchInterruptor interruptTask = new JNDISearchInterruptor(ldap, mySessionTicket);
         NamingEnumeration results;
         try {
 
             // Remember the URL, for later logging.
             url = (String) ldap.getEnvironment().get(Context.PROVIDER_URL);
+            interruptTask.setURL(url);
 
-            // Perform the search.
+            // Start timeout interruptor and perform the search.
+            Timer interruptTimer = new Timer();
+            interruptTimer.schedule(interruptTask, (1000 * myTimeout));
             results = ldap.search("", pattern, new SearchControls(SearchControls.SUBTREE_SCOPE, 0, 1000 * myTimeout, new String[] {}, false, false));
+            interruptTimer.cancel();
             if (!results.hasMore())
                 return null;
 
         } catch (TimeLimitExceededException e) {
 
             // The search timed out.
-            throw new BackendException("Search on " + url + " for " + pattern + " timed out after " + (System.currentTimeMillis() - searchStart) + "ms", e);
+            log.logWarn("Search on " + url + " for " + pattern + " timed out after ~" + (System.currentTimeMillis() - searchStart) + "ms", mySessionTicket);
+            return null;
 
         } catch (SizeLimitExceededException e) {
 
@@ -550,8 +562,16 @@ implements DirectoryManagerBackend {
 
         } catch (NamingException e) {
 
+            // Did we interrupt the search ourselves?
+            if (interruptTask.finished()) {
+                final long elapsed = System.currentTimeMillis() - searchStart;
+                log.logWarn("Search on " + url + " for " + pattern + " timed out after ~" + elapsed + "ms", mySessionTicket);
+                throw new BackendException("Search on " + url + " for " + pattern + " timed out after ~" + elapsed + "ms; connection terminated");
+            }
+
             // All other exceptions.
-            throw new BackendException("Search on " + url + " for " + pattern + " failed", e);
+            log.logWarn("Search on " + url + " for " + pattern + " failed", mySessionTicket);
+            return null;
 
         }
 
