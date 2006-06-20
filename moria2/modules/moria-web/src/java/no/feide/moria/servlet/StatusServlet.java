@@ -49,14 +49,12 @@ import no.feide.moria.controller.IllegalInputException;
 import no.feide.moria.controller.InoperableStateException;
 import no.feide.moria.controller.MoriaController;
 import no.feide.moria.log.MessageLogger;
-import no.feide.moria.store.MoriaStore;
-import no.feide.moria.store.MoriaStoreException;
-import no.feide.moria.store.MoriaStoreFactory;
 
 /**
  * The StatusServlet shows the status of Moria.
  * @version $Revision$
  */
+// TODO: All status messages should be configurable externally (not in bundles).
 public class StatusServlet
 extends MoriaServlet {
 
@@ -72,9 +70,77 @@ extends MoriaServlet {
      * </ul>
      * @see RequestUtil#PROP_BACKENDSTATUS_STATUS_XML
      */
-    private static final String[] REQUIRED_PARAMETERS = {
-                                                         RequestUtil.PROP_BACKENDSTATUS_STATUS_XML,
-                                                         RequestUtil.PROP_COOKIE_LANG};
+    private static final String[] REQUIRED_PARAMETERS = {RequestUtil.PROP_BACKENDSTATUS_STATUS_XML, RequestUtil.PROP_COOKIE_LANG};
+
+    /**
+     * The error code used to signal a problem with the backend "ping" users.<br>
+     * <br>
+     * Current value is <code>"20"</code>.
+     */
+    private static final String ERRORCODE_BACKEND = "20";
+
+    /**
+     * The error code used to signal a problem with the SOAP interface.<br>
+     * <br>
+     * Current value is <code>"30"</code>.
+     */
+    private static final String ERRORCODE_SOAP = "30";
+
+    /**
+     * The error code used to signal a problem with the key servlets/services.<br>
+     * <br>
+     * Current value is <code>"60"</code>.
+     */
+    private static final String ERRORCODE_SERVICE = "60";
+
+    /**
+     * The error code used to signal a problem with the internal modules.<br>
+     * <br>
+     * Current value is <code>"70"</code>.
+     */
+    private static final String ERRORCODE_MODULE = "70";
+
+    /**
+     * The error level used to signal a problem with the backend "ping" users.<br>
+     * <br>
+     * Current value is <code>"warn"</code>.
+     */
+    private static final String ERRORLEVEL_BACKEND = "warn";
+
+    /**
+     * The error level used to signal a problem with the SOAP interface.<br>
+     * <br>
+     * Current value is <code>"crit"</code>.
+     */
+    private static final String ERRORLEVEL_SOAP = "crit";
+
+    /**
+     * The error level used to signal a problem with the key servlets/services.<br>
+     * <br>
+     * Current value is <code>"crit"</code>.
+     */
+    private static final String ERRORLEVEL_SERVICE = "crit";
+
+    /**
+     * The error level used to signal a problem with the internal modules.<br>
+     * <br>
+     * Current value is <code>"crit"</code>.
+     */
+    private static final String ERRORLEVEL_MODULE = "crit";
+
+    /**
+     * Complete status message used to signal that everything is working.<br>
+     * <br>
+     * Current value is <code>"00 ok"</code>.
+     */
+    private static final String READY_MESSAGE = "00 ok";
+
+    /**
+     * List of names, as reported by the
+     * <code>MoriaController.getStatus()</code>.
+     * @see MoriaController#getStatus()
+     */
+    private static final String[] INTERNAL_MODULE_NAMES = {"moria", "init", "am", "dm", "sm"};
 
 
     /**
@@ -113,6 +179,7 @@ extends MoriaServlet {
      * @see BackendStatusHandler
      * @see BackendStatusUser
      */
+    // TODO: JavaDoc the @return.
     public final synchronized HashMap getBackendStatusData() {
 
         if (statusFileMonitor == null || statusFileMonitor.hasChanged()) {
@@ -136,150 +203,207 @@ extends MoriaServlet {
     }
 
 
-    private void printTable() {
-
-        HashMap backendStatusData = getBackendStatusData();
-
-    }
-
-
     /**
-     * Checks the config
-     * @param bundle
-     * @return
+     * Checks the configuration status of the Information, Login and Statistics
+     * services.
+     * @return An empty <code>Vector</code> everything is OK, otherwise one or
+     *         more error messages on the form<br>
+     *         <code><i>code level</i> moria-web <i>description</i></code><br>
+     *         where <code><i>code</i></code> is given by
+     *         <code>ERRORCODE_SERVICE</code> and <code><i>level</i></code>
+     *         is given by <code>ERRORLEVEL_SERVICE</code>.
+     * @see #ERRORCODE_SERVICE
+     * @see #ERRORCODE_SERVICE
      */
-    private Vector checkConfigStatus(ResourceBundle bundle) {
+    private Vector checkServices() {
 
-        Vector statusConfig = new Vector();
-        // InformationServlet
+        // Gettin' ready.
+        Vector messages = new Vector();
+
+        // Check the InformationServlet.
         try {
             this.getServletConfig(InformationServlet.getRequiredParameters(), log);
         } catch (IllegalStateException e) {
-            String errorMsg = bundle.getString("config_info");
-            statusConfig.add(errorMsg);
+            messages.add(ERRORCODE_SERVICE + " " + ERRORLEVEL_SERVICE + " moria-web Configuration of InformationServlet failed");
         }
 
-        // LoginServlet
+        // Check the LoginServlet.
         try {
             this.getServletConfig(LoginServlet.getRequiredParameters(), log);
         } catch (IllegalStateException e) {
-            String errorMsg = bundle.getString("config_login");
-            statusConfig.add(errorMsg);
+            messages.add(ERRORCODE_SERVICE + " " + ERRORLEVEL_SERVICE + " moria-web Configuration of LoginServlet failed");
         }
 
-        // StatisticsServlet
+        // Check the StatisticsServlet.
         try {
             this.getServletConfig(StatisticsServlet.getRequiredParameters(), log);
         } catch (IllegalStateException e) {
-            String errorMsg = bundle.getString("config_statistics");
-            statusConfig.add(errorMsg);
+            messages.add(ERRORCODE_SERVICE + " " + ERRORLEVEL_SERVICE + " moria-web Configuration of StatisticsServlet failed");
         }
 
-        return statusConfig;
+        // Done.
+        return messages;
     }
 
 
     /**
-     * Checks the modules
-     * @param bundle
-     * @return
+     * Checks the modules through <code>MoriaController.getStatus()</code> and
+     * creates an appropriate list of status messages.
+     * @return An empty <code>Vector</code> for no errors, otherwise a list of
+     *         entries on the form<br>
+     *         <code><i>code level module description</i></code><br>
+     *         where <code><i>code</i></code> is given by
+     *         <code>MODULE_ERRORCODE</code>, <code><i>level</i></code> is
+     *         given by <code>MODULE_ERRORLEVEL</code> and </code><code><i>module</i></code>
+     *         is one of
+     *         <ul>
+     *         <li><code>moria</code>
+     *         <li><code>moria-ctrl</code>
+     *         <li><code>moria-am</code>
+     *         <li><code>moria-dm</code>
+     *         <li><code>moria-sm</code>
+     *         </ul>
+     *         Note that if a module fails, the <code>moria</code> error code
+     *         will also be included, as the entire system will malfunction.
+     *         Also note, that the web module is not checked in this method, but
+     *         in <code>checkServices()</code> and <code>checkSOAP()</code>.
+     * @see #ERRORCODE_MODULE
+     * @see #ERRORLEVEL_MODULE
+     * @see #checkServices()
+     * @see #checkSOAP()
      */
-    private Vector checkModules(ResourceBundle bundle) {
+    private Vector checkModules() {
 
         Map statusMap = MoriaController.getStatus();
-        Vector statusMsg = new Vector();
+        Vector messages = new Vector();
 
         if (statusMap != null) {
 
-            String[] states = {"moria", "init", "am", "dm", "sm", "web"};
-            Map moduleNames = new HashMap();
-            moduleNames.put("moria", "Moria");
-            moduleNames.put("init", "Controller");
-            moduleNames.put("am", "Authorization manager");
-            moduleNames.put("dm", "Directory manager");
-            moduleNames.put("sm", "Store manager");
-            moduleNames.put("web", "Web application");
+            // Map module states from MoriaController to short and long names
+            // expected by surveillance solution.
 
-            for (int i = 0; i < states.length; i++) {
+            Map descriptions = new HashMap();
+            descriptions.put("moria", new String[] {"moria", "System not ready"});
+            descriptions.put("init", new String[] {"moria-ctrl", "Controller not ready"});
+            descriptions.put("am", new String[] {"moria-am", "Authorization Manager not ready"});
+            descriptions.put("dm", new String[] {"moria-dm", "Directory Manager not ready"});
+            descriptions.put("sm", new String[] {"moria-sm", "Store Manager not ready"});
 
-                Object stateObject = statusMap.get(states[i]);
-                Boolean isReady = new Boolean(false);
+            // Create status messages for all modules.
+            for (int i = 0; i < INTERNAL_MODULE_NAMES.length; i++) {
 
-                if (stateObject instanceof Boolean) {
-                    isReady = (Boolean) stateObject;
-                }
+                // Get module status.
+                Object stateObject = statusMap.get(INTERNAL_MODULE_NAMES[i]);
+                boolean ready = false;
+                if (stateObject instanceof Boolean)
+                    ready = ((Boolean) stateObject).booleanValue();
+                if (!ready) {
 
-                if (states[i].equals("moria") && isReady.booleanValue()) {
-                    statusMsg = new Vector(); // return an empty vector
-                    break;
-                } else if (!isReady.booleanValue()) {
-                    String errormsg = bundle.getString("module_1") + moduleNames.get(states[i]) + bundle.getString("module_2") + "<br>";
-                    statusMsg.add(errormsg);
+                    // Add status error message for this module.
+                    final String[] description = (String[]) descriptions.get(INTERNAL_MODULE_NAMES[i]);
+                    final String message = ERRORCODE_MODULE + " " + ERRORLEVEL_MODULE + " " + description[0] + " " + description[1];
+                    messages.add(message);
+
                 }
             }
         }
-        return statusMsg;
+
+        // Done.
+        return messages;
     }
 
 
     /**
-     * Checks the SOAP page.
-     * @param bundle
-     * @return
+     * Checks the SOAP page, by doing a HTTP GET on it using HTTP Basic
+     * authentication, as a normal service would do. Note that this test does
+     * not actually perform a SOAP operation.
+     * @return An empty <code>Vector</code> if no errors, otherwise one or
+     *         more messages on the form<br>
+     *         <code><i>code level</i> moria-web <i>description</i></code><br>
+     *         where <code><i>code</i></code> is given by
+     *         <code>ERRORCODE_SOAP</code> and <code><i>level</i></code> is
+     *         given by <code>ERRORLEVEL_SOAP</code>.
+     * @see #ERRORCODE_SOAP
+     * @see #ERRORLEVEL_SOAP
      */
-    private Vector checkSoap(ResourceBundle bundle) {
+    private Vector checkSOAP() {
 
-        Vector soapMsg = new Vector();
-
+        // Try to retrieve the Authentication service's WSDL.
+        Vector messages = new Vector();
         try {
+
+            // TODO: Why is this hard-coded?
             URL url = new URL("https://login.feide.no/moria2/v2_1/Authentication?wsdl");
-            java.net.Authenticator.setDefault(new Authenticator() {
+            java.net.Authenticator.setDefault(
+
+            new Authenticator() {
 
                 protected java.net.PasswordAuthentication getPasswordAuthentication() {
 
-                    char[] passwd = {'d', 'e', 'm', 'o', '_', 's', 'e', 'r',
-                                     'v', 'i', 'c', 'e'};
+                    // TODO: Why is this hard-coded?
+                    char[] passwd = {'d', 'e', 'm', 'o', '_', 's', 'e', 'r', 'v', 'i', 'c', 'e'};
                     return new PasswordAuthentication(new String("demo_service"), passwd);
                 }
-            });
+            }
+
+            );
 
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
             int code = connection.getResponseCode();
             if (code != HttpsURLConnection.HTTP_OK) {
-                String err = new String(bundle.getString("soap_error") + new Integer(code).toString());
-                soapMsg.add(err);
+                messages.add(ERRORCODE_SOAP + " " + ERRORLEVEL_SOAP + " moria-web WSDL GET caused HTTP error code " + String.valueOf(code));
             }
-            // should not happen
+
         } catch (MalformedURLException e) {
-            String err = bundle.getString("soap_exception1");
-            soapMsg.add(err);
+            // As the URL is hard-coded(!) above, this will be caused by
+            // re-deployment on another URL.
+            messages.add(ERRORCODE_SOAP + " " + ERRORLEVEL_SOAP + " moria-web Illegal WSDL GET URL");
         } catch (IOException e) {
-            String err = bundle.getString("soap_exception2");
-            soapMsg.add(err);
+            // Possible general problem with SOAP interface.
+            messages.add(ERRORCODE_SOAP + " " + ERRORLEVEL_SOAP + " moria-web Unable to connect to WSDL URL");
         }
 
-        return soapMsg;
+        // Done.
+        return messages;
     }
 
 
-    public Vector checkBackend(ResourceBundle bundle) {
+    /**
+     * Check each of the backend "ping" users, by performing a normal (that is,
+     * directly through the <code>MoriaController</code> rather than through
+     * the SOAP interface) authentication with each.
+     * @return An empty <code>Vector</code> if everything worked, otherwise a
+     *         list of error messages on the form<br>
+     *         <code><i>code level</i> moria-dm <i>description</i></code><br>
+     *         where <code><i>code</i></code> is given by
+     *         <code>ERRORCODE_BACKEND</code> and <code><i>level</i></code>
+     *         is given by <code>ERRORLEVEL_BACKEND</code>.
+     * @see #ERRORCODE_BACKEND
+     * @see #ERRORLEVEL_BACKEND
+     */
+    public Vector checkBackend() {
 
-        Vector backendMsg = new Vector();
+        // Gettin' started.
+        Vector messages = new Vector();
 
+        // Check each configured backend "ping" user.
+        String key, org;
         for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
+            key = (String) iterator.next();
             BackendStatusUser userData = (BackendStatusUser) backendDataUsers.get(key);
-            String org = userData.getOrganization();
+            org = userData.getOrganization();
             try {
-                final Map attributes = MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE}, userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
+
+                // Ignoring all returned attributes.
+                MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE}, userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
+
             } catch (Exception e) {
-                String err = bundle.getString("ldap_error") + org;
-                backendMsg.add(err);
+                messages.add(ERRORCODE_BACKEND + " " + ERRORLEVEL_BACKEND + " moria-dm No connectivity to " + org);
             }
         }
-        return backendMsg;
+        return messages;
     }
 
 
@@ -341,7 +465,7 @@ extends MoriaServlet {
         out.println("<td width=\"35%\">&nbsp;</td>");
 
         // Language selection
-        TreeMap languages = (TreeMap) RequestUtil.parseConfig(config, RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON);
+        TreeMap languages = RequestUtil.parseConfig(config, RequestUtil.PROP_LANGUAGE, RequestUtil.PROP_COMMON);
         Iterator it = languages.keySet().iterator();
         while (it.hasNext()) {
             String longName = (String) it.next();
@@ -361,19 +485,20 @@ extends MoriaServlet {
 
         // Check status
         Vector allerrors = new Vector();
-        allerrors.addAll(checkModules(bundle));
-        allerrors.addAll(checkConfigStatus(bundle));
-        allerrors.addAll(checkSoap(bundle));
-        allerrors.addAll(checkBackend(bundle));
+        allerrors.addAll(checkModules());
+        allerrors.addAll(checkServices());
+        allerrors.addAll(checkSOAP());
+        allerrors.addAll(checkBackend());
         if (allerrors.size() > 0) {
             for (int i = 0; i < allerrors.size(); i++) {
                 out.println("<font color=#FFFFFF>" + (String) (allerrors.get(i)) + "</font>" + "<br>");
             }
         } else if (allerrors.size() == 0) {
-            out.println("<font color=#FFFFFF>" + bundle.getString("ready_msg") + "</font>");
+            out.println("<font color=#FFFFFF>" + READY_MESSAGE + "</font>");
         }
 
         // Prepare to check test users.
+        // TODO: Unneccessary duplication of checkBackend() test above.
         out.println("<p><table border=1><tr><th>" + bundle.getString("table_organization") + "</th><th>" + bundle.getString("table_status") + "</th></tr>");
 
         // Start checking a new user.
@@ -382,7 +507,9 @@ extends MoriaServlet {
             BackendStatusUser userData = (BackendStatusUser) backendDataUsers.get(key);
             out.println("<tr><td>" + userData.getOrganization() + "</td>");
             try {
-                final Map attributes = MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE}, userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
+
+                // Ignoring the returned attribute values.
+                MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE}, userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
 
                 // This test user worked.
                 out.println("<td>OK</td>");
