@@ -184,8 +184,7 @@ implements DirectoryManagerBackend {
      * @throws BackendException
      *             If there is a problem accessing the backend.
      */
-    public final boolean userExists(final String username)
-    throws BackendException {
+    public final boolean userExists(final String username) throws BackendException {
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
@@ -255,8 +254,8 @@ implements DirectoryManagerBackend {
      *             If <code>userCredentials</code> is <code>null</code>.
      */
     public final HashMap authenticate(final Credentials userCredentials,
-                                      final String[] attributeRequest)
-    throws AuthenticationFailedException, BackendException {
+                                      final String[] attributeRequest) throws AuthenticationFailedException,
+    BackendException {
 
         // Sanity check.
         if (userCredentials == null)
@@ -398,8 +397,7 @@ implements DirectoryManagerBackend {
      */
     private HashMap getAttributes(final InitialLdapContext ldap,
                                   final String rdn,
-                                  final String[] attributes)
-    throws BackendException {
+                                  final String[] attributes) throws BackendException {
 
         // Sanity checks.
         if (ldap == null)
@@ -560,6 +558,26 @@ implements DirectoryManagerBackend {
             log.logDebug("Could not find " + pattern + " on " + url, mySessionTicket); // Necessary?
             return null;
 
+        } catch (AuthenticationException e) {
+
+            // Search failed authentication; check non-anonymous search config.
+            try {
+                final String searchUser = (String) ldap.getEnvironment().get(Context.SECURITY_PRINCIPAL);
+                final String errorMessage;
+                if ((searchUser == null) || searchUser.equals(""))
+                    errorMessage = "Anonymous search failed authentication on " + url;
+                else
+                    errorMessage = "Could not authenticate search user " + searchUser + " on " + url;
+                log.logDebug(errorMessage, mySessionTicket);
+                throw new BackendException(errorMessage, e);
+            } catch (NamingException f) {
+
+                // Should not happen!
+                log.logCritical("Unable to read LDAP environment", mySessionTicket, f);
+                throw new BackendException("Unable to read LDAP environment", f);
+
+            }
+
         } catch (NamingException e) {
 
             // Did we interrupt the search ourselves?
@@ -570,7 +588,7 @@ implements DirectoryManagerBackend {
             }
 
             // All other exceptions.
-            log.logWarn("Search on " + url + " for " + pattern + " failed", mySessionTicket);
+            log.logWarn("Search on " + url + " for " + pattern + " failed", mySessionTicket, e);
             return null;
 
         }
