@@ -455,10 +455,12 @@ implements DirectoryManagerBackend {
                         // We either have a String or a byte[].
                         String newValue = null;
                         try {
+
+                            // Encode String.
                             newValue = new String(((String) oldAttr.get(j)).getBytes(), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
                         } catch (ClassCastException e) {
 
-                            // Map byte[] to String, using ISO-8859-1 encoding.
+                            // Encode byte[] to String.
                             newValue = new String(Base64.encodeBase64((byte[]) oldAttr.get(j)), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
 
                         }
@@ -467,7 +469,7 @@ implements DirectoryManagerBackend {
                     } catch (NamingException e) {
                         throw new BackendException("Unable to read attribute value of '" + oldAttr.getID() + "' from '" + url + "'", e);
                     } catch (UnsupportedEncodingException e) {
-                        throw new BackendException("Unable to use ISO-8859-1 encoding", e);
+                        throw new BackendException("Unable to use " + DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET + " encoding", e);
                     }
                 }
                 newAttrs.put(attributes[i], newValues.toArray(new String[] {}));
