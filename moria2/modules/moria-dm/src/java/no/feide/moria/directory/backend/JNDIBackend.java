@@ -206,8 +206,7 @@ implements DirectoryManagerBackend {
                         return true;
                 } catch (NamingException e) {
                     // Unable to connect, but we might have other sources.
-                    log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName(), mySessionTicket);
-                    log.logDebug("Stack trace:", mySessionTicket, e);
+                    log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName(), mySessionTicket, e);
                     continue;
                 } finally {
 
@@ -217,8 +216,7 @@ implements DirectoryManagerBackend {
                             ldap.close();
                         } catch (NamingException e) {
                             // Ignored.
-                            log.logWarn("Unable to close the backend connection to '" + references[j] + "': " + e.getClass().getName(), mySessionTicket);
-                            log.logDebug("Stack trace:", mySessionTicket, e);
+                            log.logWarn("Unable to close the backend connection to '" + references[j] + "': " + e.getClass().getName(), mySessionTicket, e);
                         }
                     }
                 }
@@ -278,8 +276,7 @@ implements DirectoryManagerBackend {
                         ldap = connect(references[j]);
                     } catch (NamingException e) {
                         // Connection failed, but we might have other sources.
-                        log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName(), mySessionTicket);
-                        log.logDebug("Stack trace:", mySessionTicket, e);
+                        log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName(), mySessionTicket, e);
                         continue;
                     }
 
