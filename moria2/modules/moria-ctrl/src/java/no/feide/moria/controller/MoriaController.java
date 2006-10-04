@@ -1745,7 +1745,7 @@ public static Map directNonInteractiveAuthentication(final String[] requestedAtt
             String checkPassword = userCredentials.getPassword().replaceAll("[b-zA-Z0-9]", "a");
             checkPassword = checkPassword.replaceAll("[^a]", "A");
             if (checkPassword.contains("A"))
-                messageLogger.logWarn("User '" + userCredentials.getUsername() + "' attempts login with suspicious password (should only contain [a-zA-Z0-9])", sessionTicket);
+                messageLogger.logDebug("User '" + userCredentials.getUsername() + "' attempts login with suspicious password (should only contain [a-zA-Z0-9])", sessionTicket);
         }
 
         // Remove the TGT identifier.
