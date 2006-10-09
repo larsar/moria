@@ -1,21 +1,15 @@
 /*
- * Copyright (c) 2004 UNINETT FAS
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * $Id$
+ * Copyright (c) 2004 UNINETT FAS This program is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version. This program is distributed
+ * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received
+ * a copy of the GNU General Public License along with this program; if not,
+ * write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA. $Id: SimpleAxisServlet.java,v 1.7 2006/01/09
+ * 10:44:29 catoolsen Exp $
  */
 
 package no.feide.moria.servlet.soap;
@@ -56,12 +50,20 @@ extends AxisServlet {
      * Serial version UID.
      */
     private static final long serialVersionUID = 6202683940363529171L;
-    
-    /** 
+
+    /**
      * Logger for this class.
-     * */
+     */
     private MessageLogger messageLogger = new MessageLogger(SimpleAxisServlet.class);
 
+    /**
+     * The default content type, when it is necessary to override Axis' defaults
+     * (not likely, but used as a fallback).<br>
+     * <br>
+     * Current value is <code>"text/xml; charset=utf-8"</code>.
+     */
+    // TODO: Verify default content type for SOAP messages.
+    private final static String DEFAULT_CONTENT_TYPE = "text/xml; charset=utf-8";
 
     /**
      * Default constructor.
@@ -70,7 +72,6 @@ extends AxisServlet {
 
         super();
     }
-
 
     /**
      * Initializes the servlet. Called by the container.
@@ -82,7 +83,6 @@ extends AxisServlet {
         super.init();
     }
 
-
     /**
      * Handles HTTP GET requests. As SOAP uses POST, this basically returns a
      * empty page.
@@ -91,7 +91,8 @@ extends AxisServlet {
      * @param response
      *            The outgoing HTTP reponse object.
      */
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) {
+    public void doGet(final HttpServletRequest request,
+                      final HttpServletResponse response) {
 
         /* Avoid null-pointer exceptions. */
         if (request == null) {
@@ -205,7 +206,8 @@ extends AxisServlet {
 
             /* Print result to client */
             response.setCharacterEncoding("UTF-8");
-            response.setContentType("text/xml; charset=UTF-8");
+            response.setContentType(DEFAULT_CONTENT_TYPE);
+            messageLogger.logDebug("Response content type is '" + DEFAULT_CONTENT_TYPE + "'");
             printWriter.print(outputStream.toString());
 
         } else {
@@ -219,13 +221,12 @@ extends AxisServlet {
             try {
                 requestDispatcher.forward(request, response);
             } catch (Exception e) {
-                //handleException("Unable to dispatch request to " +
+                // handleException("Unable to dispatch request to " +
                 // jspLocation + "/Axis.JSP", e, request, response);
                 return;
             }
         }
     }
-
 
     /**
      * Handles HTTP POST requests. This method does the real work, handling the
@@ -235,7 +236,8 @@ extends AxisServlet {
      * @param response
      *            The outgoing HTTP response object.
      */
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) {
+    public void doPost(final HttpServletRequest request,
+                       final HttpServletResponse response) {
 
         /* Avoid null-pointer exceptions. */
         if (request == null) {
@@ -342,16 +344,15 @@ extends AxisServlet {
         try {
             axisEngine.invoke(messageContext);
         } catch (AxisFault af) {
-            
-            if ((af.getFaultString().startsWith("No such operation")) ||
-                (af.getFaultString().startsWith("org.xml.sax.SAXException"))) {
-                
+
+            if ((af.getFaultString().startsWith("No such operation")) || (af.getFaultString().startsWith("org.xml.sax.SAXException"))) {
+
                 // Handle exceptions caused by illegal input.
                 IllegalInputException e = new IllegalInputException(af.getFaultString());
                 handleException("Invocation of the Axis engine failed", e, request, response);
-                              
+
             } else
-                
+
                 // All other Axis exceptions.
                 handleException("Invocation of the axis engine failed", af, request, response);
 
@@ -375,11 +376,11 @@ extends AxisServlet {
             response.setContentType(responseMessage.getContentType(messageContext.getSOAPConstants()));
         } catch (AxisFault af) {
             handleException("Unable to retrieve content type of response", af, request, response);
-            // TODO: Verify default content type for SOAP messages
-            response.setContentType("application/soap+xml");
+            response.setContentType(DEFAULT_CONTENT_TYPE);
         }
 
         /* Write message to client */
+        messageLogger.logDebug("Response content type is '" + response.getContentType() + "'");
         try {
             responseMessage.writeTo(response.getOutputStream());
         } catch (Exception e) {
@@ -388,7 +389,6 @@ extends AxisServlet {
         }
 
     }
-
 
     /**
      * Creates a new MessageContext, initialized with some standard values.
@@ -400,7 +400,9 @@ extends AxisServlet {
      *            The outgoing response.
      * @return An initialized MessageContext.
      */
-    private MessageContext createMessageContext(final AxisEngine axisEngine, final HttpServletRequest request, final HttpServletResponse response) {
+    private MessageContext createMessageContext(final AxisEngine axisEngine,
+                                                final HttpServletRequest request,
+                                                final HttpServletResponse response) {
 
         /* Create new message context */
         MessageContext messageContext = new MessageContext(axisEngine);
@@ -437,7 +439,6 @@ extends AxisServlet {
         return messageContext;
     }
 
-
     /**
      * Logs exception with message and prints user friendly error message to
      * client.
@@ -450,7 +451,10 @@ extends AxisServlet {
      * @param response
      *            Response object for this invocation.
      */
-    private void handleException(final String message, final Exception exception, final HttpServletRequest request, final HttpServletResponse response) {
+    private void handleException(final String message,
+                                 final Exception exception,
+                                 final HttpServletRequest request,
+                                 final HttpServletResponse response) {
 
         /* We're not able to recover from this */
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
