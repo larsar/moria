@@ -207,7 +207,7 @@ extends AxisServlet {
             /* Print result to client */
             response.setCharacterEncoding("UTF-8");
             response.setContentType(DEFAULT_CONTENT_TYPE);
-            messageLogger.logDebug("Response content type is '" + DEFAULT_CONTENT_TYPE + "'");
+            messageLogger.logDebug("Response content type on GET is '" + DEFAULT_CONTENT_TYPE + "' by default");
             printWriter.print(outputStream.toString());
 
         } else {
@@ -380,7 +380,7 @@ extends AxisServlet {
         }
 
         /* Write message to client */
-        messageLogger.logDebug("Response content type is '" + response.getContentType() + "'");
+        messageLogger.logDebug("Response content type on POST is '" + response.getContentType() + "' from Axis");
         try {
             responseMessage.writeTo(response.getOutputStream());
         } catch (Exception e) {
