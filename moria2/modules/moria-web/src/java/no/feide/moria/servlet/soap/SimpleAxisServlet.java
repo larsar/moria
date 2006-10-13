@@ -57,13 +57,23 @@ extends AxisServlet {
     private MessageLogger messageLogger = new MessageLogger(SimpleAxisServlet.class);
 
     /**
-     * The default content type, when it is necessary to override Axis' defaults
-     * (not likely, but used as a fallback).<br>
+     * The default response content type. Previously this was always
+     * <code>"text/xml; charset=utf-8"</code> on GET, and set by Axis (usually
+     * to <code>"text/xml; charset=utf-8"</code>, or sometimes to
+     * <code>"application/soap+xml; charset=UTF-8"</code>) on POST, but
+     * because of problems with .Net clients this is now always this value.<br>
      * <br>
-     * Current value is <code>"text/xml; charset=utf-8"</code>.
+     * Current value is <code>"text/xml"</code>.
      */
     // TODO: Verify default content type for SOAP messages.
-    private final static String DEFAULT_CONTENT_TYPE = "text/xml; charset=utf-8";
+    private final static String DEFAULT_CONTENT_TYPE = "text/xml";
+
+    /**
+     * The default response character encoding.<br>
+     * <br>
+     * Current value is <code>"UTF-8"</code>.
+     */
+    private final static String DEFAULT_CHARACTER_ENCODING = "UTF-8";
 
     /**
      * Default constructor.
@@ -205,7 +215,7 @@ extends AxisServlet {
             }
 
             /* Print result to client */
-            response.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding(DEFAULT_CHARACTER_ENCODING);
             response.setContentType(DEFAULT_CONTENT_TYPE);
             messageLogger.logDebug("Response content type on GET is '" + DEFAULT_CONTENT_TYPE + "' by default");
             printWriter.print(outputStream.toString());
@@ -368,19 +378,17 @@ extends AxisServlet {
             return;
         }
 
-        /*
-         * If we're unable to retrieve the content type, set it to a default
-         * value.
-         */
+        // Log Axis content-type and override with default.
+        response.setCharacterEncoding(DEFAULT_CHARACTER_ENCODING);
+        response.setContentType(DEFAULT_CONTENT_TYPE);
         try {
-            response.setContentType(responseMessage.getContentType(messageContext.getSOAPConstants()));
+            messageLogger.logDebug("Axis claims response content type to be '" + responseMessage.getContentType(messageContext.getSOAPConstants()) + "', but we override with default '" + DEFAULT_CONTENT_TYPE + "'");
         } catch (AxisFault af) {
-            handleException("Unable to retrieve content type of response", af, request, response);
+            handleException("Unable to retrieve response content type; defaults to '" + DEFAULT_CONTENT_TYPE + "'", af, request, response);
             response.setContentType(DEFAULT_CONTENT_TYPE);
         }
 
         /* Write message to client */
-        messageLogger.logDebug("Response content type on POST is '" + response.getContentType() + "' from Axis");
         try {
             responseMessage.writeTo(response.getOutputStream());
         } catch (Exception e) {
