@@ -1,29 +1,26 @@
 /*
- * Copyright (c) 2004 UNINETT FAS
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
- *
+ * Copyright (c) 2004 UNINETT FAS This program is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version. This program is distributed
+ * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received
+ * a copy of the GNU General Public License along with this program; if not,
+ * write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 package no.feide.moria.directory.backend;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Timer;
+import java.util.Vector;
 
 import javax.naming.AuthenticationException;
 import javax.naming.AuthenticationNotSupportedException;
@@ -51,8 +48,7 @@ import org.apache.commons.codec.binary.Base64;
  * Java Naming and Directory Interface (JNDI) backend. Used to authenticate
  * users and retrieve the associated attributes.
  */
-public final class JNDIBackend
-implements DirectoryManagerBackend {
+public final class JNDIBackend implements DirectoryManagerBackend {
 
     /** The message logger. */
     private final MessageLogger log = new MessageLogger(JNDIBackend.class);
@@ -64,7 +60,7 @@ implements DirectoryManagerBackend {
     private final int myTimeout;
 
     /** Default initial LDAP context environment. */
-    private Hashtable defaultEnv;
+    private Hashtable<String, String> defaultEnv;
 
     /** The name of the attribute holding the username. */
     private String usernameAttribute;
@@ -74,7 +70,6 @@ implements DirectoryManagerBackend {
 
     /** The session ticket used when logging from this instance. */
     private String mySessionTicket = null;
-
 
     /**
      * Protected constructor. Creates an initial default context environment and
@@ -107,7 +102,8 @@ implements DirectoryManagerBackend {
      *             If <code>guessedAttributeName</code> or
      *             <code>usernameAttribute</code> is <code>null</code>.
      */
-    protected JNDIBackend(final String sessionTicket, final int timeout,
+    protected JNDIBackend(final String sessionTicket,
+                          final int timeout,
                           final boolean ssl,
                           final String usernameAttributeName,
                           final String guessedAttributeName)
@@ -128,7 +124,7 @@ implements DirectoryManagerBackend {
             mySessionTicket = "";
 
         // Create initial context environment.
-        defaultEnv = new Hashtable();
+        defaultEnv = new Hashtable<String, String>();
         defaultEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 
         // To catch referrals.
@@ -149,7 +145,6 @@ implements DirectoryManagerBackend {
 
     }
 
-
     /**
      * Opens this backend. Does not actually initialize the network connection
      * to the external LDAP.
@@ -167,13 +162,12 @@ implements DirectoryManagerBackend {
             throw new IllegalArgumentException("Reference cannot be NULL or an empty array");
 
         // Create a local copy of the references.
-        ArrayList newReferences = new ArrayList(references.length);
+        ArrayList<IndexedReference> newReferences = new ArrayList<IndexedReference>(references.length);
         for (int i = 0; i < references.length; i++)
             newReferences.add(references[i]);
-        myReferences = (IndexedReference[]) newReferences.toArray(new IndexedReference[] {});
+        myReferences = newReferences.toArray(new IndexedReference[] {});
 
     }
-
 
     /**
      * Checks whether a user element exists, based on its username value.
@@ -184,7 +178,8 @@ implements DirectoryManagerBackend {
      * @throws BackendException
      *             If there is a problem accessing the backend.
      */
-    public final boolean userExists(final String username) throws BackendException {
+    public final boolean userExists(final String username)
+    throws BackendException {
 
         // Sanity checks.
         if ((username == null) || (username.length() == 0))
@@ -229,7 +224,6 @@ implements DirectoryManagerBackend {
 
     }
 
-
     /**
      * Authenticates the user using the supplied credentials and retrieves the
      * requested attributes.
@@ -251,9 +245,9 @@ implements DirectoryManagerBackend {
      * @throws IllegalArgumentException
      *             If <code>userCredentials</code> is <code>null</code>.
      */
-    public final HashMap authenticate(final Credentials userCredentials,
-                                      final String[] attributeRequest) throws AuthenticationFailedException,
-    BackendException {
+    public final HashMap<String, String[]> authenticate(final Credentials userCredentials,
+                                                        final String[] attributeRequest)
+    throws AuthenticationFailedException, BackendException {
 
         // Sanity check.
         if (userCredentials == null)
@@ -366,7 +360,6 @@ implements DirectoryManagerBackend {
 
     }
 
-
     /**
      * Retrieves a list of attributes from an element.
      * @param ldap
@@ -375,7 +368,12 @@ implements DirectoryManagerBackend {
      *            The relative DN (to the DN in the LDAP context
      *            <code>ldap</code>). Cannot be <code>null</code>.
      * @param attributes
-     *            The requested attribute's names.
+     *            The requested attribute's names. Also indirectly referenced
+     *            attributes on the form
+     *            <code>someReferenceAttribute:someIndirectAttribute</code>,
+     *            where the DN in the reference attribute
+     *            <code>someReferenceAttribute</code> is followed to look up
+     *            <code>someIndirectAttribute</code> from another element.
      * @return The requested attributes (<code>String</code> names and
      *         <code>String[]</code> values), if they did exist in the
      *         external backend. Otherwise returns those attributes that could
@@ -392,9 +390,10 @@ implements DirectoryManagerBackend {
      * @see javax.naming.directory.InitialDirContext#getAttributes(java.lang.String,
      *      java.lang.String[])
      */
-    private HashMap getAttributes(final InitialLdapContext ldap,
-                                  final String rdn,
-                                  final String[] attributes) throws BackendException {
+    private HashMap<String, String[]> getAttributes(final InitialLdapContext ldap,
+                                                    final String rdn,
+                                                    final String[] attributes)
+    throws BackendException {
 
         // Sanity checks.
         if (ldap == null)
@@ -402,14 +401,55 @@ implements DirectoryManagerBackend {
         if (rdn == null)
             throw new NullPointerException("RDN cannot be NULL");
         if ((attributes == null) || (attributes.length == 0))
-            return new HashMap();
+            return new HashMap<String, String[]>();
+            
+        // Used to remember attributes to be read through references later on.
+        Hashtable<String, Vector> attributeReferences = new Hashtable<String, Vector>(); 
+
+        // Strip down request, resolving references and removing duplicates.
+        Vector<String> strippedAttributeRequest = new Vector<String>();
+        for (int i = 0; i < attributes.length; i++) {
+            int indexOfSplitCharacter = attributes[i].indexOf(DirectoryManagerBackend.ATTRIBUTE_REFERENCE_SEPARATOR);
+            if (indexOfSplitCharacter == -1) {
+
+                // A regular attribute request.
+                if (!strippedAttributeRequest.contains(attributes[i]))
+                    strippedAttributeRequest.add(attributes[i]);
+
+            } else {
+
+                // A referenced attribute request.
+                final String referencingAttribute = attributes[i].substring(0, indexOfSplitCharacter);
+                if (!strippedAttributeRequest.contains(referencingAttribute))
+                    strippedAttributeRequest.add(referencingAttribute);
+                
+                // Add to list of attributes to be read through each reference.
+                if (!attributeReferences.containsKey(referencingAttribute)) {
+                    
+                    // Add new reference.
+                    Vector<String> referencedAttribute = new Vector<String>();
+                    referencedAttribute.add(attributes[i].substring(indexOfSplitCharacter + 1));
+                    attributeReferences.put(referencingAttribute, referencedAttribute);
+                    
+                } else {
+                    
+                    // Update existing reference.
+                    Vector<String> referencedAttribute = attributeReferences.get(referencingAttribute);
+                    if (!referencedAttribute.contains(attributes[i].substring(indexOfSplitCharacter + 1)))
+                        referencedAttribute.add(attributes[i].substring(indexOfSplitCharacter + 1));
+                    
+                }
+
+            }
+
+        }
 
         // The context provider URL and DN, for later logging.
         String url = "unknown backend";
         String dn = "unknown dn";
 
         // Get the attributes from an already initialized LDAP connection.
-        Attributes oldAttrs = null;
+        Attributes rawAttributes = null;
         try {
 
             // Remember the URL and bind DN, for later logging.
@@ -418,14 +458,14 @@ implements DirectoryManagerBackend {
             dn = (String) environment.get(Context.SECURITY_PRINCIPAL);
 
             // Get the attributes.
-            oldAttrs = ldap.getAttributes(rdn, attributes);
+            rawAttributes = ldap.getAttributes(rdn, strippedAttributeRequest.toArray(new String[] {}));
 
         } catch (NameNotFoundException e) {
 
             // Successful authentication but missing user element; no attributes
             // returned and the event is logged.
-            log.logWarn("No user element found (DN was '" + dn + "')", mySessionTicket);
-            oldAttrs = new BasicAttributes();
+            log.logWarn("No LDAP element found (DN was '" + dn + "')", mySessionTicket);
+            rawAttributes = new BasicAttributes();
 
         } catch (NamingException e) {
             String a = new String();
@@ -435,49 +475,95 @@ implements DirectoryManagerBackend {
         }
 
         // Translate retrieved attributes from Attributes to HashMap.
-        HashMap newAttrs = new HashMap();
+        HashMap<String, String[]> convertedAttributes = new HashMap<String, String[]>();
         for (int i = 0; i < attributes.length; i++) {
 
-            // Did we get an attribute back at all?
-            Attribute oldAttr = oldAttrs.get(attributes[i]);
-            if (oldAttr == null) {
-                log.logDebug("Requested attribute '" + attributes[i] + "' not found on '" + url + "'", mySessionTicket);
+            // Did we get any attribute back at all?
+            final String requestedAttribute = attributes[i];
+            Attribute rawAttribute = rawAttributes.get(requestedAttribute);
+            if (rawAttribute == null) {
+
+                // Attribute was not returned.
+                log.logDebug("Requested attribute '" + requestedAttribute + "' not found on '" + url + "'", mySessionTicket);
+
             } else {
 
                 // Map the attribute values to String[].
-                ArrayList newValues = new ArrayList(oldAttr.size());
-                for (int j = 0; j < oldAttr.size(); j++) {
+                ArrayList<String> convertedAttributeValues = new ArrayList<String>(rawAttribute.size());
+                for (int j = 0; j < rawAttribute.size(); j++) {
                     try {
 
                         // We either have a String or a byte[].
-                        String newValue = null;
+                        String convertedAttributeValue = null;
                         try {
 
                             // Encode String.
-                            newValue = new String(((String) oldAttr.get(j)).getBytes(), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
+                            convertedAttributeValue = new String(((String) rawAttribute.get(j)).getBytes(), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
                         } catch (ClassCastException e) {
 
                             // Encode byte[] to String.
-                            newValue = new String(Base64.encodeBase64((byte[]) oldAttr.get(j)), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
+                            convertedAttributeValue = new String(Base64.encodeBase64((byte[]) rawAttribute.get(j)), DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET);
 
                         }
-                        newValues.add(newValue);
+                        convertedAttributeValues.add(convertedAttributeValue);
 
                     } catch (NamingException e) {
-                        throw new BackendException("Unable to read attribute value of '" + oldAttr.getID() + "' from '" + url + "'", e);
+                        throw new BackendException("Unable to read attribute value of '" + rawAttribute.getID() + "' from '" + url + "'", e);
                     } catch (UnsupportedEncodingException e) {
                         throw new BackendException("Unable to use " + DirectoryManagerBackend.ATTRIBUTE_VALUE_CHARSET + " encoding", e);
                     }
                 }
-                newAttrs.put(attributes[i], newValues.toArray(new String[] {}));
+                convertedAttributes.put(requestedAttribute, convertedAttributeValues.toArray(new String[] {}));
 
             }
 
         }
-        return newAttrs;
+        
+        // Follow references to look up any indirectly referenced attributes.
+        Enumeration keys = attributeReferences.keys();
+        while (keys.hasMoreElements()) {
+            
+            // Do we have a reference? 
+            final String referencingAttribute = (String) keys.nextElement();
+            final String[] referencingValues = convertedAttributes.get(referencingAttribute);
+            if (referencingValues == null) {
+                
+                // No reference was found in this attribute.
+                log.logDebug("Found no DN references in attribute '" + referencingAttribute + "'", mySessionTicket);
+                
+            } else {
+                
+                // One (or more) references was found in this attribute.
+                if (referencingValues.length > 1)
+                    log.logDebug("Found " + referencingValues.length + " DN references in attribute '" + referencingAttribute + "'; ignoring all but first", mySessionTicket);
+                log.logDebug("Following reference '" + referencingValues[0] + "' found in '"  + referencingAttribute + "' to look up attribute(s) '" + attributeReferences.get(referencingAttribute).toString(), mySessionTicket);
+                String providerURL = null;  // To be used later.
+                try {
+                    
+                    // Follow the reference.
+                    providerURL = (String) ldap.getEnvironment().get(Context.PROVIDER_URL);
+                    providerURL = providerURL.substring(0, providerURL.lastIndexOf("/") + 1) + referencingValues[0];
+                    ldap.addToEnvironment(Context.PROVIDER_URL, providerURL);
+                    
+                } catch (NamingException e) {
+                    throw new BackendException("Unable to update provider URL in LDAP environment", e);
+                }
+                
+                // Add any referenced attributes returned.
+                HashMap additionalAttributes = getAttributes(ldap, providerURL, (String[]) attributeReferences.get(referencingAttribute).toArray(new String[] {}));
+                Iterator i = additionalAttributes.keySet().iterator();
+                while (i.hasNext()) {
+                    String attributeName = (String) i.next();
+                    convertedAttributes.put(referencingAttribute + DirectoryManagerBackend.ATTRIBUTE_REFERENCE_SEPARATOR + attributeName, (String[]) additionalAttributes.get(attributeName));
+                }
+                    
+            }
+            
+        }
+
+        return convertedAttributes;
 
     }
-
 
     /**
      * Does nothing, but needed to fulfill the
@@ -490,7 +576,6 @@ implements DirectoryManagerBackend {
         // Does nothing.
 
     }
-
 
     /**
      * Does a subtree search for an element given a pattern. Only the first
@@ -512,7 +597,7 @@ implements DirectoryManagerBackend {
                               final String pattern) throws BackendException {
 
         // Check pattern for illegal content.
-        String[] illegals = {"*", "\\2a"};
+        String[] illegals = { "*", "\\2a" };
         for (int i = 0; i < illegals.length; i++) {
             if (pattern.indexOf(illegals[i]) > -1)
                 return null;
@@ -611,7 +696,6 @@ implements DirectoryManagerBackend {
 
     }
 
-
     /**
      * Creates a new connection to a given backend provider URL.
      * @param url
@@ -624,7 +708,7 @@ implements DirectoryManagerBackend {
     private InitialLdapContext connect(final String url) throws NamingException {
 
         // Prepare connection.
-        Hashtable env = new Hashtable(defaultEnv);
+        Hashtable<String, String> env = new Hashtable<String, String>(defaultEnv);
         env.put(Context.PROVIDER_URL, url);
         return new InitialLdapContext(env, null);
 

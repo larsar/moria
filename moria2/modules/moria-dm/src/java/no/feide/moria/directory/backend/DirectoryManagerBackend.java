@@ -1,20 +1,14 @@
 /*
- * Copyright (c) 2004 UNINETT FAS
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
- *
+ * Copyright (c) 2004 UNINETT FAS This program is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version. This program is distributed
+ * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received
+ * a copy of the GNU General Public License along with this program; if not,
+ * write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 package no.feide.moria.directory.backend;
@@ -37,13 +31,19 @@ public interface DirectoryManagerBackend {
     public static final String ATTRIBUTE_VALUE_CHARSET = "ISO-8859-1";
 
     /**
+     * The character used to separate indirect attribute references.<br>
+     * <br>
+     * Current value is <code>":"</code>.
+     */
+    public static final char ATTRIBUTE_REFERENCE_SEPARATOR = ':';
+
+    /**
      * Opens a new backend connection.
      * @param references
      *            The backend references in question. Cannot be
      *            <code>null</code>, and must contain at least one reference.
      */
     void open(IndexedReference[] references);
-
 
     /**
      * Checks whether a given user actually exists.
@@ -55,7 +55,6 @@ public interface DirectoryManagerBackend {
      *             If there was a problem accessing the backend.
      */
     boolean userExists(final String username) throws BackendException;
-
 
     /**
      * Attempts to authenticate a user and retrieve a set of user attributes.
@@ -74,9 +73,8 @@ public interface DirectoryManagerBackend {
      *             If there was a problem accessing the backend.
      */
     HashMap authenticate(final Credentials userCredentials,
-                         final String[] attributeRequest) throws AuthenticationFailedException,
-                                                         BackendException;
-
+                         final String[] attributeRequest)
+    throws AuthenticationFailedException, BackendException;
 
     /**
      * Closes the current backend and releases any resources.
