@@ -230,6 +230,10 @@ extends MoriaServlet {
         request.setAttribute(RequestUtil.ATTR_SELECTED_DENYSSO, new Boolean(denySSO));
 
         // Parse organization, if set in username, and validate results.
+        if (username == null) {
+            showLoginPage(request, response, RequestUtil.ERROR_NO_CREDENTIALS);
+            return;
+        }
         if (username.indexOf("@") != -1)
             org = username.substring(username.indexOf("@") + 1, username.length());
         if (org == null || org.equals("") || org.equals("null")) {
