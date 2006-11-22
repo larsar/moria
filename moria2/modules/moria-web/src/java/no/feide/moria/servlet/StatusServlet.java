@@ -30,6 +30,8 @@ import java.util.TreeMap;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
 import javax.net.ssl.HttpsURLConnection;
 import java.net.URL;
 import java.net.Authenticator;
@@ -172,52 +174,84 @@ extends MoriaServlet {
      */
     private static final String STATUS_PRINCIPAL = "status";
 
+    public void doSingleBackendCheck(String key, Map msgmap, ResourceBundle bundle) {
+        BackendStatusUser userData = (BackendStatusUser) backendDataUsers.get(key);
+        try {
+
+            // Ignoring the returned attribute values.
+            MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE}, userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
+
+            // This test user worked.
+            msgmap.put(key, "");
+
+        } catch (AuthenticationException e) {
+            log.logWarn("Authentication failed for: " + userData.getName() + ", contact: " + userData.getContact());
+            String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_authentication") + userData.getName() + ">" + bundle.getString("error_help");
+            msgmap.put(key, "<td>" + bundle.getString("error_authentication") + message + "</a></td></tr>");
+        } catch (DirectoryUnavailableException e) {
+            log.logWarn("The directory is unavailable for: " + userData.getName() + ", contact: " + userData.getContact());
+            String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_directory") + userData.getName() + ">" + bundle.getString("error_help");
+            msgmap.put(key, "<td>" + bundle.getString("error_directory") + message + "</a></td></tr>");
+        } catch (AuthorizationException e) {
+            log.logWarn("Authorization failed for: " + userData.getName() + ", contact: " + userData.getContact());
+            String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_authorization") + userData.getName() + ">" + bundle.getString("error_help");
+            msgmap.put(key, "<td>" + bundle.getString("error_authorization") + message + "</a></td></tr>");
+        } catch (IllegalInputException e) {
+            log.logWarn("Illegal input for: " + userData.getName() + ", contact: " + userData.getContact());
+            String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_illegal") + userData.getName() + ">" + bundle.getString("error_help");
+            msgmap.put(key, "<td>" + bundle.getString("error_illegal") + message + "</a></td></tr>");
+        } catch (InoperableStateException e) {
+            log.logWarn("Inoperable state for: " + userData.getName() + ", contact: " + userData.getContact());
+            // Only print moria-support adress if moria is inoperable
+            if (userData.getOrganization().equals("Uninett")) {
+                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_inoperable") + userData.getName() + ">" + bundle.getString("error_help");
+                msgmap.put(key, "<td>" + bundle.getString("error_inoperable") + message + "</a></td></tr>");
+            } else {
+                msgmap.put(key, "<td>" + bundle.getString("error_inoperable"));
+            }
+        }
+        
+    }
 
     /*!
      * Will do a backend check on all backends and return a HashMap with a status
      * string for each backend. An empty string ("") is returned for no error.
      */
-    private HashMap doBackendCheck(final ResourceBundle bundle) {
-        HashMap msgmap = new HashMap();
+    private Map doBackendCheck(final ResourceBundle bundle) {
+        Map msgmap = Collections.synchronizedMap(new HashMap());
         
-        // Start checking a new user.
         for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
-            BackendStatusUser userData = (BackendStatusUser) backendDataUsers.get(key);
-            try {
+            this.doSingleBackendCheck(key, msgmap, bundle);
+        }
 
-                // Ignoring the returned attribute values.
-                MoriaController.directNonInteractiveAuthentication(new String[] {STATUS_ATTRIBUTE}, userData.getName(), userData.getPassword(), STATUS_PRINCIPAL);
+        return msgmap;
+    }
+    
+    /**
+     * Will do a backend check on all backends and return a HashMap with a status
+     * string for each backend. An empty string ("") is returned for no error.
+     * This is a version that spawns one thread per user and tries to authenticate in 
+     * parallel.
+     * 
+     * @see checkBackend(java.util.Map)
+     */
+    private Map doBackendCheckMultithread(final ResourceBundle bundle) {
+        Map msgmap = Collections.synchronizedMap(new HashMap());
+        
+        // use a CountDownLatch to wait for all threads
+        CountDownLatch doneSignal = new CountDownLatch(backendDataUsers.size());
+        
+        for (Iterator iterator = backendDataUsers.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            new BackendCheckerThread(key, this, bundle, msgmap, doneSignal).start();
+        }
 
-                // This test user worked.
-                msgmap.put(key, "");
-
-            } catch (AuthenticationException e) {
-                log.logWarn("Authentication failed for: " + userData.getName() + ", contact: " + userData.getContact());
-                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_authentication") + userData.getName() + ">" + bundle.getString("error_help");
-                msgmap.put(key, "<td>" + bundle.getString("error_authentication") + message + "</a></td></tr>");
-            } catch (DirectoryUnavailableException e) {
-                log.logWarn("The directory is unavailable for: " + userData.getName() + ", contact: " + userData.getContact());
-                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_directory") + userData.getName() + ">" + bundle.getString("error_help");
-                msgmap.put(key, "<td>" + bundle.getString("error_directory") + message + "</a></td></tr>");
-            } catch (AuthorizationException e) {
-                log.logWarn("Authorization failed for: " + userData.getName() + ", contact: " + userData.getContact());
-                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_authorization") + userData.getName() + ">" + bundle.getString("error_help");
-                msgmap.put(key, "<td>" + bundle.getString("error_authorization") + message + "</a></td></tr>");
-            } catch (IllegalInputException e) {
-                log.logWarn("Illegal input for: " + userData.getName() + ", contact: " + userData.getContact());
-                String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_illegal") + userData.getName() + ">" + bundle.getString("error_help");
-                msgmap.put(key, "<td>" + bundle.getString("error_illegal") + message + "</a></td></tr>");
-            } catch (InoperableStateException e) {
-                log.logWarn("Inoperable state for: " + userData.getName() + ", contact: " + userData.getContact());
-                // Only print moria-support adress if moria is inoperable
-                if (userData.getOrganization().equals("Uninett")) {
-                    String message = "<a href=mailto:" + userData.getContact() + "?subject=" + userData.getOrganization() + ":%20" + bundle.getString("subject_inoperable") + userData.getName() + ">" + bundle.getString("error_help");
-                    msgmap.put(key, "<td>" + bundle.getString("error_inoperable") + message + "</a></td></tr>");
-                } else {
-                    msgmap.put(key, "<td>" + bundle.getString("error_inoperable"));
-                }
-            }
+        try {
+          doneSignal.await(); // wait for all thread to finish
+        } catch (InterruptedException e) {
+            // should never happen
+            
         }
         return msgmap;
     }
@@ -431,7 +465,7 @@ extends MoriaServlet {
      * @see #ERRORCODE_BACKEND
      * @see #ERRORLEVEL_BACKEND
      */
-    public Vector checkBackend(HashMap msgmap) {
+    public Vector checkBackend(Map msgmap) {
 
         // Gettin' started.
         Vector messages = new Vector();
@@ -445,7 +479,7 @@ extends MoriaServlet {
             org = userData.getOrganization();
             
             String err = (String) msgmap.get(key);
-            if (!err.equals("")) {
+            if (err != null && !err.equals("")) {
                 messages.add(ERRORCODE_BACKEND + " " + ERRORLEVEL_BACKEND + " moria-dm No connectivity to " + org);
             }
         }
@@ -535,7 +569,7 @@ extends MoriaServlet {
         allerrors.addAll(checkServices());
         allerrors.addAll(checkSOAP());
         
-        HashMap backenderrors = doBackendCheck(bundle);
+        Map backenderrors = doBackendCheckMultithread(bundle);
         allerrors.addAll(checkBackend(backenderrors));
         if (allerrors.size() > 0) {
             for (int i = 0; i < allerrors.size(); i++) {
@@ -556,7 +590,7 @@ extends MoriaServlet {
             
             String errormsg = (String) backenderrors.get(key);
             
-            if (errormsg.equals("")) {
+            if (errormsg == null || errormsg.equals("")) {
                 out.println("<td>OK</td></tr>");
             }
             else {
