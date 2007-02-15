@@ -189,20 +189,48 @@ public final class JNDIBackend implements DirectoryManagerBackend {
         String pattern = usernameAttribute + '=' + username;
 
         // Go through all references.
+        InitialLdapContext ldap = null;
         for (int i = 0; i < myReferences.length; i++) {
             String[] references = myReferences[i].getReferences();
+            final String[] usernames = myReferences[i].getUsernames();
+            final String[] passwords = myReferences[i].getPasswords();
             for (int j = 0; j < references.length; j++) {
-
-                // Search this reference.
-                InitialLdapContext ldap = null;
+                
                 try {
-                    ldap = connect(references[j]);
+                    
+                    // Context for this reference.
+                    try {
+                        ldap = connect(references[j]);
+                    } catch (NamingException e) {
+                        // Connection failed, but we might have other sources.
+                        log.logWarn("Unable to access the backend on '" + references[j] + "' to verify existence of '" + username + "': " + e.getClass().getName(), mySessionTicket, e);
+                        continue;
+                    }
+                
+                    // Anonymous search or not?
+                    ldap.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
+                    if ((usernames[j].length() == 0) && (passwords[j].length() > 0))
+                        log.logWarn("Search username is empty but search password is not - possible index problem", mySessionTicket);
+                    else if ((passwords[j].length() == 0) && (usernames[j].length() > 0))
+                        log.logWarn("Search password is empty but search username is not - possible index problem", mySessionTicket);
+                    else if ((passwords[j].length() == 0) && (usernames[j].length() == 0)) {
+                        log.logDebug("Anonymous search for user element DN on " + references[j], mySessionTicket);
+                        ldap.removeFromEnvironment(Context.SECURITY_AUTHENTICATION);
+                    } else
+                        log.logDebug("Non-anonymous search to verify existence of '" + username + "' on " + references[j], mySessionTicket);
+                    ldap.addToEnvironment(Context.SECURITY_PRINCIPAL, usernames[j]);
+                    ldap.addToEnvironment(Context.SECURITY_CREDENTIALS, passwords[j]);
+
+                    // Search this reference.
                     if (ldapSearch(ldap, pattern) != null)
                         return true;
+                    
                 } catch (NamingException e) {
+                    
                     // Unable to connect, but we might have other sources.
-                    log.logWarn("Unable to access the backend on '" + references[j] + "': " + e.getClass().getName(), mySessionTicket, e);
+                    log.logWarn("Unable to access the backend on '" + references[j] + "' to verify existence of '" + username + "': " + e.getClass().getName(), mySessionTicket, e);
                     continue;
+                    
                 } finally {
 
                     // Close the LDAP connection.
@@ -520,11 +548,11 @@ public final class JNDIBackend implements DirectoryManagerBackend {
         }
         
         // Follow references to look up any indirectly referenced attributes.
-        Enumeration keys = attributeReferences.keys();
+        Enumeration<String> keys = attributeReferences.keys();
         while (keys.hasMoreElements()) {
             
             // Do we have a reference? 
-            final String referencingAttribute = (String) keys.nextElement();
+            final String referencingAttribute = keys.nextElement();
             final String[] referencingValues = convertedAttributes.get(referencingAttribute);
             if (referencingValues == null) {
                 
