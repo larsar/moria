@@ -208,6 +208,11 @@ public final class MoriaController {
      * Used for message/error logging.
      */
     private static MessageLogger messageLogger;
+    
+    /**
+     * Used to count the number of users that opt out of SSO. 
+     */
+    private static int optOutOfSSOCounter;
 
 
     /**
@@ -262,6 +267,9 @@ public final class MoriaController {
 
             // Starting SimpleLdapServer on (hard-coded) port 389.
             // SimpleLdapServer.start(389);
+            
+            // DEBUG: Adding opt out of SSO counter.
+            optOutOfSSOCounter = 0;
 
         }
     }
@@ -629,6 +637,15 @@ public final class MoriaController {
         tickets.put(SERVICE_TICKET, serviceTicketId);
         tickets.put(SSO_TICKET, newSSOTicketId);
 
+        // DEBUG: Did the user opt out of SSO?
+        if (denySSO) {
+            if (optOutOfSSOCounter == Integer.MAX_VALUE) {
+                optOutOfSSOCounter = 0;
+                messageLogger.logInfo("Opt out of SSO counter was " + Integer.MAX_VALUE + " and has been reset");
+            }
+            optOutOfSSOCounter++;
+            messageLogger.logInfo("User " + userId + " opted out of SSO; so far " + optOutOfSSOCounter + " user(s) have done this since last restart", loginTicketId);
+        }
         accessLogger.logUser(AccessStatusType.SUCCESSFUL_INTERACTIVE_AUTHENTICATION, authnAttempt.getServicePrincipal(), userId, loginTicketId, "Service: " + serviceTicketId + " SSO: " + ssoTicketId);
 
         return tickets;
